@@ -124,13 +124,23 @@
 │   │   │   ├── SPEC.md
 │   │   │   ├── src
 │   │   │   │   ├── domain
-│   │   │   │   │   └── .gitkeep
+│   │   │   │   │   ├── .gitkeep
+│   │   │   │   │   ├── GridPlanner.ts
+│   │   │   │   │   ├── IdleAssist.ts
+│   │   │   │   │   ├── PuzzleBoard.ts
+│   │   │   │   │   ├── PuzzleProgress.ts
+│   │   │   │   │   ├── PuzzleShuffle.ts
+│   │   │   │   │   └── Swap.ts
 │   │   │   │   ├── index.ts
 │   │   │   │   └── runtime
 │   │   │   │       └── phaser
 │   │   │   │           └── .gitkeep
 │   │   │   └── tests
-│   │   │       └── .gitkeep
+│   │   │       ├── .gitkeep
+│   │   │       ├── GridPlanner.test.ts
+│   │   │       ├── PuzzleBoard.test.ts
+│   │   │       ├── PuzzleInteraction.test.ts
+│   │   │       └── PuzzleShuffle.test.ts
 │   │   └── tic-tac-toe
 │   │       ├── package.json
 │   │       ├── SPEC.md

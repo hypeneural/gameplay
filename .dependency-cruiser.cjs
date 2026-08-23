@@ -12,8 +12,11 @@ module.exports = {
     {
       name: 'game-to-game-isolation',
       severity: 'error',
-      from: { path: '^packages/games/(puzzle-swap|memory|tic-tac-toe)/src' },
-      to: { path: '^packages/games/(puzzle-swap|memory|tic-tac-toe)/src' },
+      from: { path: '^packages/games/([^/]+)/src/.+' },
+      to: {
+        path: '^packages/games/([^/]+)/src/.+',
+        pathNot: '^packages/games/$1/src/.+',
+      },
     },
     {
       name: 'platform-does-not-import-games',

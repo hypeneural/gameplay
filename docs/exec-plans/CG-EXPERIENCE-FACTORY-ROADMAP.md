@@ -103,6 +103,8 @@ The 52 px primary target, 16 px / 200 ms initial drag thresholds and 7 s idle-as
 
 ## Work package E — Puzzle Swap 2.0 as the first real proof
 
+**Progress (2026-08-23):** [x] pure deterministic board, injected-Random shuffle, tap–tap command mapping, accessible progress, adaptive grid planning and injected-Clock idle assist; [ ] Phaser texture/input runtime, shell registration and mobile evidence.
+
 1. Freeze the current SPEC with grid sizes, deterministic shuffle, one photo texture, portrait/landscape layout, drag and tap–tap interaction, 52 px primary hit areas, idle assist and relaxed-time policy.
 2. Implement and test `PuzzleBoard`, `GridPlanner` and `Swap` without Phaser. Test legal swaps, replayable shuffle, solved-state detection, progress copy and no-solution idle hint selection.
 3. Implement the Phaser adapter around one source texture and geometry. Configure input from `TouchProfile`; on every accepted move emit named feedback through Experience v0. The runtime must retain no full-resolution original or individual image-per-cell load.

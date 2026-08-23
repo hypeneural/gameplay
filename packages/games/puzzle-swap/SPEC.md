@@ -18,9 +18,9 @@ Let a visitor choose one local-session photo and solve a mobile-first swap puzzl
 
 ## Planned files
 
-- `src/domain/PuzzleBoard.ts`, `GridPlanner.ts`, `Swap.ts`
+- `src/domain/PuzzleBoard.ts`, `PuzzleShuffle.ts`, `PuzzleProgress.ts`, `GridPlanner.ts`, `Swap.ts`, `IdleAssist.ts`
 - `src/runtime/phaser/PuzzleScene.ts`, `PuzzleHud.ts`, `HintOverlay.ts`, `WinCelebration.ts`
-- `tests/PuzzleBoard.test.ts`, `tests/puzzle-mobile.spec.ts`
+- `tests/PuzzleBoard.test.ts`, `PuzzleShuffle.test.ts`, `PuzzleInteraction.test.ts`, `GridPlanner.test.ts`, `puzzle-mobile.spec.ts`
 
 ## Donors
 

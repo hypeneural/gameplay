@@ -35,7 +35,7 @@ This rules out square thumbnail assumptions, loading originals into the browser,
 | 9.5c. Production correctness kernel                                  | validated 2026-08-23 | lazy installed-game registry, run correlation, serial Phaser teardown, immutable media namespaces and fuller corpus inspector | lifecycle/media unit tests and browser cleanup proof                           |
 | 9.5d. Native-like shell                                              | in progress          | Hub → card → cover → game route, serial Back/exit, retry shell; PWA and release evidence remain pending                       | install/recovery/back/viewport matrix proves no stale chunk or orphan canvas   |
 | 9.5e. Christmas experience kit                                       | next P1 slice        | photo frame, HUD, backdrop, quality-aware motion and accessible cover/win states                                              | first real-game visual acceptance and a measured performance threshold         |
-| 10. Puzzle Swap 2.0                                                  | pending              | first real photo game                                                                                                         | Puzzle SPEC acceptance matrix, mobile evidence and no leak after repeated runs |
+| 10. Puzzle Swap 2.0                                                  | in progress — domain | deterministic board, shuffle, selection, progress, adaptive grid and idle assist                                              | Puzzle SPEC acceptance matrix, mobile evidence and no leak after repeated runs |
 | 11. Memory                                                           | pending              | subset/mixed-orientation game                                                                                                 | deterministic cards, 120-photo selection and mobile evidence                   |
 | 12. Tic-Tac-Toe                                                      | pending              | non-photo rules game using shared presentation                                                                                | deterministic AI/rules tests and mobile evidence                               |
 
@@ -145,11 +145,11 @@ The performance rule is conservative:
 
 ## Phase 10 — Puzzle Swap 2.0
 
-1. Freeze `packages/games/puzzle-swap/SPEC.md`: board sizes, drag **and** tap–tap move semantics, completion state, source photo variant, portrait/landscape behavior, 52 px touch targets, threshold profile, idle help, relaxed-time policy and retry UI.
-2. Write pure domain tests first: legal moves, deterministic shuffle from injected `Random`, solved state and accessibility-readable progress.
-3. Complete the module through the standard factory seam. Its `tuning.ts` owns feel values; `SceneScope` owns each input listener/tween/texture and the game documents every generated puzzle texture owner.
-4. Build rendering with `PhotoSurface` or a documented crop strategy; do not blur a full-resolution photo in real time. Add feedback only through the small Game Experience composition, and validate `NORMAL`, `LOW` and reduced-motion mode in Experience Lab before importing it.
-5. Add Playwright proof: select a portrait then landscape photo, complete the game through pointer drag and tap–tap, leave the game five times, inspect console/failed requests/canvas count and capture screenshots on 390×844, 412×915, 430×932 and 768×1024.
+1. [x] Freeze `packages/games/puzzle-swap/SPEC.md`: board sizes, drag **and** tap–tap move semantics, completion state, source photo variant, portrait/landscape behavior, 52 px touch targets, threshold profile, idle help, relaxed-time policy and retry UI.
+2. [x] Write pure domain tests first: legal moves, deterministic shuffle from injected `Random`, solved state, accessibility-readable progress, one idle visual hint and adaptive rectangular grids.
+3. [ ] Complete the module through the standard factory seam. Its `tuning.ts` owns feel values; `SceneScope` owns each input listener/tween/texture and the game documents every generated puzzle texture owner.
+4. [ ] Build rendering with `PhotoSurface` or a documented crop strategy; do not blur a full-resolution photo in real time. Add feedback only through the small Game Experience composition, and validate `NORMAL`, `LOW` and reduced-motion mode in Experience Lab before importing it.
+5. [ ] Add Playwright proof: select a portrait then landscape photo, complete the game through pointer drag and tap–tap, leave the game five times, inspect console/failed requests/canvas count and capture screenshots on 390×844, 412×915, 430×932 and 768×1024.
 
 Phase 10 is complete only when the initial game feels like a product rather than a dev proof, with loading/retry/exit states, no leaked resources, and evidence linked in traceability.
 
