@@ -27,3 +27,7 @@ The 2024 Christmas corpus has one date-batch layer above sessions. The inspector
 ## LESSON-007 — Navigation requests must be edge-triggered per host
 
 An incrementing exit request is safe only when a fresh `PhaserHost` treats its current value as already handled. Otherwise it consumes a completed predecessor request and immediately exits the next game. Browser Back now records the target route, cancels the current host and applies that target only after `DESTROY`.
+
+## LESSON-008 — A grid can reuse one photo texture without distorting it
+
+Puzzle pieces are visual crops of one authorized `game` variant, positioned from source-frame proportions and the contain-fitted board geometry. A piece never needs a separate image request; touch targets are transparent geometry over that same layout.

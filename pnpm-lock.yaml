@@ -58,6 +58,9 @@ importers:
       '@christmas-games/platform':
         specifier: workspace:*
         version: link:../../packages/platform
+      '@christmas-games/puzzle-swap':
+        specifier: workspace:*
+        version: link:../../packages/games/puzzle-swap
       '@christmas-games/theme':
         specifier: workspace:*
         version: link:../../packages/theme
@@ -93,6 +96,12 @@ importers:
       '@christmas-games/platform':
         specifier: workspace:*
         version: link:../../platform
+      '@christmas-games/theme':
+        specifier: workspace:*
+        version: link:../../theme
+      phaser:
+        specifier: 4.2.1
+        version: 4.2.1
 
   packages/games/tic-tac-toe: {}
 

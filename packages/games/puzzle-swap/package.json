@@ -3,8 +3,15 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "dependencies": {
-    "@christmas-games/platform": "workspace:*"
+  "exports": {
+    ".": "./src/index.ts",
+    "./definition": "./src/definition.ts"
   },
-  "exports": "./src/index.ts"
+  "peerDependencies": {
+    "phaser": "4.2.1"
+  },
+  "dependencies": {
+    "@christmas-games/platform": "workspace:*",
+    "@christmas-games/theme": "workspace:*"
+  }
 }

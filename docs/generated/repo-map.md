@@ -123,6 +123,7 @@
 │   │   │   ├── PLAN.md
 │   │   │   ├── SPEC.md
 │   │   │   ├── src
+│   │   │   │   ├── definition.ts
 │   │   │   │   ├── domain
 │   │   │   │   │   ├── .gitkeep
 │   │   │   │   │   ├── GridPlanner.ts
@@ -132,9 +133,11 @@
 │   │   │   │   │   ├── PuzzleShuffle.ts
 │   │   │   │   │   └── Swap.ts
 │   │   │   │   ├── index.ts
-│   │   │   │   └── runtime
-│   │   │   │       └── phaser
-│   │   │   │           └── .gitkeep
+│   │   │   │   ├── runtime
+│   │   │   │   │   └── phaser
+│   │   │   │   │       ├── .gitkeep
+│   │   │   │   │       └── createPuzzleSwapGame.ts
+│   │   │   │   └── tuning.ts
 │   │   │   └── tests
 │   │   │       ├── .gitkeep
 │   │   │       ├── GridPlanner.test.ts
@@ -335,7 +338,7 @@
 | `@christmas-games/platform`          | `packages\platform\package.json`          | `./src/index.ts`  |
 | `@christmas-games/theme`             | `packages\theme\package.json`             | `./src/index.ts`  |
 | `@christmas-games/dev-smoke`         | `packages\games\dev-smoke\package.json`   | `[object Object]` |
-| `@christmas-games/puzzle-swap`       | `packages\games\puzzle-swap\package.json` | `./src/index.ts`  |
+| `@christmas-games/puzzle-swap`       | `packages\games\puzzle-swap\package.json` | `[object Object]` |
 | `@christmas-games/memory`            | `packages\games\memory\package.json`      | `./src/index.ts`  |
 | `@christmas-games/tic-tac-toe`       | `packages\games\tic-tac-toe\package.json` | `./src/index.ts`  |
 | `@christmas-games/media-pipeline`    | `tools\media-pipeline\package.json`       | `—`               |

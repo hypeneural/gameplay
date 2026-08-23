@@ -147,7 +147,7 @@ The performance rule is conservative:
 
 1. [x] Freeze `packages/games/puzzle-swap/SPEC.md`: board sizes, drag **and** tap–tap move semantics, completion state, source photo variant, portrait/landscape behavior, 52 px touch targets, threshold profile, idle help, relaxed-time policy and retry UI.
 2. [x] Write pure domain tests first: legal moves, deterministic shuffle from injected `Random`, solved state, accessibility-readable progress, one idle visual hint and adaptive rectangular grids.
-3. [ ] Complete the module through the standard factory seam. Its `tuning.ts` owns feel values; `SceneScope` owns each input listener/tween/texture and the game documents every generated puzzle texture owner.
+3. [-] Complete the module through the standard factory seam. Its `tuning.ts` owns feel values; `SceneScope` owns each input listener/tween/texture and the game documents every generated puzzle texture owner. The first lazy runtime mounts one source texture, proportional crops and drag/tap input; its remaining HUD/feedback/idle work stays open.
 4. [ ] Build rendering with `PhotoSurface` or a documented crop strategy; do not blur a full-resolution photo in real time. Add feedback only through the small Game Experience composition, and validate `NORMAL`, `LOW` and reduced-motion mode in Experience Lab before importing it.
 5. [ ] Add Playwright proof: select a portrait then landscape photo, complete the game through pointer drag and tap–tap, leave the game five times, inspect console/failed requests/canvas count and capture screenshots on 390×844, 412×915, 430×932 and 768×1024.
 

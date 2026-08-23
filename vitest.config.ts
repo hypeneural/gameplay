@@ -16,6 +16,12 @@ export default defineConfig({
       '@christmas-games/dev-smoke': fileURLToPath(
         new URL('./packages/games/dev-smoke/src/index.ts', import.meta.url),
       ),
+      '@christmas-games/puzzle-swap/definition': fileURLToPath(
+        new URL('./packages/games/puzzle-swap/src/definition.ts', import.meta.url),
+      ),
+      '@christmas-games/puzzle-swap': fileURLToPath(
+        new URL('./packages/games/puzzle-swap/src/index.ts', import.meta.url),
+      ),
     },
   },
   test: {

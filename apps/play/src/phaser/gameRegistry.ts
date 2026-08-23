@@ -1,6 +1,7 @@
 import type { GameDefinition, GameModule } from '@christmas-games/platform';
 import type * as PhaserModule from 'phaser';
 import { devSmokeDefinition } from '@christmas-games/dev-smoke/definition';
+import { puzzleSwapDefinition } from '@christmas-games/puzzle-swap/definition';
 
 export type PhaserGameModule = GameModule<typeof PhaserModule, HTMLElement>;
 export interface InstalledGame {
@@ -16,6 +17,10 @@ const installedGames = {
   'dev-smoke': {
     definition: devSmokeDefinition,
     load: async () => (await import('@christmas-games/dev-smoke')).devSmokeGameModule,
+  },
+  'puzzle-swap': {
+    definition: puzzleSwapDefinition,
+    load: async () => (await import('@christmas-games/puzzle-swap')).puzzleSwapGameModule,
   },
 } satisfies Record<string, InstalledGame>;
 

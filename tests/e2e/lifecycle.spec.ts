@@ -64,6 +64,23 @@ test('five mount-unmount cycles do not leave a duplicate canvas', async ({ page 
   }
 });
 
+test('Puzzle Swap mounts from one selected photo texture and exits cleanly', async ({ page }) => {
+  const failedRequests: string[] = [];
+  page.on('requestfailed', (request) => failedRequests.push(request.url()));
+
+  await page.goto('/s/local-demo-token');
+  await page.getByTestId('open-game-puzzle-swap').click();
+  await expect(page.getByRole('heading', { name: 'Quebra-cabeça da sua foto' })).toBeVisible();
+  await page.getByTestId('play-selected-game').click();
+  await expect(page.getByTestId('game-status')).toHaveText('Pronto');
+  await expect(page.getByTestId('game-event')).toHaveText('GAME_STARTED');
+  await expect(page.locator('canvas')).toHaveCount(1);
+  await page.getByRole('button', { name: 'Sair do jogo' }).click();
+  await expect(page.getByRole('heading', { name: 'Sessão de Natal' })).toBeVisible();
+  await expect(page.locator('canvas')).toHaveCount(0);
+  expect(failedRequests).toEqual([]);
+});
+
 test('a 172-photo session keeps selection and has a deterministic no-observer fallback', async ({
   page,
 }) => {
