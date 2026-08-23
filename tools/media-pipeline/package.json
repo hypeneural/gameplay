@@ -1,0 +1,14 @@
+{
+  "name": "@christmas-games/media-pipeline",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "process": "tsx src/index.ts",
+    "inspect": "tsx src/inspect.ts"
+  },
+  "dependencies": {
+    "sharp": "0.35.3",
+    "zod": "4.4.3"
+  }
+}

@@ -1,0 +1,183 @@
+import { useMemo, useState } from 'react';
+import { createChristmasEffects } from '@christmas-games/theme';
+import type {
+  FeedbackCue,
+  FeedbackInstruction,
+  MotionPreference,
+  QualityProfile,
+} from '@christmas-games/theme';
+
+type PhotoShape = 'portrait' | 'landscape';
+
+interface ExperienceSettings {
+  motion: MotionPreference;
+  photo: PhotoShape;
+  quality: QualityProfile;
+  seed: string;
+  soundEnabled: boolean;
+}
+
+const feedbackCues: readonly FeedbackCue[] = [
+  'tap',
+  'select',
+  'correct',
+  'wrong',
+  'hint',
+  'celebrate',
+];
+
+/** Deterministic dev-only reference for the shared feedback vocabulary. */
+export function ExperienceLab(): React.JSX.Element {
+  const [settings, setSettings] = useState<ExperienceSettings>(() => readExperienceSettings());
+  const [lastInstruction, setLastInstruction] = useState<FeedbackInstruction | undefined>(
+    undefined,
+  );
+  const feel = useMemo(
+    () =>
+      createChristmasEffects<string>(
+        {
+          quality: settings.quality,
+          motion: settings.motion,
+          soundEnabled: settings.soundEnabled,
+        },
+        {
+          animate: (_target, instruction) => setLastInstruction(instruction),
+        },
+      ),
+    [settings.motion, settings.quality, settings.soundEnabled],
+  );
+
+  const update = <Key extends keyof ExperienceSettings>(
+    key: Key,
+    value: ExperienceSettings[Key],
+  ): void => {
+    setSettings((current) => {
+      const next = { ...current, [key]: value };
+      writeExperienceSettings(next);
+      return next;
+    });
+  };
+
+  return (
+    <main className="shell experience-lab">
+      <p className="eyebrow">DESENVOLVIMENTO</p>
+      <h1>Experience Lab</h1>
+      <p className="intro">
+        Referência determinística para toque, movimento e qualidade antes de criar um jogo.
+      </p>
+      <div className="experience-controls" aria-label="Controles de experiência">
+        <label className="field">
+          Qualidade
+          <select
+            data-testid="experience-quality"
+            value={settings.quality}
+            onChange={(event) => update('quality', event.target.value as QualityProfile)}
+          >
+            <option value="LOW">LOW</option>
+            <option value="NORMAL">NORMAL</option>
+            <option value="HIGH">HIGH</option>
+          </select>
+        </label>
+        <label className="field">
+          Movimento
+          <select
+            data-testid="experience-motion"
+            value={settings.motion}
+            onChange={(event) => update('motion', event.target.value as MotionPreference)}
+          >
+            <option value="full">Movimento completo</option>
+            <option value="reduced">Movimento reduzido</option>
+          </select>
+        </label>
+        <label className="field">
+          Foto
+          <select
+            data-testid="experience-photo"
+            value={settings.photo}
+            onChange={(event) => update('photo', event.target.value as PhotoShape)}
+          >
+            <option value="portrait">Portrait</option>
+            <option value="landscape">Landscape</option>
+          </select>
+        </label>
+        <label className="field">
+          Som
+          <select
+            data-testid="experience-sound"
+            value={settings.soundEnabled ? 'on' : 'off'}
+            onChange={(event) => update('soundEnabled', event.target.value === 'on')}
+          >
+            <option value="on">Preparado</option>
+            <option value="off">Silencioso</option>
+          </select>
+        </label>
+      </div>
+      <section
+        className={`experience-preview ${settings.photo} ${lastInstruction?.cue ?? 'idle'}`}
+        data-testid="experience-preview"
+        data-motion={settings.motion}
+        data-quality={settings.quality}
+        aria-label={`Preview ${settings.photo}; seed ${settings.seed}`}
+      >
+        <div className="experience-photo-surface">FOTO</div>
+        <div className="experience-feedback" aria-live="polite">
+          {lastInstruction
+            ? `${lastInstruction.cue.toUpperCase()} · ${lastInstruction.motion.durationMs} ms`
+            : 'PRONTO'}
+        </div>
+        {lastInstruction?.particles ? (
+          <span className="experience-particles" data-testid="experience-particles">
+            ✦ {lastInstruction.particles.count}
+          </span>
+        ) : null}
+      </section>
+      <div className="experience-cues" aria-label="Cues de feedback">
+        {feedbackCues.map((cue) => (
+          <button
+            className="button secondary"
+            data-testid={`experience-${cue}`}
+            key={cue}
+            type="button"
+            onClick={() => feel.apply(cue, 'preview')}
+          >
+            {cue.toUpperCase()}
+          </button>
+        ))}
+      </div>
+      <p className="hint" data-testid="experience-seed">
+        Seed determinística: {settings.seed}. “Preparado” não reproduz áudio enquanto não houver
+        assets licenciados.
+      </p>
+    </main>
+  );
+}
+
+function readExperienceSettings(): ExperienceSettings {
+  const search = new URLSearchParams(window.location.search);
+  return {
+    quality: parseQuality(search.get('quality')),
+    motion: search.get('motion') === 'reduce' ? 'reduced' : 'full',
+    photo: search.get('photo') === 'landscape' ? 'landscape' : 'portrait',
+    soundEnabled: search.get('sound') !== 'off',
+    seed: normalizeSeed(search.get('seed')),
+  };
+}
+
+function writeExperienceSettings(settings: ExperienceSettings): void {
+  const search = new URLSearchParams({
+    quality: settings.quality,
+    motion: settings.motion === 'reduced' ? 'reduce' : 'full',
+    photo: settings.photo,
+    sound: settings.soundEnabled ? 'on' : 'off',
+    seed: settings.seed,
+  });
+  window.history.replaceState(window.history.state, '', `/__dev/experience?${search.toString()}`);
+}
+
+function parseQuality(value: string | null): QualityProfile {
+  return value === 'LOW' || value === 'HIGH' ? value : 'NORMAL';
+}
+
+function normalizeSeed(value: string | null): string {
+  return value && /^\d{1,10}$/.test(value) ? value : '1234';
+}

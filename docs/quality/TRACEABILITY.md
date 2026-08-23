@@ -1,0 +1,18 @@
+# Bootstrap traceability
+
+| Requirement                                                        | Code owner                                                         | Test/evidence                                                                 |
+| ------------------------------------------------------------------ | ------------------------------------------------------------------ | ----------------------------------------------------------------------------- |
+| CG-BOOT-001: deterministic domain primitives                       | `packages/platform/src/runtime`                                    | `packages/platform/tests/runtime.test.ts`                                     |
+| CG-BOOT-002: portrait/landscape media remains proportional         | `tools/media-pipeline`                                             | `tools/media-pipeline/tests/media-pipeline.test.ts`                           |
+| CG-BOOT-003: Hub lazy-loads one Phaser game and cleans up          | `apps/play/src/phaser`                                             | `tests/e2e/lifecycle.spec.ts`; four screenshots in `docs/generated/evidence/` |
+| CG-BOOT-004: supported viewport layouts                            | `ViewportLayout.ts`                                                | unit matrix + Playwright projects                                             |
+| CG-BOOT-005: theme is shared from tokens                           | `packages/theme`                                                   | Theme Lab route and build                                                     |
+| CG-BOOT-006: architecture boundaries fail on violation             | ESLint + dependency-cruiser configs                                | `exec-plans/completed/CG-BOOTSTRAP.md`                                        |
+| CG-FACTORY-001: a game run emits once and excludes hidden time     | `GameRunController`, `ActiveGameClock`, `PageVisibilityController` | `packages/platform/tests/game-runtime.test.ts`                                |
+| CG-FACTORY-002: scene resources have an explicit owner             | `SceneScope`; Dev smoke `SHUTDOWN`                                 | unit test + lifecycle Playwright suite                                        |
+| CG-FACTORY-003: photo games preserve mixed orientation             | `PhotoSurface`, progressive Hub, Sharp pipeline                    | platform/media unit tests + session-120 e2e                                   |
+| CG-FACTORY-004: one bad media item does not publish partial output | media batch/staging/atomic manifest                                | `tools/media-pipeline/tests/media-pipeline.test.ts`                           |
+| CG-FACTORY-005: creating a game is isolated and safe               | `tools/game-generator`                                             | `tools/game-generator/tests/game-generator.test.ts`                           |
+| CG-FACTORY-006: runs cannot leak lifecycle events across instances | run id/sequence + `PhaserMountCoordinator`                         | platform run test + five-cycle Playwright proof                               |
+| CG-FACTORY-007: a reused photo id cannot serve stale pixels        | content-addressed original/derivative paths + manifest upsert      | `tools/media-pipeline/tests/media-pipeline.test.ts`                           |
+| CG-FACTORY-008: seasonal folder layout excludes delivery subtrees  | `inspectPhotoCorpus` date-batch discovery                          | `tools/media-pipeline/tests/inspect.test.ts`; Christmas full baseline         |

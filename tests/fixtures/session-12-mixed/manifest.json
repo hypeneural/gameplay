@@ -1,0 +1,88 @@
+{
+  "photos": [
+    {
+      "id": "ph_001",
+      "width": 500,
+      "height": 700,
+      "aspectRatio": 0.7142857142857143,
+      "label": "PORTRAIT 01"
+    },
+    {
+      "id": "ph_002",
+      "width": 700,
+      "height": 500,
+      "aspectRatio": 1.4,
+      "label": "LANDSCAPE 02"
+    },
+    {
+      "id": "ph_003",
+      "width": 500,
+      "height": 700,
+      "aspectRatio": 0.7142857142857143,
+      "label": "PORTRAIT 03"
+    },
+    {
+      "id": "ph_004",
+      "width": 700,
+      "height": 500,
+      "aspectRatio": 1.4,
+      "label": "LANDSCAPE 04"
+    },
+    {
+      "id": "ph_005",
+      "width": 500,
+      "height": 700,
+      "aspectRatio": 0.7142857142857143,
+      "label": "PORTRAIT 05"
+    },
+    {
+      "id": "ph_006",
+      "width": 700,
+      "height": 500,
+      "aspectRatio": 1.4,
+      "label": "LANDSCAPE 06"
+    },
+    {
+      "id": "ph_007",
+      "width": 500,
+      "height": 700,
+      "aspectRatio": 0.7142857142857143,
+      "label": "PORTRAIT 07"
+    },
+    {
+      "id": "ph_008",
+      "width": 700,
+      "height": 500,
+      "aspectRatio": 1.4,
+      "label": "LANDSCAPE 08"
+    },
+    {
+      "id": "ph_009",
+      "width": 500,
+      "height": 700,
+      "aspectRatio": 0.7142857142857143,
+      "label": "PORTRAIT 09"
+    },
+    {
+      "id": "ph_010",
+      "width": 700,
+      "height": 500,
+      "aspectRatio": 1.4,
+      "label": "LANDSCAPE 10"
+    },
+    {
+      "id": "ph_011",
+      "width": 500,
+      "height": 700,
+      "aspectRatio": 0.7142857142857143,
+      "label": "PORTRAIT 11"
+    },
+    {
+      "id": "ph_012",
+      "width": 700,
+      "height": 500,
+      "aspectRatio": 1.4,
+      "label": "LANDSCAPE 12"
+    }
+  ]
+}

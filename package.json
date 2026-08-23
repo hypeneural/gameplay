@@ -1,0 +1,48 @@
+{
+  "name": "christmas-games",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@11.19.0",
+  "engines": {
+    "node": ">=24.0.0 <25",
+    "pnpm": ">=11.19.0"
+  },
+  "scripts": {
+    "dev": "pnpm --filter @christmas-games/play dev",
+    "build": "pnpm --filter @christmas-games/play build",
+    "typecheck": "tsc --noEmit --project tsconfig.json",
+    "lint": "eslint .",
+    "test:unit": "vitest run",
+    "architecture": "depcruise --config .dependency-cruiser.cjs apps packages tools --output-type err-long",
+    "deadcode": "knip",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "repo:map": "node tools/repo-map.mjs --write",
+    "repo:map:check": "node tools/repo-map.mjs --check",
+    "check:fast": "pnpm typecheck && pnpm lint && pnpm test:unit",
+    "check": "pnpm check:fast && pnpm architecture && pnpm deadcode && pnpm format:check && pnpm repo:map:check",
+    "test:e2e": "playwright test",
+    "validate": "pnpm check && pnpm build && pnpm test:e2e",
+    "fixtures:generate": "pnpm --filter @christmas-games/fixture-generator generate",
+    "media:process": "pnpm --filter @christmas-games/media-pipeline process",
+    "media:inspect": "pnpm --filter @christmas-games/media-pipeline inspect",
+    "game:new": "pnpm --filter @christmas-games/game-generator new"
+  },
+  "devDependencies": {
+    "@eslint/js": "10.0.1",
+    "@playwright/test": "1.62.1",
+    "@types/node": "24.13.3",
+    "@types/react": "19.2.18",
+    "@types/react-dom": "19.2.4",
+    "dependency-cruiser": "18.2.0",
+    "eslint": "10.9.0",
+    "eslint-plugin-boundaries": "7.2.0",
+    "knip": "6.32.2",
+    "prettier": "3.9.6",
+    "tsx": "4.23.12",
+    "typescript": "6.0.3",
+    "typescript-eslint": "8.67.0",
+    "vitest": "4.1.11"
+  }
+}
