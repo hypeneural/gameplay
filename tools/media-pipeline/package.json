@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "process": "tsx src/index.ts",
-    "inspect": "tsx src/inspect.ts"
+    "inspect": "tsx src/inspect.ts",
+    "prepare-local": "tsx src/prepareLocal.ts"
   },
   "dependencies": {
     "sharp": "0.35.3",

@@ -67,6 +67,7 @@ Implemented now:
 4. `pnpm media:inspect <root> --sample-per-session 3` reproduces the corpus methodology without reading nested low-resolution folders or writing a file. It recognizes a single explicit `DD MM YYYY` date-batch layer and reports candidates, unreadable headers, EXIF, format, colour space and profiles separately.
 5. The media worker validates a regular source file and 32 MiB byte ceiling, hashes it as a stream, stores its immutable original and variants below the hash namespace, stages all variants before a same-filesystem publish, validates WebP output metadata, and upserts rather than replaces the session manifest through a sibling temporary file and rename.
 6. `processMediaJobs` is bounded (1–8, production baseline 2) and returns failed records for one bad item without discarding ready items.
+7. `pnpm media:prepare-local` creates a local-only opaque test session from immediate supported files, writing private WebP derivatives and metadata with no source names/paths. The Vite adapter is enabled only through `LOCAL_TEST_MEDIA_ROOT`, binds to loopback during operator use and is excluded from production builds.
 
 Production adapter work still required:
 

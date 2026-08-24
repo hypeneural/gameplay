@@ -1,9 +1,10 @@
-import { mkdtemp, readFile, writeFile } from 'node:fs/promises';
+import { mkdir, mkdtemp, readFile, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import sharp from 'sharp';
 import { processMediaJob, processMediaJobs, writeManifest } from '../src/index.js';
+import { prepareLocalMedia } from '../src/prepareLocal.js';
 
 describe('processMediaJob', () => {
   it('keeps portrait dimensions proportional across local derivatives', async () => {
@@ -138,6 +139,48 @@ describe('processMediaJob', () => {
     expect(manifest.entries).toEqual([
       { photoId: 'ph_005', state: 'ready' },
       { photoId: 'ph_006', state: 'failed', error: 'media_processing_failed' },
+    ]);
+  });
+
+  it('creates opaque local test metadata from direct source photos only', async () => {
+    const root = await mkdtemp(join(tmpdir(), 'christmas-games-'));
+    const sourceDirectory = join(root, 'input');
+    await mkdir(sourceDirectory);
+    await sharp({ create: { width: 700, height: 500, channels: 3, background: '#103e35' } })
+      .jpeg()
+      .toFile(join(sourceDirectory, 'private-source.jpg'));
+    await sharp({ create: { width: 500, height: 700, channels: 3, background: '#8f1d35' } })
+      .jpeg()
+      .toFile(join(sourceDirectory, 'second.jpg'));
+    await mkdir(join(sourceDirectory, 'nested'));
+    await sharp({ create: { width: 40, height: 40, channels: 3, background: '#000000' } })
+      .jpeg()
+      .toFile(join(sourceDirectory, 'nested', 'ignore.jpg'));
+
+    const result = await prepareLocalMedia({
+      sourceDirectory,
+      storageRoot: join(root, 'private-cache'),
+    });
+    const rawConfig = await readFile(result.configPath, 'utf8');
+    const config = JSON.parse(rawConfig) as {
+      photos: Array<{ id: string; orientation: string; width: number; height: number }>;
+    };
+
+    expect(result).toMatchObject({ ready: 2, failed: 0 });
+    expect(rawConfig).not.toContain('private-source');
+    expect(config.photos).toEqual([
+      expect.objectContaining({
+        id: 'photo-001',
+        orientation: 'landscape',
+        width: 700,
+        height: 500,
+      }),
+      expect.objectContaining({
+        id: 'photo-002',
+        orientation: 'portrait',
+        width: 500,
+        height: 700,
+      }),
     ]);
   });
 });

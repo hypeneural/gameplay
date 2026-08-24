@@ -1,7 +1,9 @@
 import { defineConfig } from 'vite';
 import { fileURLToPath, URL } from 'node:url';
+import { localTestMediaPlugin } from './vite.localTestMedia.js';
 
 export default defineConfig({
+  plugins: [localTestMediaPlugin()],
   resolve: {
     alias: {
       '@christmas-games/platform': fileURLToPath(

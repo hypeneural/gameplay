@@ -38,3 +38,9 @@ location /_private_media/ {
 The application endpoint accepts `/media/p/<opaque-photo-id>/<variant>`, validates the session cookie, ownership and allowed variant, then returns an `X-Accel-Redirect` header such as `/_private_media/<session>/<photo>/<hash>/game.webp`. Nginx serves the local file; neither original nor physical path is exposed.
 
 The authorization endpoint must reject traversal, variant values outside `thumb|card|game`, unknown ids and sessions without the secure HttpOnly session cookie. Add cache policy and rate limits at deployment time; do not add Cloudflare Images, S3, R2 or imgproxy in this phase.
+
+## Private local gameplay preview
+
+For a photographer's machine only, `pnpm media:prepare-local <source-directory> <private-storage-root>` turns immediate JPEG, PNG and WebP files into an opaque local test session. It assigns `photo-001`-style ids, keeps the content-addressed original cache outside the repository and generates the same proportional `thumb` (480 px), `card` (800 px) and `game` (1600 px) WebP variants as the worker. It writes a `local-test-session.json` containing dimensions, orientation, opaque ids and hashes—never source names or paths.
+
+Set `LOCAL_TEST_MEDIA_ROOT` to that private storage root only while starting the Vite server on `127.0.0.1`, then open `/s/local-private-test?test-media=local`. A development-only Vite middleware reads that config and serves only `/__local-test/media/<opaque-id>/<thumb|card|game>` with `Cache-Control: no-store`; it has no production-build hook and never maps an original path to a response. This is a local visual-review aid, **not** the production authorization endpoint: VPS delivery still requires the authenticated application endpoint and Nginx `X-Accel-Redirect` flow above.

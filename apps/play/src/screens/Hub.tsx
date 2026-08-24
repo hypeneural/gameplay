@@ -11,6 +11,7 @@ interface HubProps {
   onPrefetchGame(gameId: string): void;
   onSelectPhoto(photoId: string): void;
   selectedPhotoId: string;
+  showFixtureSelector: boolean;
 }
 
 const photoChunkSize = 12;
@@ -24,6 +25,7 @@ export function Hub({
   onPrefetchGame,
   onSelectPhoto,
   selectedPhotoId,
+  showFixtureSelector,
 }: HubProps): React.JSX.Element {
   const [visiblePhotos, setVisiblePhotos] = useState(photoChunkSize);
   const sentinelRef = useRef<HTMLDivElement>(null);
@@ -61,18 +63,22 @@ export function Hub({
       <p className="intro">
         Escolha uma foto e abra a prova vertical do jogo. As fotos são sempre proporcionais.
       </p>
-      <label className="field">
-        Fixture de sessão
-        <select
-          value={fixtureCount}
-          onChange={(event) => onFixtureChange(Number(event.target.value) as 4 | 12 | 120 | 172)}
-        >
-          <option value={4}>4 fotos</option>
-          <option value={12}>12 fotos mistas</option>
-          <option value={120}>120 fotos mistas</option>
-          <option value={172}>172 fotos mistas</option>
-        </select>
-      </label>
+      {showFixtureSelector ? (
+        <label className="field">
+          Fixture de sessão
+          <select
+            value={fixtureCount}
+            onChange={(event) => onFixtureChange(Number(event.target.value) as 4 | 12 | 120 | 172)}
+          >
+            <option value={4}>4 fotos</option>
+            <option value={12}>12 fotos mistas</option>
+            <option value={120}>120 fotos mistas</option>
+            <option value={172}>172 fotos mistas</option>
+          </select>
+        </label>
+      ) : (
+        <p className="hint">Modo privado de teste: somente derivados otimizados são carregados.</p>
+      )}
       <div className="photo-grid" aria-label="Fotos da sessão">
         {renderedPhotos.map((photo) => (
           <button
@@ -84,7 +90,7 @@ export function Hub({
             onClick={() => onSelectPhoto(photo.id)}
           >
             <img
-              alt={`Foto de teste ${photo.id}`}
+              alt={`Foto ${photo.orientation} da sessão`}
               decoding="async"
               height={photo.height}
               loading="lazy"

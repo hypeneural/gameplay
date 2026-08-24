@@ -39,3 +39,7 @@ Cropping a display-sized full image preserves the original display scale; it doe
 ## LESSON-010 — Seasonal feedback must end by itself
 
 Use finite scene-owned tweens for tap, hint, correct and win sparkles. Do not add a continuous emitter just to make the scene feel festive: it spends battery while the child is deciding, complicates reduced motion and can outlive a route without explicit ownership.
+
+## LESSON-011 — Real-photo review needs a separate local delivery boundary
+
+A useful operator preview can use real derivatives without weakening the product privacy model: prepare opaque ids and WebP variants in a private external cache, bind the review server to loopback, and expose only a dev-only derivative endpoint with no-store. Do not treat that convenience adapter as authorization or deploy it to the VPS.

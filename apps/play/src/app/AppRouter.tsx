@@ -13,6 +13,8 @@ import { ThemeLab } from '../screens/ThemeLab.js';
 import { createAppServices } from './AppServices.js';
 import { parseAppRoute, routePath } from './AppNavigation.js';
 import type { AppRoute, GameCoverRoute, SessionRoute } from './AppNavigation.js';
+import { fetchLocalTestSession, shouldUseLocalTestMedia } from './LocalTestSession.js';
+import type { Session } from '@christmas-games/platform';
 
 type FixtureCount = 4 | 12 | 120 | 172;
 type HistoryMode = 'none' | 'push' | 'replace';
@@ -36,9 +38,12 @@ const initialGameView: GameView = { lastEvent: 'NONE', status: 'loading' };
 export function AppRouter(): React.JSX.Element {
   const initialRoute = useMemo(() => parseAppRoute(window.location.pathname), []);
   const services = useMemo(createAppServices, []);
+  const usesLocalTestMedia = useMemo(() => shouldUseLocalTestMedia(window.location.search), []);
   const [route, setRoute] = useState<AppRoute>(initialRoute);
   const [fixtureCount, setFixtureCount] = useState<FixtureCount>(12);
   const [selectedPhotoId, setSelectedPhotoId] = useState('ph_001');
+  const [localSession, setLocalSession] = useState<Session>();
+  const [localSessionError, setLocalSessionError] = useState<string>();
   const [playing, setPlaying] = useState(false);
   const [gameAttempt, setGameAttempt] = useState(0);
   const [gameView, setGameView] = useState(initialGameView);
@@ -47,7 +52,8 @@ export function AppRouter(): React.JSX.Element {
   const pendingNavigationRef = useRef<PendingNavigation | undefined>(undefined);
   const [exitRequest, setExitRequest] = useState(0);
 
-  const session = useMemo(() => createFixtureSession(fixtureCount), [fixtureCount]);
+  const fixtureSession = useMemo(() => createFixtureSession(fixtureCount), [fixtureCount]);
+  const session = usesLocalTestMedia && localSession ? localSession : fixtureSession;
   const selectedPhoto =
     session.photos.find((photo) => photo.id === selectedPhotoId) ?? session.photos[0]!;
   const context = useMemo<GameContextSeed>(
@@ -61,6 +67,28 @@ export function AppRouter(): React.JSX.Element {
     }),
     [selectedPhoto, services, session],
   );
+
+  useEffect(() => {
+    if (!usesLocalTestMedia) return;
+    let active = true;
+    void fetchLocalTestSession().then(
+      (nextSession) => {
+        if (active) setLocalSession(nextSession);
+      },
+      (error: unknown) => {
+        if (active) {
+          setLocalSessionError(
+            error instanceof Error
+              ? error.message
+              : 'Não foi possível abrir a sessão local de teste.',
+          );
+        }
+      },
+    );
+    return () => {
+      active = false;
+    };
+  }, [usesLocalTestMedia]);
 
   const writeRoute = useCallback(
     (nextRoute: SessionRoute | GameCoverRoute, mode: Exclude<HistoryMode, 'none'>) => {
@@ -169,6 +197,16 @@ export function AppRouter(): React.JSX.Element {
   if (route.kind === 'theme-lab') return <ThemeLab />;
   if (route.kind === 'experience-lab') return <ExperienceLab />;
 
+  if (usesLocalTestMedia && !localSession) {
+    return (
+      <main className="shell unavailable-game" role="status">
+        <p className="eyebrow">TESTE LOCAL</p>
+        <h1>{localSessionError ? 'Sessão local indisponível' : 'Preparando fotos para o jogo…'}</h1>
+        {localSessionError ? <p>{localSessionError}</p> : null}
+      </main>
+    );
+  }
+
   if (route.kind === 'session') {
     return (
       <Hub
@@ -180,6 +218,7 @@ export function AppRouter(): React.JSX.Element {
         onSelectPhoto={setSelectedPhotoId}
         selectedPhotoId={selectedPhoto.id}
         session={session}
+        showFixtureSelector={!usesLocalTestMedia}
       />
     );
   }

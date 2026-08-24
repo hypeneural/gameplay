@@ -196,6 +196,10 @@ export function createPuzzleSwapGame(
     }
 
     private readonly handlePointerDown = (pointer: Phaser.Input.Pointer): void => {
+      if (this.paused) {
+        this.pointerDownIndex = null;
+        return;
+      }
       if (
         this.isInside(pointer.x, pointer.y, this.pauseBounds) ||
         this.isInside(pointer.x, pointer.y, this.hintBounds)
@@ -216,6 +220,10 @@ export function createPuzzleSwapGame(
     };
 
     private readonly handlePointerUp = (pointer: Phaser.Input.Pointer): void => {
+      if (this.paused) {
+        this.togglePause();
+        return;
+      }
       if (this.isInside(pointer.x, pointer.y, this.pauseBounds)) {
         this.togglePause();
         return;
@@ -333,7 +341,7 @@ export function createPuzzleSwapGame(
         })
         .setOrigin(0.5);
       const message = this.add
-        .text(0, 8, 'O jogo espera por você.\nToque em ▶ para continuar.', {
+        .text(0, 8, 'O jogo espera por você.\nToque para continuar.', {
           color: christmasTheme.color.snow,
           fontFamily: 'system-ui, sans-serif',
           fontSize: '15px',

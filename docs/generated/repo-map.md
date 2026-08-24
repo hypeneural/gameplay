@@ -22,7 +22,9 @@
 │       │   │   ├── AppNavigation.test.ts
 │       │   │   ├── AppNavigation.ts
 │       │   │   ├── AppRouter.tsx
-│       │   │   └── AppServices.ts
+│       │   │   ├── AppServices.ts
+│       │   │   ├── LocalTestSession.test.ts
+│       │   │   └── LocalTestSession.ts
 │       │   ├── dev
 │       │   ├── main.tsx
 │       │   ├── phaser
@@ -42,7 +44,8 @@
 │       │   │   └── ThemeLab.tsx
 │       │   ├── styles.css
 │       │   └── vite-env.d.ts
-│       └── vite.config.ts
+│       ├── vite.config.ts
+│       └── vite.localTestMedia.ts
 ├── ARCHITECTURE.md
 ├── docs
 │   ├── ai
@@ -270,7 +273,8 @@
 │   │   ├── package.json
 │   │   ├── src
 │   │   │   ├── index.ts
-│   │   │   └── inspect.ts
+│   │   │   ├── inspect.ts
+│   │   │   └── prepareLocal.ts
 │   │   └── tests
 │   │       ├── inspect.test.ts
 │   │       └── media-pipeline.test.ts
