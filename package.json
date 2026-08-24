@@ -28,7 +28,8 @@
     "media:process": "pnpm --filter @christmas-games/media-pipeline process",
     "media:inspect": "pnpm --filter @christmas-games/media-pipeline inspect",
     "media:prepare-local": "pnpm --filter @christmas-games/media-pipeline prepare-local",
-    "game:new": "pnpm --filter @christmas-games/game-generator new"
+    "game:new": "pnpm --filter @christmas-games/game-generator new",
+    "puzzle:source-reader": "node tools/export-puzzle-source-reader.mjs"
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",

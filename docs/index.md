@@ -13,6 +13,8 @@
 - [Photo corpus baseline](media/PHOTO_CORPUS_BASELINE.md)
 - [Christmas 2024 full corpus baseline](media/NATAL_2024_CORPUS_BASELINE.md)
 - [Theme direction](design/THEME_DIRECTION.md)
+- [Puzzle Swap experience review and Christmas upgrade plan](design/PUZZLE_SWAP_EXPERIENCE_REVIEW.md)
+- [Puzzle Swap concatenated core sources](references/PUZZLE_SWAP_CORE_SOURCES.txt)
 - [Analytics contracts](analytics/CONTRACTS.md)
 - [Privacy and data handling](privacy/DATA_HANDLING.md)
 - [Quality gates](quality/QUALITY_GATES.md)

@@ -77,6 +77,7 @@
 │   │   ├── FOUNDATION.md
 │   │   └── GAME_FACTORY.md
 │   ├── design
+│   │   ├── PUZZLE_SWAP_EXPERIENCE_REVIEW.md
 │   │   └── THEME_DIRECTION.md
 │   ├── exec-plans
 │   │   ├── active
@@ -91,6 +92,7 @@
 │   │   │   ├── android-412-dev-smoke.png
 │   │   │   ├── android-412-puzzle-swap-complete.png
 │   │   │   ├── android-412-puzzle-swap-landscape-native.png
+│   │   │   ├── android-412-puzzle-swap-low-reduced.png
 │   │   │   ├── android-412-puzzle-swap-native.png
 │   │   │   ├── android-412-puzzle-swap-paused.png
 │   │   │   ├── iphone-390-dev-smoke.png
@@ -102,11 +104,13 @@
 │   │   │   ├── large-phone-430-dev-smoke.png
 │   │   │   ├── large-phone-430-puzzle-swap-complete.png
 │   │   │   ├── large-phone-430-puzzle-swap-landscape-native.png
+│   │   │   ├── large-phone-430-puzzle-swap-low-reduced.png
 │   │   │   ├── large-phone-430-puzzle-swap-native.png
 │   │   │   ├── large-phone-430-puzzle-swap-paused.png
 │   │   │   ├── tablet-768-dev-smoke.png
 │   │   │   ├── tablet-768-puzzle-swap-complete.png
 │   │   │   ├── tablet-768-puzzle-swap-landscape-native.png
+│   │   │   ├── tablet-768-puzzle-swap-low-reduced.png
 │   │   │   ├── tablet-768-puzzle-swap-native.png
 │   │   │   └── tablet-768-puzzle-swap-paused.png
 │   │   └── repo-map.md
@@ -131,6 +135,7 @@
 │       ├── OFFICIAL_VALIDATION.md
 │       ├── PHASE_9_5_OFFICIAL_VALIDATION.md
 │       ├── PRODUCTION_CORRECTNESS_VALIDATION.md
+│       ├── PUZZLE_SWAP_CORE_SOURCES.txt
 │       └── REFERENCE_AUDIT.md
 ├── eslint.config.js
 ├── knip.json
@@ -297,6 +302,7 @@
 │   │       └── ph_004.jpg
 │   └── visual
 ├── tools
+│   ├── export-puzzle-source-reader.mjs
 │   ├── fixture-generator
 │   │   ├── package.json
 │   │   ├── src
