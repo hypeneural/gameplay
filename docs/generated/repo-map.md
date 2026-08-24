@@ -16,6 +16,7 @@
 │       ├── index.html
 │       ├── package.json
 │       ├── public
+│       │   └── favicon.svg
 │       ├── src
 │       │   ├── app
 │       │   │   ├── App.tsx
@@ -68,9 +69,21 @@
 │   ├── generated
 │   │   ├── evidence
 │   │   │   ├── android-412-dev-smoke.png
+│   │   │   ├── android-412-puzzle-swap-landscape-native.png
+│   │   │   ├── android-412-puzzle-swap-native.png
+│   │   │   ├── android-412-puzzle-swap-paused.png
 │   │   │   ├── iphone-390-dev-smoke.png
+│   │   │   ├── iphone-390-puzzle-swap-landscape-native.png
+│   │   │   ├── iphone-390-puzzle-swap-native.png
+│   │   │   ├── iphone-390-puzzle-swap-paused.png
 │   │   │   ├── large-phone-430-dev-smoke.png
-│   │   │   └── tablet-768-dev-smoke.png
+│   │   │   ├── large-phone-430-puzzle-swap-landscape-native.png
+│   │   │   ├── large-phone-430-puzzle-swap-native.png
+│   │   │   ├── large-phone-430-puzzle-swap-paused.png
+│   │   │   ├── tablet-768-dev-smoke.png
+│   │   │   ├── tablet-768-puzzle-swap-landscape-native.png
+│   │   │   ├── tablet-768-puzzle-swap-native.png
+│   │   │   └── tablet-768-puzzle-swap-paused.png
 │   │   └── repo-map.md
 │   ├── index.md
 │   ├── lessons.md

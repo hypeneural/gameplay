@@ -28,9 +28,13 @@ export function Hub({
   showFixtureSelector,
 }: HubProps): React.JSX.Element {
   const [visiblePhotos, setVisiblePhotos] = useState(photoChunkSize);
+  const [selectionVersion, setSelectionVersion] = useState(0);
   const sentinelRef = useRef<HTMLDivElement>(null);
   const renderedPhotos = session.photos.slice(0, visiblePhotos);
   const hasMorePhotos = renderedPhotos.length < session.photos.length;
+  const selectedPhoto =
+    session.photos.find((photo) => photo.id === selectedPhotoId) ?? session.photos[0]!;
+  const primaryGame = games.find((game) => game.id === 'puzzle-swap') ?? games[0];
   const loadMorePhotos = (): void => {
     setVisiblePhotos((current) => Math.min(current + photoChunkSize, session.photos.length));
   };
@@ -87,7 +91,11 @@ export function Hub({
             data-testid={`photo-${photo.id}`}
             key={photo.id}
             type="button"
-            onClick={() => onSelectPhoto(photo.id)}
+            onClick={() => {
+              onSelectPhoto(photo.id);
+              setSelectionVersion((current) => current + 1);
+              if (primaryGame) onPrefetchGame(primaryGame.id);
+            }}
           >
             <img
               alt={`Foto ${photo.orientation} da sessão`}
@@ -101,6 +109,36 @@ export function Hub({
           </button>
         ))}
       </div>
+      {primaryGame ? (
+        <section
+          aria-label="Foto escolhida"
+          className="photo-selection"
+          data-testid="photo-selection"
+          key={`${selectedPhoto.id}-${selectionVersion}`}
+        >
+          <div aria-hidden="true" className="photo-selection-sparkles">
+            ✦ ✧
+          </div>
+          <div>
+            <p className="eyebrow">FOTO SELECIONADA</p>
+            <h2>Pronta para brincar</h2>
+            <p className="photo-selection-meta">
+              Foto {selectedPhoto.orientation === 'portrait' ? 'vertical' : 'horizontal'} · sem
+              distorção
+            </p>
+          </div>
+          <button
+            className="button primary-game-cta"
+            data-testid="start-selected-photo"
+            type="button"
+            onClick={() => onOpenGame(primaryGame.id)}
+            onFocus={() => onPrefetchGame(primaryGame.id)}
+            onPointerDown={() => onPrefetchGame(primaryGame.id)}
+          >
+            Jogar agora <span aria-hidden="true">→</span>
+          </button>
+        </section>
+      ) : null}
       {hasMorePhotos ? (
         <div className="photo-sentinel" data-testid="photo-sentinel" ref={sentinelRef}>
           <p className="hint">

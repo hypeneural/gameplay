@@ -64,6 +64,26 @@ test('five mount-unmount cycles do not leave a duplicate canvas', async ({ page 
   }
 });
 
+test('mobile photo selection keeps a bounded gallery and opens the selected puzzle', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/s/local-demo-token');
+
+  const firstPhoto = page.getByTestId('photo-ph_001');
+  await expect(firstPhoto).toBeVisible();
+  await expect(firstPhoto).toHaveCSS('aspect-ratio', '4 / 5');
+  const firstPhotoBox = await firstPhoto.boundingBox();
+  expect(firstPhotoBox?.height).toBeLessThan(300);
+
+  await page.getByTestId('photo-ph_002').click();
+  await expect(page.getByTestId('photo-ph_002')).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.getByTestId('photo-selection')).toContainText('Foto horizontal');
+  await expect(page.getByTestId('start-selected-photo')).toBeVisible();
+  await page.getByTestId('start-selected-photo').click();
+  await expect(page).toHaveURL('/s/local-demo-token/game/puzzle-swap');
+});
+
 test('Puzzle Swap mounts selected portrait and landscape textures and exits cleanly', async ({
   page,
 }) => {

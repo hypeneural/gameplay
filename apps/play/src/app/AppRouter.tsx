@@ -39,6 +39,7 @@ export function AppRouter(): React.JSX.Element {
   const initialRoute = useMemo(() => parseAppRoute(window.location.pathname), []);
   const services = useMemo(createAppServices, []);
   const usesLocalTestMedia = useMemo(() => shouldUseLocalTestMedia(window.location.search), []);
+  const localTestMediaSearch = usesLocalTestMedia ? '?test-media=local' : '';
   const [route, setRoute] = useState<AppRoute>(initialRoute);
   const [fixtureCount, setFixtureCount] = useState<FixtureCount>(12);
   const [selectedPhotoId, setSelectedPhotoId] = useState('ph_001');
@@ -98,12 +99,12 @@ export function AppRouter(): React.JSX.Element {
       window.history[mode === 'push' ? 'pushState' : 'replaceState'](
         state,
         '',
-        routePath(nextRoute),
+        `${routePath(nextRoute)}${localTestMediaSearch}`,
       );
       navigationIndexRef.current = nextIndex;
       setRoute(nextRoute);
     },
-    [],
+    [localTestMediaSearch],
   );
 
   useEffect(() => {
@@ -113,10 +114,10 @@ export function AppRouter(): React.JSX.Element {
       window.history.replaceState(
         { christmasGamesIndex: navigationIndexRef.current },
         '',
-        routePath(initialRoute),
+        `${routePath(initialRoute)}${localTestMediaSearch}`,
       );
     }
-  }, [initialRoute]);
+  }, [initialRoute, localTestMediaSearch]);
 
   const requestGameExit = useCallback((nextRoute: AppRoute, mode: HistoryMode): void => {
     pendingNavigationRef.current = { mode, route: nextRoute };

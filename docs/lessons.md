@@ -43,3 +43,7 @@ Use finite scene-owned tweens for tap, hint, correct and win sparkles. Do not ad
 ## LESSON-011 — Real-photo review needs a separate local delivery boundary
 
 A useful operator preview can use real derivatives without weakening the product privacy model: prepare opaque ids and WebP variants in a private external cache, bind the review server to loopback, and expose only a dev-only derivative endpoint with no-store. Do not treat that convenience adapter as authorization or deploy it to the VPS.
+
+## LESSON-012 — Responsive image attributes need a bounded display box
+
+An image’s intrinsic `height` attribute can become a multi-thousand-pixel layout height when CSS only constrains its width. A mixed-orientation mobile gallery must own a fixed tile box and explicitly make the image fill that box with proportional `object-fit`; verify it at the smallest supported viewport with real derivatives.

@@ -75,13 +75,15 @@ select {
 }
 .photo-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   align-items: start;
   gap: 12px;
   margin: 1.25rem 0;
 }
 .photo-card {
-  display: block;
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) auto;
+  aspect-ratio: 4 / 5;
   width: 100%;
   padding: 0;
   color: inherit;
@@ -91,30 +93,82 @@ select {
   border-radius: var(--cg-radius-button);
   background: var(--cg-pine);
   box-shadow: var(--cg-shadow);
+  transform: translateZ(0);
+  transition:
+    border-color 160ms ease,
+    box-shadow 160ms ease,
+    transform 160ms ease;
 }
 .photo-card img {
   display: block;
   width: 100%;
-  object-fit: contain;
+  height: 100%;
+  min-height: 0;
+  object-fit: cover;
   background: #0b3028;
 }
-.photo-card.portrait img {
-  aspect-ratio: 5 / 7;
-}
-.photo-card.landscape img {
-  aspect-ratio: 7 / 5;
-}
 .photo-card[aria-pressed='true'] {
+  border-color: var(--cg-snow);
   outline: 3px solid var(--cg-snow);
   outline-offset: 2px;
+  box-shadow:
+    0 0 0 5px rgba(248, 223, 160, 0.25),
+    var(--cg-shadow);
+  transform: translateY(-3px);
 }
 .photo-card span {
   display: block;
   padding: 0.35rem;
+  background: rgba(11, 48, 40, 0.9);
   color: var(--cg-gold);
   font-size: 0.7rem;
   text-align: center;
   text-transform: uppercase;
+}
+.photo-selection {
+  position: relative;
+  display: grid;
+  gap: 0.6rem;
+  margin: 0.25rem 0 1.4rem;
+  padding: 1rem;
+  overflow: hidden;
+  border: 1px solid var(--cg-gold-dark);
+  border-radius: var(--cg-radius-card);
+  background:
+    radial-gradient(circle at 88% 12%, rgba(248, 223, 160, 0.3), transparent 20%),
+    linear-gradient(135deg, rgba(143, 29, 53, 0.94), rgba(11, 48, 40, 0.96));
+  box-shadow: var(--cg-shadow);
+  animation: selection-arrives 240ms ease-out both;
+}
+.photo-selection h2 {
+  margin: 0.16rem 0;
+}
+.photo-selection-meta {
+  margin: 0;
+  color: #fffaf0;
+  line-height: 1.4;
+}
+.photo-selection-sparkles {
+  position: absolute;
+  top: 12px;
+  right: 14px;
+  color: var(--cg-gold);
+  font-size: 1.25rem;
+  letter-spacing: 0.35rem;
+  animation: sparkle-shimmer 1.6s ease-in-out infinite alternate;
+}
+.primary-game-cta {
+  min-height: 56px;
+  margin-top: 0.2rem;
+}
+.primary-game-cta span {
+  display: inline-block;
+  margin-left: 0.35rem;
+  transition: transform 160ms ease;
+}
+.primary-game-cta:active span,
+.primary-game-cta:focus-visible span {
+  transform: translateX(4px);
 }
 .photo-sentinel {
   min-height: 48px;
@@ -407,6 +461,26 @@ select {
     transform: scale(1.08) rotate(8deg);
   }
 }
+@keyframes selection-arrives {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+@keyframes sparkle-shimmer {
+  from {
+    opacity: 0.55;
+    transform: scale(0.88) rotate(-8deg);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1.08) rotate(8deg);
+  }
+}
 .theme-samples {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -440,13 +514,53 @@ select {
   background: linear-gradient(135deg, var(--cg-cranberry), var(--cg-gold-dark));
   color: var(--cg-snow);
 }
-@media (max-width: 380px) {
+@media (min-width: 560px) {
   .photo-grid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(3, 1fr);
   }
+}
+@media (max-width: 380px) {
   .experience-controls,
   .experience-cues {
     grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 559px) {
+  .photo-grid {
+    padding-bottom: 82px;
+  }
+  .games-section {
+    padding-bottom: 82px;
+  }
+  .photo-selection {
+    position: fixed;
+    right: 12px;
+    bottom: max(12px, env(safe-area-inset-bottom));
+    left: 12px;
+    z-index: 10;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 0.65rem;
+    margin: 0;
+    padding: 0.65rem 0.75rem;
+  }
+  .photo-selection .eyebrow,
+  .photo-selection-meta,
+  .photo-selection-sparkles {
+    display: none;
+  }
+  .photo-selection h2 {
+    margin: 0;
+    font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+    font-size: 0.95rem;
+    line-height: 1.2;
+  }
+  .primary-game-cta {
+    width: auto;
+    min-height: 52px;
+    margin: 0;
+    padding: 0.8rem 0.9rem;
+    white-space: nowrap;
   }
 }
 @media (prefers-reduced-motion: reduce) {

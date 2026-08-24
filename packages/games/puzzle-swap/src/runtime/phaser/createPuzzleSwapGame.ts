@@ -547,7 +547,7 @@ export function createPuzzleSwapGame(
       backdrop.setSize(viewport.width, viewport.height);
       ribbon.setPosition(0, viewport.safeTop + 82).setSize(viewport.width, 8);
       leftStar.setPosition(28, viewport.safeTop + 118);
-      rightStar.setPosition(viewport.width - 26, viewport.height - viewport.safeBottom - 66);
+      rightStar.setPosition(viewport.width - 26, viewport.height - viewport.safeBottom - 82);
       hudPanel
         .setPosition(viewport.width / 2, viewport.safeTop + hudHeight / 2 + 6)
         .setSize(Math.max(1, viewport.width - 16), hudHeight);
@@ -556,10 +556,10 @@ export function createPuzzleSwapGame(
       this.timerText?.setPosition(viewport.width - 116, viewport.safeTop + 22);
       this.positionHudButton('puzzle-hint-button', viewport.width - 78, viewport.safeTop + 49);
       this.positionHudButton('puzzle-pause-button', viewport.width - 28, viewport.safeTop + 49);
-      instructions.setPosition(viewport.width / 2, viewport.height - viewport.safeBottom - 18);
+      instructions.setPosition(viewport.width / 2, viewport.height - viewport.safeBottom - 34);
 
       const headerHeight = 98;
-      const footerHeight = 58;
+      const footerHeight = 74;
       const availableHeight = Math.max(1, viewport.contentHeight - headerHeight - footerHeight);
       const availableWidth = Math.max(1, viewport.width - puzzleSwapTuning.boardInsetCssPx * 2);
       const plan = planPuzzleGrid({
