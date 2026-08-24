@@ -3,6 +3,7 @@ export * from './domain/IdleAssist.js';
 export * from './domain/PuzzleBoard.js';
 export * from './domain/PuzzleProgress.js';
 export * from './domain/PuzzleShuffle.js';
+export * from './domain/PuzzleTopology.js';
 export * from './domain/Swap.js';
 export * from './definition.js';
 export * from './runtime/phaser/createPuzzleSwapGame.js';

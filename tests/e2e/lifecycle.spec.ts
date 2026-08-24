@@ -310,6 +310,59 @@ test('Puzzle Swap accepts a drag-only deterministic solution', async ({ page }) 
   await expect(page.locator('canvas')).toHaveCount(0);
 });
 
+test('Puzzle Swap preserves its active board through a mobile resize', async ({ page }) => {
+  const seed = 0x10293847;
+  await page.addInitScript((fixedSeed) => {
+    Object.defineProperty(window.crypto, 'getRandomValues', {
+      configurable: true,
+      value: (values: Uint32Array<ArrayBuffer>) => {
+        if (values.length === 1) {
+          values[0] = fixedSeed;
+          return values;
+        }
+        throw new Error('This test only needs one random value.');
+      },
+    });
+  }, seed);
+  await page.goto('/s/local-demo-token');
+  await page.getByTestId('open-game-puzzle-swap').click();
+  await page.getByTestId('play-selected-game').click();
+  await expect(page.getByTestId('game-event')).toHaveText('GAME_STARTED');
+
+  const swaps = swapsToSolve(seededShuffle(seed));
+  const firstSwap = swaps.shift();
+  if (!firstSwap) throw new Error('Expected a shuffled puzzle to need a swap.');
+  const canvas = page.locator('canvas');
+  const initialBox = await canvas.boundingBox();
+  if (!initialBox) throw new Error('Puzzle Swap canvas has no initial box.');
+  await canvas.click({
+    position: portraitPuzzleCellCenter(initialBox.width, initialBox.height, firstSwap[0]),
+  });
+  await canvas.click({
+    position: portraitPuzzleCellCenter(initialBox.width, initialBox.height, firstSwap[1]),
+  });
+
+  await page.setViewportSize({ width: 430, height: 932 });
+  await expect(canvas).toBeVisible();
+  await page.waitForTimeout(210);
+
+  for (const [firstCell, secondCell] of swaps) {
+    const canvasBox = await canvas.boundingBox();
+    if (!canvasBox) throw new Error('Puzzle Swap canvas has no resized box.');
+    await canvas.click({
+      position: portraitPuzzleCellCenter(canvasBox.width, canvasBox.height, firstCell),
+    });
+    await canvas.click({
+      position: portraitPuzzleCellCenter(canvasBox.width, canvasBox.height, secondCell),
+    });
+    await page.waitForTimeout(190);
+  }
+
+  await expect(page.getByTestId('game-event')).toHaveText('GAME_COMPLETED');
+  await page.getByRole('button', { name: 'Sair do jogo' }).click();
+  await expect(page.locator('canvas')).toHaveCount(0);
+});
+
 test('Puzzle Swap honors explicit data saving and reduced motion without disabling play', async ({
   page,
 }) => {

@@ -927,6 +927,29 @@ export function shufflePuzzleBoard(board: PuzzleBoard, random: Random): PuzzleBo
 }
 
 ================================================================================================
+SOURCE: packages/games/puzzle-swap/src/domain/PuzzleTopology.ts
+------------------------------------------------------------------------------------------------
+export interface PuzzleTopology {
+  readonly columns: number;
+  readonly rows: number;
+}
+
+const portraitTopology: PuzzleTopology = { columns: 3, rows: 4 };
+const landscapeTopology: PuzzleTopology = { columns: 4, rows: 3 };
+
+/**
+ * Selects the board topology once, when a run is created. Viewport changes
+ * may change geometry, but never the board's identity, piece ids or solution.
+ */
+export function selectPuzzleTopology(photoAspectRatio: number): PuzzleTopology {
+  if (!Number.isFinite(photoAspectRatio) || photoAspectRatio <= 0) {
+    throw new Error('Puzzle topology needs a positive finite photo aspect ratio.');
+  }
+
+  return photoAspectRatio > 1 ? landscapeTopology : portraitTopology;
+}
+
+================================================================================================
 SOURCE: packages/games/puzzle-swap/src/domain/PuzzleProgress.ts
 ------------------------------------------------------------------------------------------------
 import { isPuzzleSolved, type PuzzleBoard } from './PuzzleBoard.js';
@@ -1521,6 +1544,7 @@ import {
   isPuzzleSolved,
   swapPuzzlePieces,
 } from '../../domain/PuzzleBoard.js';
+import { selectPuzzleTopology } from '../../domain/PuzzleTopology.js';
 import { getPuzzleProgress } from '../../domain/PuzzleProgress.js';
 import { shufflePuzzleBoard } from '../../domain/PuzzleShuffle.js';
 import { selectPuzzleCell } from '../../domain/Swap.js';
@@ -1544,6 +1568,11 @@ interface TouchBounds {
   readonly y: number;
   readonly width: number;
   readonly height: number;
+}
+
+interface ActivePieceMove {
+  readonly pieces: readonly PhaserModule.GameObjects.Image[];
+  readonly complete: () => void;
 }
 
 const puzzleGold = 0xf8dfa0;
@@ -1571,10 +1600,14 @@ export function createPuzzleSwapGame(
   context: GameContext,
 ): GameController {
   const textureKey = `puzzle-source-${context.run.runId}`;
+  const topology = selectPuzzleTopology(context.selectedPhoto.aspectRatio);
 
   class PuzzleScene extends Phaser.Scene {
     private readonly scope = new SceneScope();
-    private board = shufflePuzzleBoard(createSolvedPuzzleBoard(3, 4), context.random);
+    private board = shufflePuzzleBoard(
+      createSolvedPuzzleBoard(topology.columns, topology.rows),
+      context.random,
+    );
     private bounds?: BoardBounds;
     private selectedIndex: number | null = null;
     private hintIndex: number | null = null;
@@ -1603,6 +1636,7 @@ export function createPuzzleSwapGame(
     private lastDisplayedSecond = -1;
     private interactive = false;
     private movingPieces = false;
+    private activePieceMove: ActivePieceMove | undefined;
     private introPlayed = false;
     private audioEnabled = true;
     private awaitingMusicUnlock = false;
@@ -2213,6 +2247,14 @@ export function createPuzzleSwapGame(
         return;
       }
       let remaining = targets.length;
+      let completed = false;
+      const complete = (): void => {
+        if (completed) return;
+        completed = true;
+        this.activePieceMove = undefined;
+        onComplete();
+      };
+      this.activePieceMove = { pieces: targets.map((target) => target.piece), complete };
       for (const target of targets) {
         target.piece.setDepth(3);
         this.scope.resource(
@@ -2225,11 +2267,24 @@ export function createPuzzleSwapGame(
             onComplete: () => {
               target.piece.setDepth(1);
               remaining -= 1;
-              if (remaining === 0) onComplete();
+              if (remaining === 0) complete();
             },
           }),
         );
       }
+    }
+
+    /**
+     * A resize changes the grid coordinates while a swap tween may still point
+     * at the previous coordinates. Complete that short move first, then reflow
+     * the same objects into the new geometry.
+     */
+    private completeActivePieceMoveForLayout(): void {
+      const activeMove = this.activePieceMove;
+      if (!activeMove) return;
+      this.tweens.killTweensOf([...activeMove.pieces]);
+      activeMove.pieces.forEach((piece) => piece.setDepth(1));
+      activeMove.complete();
     }
 
     private revealHint(cellIndex: number): void {
@@ -2428,9 +2483,11 @@ export function createPuzzleSwapGame(
         photoAspectRatio: context.selectedPhoto.aspectRatio,
         availableWidth,
         availableHeight,
-        preferredPieceCount: puzzleSwapTuning.preferredPieceCount,
+        preferredPieceCount: this.board.pieces.length,
         minimumCellSizeCssPx: puzzleSwapTuning.minimumCellSizeCssPx,
+        candidates: [{ columns: this.board.columns, rows: this.board.rows }],
       });
+      this.assertPlanMatchesBoard(plan);
       const boardX = (viewport.width - plan.boardWidth) / 2;
       const boardY = viewport.safeTop + headerHeight + (availableHeight - plan.boardHeight) / 2;
       this.bounds = { x: boardX, y: boardY, plan };
@@ -2441,28 +2498,69 @@ export function createPuzzleSwapGame(
         ?.setPosition(viewport.width / 2, boardY + plan.boardHeight / 2)
         .setDisplaySize(plan.boardWidth, plan.boardHeight);
       this.winScrim?.setSize(viewport.width, viewport.height);
-      this.renderBoard();
+      this.completeActivePieceMoveForLayout();
+      this.layoutBoardObjects();
       this.layoutOverlay(this.pauseOverlay, viewport);
       this.layoutOverlay(this.winOverlay, viewport);
     }
 
-    private renderBoard(): void {
+    private assertPlanMatchesBoard(plan: PuzzleGridPlan): void {
+      if (
+        plan.columns !== this.board.columns ||
+        plan.rows !== this.board.rows ||
+        plan.pieceCount !== this.board.pieces.length
+      ) {
+        throw new Error('Puzzle layout topology must match the active board.');
+      }
+    }
+
+    private layoutBoardObjects(): void {
       const bounds = this.bounds;
       if (!bounds) return;
-      this.pieces.splice(0).forEach((piece) => piece.destroy());
-      this.borders.splice(0).forEach((border) => border.destroy());
 
-      const { columns, rows, cellWidth, cellHeight } = bounds.plan;
+      this.createBoardObjects();
+      if (
+        this.pieces.length !== this.board.pieces.length ||
+        this.borders.length !== this.board.pieces.length
+      ) {
+        throw new Error('Puzzle layout objects must match the active board.');
+      }
+
+      this.pieces.forEach((piece, cellIndex) => {
+        const center = this.cellCenter(cellIndex, bounds);
+        piece
+          .setPosition(center.x, center.y)
+          .setDisplaySize(bounds.plan.cellWidth, bounds.plan.cellHeight);
+      });
+      this.borders.forEach((border, cellIndex) => {
+        const center = this.cellCenter(cellIndex, bounds);
+        border
+          .setPosition(center.x, center.y)
+          .setSize(bounds.plan.cellWidth, bounds.plan.cellHeight);
+      });
+      this.updateSelectionBorders();
+      this.updateProgress();
+    }
+
+    /** Creates one object per piece on first layout; later layouts only reflow them. */
+    private createBoardObjects(): void {
+      if (this.pieces.length > 0 || this.borders.length > 0) return;
+      const bounds = this.bounds;
+      if (!bounds) return;
+
+      const { columns, cellWidth, cellHeight } = bounds.plan;
       const sourceTexture = this.textures.get(textureKey);
       for (let cellIndex = 0; cellIndex < this.board.pieces.length; cellIndex += 1) {
         const pieceId = this.board.pieces[cellIndex];
         if (pieceId === undefined) continue;
-        const sourceColumn = pieceId % columns;
-        const sourceRow = Math.floor(pieceId / columns);
-        const sourceLeft = Math.floor((sourceColumn * this.sourceWidth) / columns);
-        const sourceTop = Math.floor((sourceRow * this.sourceHeight) / rows);
-        const sourceRight = Math.floor(((sourceColumn + 1) * this.sourceWidth) / columns);
-        const sourceBottom = Math.floor(((sourceRow + 1) * this.sourceHeight) / rows);
+        const sourceColumn = pieceId % this.board.columns;
+        const sourceRow = Math.floor(pieceId / this.board.columns);
+        const sourceLeft = Math.floor((sourceColumn * this.sourceWidth) / this.board.columns);
+        const sourceTop = Math.floor((sourceRow * this.sourceHeight) / this.board.rows);
+        const sourceRight = Math.floor(
+          ((sourceColumn + 1) * this.sourceWidth) / this.board.columns,
+        );
+        const sourceBottom = Math.floor(((sourceRow + 1) * this.sourceHeight) / this.board.rows);
         const column = cellIndex % columns;
         const row = Math.floor(cellIndex / columns);
         const frameKey = `piece-${sourceRow}-${sourceColumn}`;
@@ -2502,8 +2600,6 @@ export function createPuzzleSwapGame(
           .setDepth(2);
         this.borders.push(border);
       }
-      this.updateSelectionBorders();
-      this.updateProgress();
     }
 
     private updateProgress(): void {

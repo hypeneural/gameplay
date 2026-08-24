@@ -63,7 +63,7 @@ React nunca recebe uma `Scene` Phaser. Ele só recebe eventos tipados como `GAME
 
 O jogo carrega **uma** textura derivada da foto escolhida. A foto é encaixada por proporção no espaço disponível; não é quadrada à força e não é cortada. Em seguida, a textura recebe frames retangulares: cada frame é uma peça visual da mesma imagem. Portanto, 12 peças não geram 12 downloads.
 
-`GridPlanner` escolhe uma grade que respeita orientação, espaço disponível e tamanho mínimo de toque. Normalmente a primeira preferência é 12 peças, mas o planejador pode mudar a grade quando isso torna as peças mais utilizáveis em uma foto ou viewport diferente.
+`PuzzleTopology` define a grade uma única vez no começo da partida: 3 × 4 para foto vertical e 4 × 3 para foto horizontal, ambas com 12 peças. `GridPlanner` recebe essa topologia já escolhida e calcula somente a geometria proporcional no viewport atual. Portanto, girar o aparelho pode mudar posição e tamanho das peças, mas não os ids, a solução, a quantidade ou a identidade dos objetos visuais.
 
 ### Estado e troca
 
@@ -98,6 +98,7 @@ Após um gesto, Phaser gerencia o desbloqueio de áudio. Toques, dicas, acertos 
 | `packages/platform/src/game-runtime/SceneScope.ts`                      | Registra e encerra listeners, tweens, músicas e texturas de uma Scene.                                                              |
 | `packages/games/puzzle-swap/src/domain/PuzzleBoard.ts`                  | Estado imutável, troca válida e detecção de solução.                                                                                |
 | `packages/games/puzzle-swap/src/domain/PuzzleShuffle.ts`                | Embaralhamento determinístico e nunca resolvido.                                                                                    |
+| `packages/games/puzzle-swap/src/domain/PuzzleTopology.ts`               | Escolhe a topologia estável da partida a partir da orientação da foto.                                                              |
 | `packages/games/puzzle-swap/src/domain/Swap.ts`                         | Alternativa acessível toque–toque.                                                                                                  |
 | `packages/games/puzzle-swap/src/domain/GridPlanner.ts`                  | Escolha proporcional de grade e tamanho de peça.                                                                                    |
 | `packages/games/puzzle-swap/src/domain/IdleAssist.ts`                   | Dica visual não punitiva após inatividade.                                                                                          |
@@ -138,6 +139,12 @@ O alvo não deve ser uma cópia do legado. A proposta é reter sua sensação de
 | Vitória                                      | Foto completa, confete/neve finitos, selo de “montou a lembrança” e CTA para escolher outra foto.                 | Sem loop; versão reduzida é estática e ainda comemorativa.                                                   |
 
 ## Ordem de implementação recomendada
+
+### Etapa 0 — estabilidade da partida em redimensionamento
+
+**Implementada em 2026-08-24.** A topologia agora é congelada no início da partida e a rotina de `layout` reaproveita as mesmas imagens e bordas. Se uma rotação ocorrer durante os 160 ms da animação de troca, o tween dos dois alvos é encerrado, o comando já aceito é concluído uma vez e os mesmos objetos são refluídos na nova geometria. A prova Playwright inicia uma troca, redimensiona a tela e conclui o tabuleiro determinístico em todos os quatro perfis móveis.
+
+Essa separação é pré-requisito para qualquer dificuldade futura (6, 9, 12 ou 16 peças): a dificuldade terá de ser escolhida antes do embaralhamento e nunca dentro de `layout`.
 
 ### Etapa 1 — direção de arte e protótipo estático
 

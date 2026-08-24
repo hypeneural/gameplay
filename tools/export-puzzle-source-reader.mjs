@@ -15,6 +15,7 @@ const sourcePaths = [
   'packages/platform/src/game-runtime/SceneScope.ts',
   'packages/games/puzzle-swap/src/domain/PuzzleBoard.ts',
   'packages/games/puzzle-swap/src/domain/PuzzleShuffle.ts',
+  'packages/games/puzzle-swap/src/domain/PuzzleTopology.ts',
   'packages/games/puzzle-swap/src/domain/PuzzleProgress.ts',
   'packages/games/puzzle-swap/src/domain/Swap.ts',
   'packages/games/puzzle-swap/src/domain/GridPlanner.ts',

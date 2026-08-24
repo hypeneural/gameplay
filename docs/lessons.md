@@ -59,3 +59,7 @@ For a swap puzzle, compare the two affected cell assignments before and after th
 ## LESSON-015 — Loader-retry proof needs an HTTP fixture
 
 Phaser loads data-URI images through its image-element path, which does not exercise XHR retry behavior. Browser fixtures now use safe static portrait/landscape SVGs so Playwright can abort the required-photo request, prove exactly one configured retry and verify that only a privacy-safe failure code reaches React. Keep this distinction in mind whenever loader policy is validated.
+
+## LESSON-016 — A responsive board keeps its topology and its objects
+
+Choose a puzzle topology when a run begins, then pass that one candidate to responsive geometry. A resize can move and scale pieces, but must not reselect rows or columns: doing so disconnects ids, source frames and the solved permutation. Reflow the existing piece and border Game Objects instead of destroying and recreating them. If the tiny active swap tween targets stale coordinates during a resize, stop only those targets and complete the already accepted move idempotently before reflowing.

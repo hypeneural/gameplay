@@ -178,6 +178,7 @@
 │   │   │   │   │   ├── PuzzleBoard.ts
 │   │   │   │   │   ├── PuzzleProgress.ts
 │   │   │   │   │   ├── PuzzleShuffle.ts
+│   │   │   │   │   ├── PuzzleTopology.ts
 │   │   │   │   │   └── Swap.ts
 │   │   │   │   ├── index.ts
 │   │   │   │   ├── runtime
@@ -191,7 +192,8 @@
 │   │   │       ├── GridPlanner.test.ts
 │   │   │       ├── PuzzleBoard.test.ts
 │   │   │       ├── PuzzleInteraction.test.ts
-│   │   │       └── PuzzleShuffle.test.ts
+│   │   │       ├── PuzzleShuffle.test.ts
+│   │   │       └── PuzzleTopology.test.ts
 │   │   └── tic-tac-toe
 │   │       ├── package.json
 │   │       ├── SPEC.md

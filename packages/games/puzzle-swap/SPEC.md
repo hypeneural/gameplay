@@ -17,10 +17,11 @@ Let a visitor choose one local-session photo and solve a mobile-first swap puzzl
 - `PUZ-009`: Feedback uses named cues (`tap`, `correct`, `wrong`, `hint`, `celebrate`) through the Game Experience composition; mechanics and win logic stay in the Puzzle domain/runtime.
 - `PUZ-010`: After a player gesture, authorized game-owned audio gives short optional feedback and low-volume music; the runtime never resumes `AudioContext` itself, exposes a mute control and stops the retained loop on teardown.
 - `PUZ-011`: A successful swap moves only the two existing piece objects. A correct-placement cue occurs only when a piece has just entered its solved cell; completion reveals the full proportional photo and a finite celebration.
+- `PUZ-012`: A run selects one topology from the source-photo orientation. A resize may reflow coordinates and dimensions but must not change the board topology, recreate its piece objects or alter its solution.
 
 ## Planned files
 
-- `src/domain/PuzzleBoard.ts`, `PuzzleShuffle.ts`, `PuzzleProgress.ts`, `GridPlanner.ts`, `Swap.ts`, `IdleAssist.ts`
+- `src/domain/PuzzleBoard.ts`, `PuzzleShuffle.ts`, `PuzzleTopology.ts`, `PuzzleProgress.ts`, `GridPlanner.ts`, `Swap.ts`, `IdleAssist.ts`
 - `src/runtime/phaser/PuzzleScene.ts`, `PuzzleHud.ts`, `HintOverlay.ts`, `WinCelebration.ts`
 - `tests/PuzzleBoard.test.ts`, `PuzzleShuffle.test.ts`, `PuzzleInteraction.test.ts`, `GridPlanner.test.ts`, `puzzle-mobile.spec.ts`
 
