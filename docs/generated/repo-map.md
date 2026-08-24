@@ -36,6 +36,7 @@
 │       │   │       └── ui
 │       │   │           ├── continuar.svg
 │       │   │           ├── dica.svg
+│       │   │           ├── floco-neve.svg
 │       │   │           ├── pausar.svg
 │       │   │           ├── silenciar.svg
 │       │   │           └── som.svg
@@ -54,6 +55,8 @@
 │       │   │   ├── GameQuality.ts
 │       │   │   ├── LocalTestSession.test.ts
 │       │   │   └── LocalTestSession.ts
+│       │   ├── audio
+│       │   │   └── playInterfaceTap.ts
 │       │   ├── dev
 │       │   ├── main.tsx
 │       │   ├── phaser
@@ -120,6 +123,10 @@
 │   │   │   ├── large-phone-430-puzzle-swap-low-reduced.png
 │   │   │   ├── large-phone-430-puzzle-swap-native.png
 │   │   │   ├── large-phone-430-puzzle-swap-paused.png
+│   │   │   ├── local-private-cover-390.png
+│   │   │   ├── local-private-puzzle-390.png
+│   │   │   ├── local-private-puzzle-hint-390-y74.png
+│   │   │   ├── local-private-puzzle-hint-390.png
 │   │   │   ├── tablet-768-dev-smoke.png
 │   │   │   ├── tablet-768-puzzle-swap-complete.png
 │   │   │   ├── tablet-768-puzzle-swap-landscape-native.png
@@ -190,6 +197,7 @@
 │   │   │   │   │   ├── GridPlanner.ts
 │   │   │   │   │   ├── IdleAssist.ts
 │   │   │   │   │   ├── PuzzleBoard.ts
+│   │   │   │   │   ├── PuzzleHint.ts
 │   │   │   │   │   ├── PuzzleProgress.ts
 │   │   │   │   │   ├── PuzzleShuffle.ts
 │   │   │   │   │   ├── PuzzleTopology.ts

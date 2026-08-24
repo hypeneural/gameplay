@@ -1,6 +1,7 @@
 export * from './domain/GridPlanner.js';
 export * from './domain/IdleAssist.js';
 export * from './domain/PuzzleBoard.js';
+export * from './domain/PuzzleHint.js';
 export * from './domain/PuzzleProgress.js';
 export * from './domain/PuzzleShuffle.js';
 export * from './domain/PuzzleTopology.js';

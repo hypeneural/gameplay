@@ -36,9 +36,22 @@ Puzzle pieces are visual crops of one authorized `game` variant, positioned from
 
 Cropping a display-sized full image preserves the original display scale; it does not make the cropped region fill a puzzle cell. Build named frames on the one authorized texture using source coordinates, then display each frame at the calculated cell size. This preserves aspect ratio, avoids extra requests and makes mixed orientation predictable.
 
-## LESSON-010 — Seasonal feedback must end by itself
+## LESSON-010 — Seasonal feedback needs a bounded motion budget
 
-Use finite scene-owned tweens for tap, hint, correct and win sparkles. Do not add a continuous emitter just to make the scene feel festive: it spends battery while the child is deciding, complicates reduced motion and can outlive a route without explicit ownership.
+Use finite scene-owned tweens for tap, hint, correct and win sparkles. A
+continuous snowfall is allowed only when it is an explicit part of the scene:
+use one scene-owned emitter with a texture already loaded, reserve its small
+pool, cap live particles, keep it behind the photo, and omit it in LOW and
+reduced-motion modes. Never add an unbounded emitter merely to fill empty
+space.
+
+## LESSON-019 — A useful swap hint names two visual places, not one
+
+For a swap puzzle, highlight the cell that needs its own piece and the cell
+currently holding that piece. This gives a child a concrete, non-solving move:
+swapping the two always puts one piece into place. Keep that choice in a pure
+domain function and let Phaser only present it, so the hint is testable without
+the canvas.
 
 ## LESSON-011 — Real-photo review needs a separate local delivery boundary
 

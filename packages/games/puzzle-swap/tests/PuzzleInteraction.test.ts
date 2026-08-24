@@ -4,6 +4,7 @@ import {
   createPuzzleBoard,
   createSolvedPuzzleBoard,
   emptyPuzzleSelection,
+  findPuzzleHintSwap,
   recordSuccessfulPuzzleMove,
   requestIdleAssist,
   selectPuzzleCell,
@@ -54,5 +55,13 @@ describe('Puzzle interaction domain', () => {
     const state = { lastSuccessfulMoveAtMs: 0, hasShownSinceLastMove: false };
 
     expect(requestIdleAssist(createSolvedPuzzleBoard(2, 2), state, clock, 7_000).hint).toBeNull();
+  });
+
+  it('turns an incorrect cell into a two-piece, non-solving hint', () => {
+    const board = createPuzzleBoard(3, 2, [1, 2, 0, 3, 4, 5]);
+
+    expect(findPuzzleHintSwap(board)).toEqual({ targetCellIndex: 0, sourceCellIndex: 2 });
+    expect(findPuzzleHintSwap(board, 1)).toEqual({ targetCellIndex: 1, sourceCellIndex: 0 });
+    expect(findPuzzleHintSwap(createSolvedPuzzleBoard(2, 2))).toBeNull();
   });
 });

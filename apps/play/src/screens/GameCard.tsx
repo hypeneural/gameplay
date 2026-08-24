@@ -1,4 +1,5 @@
 import type { GameDefinition } from '@christmas-games/platform';
+import { playInterfaceTap } from '../audio/playInterfaceTap.js';
 
 interface GameCardProps {
   definition: GameDefinition;
@@ -18,7 +19,10 @@ export function GameCard({ definition, onOpen, onPrefetch }: GameCardProps): Rea
           className="button game-card-cta"
           data-testid={`open-game-${definition.id}`}
           type="button"
-          onClick={() => onOpen(definition.id)}
+          onClick={() => {
+            playInterfaceTap();
+            onOpen(definition.id);
+          }}
           onFocus={() => onPrefetch(definition.id)}
           onPointerDown={() => onPrefetch(definition.id)}
         >

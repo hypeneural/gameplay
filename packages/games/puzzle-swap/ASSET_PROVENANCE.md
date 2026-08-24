@@ -21,6 +21,10 @@ supported source at load time; this game never resumes an `AudioContext`
 itself. The runtime starts the optional music only after a player gesture and
 stops its retained loop during scene teardown.
 
+React-owned navigation controls use the same authorized `tap.mp3` as a small
+inlined data URL. This keeps its 0.12-second response alive across a history
+change instead of starting a network request that the route can cancel.
+
 ## Visual direction
 
 The new runtime creates its snow, moonlight, board frame and celebratory
@@ -38,6 +42,7 @@ session details, third-party characters, logos or marks.
 | Hint control                        | `ui/dica.svg`                           | Original project SVG, hand-authored.                                                                                                                           | 64 × 64 source; Phaser rasterizes to 96 × 96 |
 | Pause / continue controls           | `ui/pausar.svg`, `ui/continuar.svg`     | Original project SVGs, hand-authored.                                                                                                                          | 64 × 64 source; Phaser rasterizes to 96 × 96 |
 | Sound controls                      | `ui/som.svg`, `ui/silenciar.svg`        | Original project SVGs, hand-authored.                                                                                                                          | 64 × 64 source; Phaser rasterizes to 96 × 96 |
+| Soft snowfall particle              | `ui/floco-neve.svg`                     | Original project SVG, hand-authored as a transparent radial snowflake.                                                                                         | 64 × 64 source; Phaser rasterizes to 48 × 48 |
 
 The retained editable backdrop source is outside the browser public directory
 under `assets-src/puzzle-swap/backgrounds/`. The game only requests the

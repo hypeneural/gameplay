@@ -1,5 +1,6 @@
 import type { GameDefinition } from '@christmas-games/platform';
 import type { ReactNode } from 'react';
+import { playInterfaceTap } from '../audio/playInterfaceTap.js';
 import { GameErrorState } from './GameErrorState.js';
 import { LoadingState } from './LoadingState.js';
 
@@ -51,7 +52,14 @@ export function GameScreen({
           </span>
           <span data-testid="game-event">{playerEventLabel(lastEvent)}</span>
         </div>
-        <button className="button secondary game-exit" type="button" onClick={onExit}>
+        <button
+          className="button secondary game-exit"
+          type="button"
+          onClick={() => {
+            playInterfaceTap();
+            onExit();
+          }}
+        >
           Sair do jogo
         </button>
       </header>

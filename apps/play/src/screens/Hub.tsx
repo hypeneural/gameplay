@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import type { GameDefinition, Session } from '@christmas-games/platform';
+import { playInterfaceTap } from '../audio/playInterfaceTap.js';
 import { GameCard } from './GameCard.js';
 
 interface HubProps {
@@ -15,10 +16,6 @@ interface HubProps {
 }
 
 const photoChunkSize = 12;
-
-function photoOrientationLabel(orientation: string): string {
-  return orientation === 'landscape' ? 'Horizontal' : 'Vertical';
-}
 
 export function Hub({
   session,
@@ -69,7 +66,7 @@ export function Hub({
       <p className="eyebrow">FOTOS DE NATAL</p>
       <h1>{session.displayName}</h1>
       <p className="intro">
-        Escolha uma foto e abra a prova vertical do jogo. As fotos são sempre proporcionais.
+        Escolha uma foto para virar uma brincadeira de Natal. Sua foto aparece sempre sem distorção.
       </p>
       {showFixtureSelector ? (
         <label className="field">
@@ -96,20 +93,20 @@ export function Hub({
             key={photo.id}
             type="button"
             onClick={() => {
+              playInterfaceTap();
               onSelectPhoto(photo.id);
               setSelectionVersion((current) => current + 1);
               if (primaryGame) onPrefetchGame(primaryGame.id);
             }}
           >
             <img
-              alt={`Foto ${photoOrientationLabel(photo.orientation).toLowerCase()} da sessão`}
+              alt="Foto da sessão"
               decoding="async"
               height={photo.height}
               loading="lazy"
               src={photo.variants.thumb}
               width={photo.width}
             />
-            <span>{photoOrientationLabel(photo.orientation)}</span>
           </button>
         ))}
       </div>
@@ -123,23 +120,26 @@ export function Hub({
           <div aria-hidden="true" className="photo-selection-sparkles">
             ✦ ✧
           </div>
+          <div aria-hidden="true" className="photo-selection-preview">
+            <img decoding="async" src={selectedPhoto.variants.thumb} />
+          </div>
           <div>
             <p className="eyebrow">FOTO SELECIONADA</p>
-            <h2>Pronta para brincar</h2>
-            <p className="photo-selection-meta">
-              Foto {selectedPhoto.orientation === 'portrait' ? 'vertical' : 'horizontal'} · sem
-              distorção
-            </p>
+            <h2>Sua foto está pronta!</h2>
+            <p className="photo-selection-meta">Ela vai virar um quebra-cabeça cheio de magia.</p>
           </div>
           <button
             className="button primary-game-cta"
             data-testid="start-selected-photo"
             type="button"
-            onClick={() => onOpenGame(primaryGame.id)}
+            onClick={() => {
+              playInterfaceTap();
+              onOpenGame(primaryGame.id);
+            }}
             onFocus={() => onPrefetchGame(primaryGame.id)}
             onPointerDown={() => onPrefetchGame(primaryGame.id)}
           >
-            Jogar agora <span aria-hidden="true">→</span>
+            Jogar agora <span aria-hidden="true">✦ →</span>
           </button>
         </section>
       ) : null}

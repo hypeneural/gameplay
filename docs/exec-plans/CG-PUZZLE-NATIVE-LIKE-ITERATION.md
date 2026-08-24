@@ -27,6 +27,21 @@ quebra-cabeça.
       nativo da textura da foto. A grade agora preserva a proporção calculada.
 - [x] Reiniciar a revisão local com os derivados privados configurados e
       conferir o fluxo em 390 × 844 com fotos locais.
+- [x] Remover da interface da pessoa qualquer rótulo de orientação da foto;
+      ela escolhe uma lembrança, não um formato técnico.
+- [x] Fazer a foto escolhida pulsar com moldura e brilho finitos, e transformar
+      o convite “Jogar agora” em uma chamada visual com miniatura da lembrança.
+- [x] Mostrar na capa o derivado real da foto escolhida, em moldura natalina e
+      sem corte ou distorção; a antiga paisagem ilustrada fica apenas como arte
+      do cenário do jogo.
+- [x] Substituir a Lua geométrica sobreposta pela lua já ilustrada no cenário e
+      aplicar neve suave no canvas, limitada por qualidade, movimento reduzido,
+      reserva de partículas e desligamento de cena.
+- [x] Evoluir a dica: ela ilumina a casa que precisa da peça e a peça que deve
+      ir para lá, sem executar a troca; a instrução explica a ação em português
+      simples e há teste puro do par sugerido.
+- [x] Dar resposta visual e sonora ao começo e ao fim de um arraste, aos
+      controles Phaser e aos controles principais do aplicativo.
 
 ## Critérios que continuam obrigatórios
 
@@ -43,18 +58,20 @@ quebra-cabeça.
 
 ## Próximos pacotes, na ordem segura
 
-### 1. Moldura e feedback de peça
+### 1. Validação de uso infantil
 
-- Criar estados visuais próprios para peça escolhida, dica e peça no lugar.
-- Medir contraste em fotos claras, escuras, verticais e horizontais.
-- Manter feedback curto, finito e sem animação contínua no modo de movimento reduzido.
+- [ ] Medir se crianças entendem que as duas bordas iluminadas devem ser
+      trocadas, antes de aumentar a intensidade ou duração da dica.
+- [ ] Medir contraste em fotos claras, escuras, verticais e horizontais.
+- [ ] Confirmar em Android físico a taxa de quadros e o custo da neve em NORMAL
+      e HIGH; LOW e movimento reduzido continuam sem neve.
 
 ### 2. Celebração da lembrança
 
-- Dar mais prioridade à foto completa ao terminar.
-- Aplicar uma única explosão curta de brilho e o som de comemoração já autorizado.
-- Oferecer ação clara para escolher outra foto; não adicionar compartilhamento
-  nem download antes do contrato de produto e privacidade correspondente.
+- [ ] Dar mais prioridade à foto completa ao terminar.
+- [ ] Aplicar uma única explosão curta de brilho e o som de comemoração já autorizado.
+- [ ] Oferecer ação clara para escolher outra foto; não adicionar compartilhamento
+      nem download antes do contrato de produto e privacidade correspondente.
 
 ### 3. Pacote reutilizável para os próximos jogos
 
@@ -70,7 +87,7 @@ quebra-cabeça.
 
 1. Rodar `pnpm check:fast` enquanto a alteração está pequena.
 2. Abrir a rota local em 390 × 844 com `?test-media=local` e conferir capa,
-   entrada, toque, pausa, som, vitória e saída.
+   entrada, neve, toque, arraste, dica de duas peças, pausa, som, vitória e saída.
 3. Conferir retrato e paisagem, inclusive após redimensionar a tela.
 4. Rodar `pnpm validate` antes de publicar: arquitetura, tipos, testes, build
    e navegador precisam passar juntos.

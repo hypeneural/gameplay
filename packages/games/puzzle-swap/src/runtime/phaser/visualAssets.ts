@@ -9,6 +9,10 @@ export const puzzleVisualAssets = {
     key: 'puzzle-background-winter-village',
     url: `${visualAssetBasePath}/backgrounds/vila-nevada-noite-v1.webp`,
   },
+  snow: {
+    key: 'puzzle-snowflake',
+    url: `${visualAssetBasePath}/ui/floco-neve.svg`,
+  },
   hint: {
     key: 'puzzle-ui-hint',
     url: `${visualAssetBasePath}/ui/dica.svg`,

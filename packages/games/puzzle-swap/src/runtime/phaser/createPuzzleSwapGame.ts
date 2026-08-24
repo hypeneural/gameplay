@@ -14,6 +14,7 @@ import {
   isPuzzleSolved,
   swapPuzzlePieces,
 } from '../../domain/PuzzleBoard.js';
+import { findPuzzleHintSwap } from '../../domain/PuzzleHint.js';
 import { selectPuzzleTopology } from '../../domain/PuzzleTopology.js';
 import { getPuzzleProgress } from '../../domain/PuzzleProgress.js';
 import { shufflePuzzleBoard } from '../../domain/PuzzleShuffle.js';
@@ -81,8 +82,9 @@ export function createPuzzleSwapGame(
     );
     private bounds?: BoardBounds;
     private selectedIndex: number | null = null;
-    private hintIndex: number | null = null;
+    private hintIndexes: readonly number[] = [];
     private pointerDownIndex: number | null = null;
+    private dragFeedbackStarted = false;
     private idleAssist = createIdleAssistState(context.clock);
     private completed = false;
     private paused = false;
@@ -90,9 +92,9 @@ export function createPuzzleSwapGame(
     private sourceHeight = 0;
     private readonly pieces: Phaser.GameObjects.Image[] = [];
     private readonly borders: Phaser.GameObjects.Rectangle[] = [];
-    private readonly ambientSnow: Phaser.GameObjects.Text[] = [];
     private progressText?: Phaser.GameObjects.Text;
     private timerText?: Phaser.GameObjects.Text;
+    private instructionsText?: Phaser.GameObjects.Text;
     private pauseBounds?: TouchBounds;
     private hintBounds?: TouchBounds;
     private audioBounds?: TouchBounds;
@@ -102,6 +104,8 @@ export function createPuzzleSwapGame(
     private winScrim?: Phaser.GameObjects.Rectangle;
     private boardFrame?: Phaser.GameObjects.Rectangle;
     private sourcePreview?: Phaser.GameObjects.Image;
+    private snowEmitter?: Phaser.GameObjects.Particles.ParticleEmitter;
+    private snowSpawnZone?: Phaser.Geom.Rectangle;
     private feedback?: FeedbackDirector<Phaser.GameObjects.Rectangle>;
     private music: Phaser.Sound.BaseSound | undefined;
     private lastDisplayedSecond = -1;
@@ -115,6 +119,7 @@ export function createPuzzleSwapGame(
     private readonly requiredTextureKeys = new Set([
       textureKey,
       puzzleVisualAssets.background.key,
+      puzzleVisualAssets.snow.key,
       ...puzzleUiTextureKeys,
     ]);
     private readonly reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -135,6 +140,10 @@ export function createPuzzleSwapGame(
     preload(): void {
       this.load.image(textureKey, context.selectedPhoto.variants.game);
       this.load.image(puzzleVisualAssets.background.key, puzzleVisualAssets.background.url);
+      this.load.svg(puzzleVisualAssets.snow.key, puzzleVisualAssets.snow.url, {
+        width: 48,
+        height: 48,
+      });
       this.load.svg(puzzleVisualAssets.hint.key, puzzleVisualAssets.hint.url, {
         width: 96,
         height: 96,
@@ -171,6 +180,7 @@ export function createPuzzleSwapGame(
 
       this.scope.texture(this.textures, textureKey);
       this.scope.texture(this.textures, puzzleVisualAssets.background.key);
+      this.scope.texture(this.textures, puzzleVisualAssets.snow.key);
       puzzleUiTextureKeys.forEach((key) => this.scope.texture(this.textures, key));
       this.createChristmasBackdrop();
       this.createBoardPresentation();
@@ -209,7 +219,7 @@ export function createPuzzleSwapGame(
         .setName('puzzle-timer')
         .setDepth(4)
         .setOrigin(0.5);
-      this.add
+      this.instructionsText = this.add
         .text(0, 0, 'Toque em duas peças ou arraste uma até outra.', {
           color: christmasTheme.color.snow,
           fontFamily: 'system-ui, sans-serif',
@@ -235,8 +245,12 @@ export function createPuzzleSwapGame(
       this.scope.add(() =>
         this.input.off(Phaser.Input.Events.POINTER_UP, this.handlePointerUp, this),
       );
+      this.scope.add(() =>
+        this.input.off(Phaser.Input.Events.POINTER_MOVE, this.handlePointerMove, this),
+      );
       this.input.on(Phaser.Input.Events.POINTER_DOWN, this.handlePointerDown, this);
       this.input.on(Phaser.Input.Events.POINTER_UP, this.handlePointerUp, this);
+      this.input.on(Phaser.Input.Events.POINTER_MOVE, this.handlePointerMove, this);
 
       const resize = (gameSize: { width: number; height: number }): void =>
         this.layout(createViewportLayout(gameSize.width, gameSize.height));
@@ -267,6 +281,7 @@ export function createPuzzleSwapGame(
 
     private readonly handlePointerDown = (pointer: Phaser.Input.Pointer): void => {
       this.startMusicAfterGesture();
+      this.dragFeedbackStarted = false;
       if (!this.interactive || this.movingPieces) {
         this.pointerDownIndex = null;
         return;
@@ -297,8 +312,33 @@ export function createPuzzleSwapGame(
       }
     };
 
+    private readonly handlePointerMove = (pointer: Phaser.Input.Pointer): void => {
+      const pressedIndex = this.pointerDownIndex;
+      if (
+        pressedIndex === null ||
+        this.dragFeedbackStarted ||
+        !pointer.isDown ||
+        !this.interactive ||
+        this.movingPieces ||
+        this.paused ||
+        pointer.getDistance() < puzzleSwapTuning.dragDistanceThresholdPx
+      ) {
+        return;
+      }
+
+      this.dragFeedbackStarted = true;
+      const pressedBorder = this.borders[pressedIndex];
+      if (pressedBorder) this.feedback?.tap(pressedBorder);
+      this.emitSparkles(pointer.x, pointer.y, 3, 260);
+    };
+
     private readonly handlePointerUp = (pointer: Phaser.Input.Pointer): void => {
-      if (!this.interactive || this.movingPieces) return;
+      const wasDragging = this.dragFeedbackStarted;
+      this.dragFeedbackStarted = false;
+      if (!this.interactive || this.movingPieces) {
+        this.pointerDownIndex = null;
+        return;
+      }
       if (this.paused) {
         this.togglePause();
         return;
@@ -325,6 +365,7 @@ export function createPuzzleSwapGame(
         pressedIndex !== releasedIndex &&
         pointer.getDistance() >= puzzleSwapTuning.dragDistanceThresholdPx
       ) {
+        if (wasDragging) this.emitSparkles(pointer.x, pointer.y, 4, 300);
         this.applySwap({ firstIndex: pressedIndex, secondIndex: releasedIndex });
         return;
       }
@@ -354,7 +395,7 @@ export function createPuzzleSwapGame(
 
       this.board = swapPuzzlePieces(this.board, swap);
       this.selectedIndex = null;
-      this.hintIndex = null;
+      this.clearHint();
       this.idleAssist = recordSuccessfulPuzzleMove(context.clock);
       this.pieces[swap.firstIndex] = secondPiece;
       this.pieces[swap.secondIndex] = firstPiece;
@@ -389,8 +430,6 @@ export function createPuzzleSwapGame(
         .setOrigin(0)
         .setName('puzzle-backdrop')
         .setDepth(0);
-      this.add.circle(0, 0, 1, puzzleGold, 0.18).setName('puzzle-moon-glow').setDepth(0);
-      this.add.circle(0, 0, 1, 0xffe7a7, 0.92).setName('puzzle-moon').setDepth(0);
       this.add
         .rectangle(0, 0, 1, 1, puzzlePine, 0.78)
         .setOrigin(0)
@@ -440,33 +479,38 @@ export function createPuzzleSwapGame(
     private createAmbientSnow(): void {
       if (context.quality === 'LOW') return;
       if (this.reducedMotion) return;
-      const count = puzzleSwapTuning.ambientSnowflakes[context.quality];
-      for (let index = 0; index < count; index += 1) {
-        const flake = this.add
-          .text(0, 0, index % 3 === 0 ? '✦' : '·', {
-            color: index % 3 === 0 ? christmasTheme.color.gold : christmasTheme.color.snow,
-            fontFamily: 'system-ui, sans-serif',
-            fontSize: index % 2 === 0 ? '14px' : '10px',
+      this.snowSpawnZone = new Phaser.Geom.Rectangle(0, -28, this.scale.gameSize.width, 28);
+      this.snowEmitter = this.scope.resource(
+        this.add
+          .particles(0, 0, puzzleVisualAssets.snow.key, {
+            alpha: { start: 0.78, end: 0.1 },
+            advance: 3_600,
+            emitZone: {
+              type: 'random',
+              source: {
+                getRandomPoint: (point) => {
+                  const zone = this.snowSpawnZone;
+                  if (!zone) return;
+                  point.x = zone.x + context.random.next() * zone.width;
+                  point.y = zone.y + context.random.next() * zone.height;
+                },
+              },
+            },
+            frequency: context.quality === 'HIGH' ? 360 : 560,
+            gravityY: 5,
+            lifespan: { min: 6_500, max: 10_500 },
+            maxAliveParticles: 18,
+            maxParticles: 20,
+            quantity: 1,
+            radial: false,
+            reserve: 18,
+            scale: { start: 0.26, end: 0.11, ease: 'Sine.easeOut' },
+            speedX: { min: -11, max: 13 },
+            speedY: { min: 62, max: 96 },
           })
-          .setOrigin(0.5)
-          .setDepth(0.5)
-          .setAlpha(0.28 + (index % 4) * 0.12)
-          .setName(`puzzle-snow-${index}`);
-        this.ambientSnow.push(flake);
-        this.scope.resource(
-          this.tweens.add({
-            targets: flake,
-            y: '+=72',
-            x: index % 2 === 0 ? '+=12' : '-=12',
-            angle: index % 2 === 0 ? 18 : -18,
-            duration: 4200 + index * 260,
-            delay: index * 170,
-            ease: 'Sine.easeInOut',
-            yoyo: true,
-            repeat: -1,
-          }),
-        );
-      }
+          .setDepth(0.7)
+          .setName('puzzle-ambient-snow'),
+      );
     }
 
     private createHudButton(name: string, iconKey: string, label: string): void {
@@ -785,16 +829,37 @@ export function createPuzzleSwapGame(
 
     private revealHint(cellIndex: number): void {
       if (context.run.state !== 'started' || this.completed) return;
-      this.hintIndex = cellIndex;
+      const hint = findPuzzleHintSwap(this.board, cellIndex);
+      if (!hint) return;
+      this.hintIndexes = [hint.targetCellIndex, hint.sourceCellIndex];
       this.selectedIndex = null;
+      this.instructionsText?.setText('Troque as duas peças que estão brilhando.');
       this.updateSelectionBorders();
-      const target = this.borders[cellIndex];
+      const target = this.borders[hint.targetCellIndex];
+      const source = this.borders[hint.sourceCellIndex];
       if (target) this.feedback?.hint(target);
+      const hintBorders = [target, source].filter(
+        (border): border is Phaser.GameObjects.Rectangle => Boolean(border),
+      );
+      if (!this.reducedMotion && hintBorders.length > 0) {
+        this.scope.resource(
+          this.tweens.add({
+            targets: hintBorders,
+            alpha: 0.34,
+            duration: 220,
+            ease: 'Sine.easeInOut',
+            yoyo: true,
+            repeat: 2,
+          }),
+        );
+      }
       this.scope.resource(
-        this.time.delayedCall(1000, () => {
-          if (this.hintIndex === cellIndex) {
-            this.hintIndex = null;
-            this.updateSelectionBorders();
+        this.time.delayedCall(1_450, () => {
+          if (
+            this.hintIndexes[0] === hint.targetCellIndex &&
+            this.hintIndexes[1] === hint.sourceCellIndex
+          ) {
+            this.clearHint();
           }
         }),
       );
@@ -804,6 +869,12 @@ export function createPuzzleSwapGame(
       if (context.run.state !== 'started' || this.completed) return;
       const cellIndex = this.board.pieces.findIndex((pieceId, index) => pieceId !== index);
       if (cellIndex >= 0) this.revealHint(cellIndex);
+    }
+
+    private clearHint(): void {
+      this.hintIndexes = [];
+      this.instructionsText?.setText('Toque em duas peças ou arraste uma até outra.');
+      this.updateSelectionBorders();
     }
 
     private togglePause(): void {
@@ -944,8 +1015,6 @@ export function createPuzzleSwapGame(
         'puzzle-background-art',
       ) as Phaser.GameObjects.Image;
       const ribbon = this.children.getByName('puzzle-ribbon') as Phaser.GameObjects.Rectangle;
-      const moonGlow = this.children.getByName('puzzle-moon-glow') as Phaser.GameObjects.Arc;
-      const moon = this.children.getByName('puzzle-moon') as Phaser.GameObjects.Arc;
       const pineHorizon = this.children.getByName(
         'puzzle-pine-horizon',
       ) as Phaser.GameObjects.Rectangle;
@@ -959,8 +1028,6 @@ export function createPuzzleSwapGame(
       );
       backgroundArt.setPosition(viewport.width / 2, viewport.height / 2).setScale(backgroundScale);
       backdrop.setSize(viewport.width, viewport.height);
-      moonGlow.setPosition(viewport.width * 0.78, viewport.safeTop + 124).setRadius(86);
-      moon.setPosition(viewport.width * 0.78, viewport.safeTop + 124).setRadius(25);
       pineHorizon
         .setPosition(0, viewport.height - viewport.safeBottom - 72)
         .setSize(viewport.width, 72)
@@ -968,14 +1035,7 @@ export function createPuzzleSwapGame(
       ribbon.setPosition(0, viewport.safeTop + 82).setSize(viewport.width, 8);
       leftStar.setPosition(28, viewport.safeTop + 118);
       rightStar.setPosition(viewport.width - 26, viewport.height - viewport.safeBottom - 82);
-      this.ambientSnow.forEach((flake, index) => {
-        const horizontalStep = ((index * 43 + 29) % 100) / 100;
-        const verticalStep = ((index * 79 + 16) % 100) / 100;
-        flake.setPosition(
-          viewport.width * horizontalStep,
-          viewport.safeTop + 96 + (viewport.contentHeight - 170) * verticalStep,
-        );
-      });
+      if (this.snowSpawnZone) this.snowSpawnZone.width = viewport.width;
       hudPanel
         .setPosition(viewport.width / 2, viewport.safeTop + hudHeight / 2 + 6)
         .setSize(Math.max(1, viewport.width - 16), hudHeight);
@@ -1135,12 +1195,14 @@ export function createPuzzleSwapGame(
     private updateSelectionBorders(): void {
       this.borders.forEach((border, index) =>
         border.setStrokeStyle(
-          index === this.selectedIndex || index === this.hintIndex ? 4 : 2,
+          index === this.selectedIndex || this.hintIndexes.includes(index) ? 4 : 2,
           index === this.selectedIndex
             ? 0xffffff
-            : index === this.hintIndex
-              ? 0x55b58a
-              : puzzleGold,
+            : index === this.hintIndexes[0]
+              ? 0x74e7bc
+              : index === this.hintIndexes[1]
+                ? 0xffe49b
+                : puzzleGold,
           0.9,
         ),
       );

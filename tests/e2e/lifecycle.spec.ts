@@ -154,10 +154,15 @@ test('mobile photo selection keeps a bounded gallery and opens the selected puzz
 
   await page.getByTestId('photo-ph_002').click();
   await expect(page.getByTestId('photo-ph_002')).toHaveAttribute('aria-pressed', 'true');
-  await expect(page.getByTestId('photo-selection')).toContainText('Foto horizontal');
+  await expect(page.getByTestId('photo-selection')).toContainText('Sua foto está pronta!');
+  await expect(page.getByTestId('photo-selection')).not.toContainText(/horizontal|vertical/i);
   await expect(page.getByTestId('start-selected-photo')).toBeVisible();
   await page.getByTestId('start-selected-photo').click();
   await expect(page).toHaveURL('/s/local-demo-token/game/puzzle-swap');
+  await expect(page.locator('.game-cover-preview img')).toHaveAttribute(
+    'src',
+    /\/fixtures\/landscape\.svg$/,
+  );
 });
 
 test('Puzzle Swap mounts selected portrait and landscape textures and exits cleanly', async ({
