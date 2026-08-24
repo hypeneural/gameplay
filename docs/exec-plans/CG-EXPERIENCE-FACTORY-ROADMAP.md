@@ -157,6 +157,14 @@ prompt and an auditable local catalog.
 or untracked file fails audit; alternative audio formats count once in a
 single-run budget; a newly generated game includes the experience prompt.
 
+## Work package G — maturidade natalina native-like
+
+**Status:** planejado. A execução por fases, os gates de assets/áudio e a
+evidência de produto estão em
+[CG-CHRISTMAS-NATIVE-LIKE-MATURITY.md](CG-CHRISTMAS-NATIVE-LIKE-MATURITY.md).
+Este pacote começa por uso infantil, contraste e direção de arte aprovada; não
+depende de provider externo, plugin ou geração por IA.
+
 ## Release work retained after Puzzle
 
 1. Add manifest, install affordance, cache versioning and offline/error route. Cache static app shell only until the authorized-derivative privacy review approves specific media behavior.

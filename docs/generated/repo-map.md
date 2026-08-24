@@ -99,6 +99,7 @@
 │   ├── exec-plans
 │   │   ├── active
 │   │   │   └── .gitkeep
+│   │   ├── CG-CHRISTMAS-NATIVE-LIKE-MATURITY.md
 │   │   ├── CG-EXPERIENCE-FACTORY-ROADMAP.md
 │   │   ├── CG-PUZZLE-NATIVE-LIKE-ITERATION.md
 │   │   └── completed
@@ -158,6 +159,7 @@
 │   │   └── TRACEABILITY.md
 │   └── references
 │       ├── ASSET_FACTORY_OFFICIAL_VALIDATION.md
+│       ├── CHRISTMAS_NATIVE_LIKE_MATURITY_VALIDATION.md
 │       ├── OFFICIAL_VALIDATION.md
 │       ├── PHASE_9_5_OFFICIAL_VALIDATION.md
 │       ├── PRODUCTION_CORRECTNESS_VALIDATION.md
