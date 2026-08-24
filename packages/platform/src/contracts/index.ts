@@ -91,6 +91,10 @@ export interface GameRun {
   start(): void;
   pause(): void;
   resume(): void;
+  /** Emits a bounded, non-analytics diagnostic for a retried required asset. */
+  assetRetry(attempt: number): void;
+  /** Emits a privacy-safe asset failure code; it must not contain a URL or user data. */
+  assetFailed(reason: string): void;
   complete(): number;
   exit(): void;
   elapsedMs(): number;

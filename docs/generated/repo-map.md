@@ -31,7 +31,10 @@
 │       │   │           ├── winter-loop.mp3
 │       │   │           ├── wrong.m4a
 │       │   │           └── wrong.mp3
-│       │   └── favicon.svg
+│       │   ├── favicon.svg
+│       │   └── fixtures
+│       │       ├── landscape.svg
+│       │       └── portrait.svg
 │       ├── src
 │       │   ├── app
 │       │   │   ├── App.tsx
@@ -39,6 +42,8 @@
 │       │   │   ├── AppNavigation.ts
 │       │   │   ├── AppRouter.tsx
 │       │   │   ├── AppServices.ts
+│       │   │   ├── GameQuality.test.ts
+│       │   │   ├── GameQuality.ts
 │       │   │   ├── LocalTestSession.test.ts
 │       │   │   └── LocalTestSession.ts
 │       │   ├── dev
@@ -91,6 +96,7 @@
 │   │   │   ├── iphone-390-dev-smoke.png
 │   │   │   ├── iphone-390-puzzle-swap-complete.png
 │   │   │   ├── iphone-390-puzzle-swap-landscape-native.png
+│   │   │   ├── iphone-390-puzzle-swap-low-reduced.png
 │   │   │   ├── iphone-390-puzzle-swap-native.png
 │   │   │   ├── iphone-390-puzzle-swap-paused.png
 │   │   │   ├── large-phone-430-dev-smoke.png

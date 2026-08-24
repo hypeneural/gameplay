@@ -32,9 +32,7 @@ export const noOpHaptics: Haptics = {
 function fixturePhoto(index: number, orientation: 'portrait' | 'landscape'): Photo {
   const width = orientation === 'portrait' ? 500 : 700;
   const height = orientation === 'portrait' ? 700 : 500;
-  const label = `${orientation === 'portrait' ? 'PORTRAIT' : 'LANDSCAPE'} ${String(index).padStart(2, '0')}`;
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}"><rect width="100%" height="100%" fill="${orientation === 'portrait' ? '#8f1d35' : '#0f4a3c'}"/><text x="50%" y="50%" text-anchor="middle" dominant-baseline="middle" font-family="Arial" font-size="42" font-weight="700" fill="#f8dfa0">${label}</text></svg>`;
-  const url = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
+  const url = `/fixtures/${orientation}.svg`;
 
   return {
     id: `ph_${String(index).padStart(3, '0')}`,

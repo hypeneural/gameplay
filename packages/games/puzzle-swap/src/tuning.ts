@@ -9,5 +9,7 @@ export const puzzleSwapTuning = {
   boardInsetCssPx: 12,
   swapDurationMs: 160,
   revealDurationMs: 520,
+  assetTimeoutMs: 10_000,
+  assetMaxRetries: 1,
   ambientSnowflakes: { NORMAL: 10, HIGH: 18 } as const,
 } as const;

@@ -187,5 +187,13 @@ export function PhaserHost({
     void exit();
   }, [exitRequest]);
 
-  return <div className="phaser-host" data-testid="phaser-host" ref={hostRef} />;
+  return (
+    <div
+      className="phaser-host"
+      data-quality={context.quality}
+      data-reduced-motion={window.matchMedia('(prefers-reduced-motion: reduce)').matches}
+      data-testid="phaser-host"
+      ref={hostRef}
+    />
+  );
 }

@@ -65,6 +65,22 @@ export class GameRunController implements GameRun {
     this.emit('GAME_RESUMED');
   }
 
+  assetRetry(attempt: number): void {
+    if (this.currentState === 'exited') return;
+    if (!Number.isInteger(attempt) || attempt < 1) {
+      throw new Error('Asset retry attempts must be positive integers.');
+    }
+    this.bridge.emit({ type: 'GAME_ASSET_RETRY', ...this.nextIdentity(), attempt });
+  }
+
+  assetFailed(reason: string): void {
+    if (this.currentState === 'exited') return;
+    if (!/^[a-z0-9][a-z0-9-]{0,79}$/.test(reason)) {
+      throw new Error('Asset failure reasons must be privacy-safe kebab-case codes.');
+    }
+    this.bridge.emit({ type: 'GAME_ASSET_FAILED', ...this.nextIdentity(), reason });
+  }
+
   complete(): number {
     if (this.currentState === 'completed') return this.clock.elapsedMs();
     if (this.currentState !== 'started') return this.clock.elapsedMs();

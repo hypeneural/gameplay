@@ -55,3 +55,7 @@ Adding a child to a Phaser `Container` removes it from the Scene display list, s
 ## LESSON-014 — “Correct” is a state transition, not every move
 
 For a swap puzzle, compare the two affected cell assignments before and after the move. Tween the two existing piece objects to their new cells, then trigger sparkle, haptic and correct SFX only for cells that were incorrect and have just become correct. Recreating the entire board on every move hides this distinction and makes photographic play feel like a web page rather than an app.
+
+## LESSON-015 — Loader-retry proof needs an HTTP fixture
+
+Phaser loads data-URI images through its image-element path, which does not exercise XHR retry behavior. Browser fixtures now use safe static portrait/landscape SVGs so Playwright can abort the required-photo request, prove exactly one configured retry and verify that only a privacy-safe failure code reaches React. Keep this distinction in mind whenever loader policy is validated.

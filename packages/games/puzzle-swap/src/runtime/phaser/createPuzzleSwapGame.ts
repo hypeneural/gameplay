@@ -99,9 +99,20 @@ export function createPuzzleSwapGame(
     private introPlayed = false;
     private audioEnabled = true;
     private awaitingMusicUnlock = false;
+    private assetFailure = false;
+    private readonly reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
     constructor() {
       super('PuzzleSwapScene');
+    }
+
+    init(): void {
+      context.run.open();
+      this.load.on(Phaser.Loader.Events.FILE_LOAD_ERROR, this.handleAssetFailure, this);
+      this.scope.add(() =>
+        this.load.off(Phaser.Loader.Events.FILE_LOAD_ERROR, this.handleAssetFailure, this),
+      );
+      this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => this.scope.dispose());
     }
 
     preload(): void {
@@ -112,6 +123,7 @@ export function createPuzzleSwapGame(
     }
 
     create(): void {
+      if (this.assetFailure) return;
       const sourceFrame = this.textures.get(textureKey).get();
       this.sourceWidth = sourceFrame.width;
       this.sourceHeight = sourceFrame.height;
@@ -190,9 +202,6 @@ export function createPuzzleSwapGame(
         this.layout(createViewportLayout(gameSize.width, gameSize.height));
       this.scope.on(this.scale, Phaser.Scale.Events.RESIZE, resize);
       this.layout(createViewportLayout(this.scale.gameSize.width, this.scale.gameSize.height));
-      this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => this.scope.dispose());
-
-      context.run.open();
       context.run.ready();
       this.playEntrance();
     }
@@ -385,7 +394,7 @@ export function createPuzzleSwapGame(
 
     private createAmbientSnow(): void {
       if (context.quality === 'LOW') return;
-      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      if (this.reducedMotion) return;
       const count = puzzleSwapTuning.ambientSnowflakes[context.quality];
       for (let index = 0; index < count; index += 1) {
         const flake = this.add
@@ -522,9 +531,7 @@ export function createPuzzleSwapGame(
     }
 
     private createFeedbackDirector(): void {
-      const motion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-        ? 'reduced'
-        : 'full';
+      const motion = this.reducedMotion ? 'reduced' : 'full';
       const haptics = new HapticFeedback(context.haptics);
       this.feedback = createChristmasEffects(
         { quality: context.quality, motion, soundEnabled: true },
@@ -640,11 +647,10 @@ export function createPuzzleSwapGame(
         this.beginInteractivePlay();
         return;
       }
-      const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
       preview.setVisible(true).setAlpha(1).setScale(1);
-      this.pieces.forEach((piece) => piece.setAlpha(reducedMotion ? 1 : 0).setScale(0.985));
-      this.borders.forEach((border) => border.setAlpha(reducedMotion ? 1 : 0));
-      if (reducedMotion) {
+      this.pieces.forEach((piece) => piece.setAlpha(this.reducedMotion ? 1 : 0).setScale(0.985));
+      this.borders.forEach((border) => border.setAlpha(this.reducedMotion ? 1 : 0));
+      if (this.reducedMotion) {
         preview.setVisible(false);
         this.beginInteractivePlay();
         return;
@@ -767,6 +773,16 @@ export function createPuzzleSwapGame(
       this.sourcePreview?.setVisible(true).setAlpha(0).setScale(0.98);
       this.winScrim?.setVisible(true).setAlpha(0);
       this.winOverlay?.setVisible(true).setAlpha(0).setScale(0.88);
+      if (this.reducedMotion) {
+        this.pieces.forEach((piece) => piece.setAlpha(0.16));
+        this.borders.forEach((border) => border.setAlpha(0.16));
+        this.sourcePreview?.setAlpha(1).setScale(1);
+        this.winScrim?.setAlpha(0.58);
+        this.winOverlay?.setAlpha(1).setScale(1);
+        const celebrationTarget = this.borders[0];
+        if (celebrationTarget) this.feedback?.celebrate(celebrationTarget);
+        return;
+      }
       this.scope.resource(
         this.tweens.add({
           targets: [...this.pieces, ...this.borders],
@@ -813,6 +829,14 @@ export function createPuzzleSwapGame(
       const celebrationTarget = this.borders[0];
       if (celebrationTarget) this.feedback?.celebrate(celebrationTarget);
     }
+
+    private readonly handleAssetFailure = (file: { key?: unknown }): void => {
+      if (file.key !== textureKey || this.assetFailure) return;
+      this.assetFailure = true;
+      this.interactive = false;
+      context.run.assetFailed('photo-game-variant');
+      this.scene.stop();
+    };
 
     private positionHudButton(name: string, x: number, y: number): void {
       const surface = this.children.getByName(`${name}-surface`) as Phaser.GameObjects.Rectangle;
@@ -1024,6 +1048,10 @@ export function createPuzzleSwapGame(
     backgroundColor: christmasTheme.color.pineDark,
     pixelArt: false,
     antialias: true,
+    loader: {
+      timeout: puzzleSwapTuning.assetTimeoutMs,
+      maxRetries: puzzleSwapTuning.assetMaxRetries,
+    },
     scale: { mode: Phaser.Scale.RESIZE, parent, width: '100%', height: '100%' },
     scene: PuzzleScene,
   });

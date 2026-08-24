@@ -69,6 +69,32 @@ describe('ActiveGameClock and GameRunController', () => {
     now = 100;
     expect(clock.elapsedMs()).toBe(10);
   });
+
+  it('bridges bounded asset diagnostics without turning them into analytics events', () => {
+    const clock = new ActiveGameClock({ now: () => 0 });
+    const analytics = new MemoryAnalytics();
+    const bridge = new GameBridge();
+    const events: string[] = [];
+    bridge.subscribe((event) => events.push(event.type));
+    const run = new GameRunController(
+      'generated-game',
+      'run-test-asset-001',
+      clock,
+      analytics,
+      bridge,
+    );
+
+    run.open();
+    run.assetRetry(1);
+    run.assetFailed('photo-game-variant');
+    expect(() => run.assetFailed('https://private.example/photo')).toThrow(
+      'privacy-safe kebab-case codes',
+    );
+    run.exit();
+
+    expect(events).toEqual(['GAME_OPENED', 'GAME_ASSET_RETRY', 'GAME_ASSET_FAILED', 'GAME_EXITED']);
+    expect(analytics.events.map((event) => event.type)).toEqual(['GAME_OPENED', 'GAME_EXITED']);
+  });
 });
 
 describe('PageVisibilityController', () => {

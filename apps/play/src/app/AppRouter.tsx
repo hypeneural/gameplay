@@ -12,6 +12,7 @@ import { Hub } from '../screens/Hub.js';
 import { ThemeLab } from '../screens/ThemeLab.js';
 import { createAppServices } from './AppServices.js';
 import { parseAppRoute, routePath } from './AppNavigation.js';
+import { resolveGameQuality } from './GameQuality.js';
 import type { AppRoute, GameCoverRoute, SessionRoute } from './AppNavigation.js';
 import { fetchLocalTestSession, shouldUseLocalTestMedia } from './LocalTestSession.js';
 import type { Session } from '@christmas-games/platform';
@@ -38,6 +39,13 @@ const initialGameView: GameView = { lastEvent: 'NONE', status: 'loading' };
 export function AppRouter(): React.JSX.Element {
   const initialRoute = useMemo(() => parseAppRoute(window.location.pathname), []);
   const services = useMemo(createAppServices, []);
+  const quality = useMemo(
+    () =>
+      resolveGameQuality(
+        (navigator as Navigator & { connection?: { saveData?: boolean } }).connection,
+      ),
+    [],
+  );
   const usesLocalTestMedia = useMemo(() => shouldUseLocalTestMedia(window.location.search), []);
   const localTestMediaSearch = usesLocalTestMedia ? '?test-media=local' : '';
   const [route, setRoute] = useState<AppRoute>(initialRoute);
@@ -64,9 +72,9 @@ export function AppRouter(): React.JSX.Element {
       clock: { now: () => performance.now() },
       analytics: services.analytics,
       haptics: services.haptics,
-      quality: 'NORMAL',
+      quality,
     }),
-    [selectedPhoto, services, session],
+    [quality, selectedPhoto, services, session],
   );
 
   useEffect(() => {
