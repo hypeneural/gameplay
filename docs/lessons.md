@@ -53,6 +53,16 @@ swapping the two always puts one piece into place. Keep that choice in a pure
 domain function and let Phaser only present it, so the hint is testable without
 the canvas.
 
+## LESSON-020 — Asset facts need a local, exact and complete boundary
+
+An asset provenance table explains intent, but it cannot prove that every file
+currently under a public game directory was reviewed. Keep one manifest per
+game with exact bytes, delivery alternatives and a provenance anchor; audit the
+directory against it. Count browser-format alternatives twice for the static
+package and once (the larger choice) for a game run. Do not switch the runtime
+to generated asset code until a second game proves the adapter is genuinely
+shared.
+
 ## LESSON-011 — Real-photo review needs a separate local delivery boundary
 
 A useful operator preview can use real derivatives without weakening the product privacy model: prepare opaque ids and WebP variants in a private external cache, bind the review server to loopback, and expose only a dev-only derivative endpoint with no-store. Do not treat that convenience adapter as authorization or deploy it to the VPS.

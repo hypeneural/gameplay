@@ -91,6 +91,8 @@
 │   ├── architecture
 │   │   ├── FOUNDATION.md
 │   │   └── GAME_FACTORY.md
+│   ├── assets
+│   │   └── ASSET_MANIFEST_CONTRACT.md
 │   ├── design
 │   │   ├── PUZZLE_SWAP_EXPERIENCE_REVIEW.md
 │   │   └── THEME_DIRECTION.md
@@ -103,6 +105,9 @@
 │   │       ├── CG-BOOTSTRAP.md
 │   │       ├── CG-GAME-FACTORY-HARDENING.md
 │   │       └── CG-PRODUCTION-CORRECTNESS.md
+│   ├── experience
+│   │   └── christmas
+│   │       └── ART_BIBLE.md
 │   ├── generated
 │   │   ├── evidence
 │   │   │   ├── android-412-dev-smoke.png
@@ -152,6 +157,7 @@
 │   │   ├── QUALITY_GATES.md
 │   │   └── TRACEABILITY.md
 │   └── references
+│       ├── ASSET_FACTORY_OFFICIAL_VALIDATION.md
 │       ├── OFFICIAL_VALIDATION.md
 │       ├── PHASE_9_5_OFFICIAL_VALIDATION.md
 │       ├── PRODUCTION_CORRECTNESS_VALIDATION.md
@@ -187,6 +193,8 @@
 │   │   │       └── .gitkeep
 │   │   ├── puzzle-swap
 │   │   │   ├── ASSET_PROVENANCE.md
+│   │   │   ├── assets
+│   │   │   │   └── manifest.json
 │   │   │   ├── package.json
 │   │   │   ├── PLAN.md
 │   │   │   ├── SPEC.md
@@ -327,6 +335,14 @@
 │   │       └── ph_004.jpg
 │   └── visual
 ├── tools
+│   ├── asset-factory
+│   │   ├── package.json
+│   │   ├── src
+│   │   │   ├── contracts.ts
+│   │   │   ├── index.ts
+│   │   │   └── manifest.ts
+│   │   └── tests
+│   │       └── asset-factory.test.ts
 │   ├── export-puzzle-source-reader.mjs
 │   ├── fixture-generator
 │   │   ├── package.json

@@ -1,0 +1,14 @@
+{
+  "name": "@christmas-games/asset-factory",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "doctor": "tsx src/index.ts doctor",
+    "validate": "tsx src/index.ts validate",
+    "audit": "tsx src/index.ts audit",
+    "catalog": "tsx src/index.ts catalog",
+    "budget": "tsx src/index.ts budget",
+    "manifest": "tsx src/index.ts manifest"
+  }
+}

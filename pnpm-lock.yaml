@@ -109,6 +109,8 @@ importers:
 
   packages/theme: {}
 
+  tools/asset-factory: {}
+
   tools/fixture-generator:
     dependencies:
       sharp:

@@ -29,6 +29,12 @@
     "media:inspect": "pnpm --filter @christmas-games/media-pipeline inspect",
     "media:prepare-local": "pnpm --filter @christmas-games/media-pipeline prepare-local",
     "game:new": "pnpm --filter @christmas-games/game-generator new",
+    "asset:doctor": "pnpm --filter @christmas-games/asset-factory run doctor",
+    "asset:validate": "pnpm --filter @christmas-games/asset-factory run validate",
+    "asset:audit": "pnpm --filter @christmas-games/asset-factory run audit",
+    "asset:catalog": "pnpm --filter @christmas-games/asset-factory run catalog",
+    "asset:budget": "pnpm --filter @christmas-games/asset-factory run budget",
+    "asset:manifest": "pnpm --filter @christmas-games/asset-factory run manifest",
     "puzzle:source-reader": "node tools/export-puzzle-source-reader.mjs"
   },
   "devDependencies": {

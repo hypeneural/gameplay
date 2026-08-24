@@ -22,6 +22,7 @@ describe('game:new command', () => {
       'src/domain/PhotoBingoState.ts',
       'src/runtime/phaser/createPhotoBingoGame.ts',
       'SPEC.md',
+      'EXPERIENCE.md',
     ]);
     expect(files[2]!.contents).toContain("id: 'photo-bingo'");
     expect(files[2]!.contents).toContain('shortRule');
@@ -29,5 +30,7 @@ describe('game:new command', () => {
     expect(files[3]!.contents).toContain('primaryTargetMinCssPx: 52');
     expect(files[5]!.contents).toContain('Phaser.Core.Events.DESTROY');
     expect(files[6]!.contents).toContain('Child usability');
+    expect(files[7]!.contents).toContain('Foto protagonista');
+    expect(files[7]!.contents).toContain('assets/manifest.json');
   });
 });

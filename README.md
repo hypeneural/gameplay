@@ -32,9 +32,14 @@ pnpm validate
 ```sh
 pnpm game:new photo-bingo --dry-run
 pnpm media:inspect 'E:\<season-root>' --sample-per-session 3
+pnpm asset:doctor
+pnpm asset:validate
 ```
 
-The first creates an isolated game starter without registering it in the app. The second is read-only and measures direct photos in session folders while excluding nested low-resolution folders.
+The first creates an isolated game starter without registering it in the app.
+The second is read-only and measures direct photos in session folders while
+excluding nested low-resolution folders. The last two audit the local catalog
+of browser assets; they never fetch assets or inspect customer photos.
 
 ## Documentation
 

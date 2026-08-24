@@ -7,9 +7,10 @@ Build a safe, local-VPS, mobile-first factory for personalized photo minigames. 
 ## Start here
 
 1. Read `docs/index.md`, the active execution plan and the relevant game `SPEC.md`.
-2. For Phaser work, read the matching file in `vendor/phaser-skills/v4.2.1/`, then inspect installed types and a 4.2.1 official example.
-3. Make the smallest coherent change and run `pnpm check:fast`.
-4. Before handoff, run `pnpm validate`; record durable discoveries in `docs/lessons.md`.
+2. For presentation or asset work, read `docs/experience/christmas/ART_BIBLE.md` and `docs/assets/ASSET_MANIFEST_CONTRACT.md`.
+3. For Phaser work, read the matching file in `vendor/phaser-skills/v4.2.1/`, then inspect installed types and a 4.2.1 official example.
+4. Make the smallest coherent change and run `pnpm check:fast`.
+5. Before handoff, run `pnpm validate`; record durable discoveries in `docs/lessons.md`.
 
 ## Source order
 

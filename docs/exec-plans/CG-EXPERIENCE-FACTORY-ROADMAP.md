@@ -113,6 +113,50 @@ The 52 px primary target, 16 px / 200 ms initial drag thresholds and 7 s idle-as
 
 **Exit condition:** Puzzle is a product-quality game, not a Theme Lab visual proof: an understandable first action, correct feedback without punishment, visual loading/retry/exit states, no leak after repeated runs and linked screenshot/trace evidence.
 
+## Work package F — Christmas Experience Factory v0
+
+**Status (2026-08-24): implemented as an offline, audit-first foundation.**
+
+The next games need to reuse the decisions proven by Puzzle without sharing a
+Phaser Scene or relying on an agent remembering a long conversation. This
+package turns the minimum durable knowledge into short docs, a generated-game
+prompt and an auditable local catalog.
+
+- [x] Add `docs/experience/christmas/ART_BIBLE.md`: photo-first visual story,
+      first five seconds, feedback vocabulary, sound roles and LOW/reduced
+      behavior.
+- [x] Add `docs/assets/ASSET_MANIFEST_CONTRACT.md`: a small manifest contract
+      for files that are actually browser-deliverable.
+- [x] Add offline `asset-factory` commands: `doctor`, `manifest`, `audit`
+      (`validate` is its automation alias), `catalog` and `budget`. They read
+      local files only; there is no crawler, download or automatic asset
+      generation.
+- [x] Migrate the current Puzzle visual and audio package into
+      `packages/games/puzzle-swap/assets/manifest.json`, including exact bytes,
+      image dimensions, audio duration, quality behavior, source role,
+      provenance anchor and separate public/run budgets.
+- [x] Make `pnpm asset:validate` fail if a public Puzzle asset is missing,
+      changed in size, outside its game directory or absent from the manifest.
+- [x] Extend `game:new` with a focused `EXPERIENCE.md` prompt so a future game
+      defines its child-facing response before writing Phaser code.
+
+### Deliberately deferred
+
+1. Generate runtime asset adapters only when a second game validates the same
+   need. Puzzle keeps `visualAssets.ts` and `audioAssets.ts` in this release,
+   so catalog migration cannot regress its mobile scene.
+2. Add conversion recipes, atlas packing, external-provider discovery or AI
+   generation only after the catalog provides a measured need and the owner
+   approves the asset/licensing workflow.
+3. Move shared effects to `theme` only after two games use the same composition
+   and lifecycle behavior; do not introduce a base Scene.
+4. Before increasing the established budgets, record real Android and VPS
+   performance evidence rather than treating static bytes as frame-rate proof.
+
+**Exit tests:** a fixture proves that traversal is refused; a missing/changed
+or untracked file fails audit; alternative audio formats count once in a
+single-run budget; a newly generated game includes the experience prompt.
+
 ## Release work retained after Puzzle
 
 1. Add manifest, install affordance, cache versioning and offline/error route. Cache static app shell only until the authorized-derivative privacy review approves specific media behavior.

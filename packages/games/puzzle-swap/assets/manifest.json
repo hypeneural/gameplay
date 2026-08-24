@@ -1,0 +1,327 @@
+{
+  "version": 1,
+  "gameId": "puzzle-swap",
+  "budget": {
+    "publicBytesMax": 1750000,
+    "runtimeBytesMax": 1000000,
+    "visualBytesMax": 128000
+  },
+  "assets": [
+    {
+      "id": "winter-village-background",
+      "kind": "background",
+      "format": "webp",
+      "file": "apps/play/public/assets/puzzle-swap/backgrounds/vila-nevada-noite-v1.webp",
+      "publicPath": "/assets/puzzle-swap/backgrounds/vila-nevada-noite-v1.webp",
+      "bytes": 106970,
+      "dimensions": { "width": 1024, "height": 1536 },
+      "textureKey": "puzzle-background-winter-village",
+      "quality": { "low": "keep", "reducedMotion": "keep" },
+      "provenance": {
+        "source": "project-created",
+        "license": "project-owned",
+        "record": "ASSET_PROVENANCE.md#original-visual-package-v1"
+      }
+    },
+    {
+      "id": "snow-particle",
+      "kind": "vfx",
+      "format": "svg",
+      "file": "apps/play/public/assets/puzzle-swap/ui/floco-neve.svg",
+      "publicPath": "/assets/puzzle-swap/ui/floco-neve.svg",
+      "bytes": 426,
+      "dimensions": { "width": 64, "height": 64 },
+      "textureKey": "puzzle-snowflake",
+      "quality": { "low": "omit", "reducedMotion": "omit" },
+      "provenance": {
+        "source": "project-created",
+        "license": "project-owned",
+        "record": "ASSET_PROVENANCE.md#original-visual-package-v1"
+      }
+    },
+    {
+      "id": "hint-control",
+      "kind": "ui",
+      "format": "svg",
+      "file": "apps/play/public/assets/puzzle-swap/ui/dica.svg",
+      "publicPath": "/assets/puzzle-swap/ui/dica.svg",
+      "bytes": 414,
+      "dimensions": { "width": 64, "height": 64 },
+      "textureKey": "puzzle-ui-hint",
+      "quality": { "low": "keep", "reducedMotion": "keep" },
+      "provenance": {
+        "source": "project-created",
+        "license": "project-owned",
+        "record": "ASSET_PROVENANCE.md#original-visual-package-v1"
+      }
+    },
+    {
+      "id": "pause-control",
+      "kind": "ui",
+      "format": "svg",
+      "file": "apps/play/public/assets/puzzle-swap/ui/pausar.svg",
+      "publicPath": "/assets/puzzle-swap/ui/pausar.svg",
+      "bytes": 346,
+      "dimensions": { "width": 64, "height": 64 },
+      "textureKey": "puzzle-ui-pause",
+      "quality": { "low": "keep", "reducedMotion": "keep" },
+      "provenance": {
+        "source": "project-created",
+        "license": "project-owned",
+        "record": "ASSET_PROVENANCE.md#original-visual-package-v1"
+      }
+    },
+    {
+      "id": "continue-control",
+      "kind": "ui",
+      "format": "svg",
+      "file": "apps/play/public/assets/puzzle-swap/ui/continuar.svg",
+      "publicPath": "/assets/puzzle-swap/ui/continuar.svg",
+      "bytes": 336,
+      "dimensions": { "width": 64, "height": 64 },
+      "textureKey": "puzzle-ui-play",
+      "quality": { "low": "keep", "reducedMotion": "keep" },
+      "provenance": {
+        "source": "project-created",
+        "license": "project-owned",
+        "record": "ASSET_PROVENANCE.md#original-visual-package-v1"
+      }
+    },
+    {
+      "id": "sound-on-control",
+      "kind": "ui",
+      "format": "svg",
+      "file": "apps/play/public/assets/puzzle-swap/ui/som.svg",
+      "publicPath": "/assets/puzzle-swap/ui/som.svg",
+      "bytes": 436,
+      "dimensions": { "width": 64, "height": 64 },
+      "textureKey": "puzzle-ui-sound-on",
+      "quality": { "low": "keep", "reducedMotion": "keep" },
+      "provenance": {
+        "source": "project-created",
+        "license": "project-owned",
+        "record": "ASSET_PROVENANCE.md#original-visual-package-v1"
+      }
+    },
+    {
+      "id": "sound-off-control",
+      "kind": "ui",
+      "format": "svg",
+      "file": "apps/play/public/assets/puzzle-swap/ui/silenciar.svg",
+      "publicPath": "/assets/puzzle-swap/ui/silenciar.svg",
+      "bytes": 403,
+      "dimensions": { "width": 64, "height": 64 },
+      "textureKey": "puzzle-ui-sound-off",
+      "quality": { "low": "keep", "reducedMotion": "keep" },
+      "provenance": {
+        "source": "project-created",
+        "license": "project-owned",
+        "record": "ASSET_PROVENANCE.md#original-visual-package-v1"
+      }
+    },
+    {
+      "id": "tap-m4a",
+      "kind": "audio",
+      "format": "m4a",
+      "file": "apps/play/public/assets/puzzle-swap/audio/tap.m4a",
+      "publicPath": "/assets/puzzle-swap/audio/tap.m4a",
+      "bytes": 2728,
+      "durationSeconds": 0.121,
+      "cue": "tap",
+      "deliveryGroup": "tap",
+      "quality": { "low": "keep", "reducedMotion": "keep" },
+      "provenance": {
+        "source": "owner-authorized-legacy",
+        "license": "project-owned",
+        "record": "ASSET_PROVENANCE.md#authorized-legacy-audio"
+      }
+    },
+    {
+      "id": "tap-mp3",
+      "kind": "audio",
+      "format": "mp3",
+      "file": "apps/play/public/assets/puzzle-swap/audio/tap.mp3",
+      "publicPath": "/assets/puzzle-swap/audio/tap.mp3",
+      "bytes": 2732,
+      "durationSeconds": 0.115,
+      "cue": "tap",
+      "deliveryGroup": "tap",
+      "quality": { "low": "keep", "reducedMotion": "keep" },
+      "provenance": {
+        "source": "owner-authorized-legacy",
+        "license": "project-owned",
+        "record": "ASSET_PROVENANCE.md#authorized-legacy-audio"
+      }
+    },
+    {
+      "id": "hint-m4a",
+      "kind": "audio",
+      "format": "m4a",
+      "file": "apps/play/public/assets/puzzle-swap/audio/hint.m4a",
+      "publicPath": "/assets/puzzle-swap/audio/hint.m4a",
+      "bytes": 1853,
+      "durationSeconds": 0.054,
+      "cue": "hint",
+      "deliveryGroup": "hint",
+      "quality": { "low": "keep", "reducedMotion": "keep" },
+      "provenance": {
+        "source": "owner-authorized-legacy",
+        "license": "project-owned",
+        "record": "ASSET_PROVENANCE.md#authorized-legacy-audio"
+      }
+    },
+    {
+      "id": "hint-mp3",
+      "kind": "audio",
+      "format": "mp3",
+      "file": "apps/play/public/assets/puzzle-swap/audio/hint.mp3",
+      "publicPath": "/assets/puzzle-swap/audio/hint.mp3",
+      "bytes": 1580,
+      "durationSeconds": 0.047,
+      "cue": "hint",
+      "deliveryGroup": "hint",
+      "quality": { "low": "keep", "reducedMotion": "keep" },
+      "provenance": {
+        "source": "owner-authorized-legacy",
+        "license": "project-owned",
+        "record": "ASSET_PROVENANCE.md#authorized-legacy-audio"
+      }
+    },
+    {
+      "id": "correct-m4a",
+      "kind": "audio",
+      "format": "m4a",
+      "file": "apps/play/public/assets/puzzle-swap/audio/correct.m4a",
+      "publicPath": "/assets/puzzle-swap/audio/correct.m4a",
+      "bytes": 7839,
+      "durationSeconds": 0.477,
+      "cue": "correct",
+      "deliveryGroup": "correct",
+      "quality": { "low": "keep", "reducedMotion": "keep" },
+      "provenance": {
+        "source": "owner-authorized-legacy",
+        "license": "project-owned",
+        "record": "ASSET_PROVENANCE.md#authorized-legacy-audio"
+      }
+    },
+    {
+      "id": "correct-mp3",
+      "kind": "audio",
+      "format": "mp3",
+      "file": "apps/play/public/assets/puzzle-swap/audio/correct.mp3",
+      "publicPath": "/assets/puzzle-swap/audio/correct.mp3",
+      "bytes": 8492,
+      "durationSeconds": 0.47,
+      "cue": "correct",
+      "deliveryGroup": "correct",
+      "quality": { "low": "keep", "reducedMotion": "keep" },
+      "provenance": {
+        "source": "owner-authorized-legacy",
+        "license": "project-owned",
+        "record": "ASSET_PROVENANCE.md#authorized-legacy-audio"
+      }
+    },
+    {
+      "id": "wrong-m4a",
+      "kind": "audio",
+      "format": "m4a",
+      "file": "apps/play/public/assets/puzzle-swap/audio/wrong.m4a",
+      "publicPath": "/assets/puzzle-swap/audio/wrong.m4a",
+      "bytes": 4225,
+      "durationSeconds": 0.211,
+      "cue": "wrong",
+      "deliveryGroup": "wrong",
+      "quality": { "low": "keep", "reducedMotion": "keep" },
+      "provenance": {
+        "source": "owner-authorized-legacy",
+        "license": "project-owned",
+        "record": "ASSET_PROVENANCE.md#authorized-legacy-audio"
+      }
+    },
+    {
+      "id": "wrong-mp3",
+      "kind": "audio",
+      "format": "mp3",
+      "file": "apps/play/public/assets/puzzle-swap/audio/wrong.mp3",
+      "publicPath": "/assets/puzzle-swap/audio/wrong.mp3",
+      "bytes": 4268,
+      "durationSeconds": 0.205,
+      "cue": "wrong",
+      "deliveryGroup": "wrong",
+      "quality": { "low": "keep", "reducedMotion": "keep" },
+      "provenance": {
+        "source": "owner-authorized-legacy",
+        "license": "project-owned",
+        "record": "ASSET_PROVENANCE.md#authorized-legacy-audio"
+      }
+    },
+    {
+      "id": "celebrate-m4a",
+      "kind": "audio",
+      "format": "m4a",
+      "file": "apps/play/public/assets/puzzle-swap/audio/celebrate.m4a",
+      "publicPath": "/assets/puzzle-swap/audio/celebrate.m4a",
+      "bytes": 54781,
+      "durationSeconds": 3.776,
+      "cue": "celebrate",
+      "deliveryGroup": "celebrate",
+      "quality": { "low": "keep", "reducedMotion": "keep" },
+      "provenance": {
+        "source": "owner-authorized-legacy",
+        "license": "project-owned",
+        "record": "ASSET_PROVENANCE.md#authorized-legacy-audio"
+      }
+    },
+    {
+      "id": "celebrate-mp3",
+      "kind": "audio",
+      "format": "mp3",
+      "file": "apps/play/public/assets/puzzle-swap/audio/celebrate.mp3",
+      "publicPath": "/assets/puzzle-swap/audio/celebrate.mp3",
+      "bytes": 61484,
+      "durationSeconds": 3.769,
+      "cue": "celebrate",
+      "deliveryGroup": "celebrate",
+      "quality": { "low": "keep", "reducedMotion": "keep" },
+      "provenance": {
+        "source": "owner-authorized-legacy",
+        "license": "project-owned",
+        "record": "ASSET_PROVENANCE.md#authorized-legacy-audio"
+      }
+    },
+    {
+      "id": "winter-loop-m4a",
+      "kind": "audio",
+      "format": "m4a",
+      "file": "apps/play/public/assets/puzzle-swap/audio/winter-loop.m4a",
+      "publicPath": "/assets/puzzle-swap/audio/winter-loop.m4a",
+      "bytes": 636204,
+      "durationSeconds": 44.313,
+      "cue": "music",
+      "deliveryGroup": "winter-loop",
+      "quality": { "low": "keep", "reducedMotion": "keep" },
+      "provenance": {
+        "source": "owner-authorized-legacy",
+        "license": "project-owned",
+        "record": "ASSET_PROVENANCE.md#authorized-legacy-audio"
+      }
+    },
+    {
+      "id": "winter-loop-mp3",
+      "kind": "audio",
+      "format": "mp3",
+      "file": "apps/play/public/assets/puzzle-swap/audio/winter-loop.mp3",
+      "publicPath": "/assets/puzzle-swap/audio/winter-loop.mp3",
+      "bytes": 710060,
+      "durationSeconds": 44.307,
+      "cue": "music",
+      "deliveryGroup": "winter-loop",
+      "quality": { "low": "keep", "reducedMotion": "keep" },
+      "provenance": {
+        "source": "owner-authorized-legacy",
+        "license": "project-owned",
+        "record": "ASSET_PROVENANCE.md#authorized-legacy-audio"
+      }
+    }
+  ]
+}
