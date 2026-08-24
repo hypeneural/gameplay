@@ -64,7 +64,9 @@ test('five mount-unmount cycles do not leave a duplicate canvas', async ({ page 
   }
 });
 
-test('Puzzle Swap mounts from one selected photo texture and exits cleanly', async ({ page }) => {
+test('Puzzle Swap mounts selected portrait and landscape textures and exits cleanly', async ({
+  page,
+}) => {
   const failedRequests: string[] = [];
   page.on('requestfailed', (request) => failedRequests.push(request.url()));
 
@@ -75,10 +77,51 @@ test('Puzzle Swap mounts from one selected photo texture and exits cleanly', asy
   await expect(page.getByTestId('game-status')).toHaveText('Pronto');
   await expect(page.getByTestId('game-event')).toHaveText('GAME_STARTED');
   await expect(page.locator('canvas')).toHaveCount(1);
+  await page.screenshot({
+    path: `docs/generated/evidence/${test.info().project.name}-puzzle-swap-native.png`,
+    fullPage: true,
+  });
+  await page.getByRole('button', { name: 'Sair do jogo' }).click();
+  await expect(page.getByRole('heading', { name: 'Sessão de Natal' })).toBeVisible();
+  await expect(page.locator('canvas')).toHaveCount(0);
+
+  await page.getByTestId('photo-ph_002').click();
+  await expect(page.getByTestId('photo-ph_002')).toHaveAttribute('aria-pressed', 'true');
+  await page.getByTestId('open-game-puzzle-swap').click();
+  await page.getByTestId('play-selected-game').click();
+  await expect(page.getByTestId('game-status')).toHaveText('Pronto');
+  await expect(page.getByTestId('game-event')).toHaveText('GAME_STARTED');
+  await expect(page.locator('canvas')).toHaveCount(1);
+  await page.screenshot({
+    path: `docs/generated/evidence/${test.info().project.name}-puzzle-swap-landscape-native.png`,
+    fullPage: true,
+  });
   await page.getByRole('button', { name: 'Sair do jogo' }).click();
   await expect(page.getByRole('heading', { name: 'Sessão de Natal' })).toBeVisible();
   await expect(page.locator('canvas')).toHaveCount(0);
   expect(failedRequests).toEqual([]);
+});
+
+test('Puzzle Swap pause control pauses and resumes the active run', async ({ page }) => {
+  await page.goto('/s/local-demo-token');
+  await page.getByTestId('open-game-puzzle-swap').click();
+  await page.getByTestId('play-selected-game').click();
+  await expect(page.getByTestId('game-event')).toHaveText('GAME_STARTED');
+
+  const canvas = page.locator('canvas');
+  const canvasBox = await canvas.boundingBox();
+  if (!canvasBox) throw new Error('Puzzle Swap canvas has no bounding box.');
+  const pauseControl = { x: canvasBox.width - 28, y: 64 };
+  await canvas.click({ position: pauseControl });
+  await expect(page.getByTestId('game-event')).toHaveText('GAME_PAUSED');
+  await page.screenshot({
+    path: `docs/generated/evidence/${test.info().project.name}-puzzle-swap-paused.png`,
+    fullPage: true,
+  });
+  await canvas.click({ position: pauseControl });
+  await expect(page.getByTestId('game-event')).toHaveText('GAME_RESUMED');
+  await page.getByRole('button', { name: 'Sair do jogo' }).click();
+  await expect(page.locator('canvas')).toHaveCount(0);
 });
 
 test('a 172-photo session keeps selection and has a deterministic no-observer fallback', async ({

@@ -31,3 +31,11 @@ An incrementing exit request is safe only when a fresh `PhaserHost` treats its c
 ## LESSON-008 — A grid can reuse one photo texture without distorting it
 
 Puzzle pieces are visual crops of one authorized `game` variant, positioned from source-frame proportions and the contain-fitted board geometry. A piece never needs a separate image request; touch targets are transparent geometry over that same layout.
+
+## LESSON-009 — A crop rectangle and a proportional puzzle frame are different tools
+
+Cropping a display-sized full image preserves the original display scale; it does not make the cropped region fill a puzzle cell. Build named frames on the one authorized texture using source coordinates, then display each frame at the calculated cell size. This preserves aspect ratio, avoids extra requests and makes mixed orientation predictable.
+
+## LESSON-010 — Seasonal feedback must end by itself
+
+Use finite scene-owned tweens for tap, hint, correct and win sparkles. Do not add a continuous emitter just to make the scene feel festive: it spends battery while the child is deciding, complicates reduced motion and can outlive a route without explicit ownership.
