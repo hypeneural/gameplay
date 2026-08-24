@@ -210,24 +210,14 @@ select {
 }
 .game-card-preview,
 .game-cover-preview {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.3rem;
+  position: relative;
   min-height: 104px;
   overflow: hidden;
   border: 1px solid rgba(248, 223, 160, 0.65);
   border-radius: calc(var(--cg-radius-card) - 4px);
   background:
-    radial-gradient(circle at 25% 30%, rgba(248, 223, 160, 0.55), transparent 21%),
-    radial-gradient(circle at 70% 70%, rgba(143, 29, 53, 0.9), transparent 34%),
-    linear-gradient(135deg, var(--cg-pine), var(--cg-pine-dark));
-  color: var(--cg-gold);
-  font-size: clamp(1.1rem, 5vw, 1.9rem);
-}
-.game-card-preview span:nth-child(2),
-.game-cover-preview span:nth-child(2) {
-  font-size: 1.8em;
+    linear-gradient(180deg, rgba(3, 15, 39, 0.06), rgba(3, 15, 39, 0.46)),
+    url('/assets/puzzle-swap/backgrounds/vila-nevada-noite-v1.webp') center 74% / cover;
 }
 .game-card-copy {
   display: grid;
@@ -268,6 +258,7 @@ select {
   width: min(100%, 340px);
   min-height: clamp(180px, 44vw, 260px);
   margin-bottom: 0.8rem;
+  background-position: center bottom;
 }
 .cover-rule {
   max-width: 28ch;

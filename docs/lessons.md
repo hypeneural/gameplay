@@ -63,3 +63,20 @@ Phaser loads data-URI images through its image-element path, which does not exer
 ## LESSON-016 — A responsive board keeps its topology and its objects
 
 Choose a puzzle topology when a run begins, then pass that one candidate to responsive geometry. A resize can move and scale pieces, but must not reselect rows or columns: doing so disconnects ids, source frames and the solved permutation. Reflow the existing piece and border Game Objects instead of destroying and recreating them. If the tiny active swap tween targets stale coordinates during a resize, stop only those targets and complete the already accepted move idempotently before reflowing.
+
+## LESSON-017 — Display geometry and native texture scale are not interchangeable
+
+`setDisplaySize` sets the proportional size of a photo or its source-frame
+piece. Calling `setScale(1)` afterward discards that fitted scale and restores
+the texture at native dimensions, which can cover the whole mobile stage and
+make an otherwise correct grid look stretched. Animate alpha, or calculate a
+relative scale from the fitted value; never reset photographic Image scale in
+an entrance or victory tween.
+
+## LESSON-018 — Local photo review needs its server-time configuration
+
+The local browser route only returns private derived photos when the Vite
+server starts with `LOCAL_TEST_MEDIA_ROOT` pointing to the prepared external
+storage. A route can otherwise return the application HTML for the private
+endpoint and fail JSON validation. Check the endpoint response before visual
+review; do not weaken the middleware or expose a filesystem path as a fix.

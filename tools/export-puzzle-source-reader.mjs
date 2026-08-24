@@ -26,6 +26,7 @@ const sourcePaths = [
   'packages/theme/src/game-feel/MotionTokens.ts',
   'packages/games/puzzle-swap/src/tuning.ts',
   'packages/games/puzzle-swap/src/runtime/phaser/audioAssets.ts',
+  'packages/games/puzzle-swap/src/runtime/phaser/visualAssets.ts',
   'packages/games/puzzle-swap/src/runtime/phaser/createPuzzleSwapGame.ts',
 ];
 

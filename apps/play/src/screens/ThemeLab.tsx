@@ -4,7 +4,7 @@ export function ThemeLab(): React.JSX.Element {
   return (
     <main className="shell theme-lab">
       <p className="eyebrow">DESENVOLVIMENTO</p>
-      <h1>Theme Lab</h1>
+      <h1>Mostruário do tema</h1>
       <div className="theme-samples">
         <button className="button" type="button">
           Começar
@@ -12,8 +12,8 @@ export function ThemeLab(): React.JSX.Element {
         <button className="button secondary" type="button">
           Voltar
         </button>
-        <div className="frame portrait">PORTRAIT</div>
-        <div className="frame landscape">LANDSCAPE</div>
+        <div className="frame portrait">RETRATO</div>
+        <div className="frame landscape">PAISAGEM</div>
         <div className="hud">00:42 · 12 movimentos</div>
         <div className="win">Vitória! ✦</div>
       </div>

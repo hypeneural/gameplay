@@ -10,11 +10,7 @@ interface GameCardProps {
 export function GameCard({ definition, onOpen, onPrefetch }: GameCardProps): React.JSX.Element {
   return (
     <article className="game-card">
-      <div aria-label={definition.cover.alt} className="game-card-preview" role="img">
-        <span aria-hidden="true">✦</span>
-        <span aria-hidden="true">🎄</span>
-        <span aria-hidden="true">✦</span>
-      </div>
+      <div aria-label={definition.cover.alt} className="game-card-preview" role="img" />
       <div className="game-card-copy">
         <h2>{definition.displayName}</h2>
         <p>{definition.shortDescription}</p>

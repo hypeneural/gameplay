@@ -14,6 +14,8 @@
 - [Christmas 2024 full corpus baseline](media/NATAL_2024_CORPUS_BASELINE.md)
 - [Theme direction](design/THEME_DIRECTION.md)
 - [Puzzle Swap experience review and Christmas upgrade plan](design/PUZZLE_SWAP_EXPERIENCE_REVIEW.md)
+- [Puzzle Swap native-like mobile iteration](exec-plans/CG-PUZZLE-NATIVE-LIKE-ITERATION.md)
+- [Puzzle Swap native-like technical validation](references/PUZZLE_SWAP_NATIVE_LIKE_VALIDATION.md)
 - [Puzzle Swap concatenated core sources](references/PUZZLE_SWAP_CORE_SOURCES.txt)
 - [Analytics contracts](analytics/CONTRACTS.md)
 - [Privacy and data handling](privacy/DATA_HANDLING.md)

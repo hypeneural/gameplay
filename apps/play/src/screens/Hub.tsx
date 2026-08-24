@@ -16,6 +16,10 @@ interface HubProps {
 
 const photoChunkSize = 12;
 
+function photoOrientationLabel(orientation: string): string {
+  return orientation === 'landscape' ? 'Horizontal' : 'Vertical';
+}
+
 export function Hub({
   session,
   fixtureCount,
@@ -69,7 +73,7 @@ export function Hub({
       </p>
       {showFixtureSelector ? (
         <label className="field">
-          Fixture de sessão
+          Amostra da sessão
           <select
             value={fixtureCount}
             onChange={(event) => onFixtureChange(Number(event.target.value) as 4 | 12 | 120 | 172)}
@@ -98,14 +102,14 @@ export function Hub({
             }}
           >
             <img
-              alt={`Foto ${photo.orientation} da sessão`}
+              alt={`Foto ${photoOrientationLabel(photo.orientation).toLowerCase()} da sessão`}
               decoding="async"
               height={photo.height}
               loading="lazy"
               src={photo.variants.thumb}
               width={photo.width}
             />
-            <span>{photo.orientation}</span>
+            <span>{photoOrientationLabel(photo.orientation)}</span>
           </button>
         ))}
       </div>
@@ -142,8 +146,8 @@ export function Hub({
       {hasMorePhotos ? (
         <div className="photo-sentinel" data-testid="photo-sentinel" ref={sentinelRef}>
           <p className="hint">
-            Mostrando {renderedPhotos.length} thumbnails de {session.photos.length}; versões game
-            não foram carregadas.
+            Mostrando {renderedPhotos.length} miniaturas de {session.photos.length}; as versões para
+            jogar ainda não foram carregadas.
           </p>
           <button
             className="button secondary"

@@ -5,6 +5,21 @@ import { LoadingState } from './LoadingState.js';
 
 type GameScreenStatus = 'loading' | 'ready' | 'error';
 
+const eventLabels: Record<string, string> = {
+  NONE: 'Preparando jogo',
+  GAME_READY: 'Pronto para brincar',
+  GAME_STARTED: 'Brincadeira iniciada',
+  GAME_PAUSED: 'Jogo em pausa',
+  GAME_RESUMED: 'Brincadeira retomada',
+  GAME_COMPLETED: 'Foto montada!',
+  GAME_ASSET_FAILED: 'Não foi possível abrir a foto',
+  GAME_EXITED: 'Até breve!',
+};
+
+function playerEventLabel(event: string): string {
+  return eventLabels[event] ?? 'Atualizando jogo…';
+}
+
 interface GameScreenProps {
   children: ReactNode;
   definition: GameDefinition;
@@ -34,7 +49,7 @@ export function GameScreen({
           <span data-testid="game-status">
             {status === 'ready' ? 'Pronto' : status === 'error' ? 'Erro' : 'Carregando…'}
           </span>
-          <span data-testid="game-event">{lastEvent}</span>
+          <span data-testid="game-event">{playerEventLabel(lastEvent)}</span>
         </div>
         <button className="button secondary game-exit" type="button" onClick={onExit}>
           Sair do jogo

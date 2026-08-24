@@ -26,6 +26,7 @@ import {
 import { puzzleSwapDefinition } from '../../definition.js';
 import { puzzleSwapTuning } from '../../tuning.js';
 import { puzzleAudio, puzzleSfxKeyByCue } from './audioAssets.js';
+import { puzzleUiTextureKeys, puzzleVisualAssets } from './visualAssets.js';
 
 interface BoardBounds {
   readonly x: number;
@@ -111,6 +112,11 @@ export function createPuzzleSwapGame(
     private audioEnabled = true;
     private awaitingMusicUnlock = false;
     private assetFailure = false;
+    private readonly requiredTextureKeys = new Set([
+      textureKey,
+      puzzleVisualAssets.background.key,
+      ...puzzleUiTextureKeys,
+    ]);
     private readonly reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
     constructor() {
@@ -128,6 +134,27 @@ export function createPuzzleSwapGame(
 
     preload(): void {
       this.load.image(textureKey, context.selectedPhoto.variants.game);
+      this.load.image(puzzleVisualAssets.background.key, puzzleVisualAssets.background.url);
+      this.load.svg(puzzleVisualAssets.hint.key, puzzleVisualAssets.hint.url, {
+        width: 96,
+        height: 96,
+      });
+      this.load.svg(puzzleVisualAssets.pause.key, puzzleVisualAssets.pause.url, {
+        width: 96,
+        height: 96,
+      });
+      this.load.svg(puzzleVisualAssets.play.key, puzzleVisualAssets.play.url, {
+        width: 96,
+        height: 96,
+      });
+      this.load.svg(puzzleVisualAssets.soundOn.key, puzzleVisualAssets.soundOn.url, {
+        width: 96,
+        height: 96,
+      });
+      this.load.svg(puzzleVisualAssets.soundOff.key, puzzleVisualAssets.soundOff.url, {
+        width: 96,
+        height: 96,
+      });
       for (const asset of Object.values(puzzleAudio)) {
         this.load.audio(asset.key, [...asset.urls], { instances: 4 });
       }
@@ -143,6 +170,8 @@ export function createPuzzleSwapGame(
       }
 
       this.scope.texture(this.textures, textureKey);
+      this.scope.texture(this.textures, puzzleVisualAssets.background.key);
+      puzzleUiTextureKeys.forEach((key) => this.scope.texture(this.textures, key));
       this.createChristmasBackdrop();
       this.createBoardPresentation();
       this.add
@@ -191,9 +220,9 @@ export function createPuzzleSwapGame(
         .setName('puzzle-instructions')
         .setDepth(4)
         .setOrigin(0.5);
-      this.createHudButton('puzzle-hint-button', '✦', 'Dica');
-      this.createHudButton('puzzle-pause-button', 'Ⅱ', 'Pausar');
-      this.createHudButton('puzzle-audio-button', '♪', 'Som');
+      this.createHudButton('puzzle-hint-button', puzzleVisualAssets.hint.key, 'Dica');
+      this.createHudButton('puzzle-pause-button', puzzleVisualAssets.pause.key, 'Pausar');
+      this.createHudButton('puzzle-audio-button', puzzleVisualAssets.soundOn.key, 'Som');
       this.createPauseOverlay();
       this.createWinOverlay();
       this.createFeedbackDirector();
@@ -351,7 +380,12 @@ export function createPuzzleSwapGame(
 
     private createChristmasBackdrop(): void {
       this.add
-        .rectangle(0, 0, 1, 1, puzzleNight)
+        .image(0, 0, puzzleVisualAssets.background.key)
+        .setName('puzzle-background-art')
+        .setDepth(-1)
+        .setOrigin(0.5);
+      this.add
+        .rectangle(0, 0, 1, 1, puzzleNight, 0.56)
         .setOrigin(0)
         .setName('puzzle-backdrop')
         .setDepth(0);
@@ -435,22 +469,13 @@ export function createPuzzleSwapGame(
       }
     }
 
-    private createHudButton(name: string, glyph: string, label: string): void {
+    private createHudButton(name: string, iconKey: string, label: string): void {
       this.add
         .rectangle(0, 0, 42, 38, puzzleCranberry, 0.86)
         .setStrokeStyle(1, puzzleGold, 0.75)
         .setName(`${name}-surface`)
         .setDepth(4);
-      this.add
-        .text(0, 0, glyph, {
-          color: christmasTheme.color.snow,
-          fontFamily: 'system-ui, sans-serif',
-          fontSize: '16px',
-          fontStyle: 'bold',
-        })
-        .setName(name)
-        .setDepth(5)
-        .setOrigin(0.5);
+      this.add.image(0, 0, iconKey).setName(name).setDepth(5).setDisplaySize(20, 20).setOrigin(0.5);
       this.add
         .text(0, 0, label, {
           color: christmasTheme.color.snow,
@@ -636,9 +661,11 @@ export function createPuzzleSwapGame(
 
     private toggleAudio(): void {
       this.audioEnabled = !this.audioEnabled;
-      const glyph = this.children.getByName('puzzle-audio-button') as Phaser.GameObjects.Text;
+      const icon = this.children.getByName('puzzle-audio-button') as Phaser.GameObjects.Image;
       const label = this.children.getByName('puzzle-audio-button-label') as Phaser.GameObjects.Text;
-      glyph.setText(this.audioEnabled ? '♪' : '×');
+      icon.setTexture(
+        this.audioEnabled ? puzzleVisualAssets.soundOn.key : puzzleVisualAssets.soundOff.key,
+      );
       label.setText(this.audioEnabled ? 'Som' : 'Mudo');
       if (!this.audioEnabled) {
         this.awaitingMusicUnlock = false;
@@ -658,8 +685,11 @@ export function createPuzzleSwapGame(
         this.beginInteractivePlay();
         return;
       }
-      preview.setVisible(true).setAlpha(1).setScale(1);
-      this.pieces.forEach((piece) => piece.setAlpha(this.reducedMotion ? 1 : 0).setScale(0.985));
+      // `setDisplaySize` establishes the proportional photo geometry. Never
+      // reset an Image scale here: `setScale(1)` would restore its native
+      // texture size and stretch a small puzzle piece across the viewport.
+      preview.setVisible(true).setAlpha(1);
+      this.pieces.forEach((piece) => piece.setAlpha(this.reducedMotion ? 1 : 0));
       this.borders.forEach((border) => border.setAlpha(this.reducedMotion ? 1 : 0));
       if (this.reducedMotion) {
         preview.setVisible(false);
@@ -670,19 +700,15 @@ export function createPuzzleSwapGame(
         this.tweens.add({
           targets: preview,
           alpha: 0,
-          scaleX: 1.018,
-          scaleY: 1.018,
           duration: Math.round(puzzleSwapTuning.revealDurationMs * 0.62),
           ease: 'Sine.easeInOut',
-          onComplete: () => preview.setVisible(false).setScale(1),
+          onComplete: () => preview.setVisible(false),
         }),
       );
       this.scope.resource(
         this.tweens.add({
           targets: [...this.pieces, ...this.borders],
           alpha: 1,
-          scaleX: 1,
-          scaleY: 1,
           delay: Math.round(puzzleSwapTuning.revealDurationMs * 0.24),
           duration: Math.round(puzzleSwapTuning.revealDurationMs * 0.76),
           ease: 'Cubic.easeOut',
@@ -784,11 +810,15 @@ export function createPuzzleSwapGame(
       if (this.completed) return;
       this.paused = !this.paused;
       this.pauseOverlay?.setVisible(this.paused);
-      const pauseButton = this.children.getByName('puzzle-pause-button') as Phaser.GameObjects.Text;
+      const pauseButton = this.children.getByName(
+        'puzzle-pause-button',
+      ) as Phaser.GameObjects.Image;
       const pauseLabel = this.children.getByName(
         'puzzle-pause-button-label',
       ) as Phaser.GameObjects.Text;
-      pauseButton.setText(this.paused ? '▶' : 'Ⅱ');
+      pauseButton.setTexture(
+        this.paused ? puzzleVisualAssets.play.key : puzzleVisualAssets.pause.key,
+      );
       pauseLabel.setText(this.paused ? 'Jogar' : 'Pausar');
       if (this.paused) context.run.pause();
       else context.run.resume();
@@ -802,13 +832,13 @@ export function createPuzzleSwapGame(
       this.interactive = false;
       const elapsedMs = context.run.complete();
       this.winDurationText?.setText(`Você montou essa lembrança\nem ${formatDuration(elapsedMs)}.`);
-      this.sourcePreview?.setVisible(true).setAlpha(0).setScale(0.98);
+      this.sourcePreview?.setVisible(true).setAlpha(0);
       this.winScrim?.setVisible(true).setAlpha(0);
       this.winOverlay?.setVisible(true).setAlpha(0).setScale(0.88);
       if (this.reducedMotion) {
         this.pieces.forEach((piece) => piece.setAlpha(0.16));
         this.borders.forEach((border) => border.setAlpha(0.16));
-        this.sourcePreview?.setAlpha(1).setScale(1);
+        this.sourcePreview?.setAlpha(1);
         this.winScrim?.setAlpha(0.58);
         this.winOverlay?.setAlpha(1).setScale(1);
         const celebrationTarget = this.borders[0];
@@ -828,8 +858,6 @@ export function createPuzzleSwapGame(
           this.tweens.add({
             targets: this.sourcePreview,
             alpha: 1,
-            scaleX: 1,
-            scaleY: 1,
             duration: 280,
             ease: 'Cubic.easeOut',
           }),
@@ -863,19 +891,24 @@ export function createPuzzleSwapGame(
     }
 
     private readonly handleAssetFailure = (file: { key?: unknown }): void => {
-      if (file.key !== textureKey || this.assetFailure) return;
+      if (
+        typeof file.key !== 'string' ||
+        !this.requiredTextureKeys.has(file.key) ||
+        this.assetFailure
+      )
+        return;
       this.assetFailure = true;
       this.interactive = false;
-      context.run.assetFailed('photo-game-variant');
+      context.run.assetFailed(file.key === textureKey ? 'photo-game-variant' : 'game-visual-asset');
       this.scene.stop();
     };
 
     private positionHudButton(name: string, x: number, y: number): void {
       const surface = this.children.getByName(`${name}-surface`) as Phaser.GameObjects.Rectangle;
-      const glyph = this.children.getByName(name) as Phaser.GameObjects.Text;
+      const icon = this.children.getByName(name) as Phaser.GameObjects.Image;
       const label = this.children.getByName(`${name}-label`) as Phaser.GameObjects.Text;
       surface.setPosition(x, y);
-      glyph.setPosition(x, y - 6);
+      icon.setPosition(x, y - 6);
       label.setPosition(x, y + 11);
       const bounds = { x: x - 24, y: y - 24, width: 48, height: 48 };
       if (name === 'puzzle-hint-button') this.hintBounds = bounds;
@@ -907,6 +940,9 @@ export function createPuzzleSwapGame(
       ) as Phaser.GameObjects.Text;
       const hudPanel = this.children.getByName('puzzle-hud-panel') as Phaser.GameObjects.Rectangle;
       const backdrop = this.children.getByName('puzzle-backdrop') as Phaser.GameObjects.Rectangle;
+      const backgroundArt = this.children.getByName(
+        'puzzle-background-art',
+      ) as Phaser.GameObjects.Image;
       const ribbon = this.children.getByName('puzzle-ribbon') as Phaser.GameObjects.Rectangle;
       const moonGlow = this.children.getByName('puzzle-moon-glow') as Phaser.GameObjects.Arc;
       const moon = this.children.getByName('puzzle-moon') as Phaser.GameObjects.Arc;
@@ -916,6 +952,12 @@ export function createPuzzleSwapGame(
       const leftStar = this.children.getByName('puzzle-star-left') as Phaser.GameObjects.Text;
       const rightStar = this.children.getByName('puzzle-star-right') as Phaser.GameObjects.Text;
       const hudHeight = 74;
+      const backgroundFrame = this.textures.get(puzzleVisualAssets.background.key).get();
+      const backgroundScale = Math.max(
+        viewport.width / backgroundFrame.width,
+        viewport.height / backgroundFrame.height,
+      );
+      backgroundArt.setPosition(viewport.width / 2, viewport.height / 2).setScale(backgroundScale);
       backdrop.setSize(viewport.width, viewport.height);
       moonGlow.setPosition(viewport.width * 0.78, viewport.safeTop + 124).setRadius(86);
       moon.setPosition(viewport.width * 0.78, viewport.safeTop + 124).setRadius(25);

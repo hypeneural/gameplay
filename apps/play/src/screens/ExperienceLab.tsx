@@ -26,6 +26,25 @@ const feedbackCues: readonly FeedbackCue[] = [
   'celebrate',
 ];
 
+const cueLabels: Record<FeedbackCue, string> = {
+  tap: 'Toque',
+  select: 'Escolha',
+  correct: 'Acertou',
+  wrong: 'Tente de novo',
+  hint: 'Dica',
+  celebrate: 'Comemoração',
+};
+
+function photoShapeLabel(shape: PhotoShape): string {
+  return shape === 'landscape' ? 'horizontal' : 'vertical';
+}
+
+function qualityLabel(quality: QualityProfile): string {
+  if (quality === 'LOW') return 'Economia de dados';
+  if (quality === 'HIGH') return 'Mais efeitos';
+  return 'Equilibrada';
+}
+
 /** Deterministic dev-only reference for the shared feedback vocabulary. */
 export function ExperienceLab(): React.JSX.Element {
   const [settings, setSettings] = useState<ExperienceSettings>(() => readExperienceSettings());
@@ -61,7 +80,7 @@ export function ExperienceLab(): React.JSX.Element {
   return (
     <main className="shell experience-lab">
       <p className="eyebrow">DESENVOLVIMENTO</p>
-      <h1>Experience Lab</h1>
+      <h1>Laboratório da brincadeira</h1>
       <p className="intro">
         Referência determinística para toque, movimento e qualidade antes de criar um jogo.
       </p>
@@ -73,9 +92,9 @@ export function ExperienceLab(): React.JSX.Element {
             value={settings.quality}
             onChange={(event) => update('quality', event.target.value as QualityProfile)}
           >
-            <option value="LOW">LOW</option>
-            <option value="NORMAL">NORMAL</option>
-            <option value="HIGH">HIGH</option>
+            <option value="LOW">Economia de dados</option>
+            <option value="NORMAL">Equilibrada</option>
+            <option value="HIGH">Mais efeitos</option>
           </select>
         </label>
         <label className="field">
@@ -96,8 +115,8 @@ export function ExperienceLab(): React.JSX.Element {
             value={settings.photo}
             onChange={(event) => update('photo', event.target.value as PhotoShape)}
           >
-            <option value="portrait">Portrait</option>
-            <option value="landscape">Landscape</option>
+            <option value="portrait">Vertical</option>
+            <option value="landscape">Horizontal</option>
           </select>
         </label>
         <label className="field">
@@ -107,7 +126,7 @@ export function ExperienceLab(): React.JSX.Element {
             value={settings.soundEnabled ? 'on' : 'off'}
             onChange={(event) => update('soundEnabled', event.target.value === 'on')}
           >
-            <option value="on">Preparado</option>
+            <option value="on">Ligado</option>
             <option value="off">Silencioso</option>
           </select>
         </label>
@@ -117,13 +136,13 @@ export function ExperienceLab(): React.JSX.Element {
         data-testid="experience-preview"
         data-motion={settings.motion}
         data-quality={settings.quality}
-        aria-label={`Preview ${settings.photo}; seed ${settings.seed}`}
+        aria-label={`Prévia ${photoShapeLabel(settings.photo)}; ${qualityLabel(settings.quality)}; combinação ${settings.seed}`}
       >
         <div className="experience-photo-surface">FOTO</div>
         <div className="experience-feedback" aria-live="polite">
           {lastInstruction
-            ? `${lastInstruction.cue.toUpperCase()} · ${lastInstruction.motion.durationMs} ms`
-            : 'PRONTO'}
+            ? `${cueLabels[lastInstruction.cue]} · ${lastInstruction.motion.durationMs} ms`
+            : 'PRONTO PARA BRINCAR'}
         </div>
         {lastInstruction?.particles ? (
           <span className="experience-particles" data-testid="experience-particles">
@@ -131,7 +150,7 @@ export function ExperienceLab(): React.JSX.Element {
           </span>
         ) : null}
       </section>
-      <div className="experience-cues" aria-label="Cues de feedback">
+      <div className="experience-cues" aria-label="Respostas ao toque">
         {feedbackCues.map((cue) => (
           <button
             className="button secondary"
@@ -140,13 +159,12 @@ export function ExperienceLab(): React.JSX.Element {
             type="button"
             onClick={() => feel.apply(cue, 'preview')}
           >
-            {cue.toUpperCase()}
+            {cueLabels[cue]}
           </button>
         ))}
       </div>
       <p className="hint" data-testid="experience-seed">
-        Seed determinística: {settings.seed}. “Preparado” não reproduz áudio enquanto não houver
-        assets licenciados.
+        Combinação fixa: {settings.seed}. O som é testado dentro do jogo depois do primeiro toque.
       </p>
     </main>
   );

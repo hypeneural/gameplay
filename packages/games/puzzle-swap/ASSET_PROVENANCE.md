@@ -26,3 +26,20 @@ stops its retained loop during scene teardown.
 The new runtime creates its snow, moonlight, board frame and celebratory
 sparkles as bounded scene-owned Phaser objects. It intentionally does not copy
 the legacy customer-image flow or the old server-side image scripts.
+
+## Original visual package v1 (2026-08-24)
+
+These files are original project assets. They do not contain customer photos,
+session details, third-party characters, logos or marks.
+
+| Role                                | Browser asset                           | Source / processing                                                                                                                                            | Size budget                                  |
+| ----------------------------------- | --------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------- |
+| Illustrated winter-village backdrop | `backgrounds/vila-nevada-noite-v1.webp` | Original project illustration generated for this product; prepared from the retained PNG source with Sharp, `fit: inside`, no enlargement and WebP quality 78. | 1024 × 1536, 106,970 bytes                   |
+| Hint control                        | `ui/dica.svg`                           | Original project SVG, hand-authored.                                                                                                                           | 64 × 64 source; Phaser rasterizes to 96 × 96 |
+| Pause / continue controls           | `ui/pausar.svg`, `ui/continuar.svg`     | Original project SVGs, hand-authored.                                                                                                                          | 64 × 64 source; Phaser rasterizes to 96 × 96 |
+| Sound controls                      | `ui/som.svg`, `ui/silenciar.svg`        | Original project SVGs, hand-authored.                                                                                                                          | 64 × 64 source; Phaser rasterizes to 96 × 96 |
+
+The retained editable backdrop source is outside the browser public directory
+under `assets-src/puzzle-swap/backgrounds/`. The game only requests the
+optimized WebP and the five small SVG controls. Every texture is registered in
+the scene scope and released during shutdown.

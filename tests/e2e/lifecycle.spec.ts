@@ -100,7 +100,7 @@ test('Hub loads only thumbnails and Phaser mounts and disposes cleanly', async (
   await expect(page.getByRole('heading', { name: 'Prova de Natal' })).toBeVisible();
   await page.getByTestId('play-selected-game').click();
   await expect(page.getByTestId('game-status')).toHaveText('Pronto');
-  await expect(page.getByTestId('game-event')).toHaveText('GAME_STARTED');
+  await expect(page.getByTestId('game-event')).toHaveText('Brincadeira iniciada');
   await expect(page.locator('canvas')).toHaveCount(1);
   await expect(page.locator('canvas')).toBeVisible();
   await page.screenshot({
@@ -112,7 +112,7 @@ test('Hub loads only thumbnails and Phaser mounts and disposes cleanly', async (
   const canvasBox = await canvas.boundingBox();
   if (!canvasBox) throw new Error('Gameplay canvas has no bounding box.');
   await canvas.click({ position: { x: canvasBox.width * 0.3, y: canvasBox.height * 0.4 } });
-  await expect(page.getByTestId('game-event')).toHaveText('GAME_COMPLETED');
+  await expect(page.getByTestId('game-event')).toHaveText('Foto montada!');
   await page.getByRole('button', { name: 'Sair do jogo' }).click();
   await expect(page.getByRole('heading', { name: 'Sessão de Natal' })).toBeVisible();
   await expect(page.locator('canvas')).toHaveCount(0);
@@ -171,7 +171,7 @@ test('Puzzle Swap mounts selected portrait and landscape textures and exits clea
   await expect(page.getByRole('heading', { name: 'Quebra-cabeça da sua foto' })).toBeVisible();
   await page.getByTestId('play-selected-game').click();
   await expect(page.getByTestId('game-status')).toHaveText('Pronto');
-  await expect(page.getByTestId('game-event')).toHaveText('GAME_STARTED');
+  await expect(page.getByTestId('game-event')).toHaveText('Brincadeira iniciada');
   await expect(page.locator('canvas')).toHaveCount(1);
   await page.screenshot({
     path: `docs/generated/evidence/${test.info().project.name}-puzzle-swap-native.png`,
@@ -186,7 +186,7 @@ test('Puzzle Swap mounts selected portrait and landscape textures and exits clea
   await page.getByTestId('open-game-puzzle-swap').click();
   await page.getByTestId('play-selected-game').click();
   await expect(page.getByTestId('game-status')).toHaveText('Pronto');
-  await expect(page.getByTestId('game-event')).toHaveText('GAME_STARTED');
+  await expect(page.getByTestId('game-event')).toHaveText('Brincadeira iniciada');
   await expect(page.locator('canvas')).toHaveCount(1);
   await page.screenshot({
     path: `docs/generated/evidence/${test.info().project.name}-puzzle-swap-landscape-native.png`,
@@ -202,20 +202,20 @@ test('Puzzle Swap pause control pauses and resumes the active run', async ({ pag
   await page.goto('/s/local-demo-token');
   await page.getByTestId('open-game-puzzle-swap').click();
   await page.getByTestId('play-selected-game').click();
-  await expect(page.getByTestId('game-event')).toHaveText('GAME_STARTED');
+  await expect(page.getByTestId('game-event')).toHaveText('Brincadeira iniciada');
 
   const canvas = page.locator('canvas');
   const canvasBox = await canvas.boundingBox();
   if (!canvasBox) throw new Error('Puzzle Swap canvas has no bounding box.');
   const pauseControl = { x: canvasBox.width - 28, y: 64 };
   await canvas.click({ position: pauseControl });
-  await expect(page.getByTestId('game-event')).toHaveText('GAME_PAUSED');
+  await expect(page.getByTestId('game-event')).toHaveText('Jogo em pausa');
   await page.screenshot({
     path: `docs/generated/evidence/${test.info().project.name}-puzzle-swap-paused.png`,
     fullPage: true,
   });
   await canvas.click({ position: pauseControl });
-  await expect(page.getByTestId('game-event')).toHaveText('GAME_RESUMED');
+  await expect(page.getByTestId('game-event')).toHaveText('Brincadeira retomada');
   await page.getByRole('button', { name: 'Sair do jogo' }).click();
   await expect(page.locator('canvas')).toHaveCount(0);
 });
@@ -252,7 +252,7 @@ test('Puzzle Swap animates a deterministic mobile solve and loads its authorized
   await page.goto('/s/local-demo-token');
   await page.getByTestId('open-game-puzzle-swap').click();
   await page.getByTestId('play-selected-game').click();
-  await expect(page.getByTestId('game-event')).toHaveText('GAME_STARTED');
+  await expect(page.getByTestId('game-event')).toHaveText('Brincadeira iniciada');
 
   const canvas = page.locator('canvas');
   const canvasBox = await canvas.boundingBox();
@@ -267,7 +267,7 @@ test('Puzzle Swap animates a deterministic mobile solve and loads its authorized
     await page.waitForTimeout(190);
   }
 
-  await expect(page.getByTestId('game-event')).toHaveText('GAME_COMPLETED');
+  await expect(page.getByTestId('game-event')).toHaveText('Foto montada!');
   await page.screenshot({
     path: `docs/generated/evidence/${test.info().project.name}-puzzle-swap-complete.png`,
     fullPage: true,
@@ -298,14 +298,14 @@ test('Puzzle Swap accepts a drag-only deterministic solution', async ({ page }) 
   await page.goto('/s/local-demo-token');
   await page.getByTestId('open-game-puzzle-swap').click();
   await page.getByTestId('play-selected-game').click();
-  await expect(page.getByTestId('game-event')).toHaveText('GAME_STARTED');
+  await expect(page.getByTestId('game-event')).toHaveText('Brincadeira iniciada');
 
   const canvas = page.locator('canvas');
   for (const [firstCell, secondCell] of swapsToSolve(seededShuffle(seed))) {
     await dragPuzzleCells(page, canvas, firstCell, secondCell);
   }
 
-  await expect(page.getByTestId('game-event')).toHaveText('GAME_COMPLETED');
+  await expect(page.getByTestId('game-event')).toHaveText('Foto montada!');
   await page.getByRole('button', { name: 'Sair do jogo' }).click();
   await expect(page.locator('canvas')).toHaveCount(0);
 });
@@ -327,7 +327,7 @@ test('Puzzle Swap preserves its active board through a mobile resize', async ({ 
   await page.goto('/s/local-demo-token');
   await page.getByTestId('open-game-puzzle-swap').click();
   await page.getByTestId('play-selected-game').click();
-  await expect(page.getByTestId('game-event')).toHaveText('GAME_STARTED');
+  await expect(page.getByTestId('game-event')).toHaveText('Brincadeira iniciada');
 
   const swaps = swapsToSolve(seededShuffle(seed));
   const firstSwap = swaps.shift();
@@ -358,7 +358,7 @@ test('Puzzle Swap preserves its active board through a mobile resize', async ({ 
     await page.waitForTimeout(190);
   }
 
-  await expect(page.getByTestId('game-event')).toHaveText('GAME_COMPLETED');
+  await expect(page.getByTestId('game-event')).toHaveText('Foto montada!');
   await page.getByRole('button', { name: 'Sair do jogo' }).click();
   await expect(page.locator('canvas')).toHaveCount(0);
 });
@@ -376,7 +376,7 @@ test('Puzzle Swap honors explicit data saving and reduced motion without disabli
   await page.goto('/s/local-demo-token');
   await page.getByTestId('open-game-puzzle-swap').click();
   await page.getByTestId('play-selected-game').click();
-  await expect(page.getByTestId('game-event')).toHaveText('GAME_STARTED');
+  await expect(page.getByTestId('game-event')).toHaveText('Brincadeira iniciada');
   await expect(page.getByTestId('phaser-host')).toHaveAttribute('data-quality', 'LOW');
   await expect(page.getByTestId('phaser-host')).toHaveAttribute('data-reduced-motion', 'true');
   await page.screenshot({
@@ -400,7 +400,7 @@ test('Puzzle Swap exposes a safe retry UI after its required photo fails once', 
   await page.getByTestId('play-selected-game').click();
 
   await expect(page.getByTestId('game-status')).toHaveText('Erro');
-  await expect(page.getByTestId('game-event')).toHaveText('GAME_ASSET_FAILED');
+  await expect(page.getByTestId('game-event')).toHaveText('Não foi possível abrir a foto');
   await expect(page.getByRole('alert')).toContainText('Não foi possível abrir o jogo.');
   expect(attempts).toBe(2);
   await page.getByRole('button', { name: 'Sair do jogo' }).click();
@@ -427,7 +427,7 @@ test('a 172-photo session keeps selection and has a deterministic no-observer fa
     Object.defineProperty(window, 'IntersectionObserver', { configurable: true, value: undefined });
   });
   await page.goto('/s/local-demo-token');
-  await page.getByLabel('Fixture de sessão').selectOption('172');
+  await page.getByLabel('Amostra da sessão').selectOption('172');
   await expect(page.getByTestId('photo-ph_001')).toHaveAttribute('aria-pressed', 'true');
   await page.getByTestId('photo-ph_002').click();
   await expect(page.getByTestId('photo-ph_002')).toHaveAttribute('aria-pressed', 'true');
@@ -441,12 +441,12 @@ test('Experience Lab keeps reduced motion separate from quality and makes cues o
   page,
 }) => {
   await page.goto('/__dev/experience?quality=LOW&motion=reduce&photo=landscape&sound=off&seed=987');
-  await expect(page.getByRole('heading', { name: 'Experience Lab' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Laboratório da brincadeira' })).toBeVisible();
   await expect(page.getByTestId('experience-quality')).toHaveValue('LOW');
   await expect(page.getByTestId('experience-motion')).toHaveValue('reduced');
   await expect(page.getByTestId('experience-preview')).toHaveAttribute('data-motion', 'reduced');
   await page.getByTestId('experience-correct').click();
-  await expect(page.getByTestId('experience-preview')).toContainText('CORRECT · 120 ms');
+  await expect(page.getByTestId('experience-preview')).toContainText('Acertou · 120 ms');
   await expect(page.getByTestId('experience-particles')).toHaveCount(0);
 
   await page.getByTestId('experience-quality').selectOption('NORMAL');

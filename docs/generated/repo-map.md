@@ -18,19 +18,27 @@
 │       ├── public
 │       │   ├── assets
 │       │   │   └── puzzle-swap
-│       │   │       └── audio
-│       │   │           ├── celebrate.m4a
-│       │   │           ├── celebrate.mp3
-│       │   │           ├── correct.m4a
-│       │   │           ├── correct.mp3
-│       │   │           ├── hint.m4a
-│       │   │           ├── hint.mp3
-│       │   │           ├── tap.m4a
-│       │   │           ├── tap.mp3
-│       │   │           ├── winter-loop.m4a
-│       │   │           ├── winter-loop.mp3
-│       │   │           ├── wrong.m4a
-│       │   │           └── wrong.mp3
+│       │   │       ├── audio
+│       │   │       │   ├── celebrate.m4a
+│       │   │       │   ├── celebrate.mp3
+│       │   │       │   ├── correct.m4a
+│       │   │       │   ├── correct.mp3
+│       │   │       │   ├── hint.m4a
+│       │   │       │   ├── hint.mp3
+│       │   │       │   ├── tap.m4a
+│       │   │       │   ├── tap.mp3
+│       │   │       │   ├── winter-loop.m4a
+│       │   │       │   ├── winter-loop.mp3
+│       │   │       │   ├── wrong.m4a
+│       │   │       │   └── wrong.mp3
+│       │   │       ├── backgrounds
+│       │   │       │   └── vila-nevada-noite-v1.webp
+│       │   │       └── ui
+│       │   │           ├── continuar.svg
+│       │   │           ├── dica.svg
+│       │   │           ├── pausar.svg
+│       │   │           ├── silenciar.svg
+│       │   │           └── som.svg
 │       │   ├── favicon.svg
 │       │   └── fixtures
 │       │       ├── landscape.svg
@@ -68,6 +76,10 @@
 │       ├── vite.config.ts
 │       └── vite.localTestMedia.ts
 ├── ARCHITECTURE.md
+├── assets-src
+│   └── puzzle-swap
+│       └── backgrounds
+│           └── vila-nevada-noite-v1.png
 ├── docs
 │   ├── ai
 │   │   └── PHASER_SKILL_MAP.md
@@ -83,6 +95,7 @@
 │   │   ├── active
 │   │   │   └── .gitkeep
 │   │   ├── CG-EXPERIENCE-FACTORY-ROADMAP.md
+│   │   ├── CG-PUZZLE-NATIVE-LIKE-ITERATION.md
 │   │   └── completed
 │   │       ├── CG-BOOTSTRAP.md
 │   │       ├── CG-GAME-FACTORY-HARDENING.md
@@ -136,6 +149,7 @@
 │       ├── PHASE_9_5_OFFICIAL_VALIDATION.md
 │       ├── PRODUCTION_CORRECTNESS_VALIDATION.md
 │       ├── PUZZLE_SWAP_CORE_SOURCES.txt
+│       ├── PUZZLE_SWAP_NATIVE_LIKE_VALIDATION.md
 │       └── REFERENCE_AUDIT.md
 ├── eslint.config.js
 ├── knip.json
@@ -185,7 +199,8 @@
 │   │   │   │   │   └── phaser
 │   │   │   │   │       ├── .gitkeep
 │   │   │   │   │       ├── audioAssets.ts
-│   │   │   │   │       └── createPuzzleSwapGame.ts
+│   │   │   │   │       ├── createPuzzleSwapGame.ts
+│   │   │   │   │       └── visualAssets.ts
 │   │   │   │   └── tuning.ts
 │   │   │   └── tests
 │   │   │       ├── .gitkeep
