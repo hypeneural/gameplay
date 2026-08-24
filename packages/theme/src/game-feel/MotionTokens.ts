@@ -11,7 +11,7 @@ export interface MotionToken {
 const fullMotionTokens: Record<MotionName, MotionToken> = {
   press: { durationMs: 100, easing: 'Cubic.easeOut', scale: 0.98 },
   select: { durationMs: 120, easing: 'Cubic.easeOut', scale: 1.03 },
-  swap: { durationMs: 160, easing: 'Sine.easeInOut' },
+  swap: { durationMs: 160, easing: 'Sine.easeInOut', scale: 1.055 },
   flip: { durationMs: 240, easing: 'Sine.easeInOut' },
   modal: { durationMs: 210, easing: 'Cubic.easeOut' },
   reveal: { durationMs: 360, easing: 'Sine.easeInOut' },

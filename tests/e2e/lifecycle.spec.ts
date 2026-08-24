@@ -1,5 +1,63 @@
 import { expect, test } from '@playwright/test';
 
+function seededShuffle(seed: number): number[] {
+  let state = seed >>> 0;
+  const nextInt = (maximum: number): number => {
+    state = (state + 0x6d2b79f5) >>> 0;
+    let value = state;
+    value = Math.imul(value ^ (value >>> 15), value | 1);
+    value ^= value + Math.imul(value ^ (value >>> 7), value | 61);
+    const random = ((value ^ (value >>> 14)) >>> 0) / 4_294_967_296;
+    return Math.floor(random * (maximum + 1));
+  };
+  const pieces = Array.from({ length: 12 }, (_value, index) => index);
+  for (let currentIndex = pieces.length - 1; currentIndex > 0; currentIndex -= 1) {
+    const nextIndex = nextInt(currentIndex);
+    const currentPiece = pieces[currentIndex];
+    pieces[currentIndex] = pieces[nextIndex]!;
+    pieces[nextIndex] = currentPiece!;
+  }
+  if (!pieces.every((pieceId, index) => pieceId === index)) return pieces;
+  [pieces[0], pieces[1]] = [pieces[1]!, pieces[0]!];
+  return pieces;
+}
+
+function swapsToSolve(initialPieces: readonly number[]): Array<[number, number]> {
+  const pieces = [...initialPieces];
+  const swaps: Array<[number, number]> = [];
+  for (let expectedCell = 0; expectedCell < pieces.length; expectedCell += 1) {
+    const currentCell = pieces.indexOf(expectedCell);
+    if (currentCell === expectedCell) continue;
+    swaps.push([expectedCell, currentCell]);
+    [pieces[expectedCell], pieces[currentCell]] = [pieces[currentCell]!, pieces[expectedCell]!];
+  }
+  return swaps;
+}
+
+function portraitPuzzleCellCenter(
+  canvasWidth: number,
+  canvasHeight: number,
+  cellIndex: number,
+): { x: number; y: number } {
+  const safeTop = Math.max(16, Math.round(canvasHeight * 0.025));
+  const safeBottom = Math.max(20, Math.round(canvasHeight * 0.035));
+  const availableWidth = canvasWidth - 24;
+  const availableHeight = canvasHeight - safeTop - safeBottom - 98 - 74;
+  const photoAspectRatio = 5 / 7;
+  const board =
+    photoAspectRatio > availableWidth / availableHeight
+      ? { width: availableWidth, height: availableWidth / photoAspectRatio }
+      : { width: availableHeight * photoAspectRatio, height: availableHeight };
+  const boardX = (canvasWidth - board.width) / 2;
+  const boardY = safeTop + 98 + (availableHeight - board.height) / 2;
+  const column = cellIndex % 3;
+  const row = Math.floor(cellIndex / 3);
+  return {
+    x: boardX + (column + 0.5) * (board.width / 3),
+    y: boardY + (row + 0.5) * (board.height / 4),
+  };
+}
+
 test('Hub loads only thumbnails and Phaser mounts and disposes cleanly', async ({ page }) => {
   const consoleErrors: string[] = [];
   const failedRequests: string[] = [];
@@ -142,6 +200,67 @@ test('Puzzle Swap pause control pauses and resumes the active run', async ({ pag
   await expect(page.getByTestId('game-event')).toHaveText('GAME_RESUMED');
   await page.getByRole('button', { name: 'Sair do jogo' }).click();
   await expect(page.locator('canvas')).toHaveCount(0);
+});
+
+test('Puzzle Swap animates a deterministic mobile solve and loads its authorized sound bundle', async ({
+  page,
+}) => {
+  const seed = 0x13579bdf;
+  const audioResponses: Array<{ status: number; url: string }> = [];
+  const browserErrors: string[] = [];
+  await page.addInitScript((fixedSeed) => {
+    const originalGetRandomValues = window.crypto.getRandomValues.bind(window.crypto);
+    Object.defineProperty(window.crypto, 'getRandomValues', {
+      configurable: true,
+      value: (values: Uint32Array<ArrayBuffer>) => {
+        if (values.length === 1) {
+          values[0] = fixedSeed;
+          return values;
+        }
+        return originalGetRandomValues(values);
+      },
+    });
+  }, seed);
+  page.on('response', (response) => {
+    if (response.url().includes('/assets/puzzle-swap/audio/')) {
+      audioResponses.push({ status: response.status(), url: response.url() });
+    }
+  });
+  page.on('pageerror', (error) => browserErrors.push(error.message));
+  page.on('console', (message) => {
+    if (message.type() === 'error') browserErrors.push(message.text());
+  });
+
+  await page.goto('/s/local-demo-token');
+  await page.getByTestId('open-game-puzzle-swap').click();
+  await page.getByTestId('play-selected-game').click();
+  await expect(page.getByTestId('game-event')).toHaveText('GAME_STARTED');
+
+  const canvas = page.locator('canvas');
+  const canvasBox = await canvas.boundingBox();
+  if (!canvasBox) throw new Error('Puzzle Swap canvas has no bounding box.');
+  for (const [firstCell, secondCell] of swapsToSolve(seededShuffle(seed))) {
+    await canvas.click({
+      position: portraitPuzzleCellCenter(canvasBox.width, canvasBox.height, firstCell),
+    });
+    await canvas.click({
+      position: portraitPuzzleCellCenter(canvasBox.width, canvasBox.height, secondCell),
+    });
+    await page.waitForTimeout(190);
+  }
+
+  await expect(page.getByTestId('game-event')).toHaveText('GAME_COMPLETED');
+  await page.screenshot({
+    path: `docs/generated/evidence/${test.info().project.name}-puzzle-swap-complete.png`,
+    fullPage: true,
+  });
+  expect(audioResponses.length).toBeGreaterThanOrEqual(6);
+  expect(audioResponses.every((response) => response.status === 200)).toBe(true);
+  await page.getByRole('button', { name: 'Sair do jogo' }).click();
+  await page.waitForTimeout(500);
+  await expect(page.getByRole('heading', { name: 'Sessão de Natal' })).toBeVisible();
+  await expect(page.locator('canvas')).toHaveCount(0);
+  expect(browserErrors).toEqual([]);
 });
 
 test('a 172-photo session keeps selection and has a deterministic no-observer fallback', async ({

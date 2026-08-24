@@ -16,6 +16,21 @@
 │       ├── index.html
 │       ├── package.json
 │       ├── public
+│       │   ├── assets
+│       │   │   └── puzzle-swap
+│       │   │       └── audio
+│       │   │           ├── celebrate.m4a
+│       │   │           ├── celebrate.mp3
+│       │   │           ├── correct.m4a
+│       │   │           ├── correct.mp3
+│       │   │           ├── hint.m4a
+│       │   │           ├── hint.mp3
+│       │   │           ├── tap.m4a
+│       │   │           ├── tap.mp3
+│       │   │           ├── winter-loop.m4a
+│       │   │           ├── winter-loop.mp3
+│       │   │           ├── wrong.m4a
+│       │   │           └── wrong.mp3
 │       │   └── favicon.svg
 │       ├── src
 │       │   ├── app
@@ -69,18 +84,22 @@
 │   ├── generated
 │   │   ├── evidence
 │   │   │   ├── android-412-dev-smoke.png
+│   │   │   ├── android-412-puzzle-swap-complete.png
 │   │   │   ├── android-412-puzzle-swap-landscape-native.png
 │   │   │   ├── android-412-puzzle-swap-native.png
 │   │   │   ├── android-412-puzzle-swap-paused.png
 │   │   │   ├── iphone-390-dev-smoke.png
+│   │   │   ├── iphone-390-puzzle-swap-complete.png
 │   │   │   ├── iphone-390-puzzle-swap-landscape-native.png
 │   │   │   ├── iphone-390-puzzle-swap-native.png
 │   │   │   ├── iphone-390-puzzle-swap-paused.png
 │   │   │   ├── large-phone-430-dev-smoke.png
+│   │   │   ├── large-phone-430-puzzle-swap-complete.png
 │   │   │   ├── large-phone-430-puzzle-swap-landscape-native.png
 │   │   │   ├── large-phone-430-puzzle-swap-native.png
 │   │   │   ├── large-phone-430-puzzle-swap-paused.png
 │   │   │   ├── tablet-768-dev-smoke.png
+│   │   │   ├── tablet-768-puzzle-swap-complete.png
 │   │   │   ├── tablet-768-puzzle-swap-landscape-native.png
 │   │   │   ├── tablet-768-puzzle-swap-native.png
 │   │   │   └── tablet-768-puzzle-swap-paused.png
@@ -135,6 +154,7 @@
 │   │   │   └── tests
 │   │   │       └── .gitkeep
 │   │   ├── puzzle-swap
+│   │   │   ├── ASSET_PROVENANCE.md
 │   │   │   ├── package.json
 │   │   │   ├── PLAN.md
 │   │   │   ├── SPEC.md
@@ -152,6 +172,7 @@
 │   │   │   │   ├── runtime
 │   │   │   │   │   └── phaser
 │   │   │   │   │       ├── .gitkeep
+│   │   │   │   │       ├── audioAssets.ts
 │   │   │   │   │       └── createPuzzleSwapGame.ts
 │   │   │   │   └── tuning.ts
 │   │   │   └── tests

@@ -47,3 +47,11 @@ A useful operator preview can use real derivatives without weakening the product
 ## LESSON-012 — Responsive image attributes need a bounded display box
 
 An image’s intrinsic `height` attribute can become a multi-thousand-pixel layout height when CSS only constrains its width. A mixed-orientation mobile gallery must own a fixed tile box and explicitly make the image fill that box with proportional `object-fit`; verify it at the smallest supported viewport with real derivatives.
+
+## LESSON-013 — A completion overlay needs a direct scene reference
+
+Adding a child to a Phaser `Container` removes it from the Scene display list, so a later `children.getByName()` cannot retrieve that child reliably. Retain the win-duration text as a scene field; otherwise a completed run can emit `GAME_COMPLETED` while the visual completion path throws before the overlay appears or the controller destroys cleanly.
+
+## LESSON-014 — “Correct” is a state transition, not every move
+
+For a swap puzzle, compare the two affected cell assignments before and after the move. Tween the two existing piece objects to their new cells, then trigger sparkle, haptic and correct SFX only for cells that were incorrect and have just become correct. Recreating the entire board on every move hides this distinction and makes photographic play feel like a web page rather than an app.

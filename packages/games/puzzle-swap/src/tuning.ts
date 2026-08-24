@@ -7,4 +7,7 @@ export const puzzleSwapTuning = {
   dragDistanceThresholdPx: childTouchProfile.dragDistanceThresholdPx,
   idleAssistDelayMs: childTouchProfile.idleAssistDelayMs,
   boardInsetCssPx: 12,
+  swapDurationMs: 160,
+  revealDurationMs: 520,
+  ambientSnowflakes: { NORMAL: 10, HIGH: 18 } as const,
 } as const;

@@ -15,6 +15,8 @@ Let a visitor choose one local-session photo and solve a mobile-first swap puzzl
 - `PUZ-007`: After 6–8 seconds without a successful move, the game gives one non-solving visual hint. The first release uses relaxed time: elapsed time is informational, never a failure condition.
 - `PUZ-008`: `LOW` quality and reduced-motion mode preserve move confirmation and progress while removing decorative snow, looping celebration and optional post-FX.
 - `PUZ-009`: Feedback uses named cues (`tap`, `correct`, `wrong`, `hint`, `celebrate`) through the Game Experience composition; mechanics and win logic stay in the Puzzle domain/runtime.
+- `PUZ-010`: After a player gesture, authorized game-owned audio gives short optional feedback and low-volume music; the runtime never resumes `AudioContext` itself, exposes a mute control and stops the retained loop on teardown.
+- `PUZ-011`: A successful swap moves only the two existing piece objects. A correct-placement cue occurs only when a piece has just entered its solved cell; completion reveals the full proportional photo and a finite celebration.
 
 ## Planned files
 

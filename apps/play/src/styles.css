@@ -526,6 +526,30 @@ select {
   }
 }
 @media (max-width: 559px) {
+  .game-screen {
+    gap: 8px;
+    padding-right: 12px;
+    padding-left: 12px;
+  }
+  .game-header {
+    gap: 7px;
+  }
+  .game-header .eyebrow {
+    font-size: 0.64rem;
+  }
+  .game-header strong {
+    max-width: 15ch;
+    font-size: 0.96rem;
+    line-height: 1.14;
+  }
+  .game-status {
+    min-width: 4.8rem;
+    font-size: 0.67rem;
+  }
+  .game-exit {
+    padding: 0.68rem 0.78rem;
+    font-size: 0.85rem;
+  }
   .photo-grid {
     padding-bottom: 82px;
   }
