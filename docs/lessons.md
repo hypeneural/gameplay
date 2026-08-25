@@ -103,3 +103,12 @@ server starts with `LOCAL_TEST_MEDIA_ROOT` pointing to the prepared external
 storage. A route can otherwise return the application HTML for the private
 endpoint and fail JSON validation. Check the endpoint response before visual
 review; do not weaken the middleware or expose a filesystem path as a fix.
+
+## LESSON-021 — A style anchor is a decision tool, not a browser asset
+
+Keep the master visual frame outside `public/`, without client photography,
+and record its purpose and provenance next to it. Use the anchor to review
+photo hierarchy, protected zones and CTA before sourcing or preparing any
+runtime art. A CSS-only preview may prove that hierarchy with existing
+authorized assets, but it does not bypass manifest, licensing or approval
+gates for new art.

@@ -8,3 +8,4 @@ playwright-report/
 test-results/
 docs/generated/evidence/
 tools/fixture-generator/tests/fixtures/
+*.zip

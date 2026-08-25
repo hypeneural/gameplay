@@ -190,7 +190,7 @@ export function createPuzzleSwapGame(
         .setName('puzzle-hud-panel')
         .setDepth(3);
       this.add
-        .text(0, 0, 'PUZZLE DE NATAL', {
+        .text(0, 0, 'QUEBRA-CABEÇA', {
           color: christmasTheme.color.snow,
           fontFamily: 'system-ui, sans-serif',
           fontSize: '13px',

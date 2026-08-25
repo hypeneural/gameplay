@@ -41,33 +41,42 @@ export function GameCover({
       </button>
       <section className="game-cover-panel" aria-labelledby="game-cover-title">
         <div className="game-cover-preview">
-          <img
-            alt="Foto escolhida para esta brincadeira"
-            decoding="async"
-            src={photo.variants.card}
-          />
-          <div aria-hidden="true" className="cover-snowfall">
-            {coverSnowflakes.map((flake, index) => (
-              <span
-                key={index}
-                style={{
-                  animationDelay: flake.delay,
-                  animationDuration: flake.duration,
-                  height: flake.size,
-                  left: flake.left,
-                  width: flake.size,
-                }}
-              />
-            ))}
+          <div aria-hidden="true" className="cover-scene-sparkles">
+            <span>✦</span>
+            <span>✧</span>
+            <span>✦</span>
           </div>
-          <span aria-hidden="true" className="cover-photo-glint">
-            ✦
-          </span>
+          <div className="cover-photo-frame">
+            <span aria-hidden="true" className="cover-frame-ribbon" />
+            <span aria-hidden="true" className="cover-frame-bow" />
+            <img
+              alt="Foto escolhida para esta brincadeira"
+              decoding="async"
+              src={photo.variants.card}
+            />
+            <div aria-hidden="true" className="cover-snowfall">
+              {coverSnowflakes.map((flake, index) => (
+                <span
+                  key={index}
+                  style={{
+                    animationDelay: flake.delay,
+                    animationDuration: flake.duration,
+                    height: flake.size,
+                    left: flake.left,
+                    width: flake.size,
+                  }}
+                />
+              ))}
+            </div>
+            <span aria-hidden="true" className="cover-photo-glint">
+              ✦
+            </span>
+          </div>
         </div>
         <p className="eyebrow">VAMOS BRINCAR</p>
         <h1 id="game-cover-title">{definition.displayName}</h1>
         <p className="cover-rule">{definition.shortRule}</p>
-        <p className="cover-photo-meta">Esta é a foto que vai virar um quebra-cabeça mágico.</p>
+        <p className="cover-photo-meta">Sua foto é a estrela desta brincadeira de Natal.</p>
         <button
           className="button cover-play"
           data-testid="play-selected-game"
@@ -79,7 +88,13 @@ export function GameCover({
           onFocus={onPrefetch}
           onPointerDown={onPrefetch}
         >
-          Começar a brincadeira <span aria-hidden="true">✦</span>
+          <span aria-hidden="true" className="cover-play-sparkle">
+            ✦
+          </span>
+          <span>Começar a brincadeira</span>
+          <span aria-hidden="true" className="cover-play-arrow">
+            →
+          </span>
         </button>
       </section>
     </main>

@@ -1,7 +1,8 @@
 # CG-CHRISTMAS-NATIVE-LIKE-MATURITY — plano de maturidade visual e lúdica
 
-**Estado:** proposto — ainda não iniciar providers, geração de assets ou
-alterações de runtime sem selecionar a fase correspondente.
+**Estado:** em execução — Fase 1 concluída; a primeira âncora visual de Fase 2
+foi criada para revisão. Providers, assets de runtime e mudanças de Phaser
+continuam condicionados à fase, proveniência e validação correspondentes.
 
 **Ponto de partida:** `c61d3e6` na branch `codex/puzzle-native-like-v1`.
 
@@ -69,6 +70,27 @@ de conceitos quando não divergir da tag instalada.
 
 ## Ordem de execução
 
+## Acompanhamento da execução
+
+- [ ] Fase 0 — evidência privada de uso e Android físico depende do
+      proprietário, responsáveis e aparelho de referência.
+- [x] Fase 1 — linguagem natalina de produção documentada e roteada.
+- [x] Fase 2.1 — `MASTER_STYLE_FRAME` candidata criada fora de `public/`, sem
+      foto de cliente e com proveniência.
+- [ ] Fase 2.2–2.4 — seis âncoras, mockups e aprovação explícita da direção.
+- [x] Prévia visual controlada — entrada do Puzzle recebeu moldura, cenário e
+      CTA em CSS com assets já autorizados; verificadas foto, dica e troca em 390 px.
+- [ ] Fase 3 — requisitos de experiência e manifesto v2.
+- [ ] Fase 4 — Asset Lab local.
+- [ ] Fase 5 — acabamento do Puzzle após os gates anteriores.
+- [ ] Fases 6–10 — núcleo de arte, áudio, automação, segundo jogo e produção.
+
+**Evidência desta execução (2026-08-24):** `pnpm validate` passou com 52
+testes Playwright em 5,7 min. A matriz cobriu 390, 412, 430 e 768 CSS px,
+entrada/saída, foto retrato e paisagem, toque–toque, arraste, dica, pausa,
+som, retry seguro, LOW e movimento reduzido. A inspeção manual privada em 390
+px também confirmou foto central, CTA, dica e troca sem erro de console.
+
 ### Fase 0 — evidência de uso antes de mais arte
 
 **Objetivo:** resolver as decisões que realmente mudam a interface antes de
@@ -94,7 +116,7 @@ produto. Sem mudança de mecânica nesta fase.
 sair sem tutorial longo; nenhuma combinação de foto torna a instrução ou peça
 invisível; LOW e redução de movimento continuam jogáveis.
 
-### Fase 1 — linguagem natalina de produção
+### Fase 1 — linguagem natalina de produção ✅
 
 **Objetivo:** tirar o “gosto” natalino da memória do agente e colocá-lo em
 documentos curtos, roteáveis e verificáveis.
@@ -122,23 +144,33 @@ Para pisca-pisca, separar semanticamente:
 documento e produz uma decisão consistente de qualidade, LOW e movimento
 reduzido; não apenas “adiciona glow”.
 
+**Registro de execução:** concluída em 2026-08-24 com os oito documentos
+listados, o roteamento em `ART_BIBLE.md`, índice de documentação e uma
+revalidação dos links oficiais em
+`references/CHRISTMAS_NATIVE_LIKE_MATURITY_VALIDATION.md`.
+
 ### Fase 2 — âncoras visuais e quadro de aprovação
 
 **Objetivo:** comunicar a direção de arte por imagem antes de produzir dezenas
 de arquivos.
 
-1. Criar um único `MASTER_STYLE_FRAME` em 390 × 844 contendo cenário, área de
-   foto, moldura, HUD, árvore/luzes, neve e a hierarquia correta de leitura.
-2. Derivar seis âncoras de referência: árvore, presente, iluminação, UI, VFX e
-   personagem opcional. Elas vivem fora de `public/`, recebem proveniência e
-   são referências de direção, não assets de runtime.
-3. Produzir mockups de retrato e paisagem e revisar explicitamente: foto mais
-   chamativa, instrução legível, CTA percebido, cor natalina sem poluição.
-4. Guardar somente âncoras aprovadas. Referência não aprovada é removida do
-   fluxo de decisão, não “quase usada”.
+1. [x] Criar um único `MASTER_STYLE_FRAME` em 390 × 844 contendo cenário, área de
+       foto, moldura, HUD, árvore/luzes, neve e a hierarquia correta de leitura.
+2. [ ] Derivar seis âncoras de referência: árvore, presente, iluminação, UI, VFX e
+       personagem opcional. Elas vivem fora de `public/`, recebem proveniência e
+       são referências de direção, não assets de runtime.
+3. [ ] Produzir mockups de retrato e paisagem e revisar explicitamente: foto mais
+       chamativa, instrução legível, CTA percebido, cor natalina sem poluição.
+4. [ ] Guardar somente âncoras aprovadas. Referência não aprovada é removida do
+       fluxo de decisão, não “quase usada”.
 
 **Gate do proprietário:** aprovação da direção visual antes de gerar,
 baixar ou harmonizar um pacote de arte.
+
+**Registro de execução:** `master-style-frame-v1.png` é uma candidata fora de
+`public/`. A prévia CSS da entrada do Puzzle usa somente o cenário já
+catalogado e formas do navegador; ela serve para validar hierarquia de foto e
+CTA, não aprova nem introduz um pacote de arte novo.
 
 **Aceite:** uma pessoa reconhece a mesma família visual em UI, luz, cena e VFX
 sem que o fundo compita com a foto.

@@ -4,6 +4,21 @@ Esta é a referência curta para cada jogo novo. Ela descreve decisões que deve
 ser consistentes entre jogos, sem forçar uma Scene, uma mecânica ou uma arte
 idêntica.
 
+## Roteamento de decisões
+
+| Se a tarefa for…                                        | Ler antes de decidir                            |
+| ------------------------------------------------------- | ----------------------------------------------- |
+| compor fundo, moldura, foto ou controles                | `SCENE_GRAMMAR.md` e `COMPONENT_DICTIONARY.md`  |
+| criar ou ajustar luz, janela, árvore ou pisca           | `LIGHTING_BIBLE.md` e `COMPONENT_DICTIONARY.md` |
+| adicionar transição, neve, dica, acerto ou vitória      | `MOTION_BIBLE.md` e `COMPONENT_DICTIONARY.md`   |
+| criar/ajustar efeitos, música, mudo, pausa ou saída     | `AUDIO_BIBLE.md` e `MUSIC_BIBLE.md`             |
+| propor Papai Noel, rena, elfo ou outro personagem       | `CHARACTER_BIBLE.md`                            |
+| pedir uma imagem de referência ou avaliar uma candidata | `PROMPT_RECIPES.md` e `style-anchors/README.md` |
+
+As regras curtas desta Bíblia continuam obrigatórias. Os documentos roteados
+acima detalham como aplicá-las sem transformar preferência pessoal em regra
+implícita.
+
 ## Promessa para a criança e para a família
 
 Em até cinco segundos, a pessoa deve reconhecer a própria lembrança, entender

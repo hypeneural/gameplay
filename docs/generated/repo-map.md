@@ -10,6 +10,7 @@
 ├── .node-version
 ├── .prettierignore
 ├── AGENTS.md
+├── analise.zip
 ├── apps
 │   └── play
 │       ├── AGENTS.md
@@ -108,7 +109,18 @@
 │   │       └── CG-PRODUCTION-CORRECTNESS.md
 │   ├── experience
 │   │   └── christmas
-│   │       └── ART_BIBLE.md
+│   │       ├── ART_BIBLE.md
+│   │       ├── AUDIO_BIBLE.md
+│   │       ├── CHARACTER_BIBLE.md
+│   │       ├── COMPONENT_DICTIONARY.md
+│   │       ├── LIGHTING_BIBLE.md
+│   │       ├── MOTION_BIBLE.md
+│   │       ├── MUSIC_BIBLE.md
+│   │       ├── PROMPT_RECIPES.md
+│   │       ├── SCENE_GRAMMAR.md
+│   │       └── style-anchors
+│   │           ├── master-style-frame-v1.png
+│   │           └── README.md
 │   ├── generated
 │   │   ├── evidence
 │   │   │   ├── android-412-dev-smoke.png
@@ -167,6 +179,7 @@
 │       ├── PUZZLE_SWAP_NATIVE_LIKE_VALIDATION.md
 │       └── REFERENCE_AUDIT.md
 ├── eslint.config.js
+├── games.zip
 ├── knip.json
 ├── package.json
 ├── packages
@@ -416,10 +429,11 @@
 │           │   └── SKILL.md
 │           ├── v3-to-v4-migration
 │           │   └── SKILL.md
-│           └── v4-new-features
-│               ├── references
-│               │   └── REFERENCE.md
-│               └── SKILL.md
+│           ├── v4-new-features
+│           │   ├── references
+│           │   │   └── REFERENCE.md
+│           │   └── SKILL.md
+│           └── v4.2.1.zip
 └── vitest.config.ts
 ```
 

@@ -159,6 +159,10 @@ test('mobile photo selection keeps a bounded gallery and opens the selected puzz
   await expect(page.getByTestId('start-selected-photo')).toBeVisible();
   await page.getByTestId('start-selected-photo').click();
   await expect(page).toHaveURL('/s/local-demo-token/game/puzzle-swap');
+  await expect(page.locator('.cover-photo-frame')).toBeVisible();
+  await expect(page.locator('.cover-photo-meta')).toHaveText(
+    'Sua foto é a estrela desta brincadeira de Natal.',
+  );
   await expect(page.locator('.game-cover-preview img')).toHaveAttribute(
     'src',
     /\/fixtures\/landscape\.svg$/,
