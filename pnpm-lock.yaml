@@ -57,9 +57,6 @@ importers:
       '@christmas-games/dev-smoke':
         specifier: workspace:*
         version: link:../../packages/games/dev-smoke
-      '@christmas-games/memory':
-        specifier: workspace:*
-        version: link:../../packages/games/memory
       '@christmas-games/platform':
         specifier: workspace:*
         version: link:../../packages/platform

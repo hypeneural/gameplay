@@ -10,7 +10,6 @@
   "dependencies": {
     "@christmas-games/dev-smoke": "workspace:*",
     "@christmas-games/platform": "workspace:*",
-    "@christmas-games/memory": "workspace:*",
     "@christmas-games/puzzle-swap": "workspace:*",
     "@christmas-games/theme": "workspace:*",
     "phaser": "4.2.1",
