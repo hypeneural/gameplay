@@ -1,14 +1,22 @@
 import { defineConfig, devices } from '@playwright/test';
 
+const e2ePort = Number(process.env.CG_E2E_PORT ?? 4173);
+if (!Number.isInteger(e2ePort) || e2ePort < 1 || e2ePort > 65_535) {
+  throw new Error('CG_E2E_PORT must be a valid TCP port.');
+}
+const e2eBaseUrl = `http://127.0.0.1:${e2ePort}`;
+const e2eOutputDir = process.env.CG_E2E_OUTPUT_DIR ?? 'test-results';
+const e2eHtmlReportDir = process.env.CG_E2E_HTML_REPORT_DIR ?? 'playwright-report';
+
 export default defineConfig({
   testDir: './tests/e2e',
   timeout: 30_000,
   workers: 1,
   expect: { timeout: 10_000 },
-  outputDir: 'test-results',
-  reporter: [['list'], ['html', { open: 'never' }]],
+  outputDir: e2eOutputDir,
+  reporter: [['list'], ['html', { open: 'never', outputFolder: e2eHtmlReportDir }]],
   use: {
-    baseURL: 'http://127.0.0.1:4173',
+    baseURL: e2eBaseUrl,
     trace: 'retain-on-failure',
     screenshot: 'only-on-failure',
   },
@@ -39,8 +47,8 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: 'pnpm --filter @christmas-games/play dev --host 127.0.0.1 --port 4173',
-    url: 'http://127.0.0.1:4173',
+    command: `pnpm --filter @christmas-games/play dev --host 127.0.0.1 --port ${e2ePort}`,
+    url: e2eBaseUrl,
     reuseExistingServer: !process.env.CI,
   },
 });

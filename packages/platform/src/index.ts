@@ -4,6 +4,7 @@ export * from './game-runtime/ActiveGameClock.js';
 export * from './game-runtime/AssetLoader.js';
 export * from './game-runtime/AudioManager.js';
 export * from './game-runtime/FrameBudgetMonitor.js';
+export * from './game-runtime/PerformanceMeasurements.js';
 export * from './game-runtime/GameRunController.js';
 export * from './game-runtime/HapticFeedback.js';
 export * from './game-runtime/PageVisibilityController.js';

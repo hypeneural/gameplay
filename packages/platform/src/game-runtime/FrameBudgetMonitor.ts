@@ -1,4 +1,5 @@
 import type { QualityTier } from '../contracts/index.js';
+import { summarizeFrameDeltas } from './PerformanceMeasurements.js';
 
 export interface FrameBudgetDecision {
   tier: QualityTier;
@@ -36,9 +37,10 @@ export class FrameBudgetMonitor {
     if (this.locked || !Number.isFinite(deltaMs) || deltaMs <= 0) return this.decision();
     this.samples.push(deltaMs);
     if (this.samples.length >= this.sampleSize) {
-      const sorted = [...this.samples].sort((left, right) => left - right);
-      const p95 = sorted[Math.ceil(sorted.length * 0.95) - 1]!;
-      if (p95 > this.p95BudgetMs) this.tier = lowerTier(this.tier);
+      const timings = summarizeFrameDeltas(this.samples, this.p95BudgetMs);
+      if (timings.p95Ms !== undefined && timings.p95Ms > this.p95BudgetMs) {
+        this.tier = lowerTier(this.tier);
+      }
       this.locked = true;
     }
     return this.decision();

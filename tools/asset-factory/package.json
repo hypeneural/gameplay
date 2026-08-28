@@ -9,6 +9,7 @@
     "audit": "tsx src/index.ts audit",
     "catalog": "tsx src/index.ts catalog",
     "budget": "tsx src/index.ts budget",
-    "manifest": "tsx src/index.ts manifest"
+    "manifest": "tsx src/index.ts manifest",
+    "migrate": "tsx src/index.ts migrate"
   }
 }

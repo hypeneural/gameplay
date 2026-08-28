@@ -1,10 +1,11 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Suspense, lazy, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { createFixtureSession } from '@christmas-games/platform';
-import type { GameContextSeed } from '@christmas-games/platform';
+import type { GameContextSeed, GameDifficulty } from '@christmas-games/platform';
 import { PhaserHost } from '../phaser/PhaserHost.js';
 import type { PhaserHostStatus } from '../phaser/PhaserHost.js';
 import { prefetchGame } from '../phaser/createGame.js';
 import { getInstalledGame, gameDefinitions } from '../phaser/gameRegistry.js';
+import { AssetLab } from '../screens/AssetLab.js';
 import { ExperienceLab } from '../screens/ExperienceLab.js';
 import { GameCover } from '../screens/GameCover.js';
 import { GameScreen } from '../screens/GameScreen.js';
@@ -30,11 +31,15 @@ interface HistoryState {
 }
 
 interface GameView {
+  eventSequence: number;
   lastEvent: string;
   status: PhaserHostStatus;
 }
 
-const initialGameView: GameView = { lastEvent: 'NONE', status: 'loading' };
+const initialGameView: GameView = { eventSequence: 0, lastEvent: 'NONE', status: 'loading' };
+const PerformanceLab = import.meta.env.DEV
+  ? lazy(async () => ({ default: (await import('../screens/PerformanceLab.js')).PerformanceLab }))
+  : undefined;
 
 export function AppRouter(): React.JSX.Element {
   const initialRoute = useMemo(() => parseAppRoute(window.location.pathname), []);
@@ -48,6 +53,11 @@ export function AppRouter(): React.JSX.Element {
   );
   const usesLocalTestMedia = useMemo(() => shouldUseLocalTestMedia(window.location.search), []);
   const localTestMediaSearch = usesLocalTestMedia ? '?test-media=local' : '';
+  const developmentScenario = useMemo(() => {
+    if (!import.meta.env.DEV) return undefined;
+    const scenario = new URLSearchParams(window.location.search).get('scenario');
+    return scenario === 'victory' ? scenario : undefined;
+  }, []);
   const [route, setRoute] = useState<AppRoute>(initialRoute);
   const [fixtureCount, setFixtureCount] = useState<FixtureCount>(12);
   const [selectedPhotoId, setSelectedPhotoId] = useState('ph_001');
@@ -55,6 +65,7 @@ export function AppRouter(): React.JSX.Element {
   const [localSessionError, setLocalSessionError] = useState<string>();
   const [playing, setPlaying] = useState(false);
   const [gameAttempt, setGameAttempt] = useState(0);
+  const [difficulty, setDifficulty] = useState<GameDifficulty>('normal');
   const [gameView, setGameView] = useState(initialGameView);
   const navigationIndexRef = useRef(readHistoryIndex());
   const playingRef = useRef(false);
@@ -73,8 +84,14 @@ export function AppRouter(): React.JSX.Element {
       analytics: services.analytics,
       haptics: services.haptics,
       quality,
+      difficulty,
+      preferences: {
+        reducedMotion: window.matchMedia('(prefers-reduced-motion: reduce)').matches,
+        soundEnabled: true,
+      },
+      ...(developmentScenario ? { development: { scenario: developmentScenario } } : {}),
     }),
-    [quality, selectedPhoto, services, session],
+    [developmentScenario, difficulty, quality, selectedPhoto, services, session],
   );
 
   useEffect(() => {
@@ -116,7 +133,14 @@ export function AppRouter(): React.JSX.Element {
   );
 
   useEffect(() => {
-    if (initialRoute.kind === 'theme-lab' || initialRoute.kind === 'experience-lab') return;
+    if (
+      initialRoute.kind === 'theme-lab' ||
+      initialRoute.kind === 'experience-lab' ||
+      initialRoute.kind === 'asset-lab' ||
+      initialRoute.kind === 'performance-lab'
+    ) {
+      return;
+    }
     const state = window.history.state as HistoryState | null;
     if (typeof state?.christmasGamesIndex !== 'number') {
       window.history.replaceState(
@@ -153,7 +177,12 @@ export function AppRouter(): React.JSX.Element {
   };
 
   const openGame = (gameId: string): void => {
-    if (!getInstalledGame(gameId) || (route.kind !== 'session' && route.kind !== 'game-cover'))
+    const game = getInstalledGame(gameId);
+    if (
+      !game ||
+      session.photos.length < game.definition.minPhotos ||
+      (route.kind !== 'session' && route.kind !== 'game-cover')
+    )
       return;
     writeRoute({ kind: 'game-cover', token: route.token, gameId }, 'push');
   };
@@ -176,12 +205,19 @@ export function AppRouter(): React.JSX.Element {
   };
 
   const play = (): void => {
+    setDifficulty('normal');
     playingRef.current = true;
     setGameView(initialGameView);
     setPlaying(true);
   };
 
   const retry = (): void => {
+    setGameView(initialGameView);
+    setGameAttempt((attempt) => attempt + 1);
+  };
+
+  const startChallenge = (): void => {
+    setDifficulty('desafio');
     setGameView(initialGameView);
     setGameAttempt((attempt) => attempt + 1);
   };
@@ -195,6 +231,8 @@ export function AppRouter(): React.JSX.Element {
     if (
       pending.route.kind !== 'theme-lab' &&
       pending.route.kind !== 'experience-lab' &&
+      pending.route.kind !== 'asset-lab' &&
+      pending.route.kind !== 'performance-lab' &&
       pending.mode !== 'none'
     ) {
       writeRoute(pending.route, pending.mode);
@@ -205,6 +243,26 @@ export function AppRouter(): React.JSX.Element {
 
   if (route.kind === 'theme-lab') return <ThemeLab />;
   if (route.kind === 'experience-lab') return <ExperienceLab />;
+  if (route.kind === 'asset-lab') return <AssetLab />;
+  if (route.kind === 'performance-lab') {
+    return PerformanceLab ? (
+      <Suspense
+        fallback={
+          <main className="shell unavailable-game" role="status">
+            <p className="eyebrow">DESENVOLVIMENTO LOCAL</p>
+            <h1>Preparando medição…</h1>
+          </main>
+        }
+      >
+        <PerformanceLab />
+      </Suspense>
+    ) : (
+      <main className="shell unavailable-game" role="alert">
+        <p className="eyebrow">DESENVOLVIMENTO LOCAL</p>
+        <h1>Este laboratório não está publicado.</h1>
+      </main>
+    );
+  }
 
   if (usesLocalTestMedia && !localSession) {
     return (
@@ -247,6 +305,17 @@ export function AppRouter(): React.JSX.Element {
   }
 
   if (!playing) {
+    if (session.photos.length < game.definition.minPhotos) {
+      return (
+        <main className="shell unavailable-game" role="alert">
+          <p className="eyebrow">FOTOS INSUFICIENTES</p>
+          <h1>Esta brincadeira precisa de pelo menos {game.definition.minPhotos} fotos.</h1>
+          <button className="button" type="button" onClick={() => goToSession(gameRoute.token)}>
+            Voltar para a sessão
+          </button>
+        </main>
+      );
+    }
     return (
       <GameCover
         definition={game.definition}
@@ -261,10 +330,13 @@ export function AppRouter(): React.JSX.Element {
   return (
     <GameScreen
       definition={game.definition}
+      eventSequence={gameView.eventSequence}
       lastEvent={gameView.lastEvent}
       onExit={() => goToSession(gameRoute.token)}
+      onBrowseGames={() => goToSession(gameRoute.token)}
       onRetry={retry}
       status={gameView.status}
+      {...(gameRoute.gameId === 'puzzle-swap' ? { onChallenge: startChallenge } : {})}
     >
       <PhaserHost
         bridge={services.bridge}
@@ -273,11 +345,14 @@ export function AppRouter(): React.JSX.Element {
         gameId={gameRoute.gameId as Parameters<typeof prefetchGame>[0]}
         key={gameAttempt}
         onExit={handleGameExit}
-        onStateChange={(status, lastEvent) => {
+        onStateChange={(status, lastEvent, eventSequence) => {
           setGameView((current) =>
-            current.status === status && current.lastEvent === lastEvent
+            eventSequence < current.eventSequence ||
+            (current.status === status &&
+              current.lastEvent === lastEvent &&
+              current.eventSequence === eventSequence)
               ? current
-              : { status, lastEvent },
+              : { eventSequence, status, lastEvent },
           );
         }}
       />

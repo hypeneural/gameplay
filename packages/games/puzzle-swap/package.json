@@ -5,6 +5,8 @@
   "type": "module",
   "exports": {
     ".": "./src/index.ts",
+    "./asset-lab": "./src/assets/assetLabCatalog.ts",
+    "./performance-lab": "./src/lab/PuzzlePerformanceScenario.ts",
     "./definition": "./src/definition.ts"
   },
   "peerDependencies": {

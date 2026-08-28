@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import type { GameDefinition, Session } from '@christmas-games/platform';
 import { playInterfaceTap } from '../audio/playInterfaceTap.js';
+import { StudioSignature } from '../components/StudioSignature.js';
 import { GameCard } from './GameCard.js';
 
 interface HubProps {
@@ -165,6 +166,7 @@ export function Hub({
         <div className="game-card-list">
           {games.map((game) => (
             <GameCard
+              available={session.photos.length >= game.minPhotos}
               definition={game}
               key={game.id}
               onOpen={onOpenGame}
@@ -173,6 +175,7 @@ export function Hub({
           ))}
         </div>
       </section>
+      <StudioSignature />
     </main>
   );
 }

@@ -51,6 +51,11 @@ export class GameRunController implements GameRun {
     this.emit('GAME_STARTED');
   }
 
+  interactionSettled(): void {
+    if (this.currentState !== 'started') return;
+    this.bridge.emit({ type: 'GAME_INTERACTION_SETTLED', ...this.nextIdentity() });
+  }
+
   pause(): void {
     if (this.currentState !== 'started') return;
     this.currentState = 'paused';

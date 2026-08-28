@@ -17,9 +17,11 @@ describe('AppNavigation', () => {
     );
   });
 
-  it('recognizes the isolated Theme Lab and rejects unknown route shapes safely', () => {
+  it('recognizes isolated development labs and rejects unknown route shapes safely', () => {
     expect(parseAppRoute('/__dev/theme')).toEqual({ kind: 'theme-lab' });
     expect(parseAppRoute('/__dev/experience')).toEqual({ kind: 'experience-lab' });
+    expect(parseAppRoute('/__dev/assets')).toEqual({ kind: 'asset-lab' });
+    expect(parseAppRoute('/__dev/performance')).toEqual({ kind: 'performance-lab' });
     expect(parseAppRoute('/unexpected')).toEqual({ kind: 'session', token: 'local-demo-token' });
   });
 

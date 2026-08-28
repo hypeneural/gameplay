@@ -1,5 +1,7 @@
 import type { GameDefinition, Photo } from '@christmas-games/platform';
 import { playInterfaceTap } from '../audio/playInterfaceTap.js';
+import { ShareButton } from '../components/ShareButton.js';
+import { StudioSignature } from '../components/StudioSignature.js';
 
 interface GameCoverProps {
   definition: GameDefinition;
@@ -96,7 +98,9 @@ export function GameCover({
             →
           </span>
         </button>
+        <ShareButton className="cover-share" />
       </section>
+      <StudioSignature compact />
     </main>
   );
 }

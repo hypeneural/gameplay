@@ -21,6 +21,9 @@
       "@christmas-games/theme": ["packages/theme/src/index.ts"],
       "@christmas-games/dev-smoke": ["packages/games/dev-smoke/src/index.ts"],
       "@christmas-games/puzzle-swap": ["packages/games/puzzle-swap/src/index.ts"],
+      "@christmas-games/puzzle-swap/asset-lab": [
+        "packages/games/puzzle-swap/src/assets/assetLabCatalog.ts"
+      ],
       "@christmas-games/memory": ["packages/games/memory/src/index.ts"],
       "@christmas-games/tic-tac-toe": ["packages/games/tic-tac-toe/src/index.ts"],
       "@christmas-games/*": ["packages/games/*/src/index.ts"]

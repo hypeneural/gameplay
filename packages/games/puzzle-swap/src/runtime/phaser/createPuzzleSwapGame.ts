@@ -1,18 +1,18 @@
-import { HapticFeedback, SceneScope, createViewportLayout } from '@christmas-games/platform';
+import { SceneScope, createViewportLayout } from '@christmas-games/platform';
 import type {
   GameContext,
   GameController,
   GameModule,
   GameViewport,
 } from '@christmas-games/platform';
-import { createChristmasEffects, christmasTheme } from '@christmas-games/theme';
-import type { FeedbackDirector } from '@christmas-games/theme';
+import { christmasTheme } from '@christmas-games/theme';
 import type * as PhaserModule from 'phaser';
-import { planPuzzleGrid, type PuzzleGridPlan } from '../../domain/GridPlanner.js';
+import type { PuzzleGridPlan } from '../../domain/GridPlanner.js';
 import {
   createSolvedPuzzleBoard,
   isPuzzleSolved,
   swapPuzzlePieces,
+  type PuzzleSwap,
 } from '../../domain/PuzzleBoard.js';
 import { findPuzzleHintSwap } from '../../domain/PuzzleHint.js';
 import { selectPuzzleTopology } from '../../domain/PuzzleTopology.js';
@@ -26,8 +26,13 @@ import {
 } from '../../domain/IdleAssist.js';
 import { puzzleSwapDefinition } from '../../definition.js';
 import { puzzleSwapTuning } from '../../tuning.js';
-import { puzzleAudio, puzzleSfxKeyByCue } from './audioAssets.js';
+import { puzzleAudio } from './audioAssets.js';
+import { planPuzzleBoardLayout, puzzleSwapChromeMetrics } from './PuzzleBoardLayout.js';
+import { PuzzleAudioDirector } from './presentation/PuzzleAudioDirector.js';
+import { createPuzzleFeedbackDirector, emitPuzzleSparkles } from './presentation/PuzzleFeedback.js';
+import { createPuzzleScenePresentation } from './presentation/PuzzleScenePresentation.js';
 import { puzzleUiTextureKeys, puzzleVisualAssets } from './visualAssets.js';
+import type { PuzzlePerformanceScenario } from '../../lab/PuzzlePerformanceScenario.js';
 
 interface BoardBounds {
   readonly x: number;
@@ -48,10 +53,6 @@ interface ActivePieceMove {
 }
 
 const puzzleGold = 0xf8dfa0;
-const puzzlePineDark = 0x082821;
-const puzzleNight = 0x09143b;
-const puzzlePine = 0x0f493a;
-const puzzleCranberry = 0x8f1d35;
 
 function formatDuration(durationMs: number): string {
   const totalSeconds = Math.max(0, Math.floor(durationMs / 1000));
@@ -72,7 +73,10 @@ export function createPuzzleSwapGame(
   context: GameContext,
 ): GameController {
   const textureKey = `puzzle-source-${context.run.runId}`;
-  const topology = selectPuzzleTopology(context.selectedPhoto.aspectRatio);
+  const topology = selectPuzzleTopology(
+    context.selectedPhoto.aspectRatio,
+    context.difficulty === 'desafio' ? 'desafio' : 'normal',
+  );
 
   class PuzzleScene extends Phaser.Scene {
     private readonly scope = new SceneScope();
@@ -82,6 +86,13 @@ export function createPuzzleSwapGame(
     );
     private bounds?: BoardBounds;
     private selectedIndex: number | null = null;
+    /**
+     * A child can begin the next tap while the two prior pieces are settling.
+     * Preserve at most two intended next pairs and replay them after the
+     * tween, rather than silently throwing away a valid gesture on a slow
+     * renderer.
+     */
+    private readonly queuedTapIndexes: number[] = [];
     private hintIndexes: readonly number[] = [];
     private pointerDownIndex: number | null = null;
     private dragFeedbackStarted = false;
@@ -95,6 +106,10 @@ export function createPuzzleSwapGame(
     private progressText?: Phaser.GameObjects.Text;
     private timerText?: Phaser.GameObjects.Text;
     private instructionsText?: Phaser.GameObjects.Text;
+    private instructionsPanel?: Phaser.GameObjects.Rectangle;
+    private hintTimer: Phaser.Time.TimerEvent | undefined;
+    private hintStageTimer: Phaser.Time.TimerEvent | undefined;
+    private nextHintAvailableAt = 0;
     private pauseBounds?: TouchBounds;
     private hintBounds?: TouchBounds;
     private audioBounds?: TouchBounds;
@@ -104,17 +119,15 @@ export function createPuzzleSwapGame(
     private winScrim?: Phaser.GameObjects.Rectangle;
     private boardFrame?: Phaser.GameObjects.Rectangle;
     private sourcePreview?: Phaser.GameObjects.Image;
-    private snowEmitter?: Phaser.GameObjects.Particles.ParticleEmitter;
     private snowSpawnZone?: Phaser.Geom.Rectangle;
-    private feedback?: FeedbackDirector<Phaser.GameObjects.Rectangle>;
-    private music: Phaser.Sound.BaseSound | undefined;
+    private feedback?: ReturnType<typeof createPuzzleFeedbackDirector>;
+    private audio?: PuzzleAudioDirector;
     private lastDisplayedSecond = -1;
     private interactive = false;
     private movingPieces = false;
     private activePieceMove: ActivePieceMove | undefined;
     private introPlayed = false;
-    private audioEnabled = true;
-    private awaitingMusicUnlock = false;
+    private developmentScenarioStarted = false;
     private assetFailure = false;
     private readonly requiredTextureKeys = new Set([
       textureKey,
@@ -122,7 +135,9 @@ export function createPuzzleSwapGame(
       puzzleVisualAssets.snow.key,
       ...puzzleUiTextureKeys,
     ]);
-    private readonly reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    private readonly reducedMotion =
+      context.preferences?.reducedMotion ??
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
     constructor() {
       super('PuzzleSwapScene');
@@ -182,61 +197,42 @@ export function createPuzzleSwapGame(
       this.scope.texture(this.textures, puzzleVisualAssets.background.key);
       this.scope.texture(this.textures, puzzleVisualAssets.snow.key);
       puzzleUiTextureKeys.forEach((key) => this.scope.texture(this.textures, key));
-      this.createChristmasBackdrop();
-      this.createBoardPresentation();
-      this.add
-        .rectangle(0, 0, 1, 1, 0x082821, 0.92)
-        .setStrokeStyle(1, puzzleGold, 0.4)
-        .setName('puzzle-hud-panel')
-        .setDepth(3);
-      this.add
-        .text(0, 0, 'QUEBRA-CABEÇA', {
-          color: christmasTheme.color.snow,
-          fontFamily: 'system-ui, sans-serif',
-          fontSize: '13px',
-          fontStyle: 'bold',
-        })
-        .setName('puzzle-title')
-        .setDepth(4)
-        .setOrigin(0, 0.5);
-      this.progressText = this.add
-        .text(0, 0, '', {
-          color: christmasTheme.color.gold,
-          fontFamily: 'system-ui, sans-serif',
-          fontSize: '11px',
-          align: 'center',
-        })
-        .setName('puzzle-progress')
-        .setDepth(4)
-        .setOrigin(0, 0.5);
-      this.timerText = this.add
-        .text(0, 0, '00:00', {
-          color: christmasTheme.color.snow,
-          fontFamily: 'ui-monospace, SFMono-Regular, monospace',
-          fontSize: '13px',
-          fontStyle: 'bold',
-        })
-        .setName('puzzle-timer')
-        .setDepth(4)
-        .setOrigin(0.5);
-      this.instructionsText = this.add
-        .text(0, 0, 'Toque em duas peças ou arraste uma até outra.', {
-          color: christmasTheme.color.snow,
-          fontFamily: 'system-ui, sans-serif',
-          fontSize: '13px',
-          align: 'center',
-          wordWrap: { width: 280 },
-        })
-        .setName('puzzle-instructions')
-        .setDepth(4)
-        .setOrigin(0.5);
-      this.createHudButton('puzzle-hint-button', puzzleVisualAssets.hint.key, 'Dica');
-      this.createHudButton('puzzle-pause-button', puzzleVisualAssets.pause.key, 'Pausar');
-      this.createHudButton('puzzle-audio-button', puzzleVisualAssets.soundOn.key, 'Som');
-      this.createPauseOverlay();
-      this.createWinOverlay();
-      this.createFeedbackDirector();
-      this.createAmbientSnow();
+      this.audio = new PuzzleAudioDirector({
+        Phaser,
+        scene: this,
+        scope: this.scope,
+        initiallyEnabled: context.preferences?.soundEnabled ?? true,
+      });
+      const presentation = createPuzzleScenePresentation({
+        Phaser,
+        scene: this,
+        scope: this.scope,
+        textureKey,
+        quality: context.quality,
+        reducedMotion: this.reducedMotion,
+        random: context.random,
+        audioEnabled: this.audio.soundEnabled,
+      });
+      this.boardFrame = presentation.boardFrame;
+      this.sourcePreview = presentation.sourcePreview;
+      this.progressText = presentation.progressText;
+      this.timerText = presentation.timerText;
+      this.instructionsPanel = presentation.instructionsPanel;
+      this.instructionsText = presentation.instructionsText;
+      this.pauseOverlay = presentation.pauseOverlay;
+      this.winOverlay = presentation.winOverlay;
+      this.winDurationText = presentation.winDurationText;
+      this.winScrim = presentation.winScrim;
+      if (presentation.snowSpawnZone) this.snowSpawnZone = presentation.snowSpawnZone;
+      this.feedback = createPuzzleFeedbackDirector({
+        scene: this,
+        scope: this.scope,
+        random: context.random,
+        haptics: context.haptics,
+        quality: context.quality,
+        reducedMotion: this.reducedMotion,
+        playSound: (cue) => this.audio?.playFeedbackSound(cue),
+      });
 
       this.input.dragDistanceThreshold = puzzleSwapTuning.dragDistanceThresholdPx;
       this.scope.add(() =>
@@ -269,6 +265,11 @@ export function createPuzzleSwapGame(
         this.timerText?.setText(formatDuration(elapsedMs));
       }
 
+      // A gentle idle hint must never take control away from a child who has
+      // already chosen a piece, nor compete with the settling animation of a
+      // real swap. Both states are active play, not inactivity.
+      if (this.selectedIndex !== null || this.movingPieces) return;
+
       const result = requestIdleAssist(
         this.board,
         this.idleAssist,
@@ -280,7 +281,7 @@ export function createPuzzleSwapGame(
     }
 
     private readonly handlePointerDown = (pointer: Phaser.Input.Pointer): void => {
-      this.startMusicAfterGesture();
+      this.audio?.startMusicAfterGesture();
       this.dragFeedbackStarted = false;
       if (!this.interactive || this.movingPieces) {
         this.pointerDownIndex = null;
@@ -329,14 +330,19 @@ export function createPuzzleSwapGame(
       this.dragFeedbackStarted = true;
       const pressedBorder = this.borders[pressedIndex];
       if (pressedBorder) this.feedback?.tap(pressedBorder);
-      this.emitSparkles(pointer.x, pointer.y, 3, 260);
+      emitPuzzleSparkles(this, this.scope, context.random, pointer.x, pointer.y, 3, 260);
     };
 
     private readonly handlePointerUp = (pointer: Phaser.Input.Pointer): void => {
       const wasDragging = this.dragFeedbackStarted;
       this.dragFeedbackStarted = false;
-      if (!this.interactive || this.movingPieces) {
+      if (!this.interactive) {
         this.pointerDownIndex = null;
+        return;
+      }
+      if (this.movingPieces) {
+        this.pointerDownIndex = null;
+        this.queueTapWhilePiecesSettle(pointer);
         return;
       }
       if (this.paused) {
@@ -365,11 +371,31 @@ export function createPuzzleSwapGame(
         pressedIndex !== releasedIndex &&
         pointer.getDistance() >= puzzleSwapTuning.dragDistanceThresholdPx
       ) {
-        if (wasDragging) this.emitSparkles(pointer.x, pointer.y, 4, 300);
+        if (wasDragging)
+          emitPuzzleSparkles(this, this.scope, context.random, pointer.x, pointer.y, 4, 300);
         this.applySwap({ firstIndex: pressedIndex, secondIndex: releasedIndex });
         return;
       }
 
+      this.applyCellTap(releasedIndex);
+    };
+
+    private queueTapWhilePiecesSettle(pointer: Phaser.Input.Pointer): void {
+      if (
+        this.paused ||
+        pointer.getDistance() >= puzzleSwapTuning.dragDistanceThresholdPx ||
+        this.isInside(pointer.x, pointer.y, this.pauseBounds) ||
+        this.isInside(pointer.x, pointer.y, this.hintBounds) ||
+        this.isInside(pointer.x, pointer.y, this.audioBounds)
+      ) {
+        return;
+      }
+      const cellIndex = this.cellIndexAt(pointer.x, pointer.y);
+      if (cellIndex === null || this.queuedTapIndexes.length >= 4) return;
+      this.queuedTapIndexes.push(cellIndex);
+    }
+
+    private applyCellTap(releasedIndex: number): void {
       const selectionResult = selectPuzzleCell(
         this.board,
         { selectedIndex: this.selectedIndex },
@@ -381,12 +407,39 @@ export function createPuzzleSwapGame(
       else {
         this.updateSelectionBorders();
         const target = this.borders[releasedIndex];
-        if (target && this.selectedIndex !== null) this.feedback?.select(target);
-        else if (target && selectedBeforeTap === releasedIndex) this.feedback?.wrong(target);
+        if (target && this.selectedIndex !== null) {
+          this.showCoachMark('Agora toque em outra peça para trocar.');
+          this.feedback?.select(target);
+        } else if (target && selectedBeforeTap === releasedIndex) {
+          this.showCoachMark('Toque em uma peça para escolher.');
+          this.feedback?.wrong(target);
+        }
       }
-    };
+    }
 
-    private applySwap(swap: { firstIndex: number; secondIndex: number }): void {
+    private replayQueuedTaps(): void {
+      if (
+        this.movingPieces ||
+        this.completed ||
+        this.paused ||
+        !this.interactive ||
+        context.run.state !== 'started'
+      ) {
+        return;
+      }
+      const cellIndex = this.queuedTapIndexes.shift();
+      if (cellIndex === undefined) return;
+      this.applyCellTap(cellIndex);
+      // The first queued tap only selects a piece. The second one is the
+      // child's matching tap and can be handled immediately; a resulting
+      // swap stops this recursion until its own tween has finished.
+      if (!this.movingPieces) this.replayQueuedTaps();
+    }
+
+    private applySwap(
+      swap: { firstIndex: number; secondIndex: number },
+      afterMove?: () => void,
+    ): void {
       if (this.movingPieces || this.completed) return;
       const progressBefore = getPuzzleProgress(this.board);
       const firstPiece = this.pieces[swap.firstIndex];
@@ -402,10 +455,11 @@ export function createPuzzleSwapGame(
       this.updateSelectionBorders();
       this.updateProgress();
 
+      const progressAfter = getPuzzleProgress(this.board);
       const newlyCorrect = [swap.firstIndex, swap.secondIndex].filter(
         (cellIndex) =>
           this.board.pieces[cellIndex] === cellIndex &&
-          progressBefore.correctPieces < getPuzzleProgress(this.board).correctPieces,
+          progressBefore.correctPieces < progressAfter.correctPieces,
       );
       this.movingPieces = true;
       const finishMove = (): void => {
@@ -414,311 +468,30 @@ export function createPuzzleSwapGame(
           const feedbackTarget = this.borders[cellIndex];
           if (feedbackTarget) this.feedback?.correct(feedbackTarget);
         }
+        if (newlyCorrect.length === 0) {
+          const feedbackTarget = this.borders[swap.secondIndex] ?? this.borders[swap.firstIndex];
+          if (feedbackTarget) this.feedback?.wrong(feedbackTarget);
+        }
         if (isPuzzleSolved(this.board)) this.completePuzzle();
+        else {
+          context.run.interactionSettled();
+          this.replayQueuedTaps();
+        }
+        afterMove?.();
       };
       this.tweenPiecesToCells([swap.firstIndex, swap.secondIndex], finishMove);
     }
 
-    private createChristmasBackdrop(): void {
-      this.add
-        .image(0, 0, puzzleVisualAssets.background.key)
-        .setName('puzzle-background-art')
-        .setDepth(-1)
-        .setOrigin(0.5);
-      this.add
-        .rectangle(0, 0, 1, 1, puzzleNight, 0.56)
-        .setOrigin(0)
-        .setName('puzzle-backdrop')
-        .setDepth(0);
-      this.add
-        .rectangle(0, 0, 1, 1, puzzlePine, 0.78)
-        .setOrigin(0)
-        .setName('puzzle-pine-horizon')
-        .setDepth(0);
-      this.add
-        .rectangle(0, 0, 1, 1, puzzleCranberry, 0.34)
-        .setOrigin(0)
-        .setName('puzzle-ribbon')
-        .setDepth(0);
-      this.add
-        .text(0, 0, '✦', {
-          color: christmasTheme.color.gold,
-          fontFamily: 'system-ui, sans-serif',
-          fontSize: '28px',
-        })
-        .setName('puzzle-star-left')
-        .setDepth(0)
-        .setAlpha(0.52)
-        .setOrigin(0.5);
-      this.add
-        .text(0, 0, '✦', {
-          color: christmasTheme.color.snow,
-          fontFamily: 'system-ui, sans-serif',
-          fontSize: '18px',
-        })
-        .setName('puzzle-star-right')
-        .setDepth(0)
-        .setAlpha(0.4)
-        .setOrigin(0.5);
-    }
-
-    private createBoardPresentation(): void {
-      this.boardFrame = this.add
-        .rectangle(0, 0, 1, 1, 0x020813, 0.38)
-        .setStrokeStyle(3, puzzleGold, 0.94)
-        .setDepth(0.8)
-        .setName('puzzle-board-frame');
-      this.sourcePreview = this.add
-        .image(0, 0, textureKey)
-        .setOrigin(0.5)
-        .setDepth(2.5)
-        .setVisible(false)
-        .setName('puzzle-photo-reveal');
-    }
-
-    private createAmbientSnow(): void {
-      if (context.quality === 'LOW') return;
-      if (this.reducedMotion) return;
-      this.snowSpawnZone = new Phaser.Geom.Rectangle(0, -28, this.scale.gameSize.width, 28);
-      this.snowEmitter = this.scope.resource(
-        this.add
-          .particles(0, 0, puzzleVisualAssets.snow.key, {
-            alpha: { start: 0.78, end: 0.1 },
-            advance: 3_600,
-            emitZone: {
-              type: 'random',
-              source: {
-                getRandomPoint: (point) => {
-                  const zone = this.snowSpawnZone;
-                  if (!zone) return;
-                  point.x = zone.x + context.random.next() * zone.width;
-                  point.y = zone.y + context.random.next() * zone.height;
-                },
-              },
-            },
-            frequency: context.quality === 'HIGH' ? 360 : 560,
-            gravityY: 5,
-            lifespan: { min: 6_500, max: 10_500 },
-            maxAliveParticles: 18,
-            maxParticles: 20,
-            quantity: 1,
-            radial: false,
-            reserve: 18,
-            scale: { start: 0.26, end: 0.11, ease: 'Sine.easeOut' },
-            speedX: { min: -11, max: 13 },
-            speedY: { min: 62, max: 96 },
-          })
-          .setDepth(0.7)
-          .setName('puzzle-ambient-snow'),
-      );
-    }
-
-    private createHudButton(name: string, iconKey: string, label: string): void {
-      this.add
-        .rectangle(0, 0, 42, 38, puzzleCranberry, 0.86)
-        .setStrokeStyle(1, puzzleGold, 0.75)
-        .setName(`${name}-surface`)
-        .setDepth(4);
-      this.add.image(0, 0, iconKey).setName(name).setDepth(5).setDisplaySize(20, 20).setOrigin(0.5);
-      this.add
-        .text(0, 0, label, {
-          color: christmasTheme.color.snow,
-          fontFamily: 'system-ui, sans-serif',
-          fontSize: '9px',
-          fontStyle: 'bold',
-        })
-        .setName(`${name}-label`)
-        .setDepth(5)
-        .setOrigin(0.5);
-    }
-
-    private createPauseOverlay(): void {
-      const panel = this.add
-        .rectangle(0, 0, 286, 156, puzzlePineDark, 0.98)
-        .setStrokeStyle(2, puzzleGold, 0.95);
-      const title = this.add
-        .text(0, -36, 'PAUSA', {
-          color: christmasTheme.color.gold,
-          fontFamily: 'system-ui, sans-serif',
-          fontSize: '22px',
-          fontStyle: 'bold',
-        })
-        .setOrigin(0.5);
-      const message = this.add
-        .text(0, 8, 'O jogo espera por você.\nToque para continuar.', {
-          color: christmasTheme.color.snow,
-          fontFamily: 'system-ui, sans-serif',
-          fontSize: '15px',
-          align: 'center',
-        })
-        .setOrigin(0.5);
-      this.pauseOverlay = this.add
-        .container(0, 0, [panel, title, message])
-        .setDepth(8)
-        .setVisible(false)
-        .setName('puzzle-pause-overlay');
-    }
-
-    private createWinOverlay(): void {
-      this.winScrim = this.add
-        .rectangle(0, 0, 1, 1, 0x020713, 0)
-        .setOrigin(0)
-        .setDepth(10)
-        .setVisible(false)
-        .setName('puzzle-win-scrim');
-      const panel = this.add
-        .rectangle(0, 0, 304, 192, puzzlePineDark, 0.98)
-        .setStrokeStyle(3, puzzleGold, 0.98);
-      const eyebrow = this.add
-        .text(0, -58, 'MISSÃO CONCLUÍDA', {
-          color: christmasTheme.color.gold,
-          fontFamily: 'system-ui, sans-serif',
-          fontSize: '13px',
-          fontStyle: 'bold',
-        })
-        .setOrigin(0.5);
-      const title = this.add
-        .text(0, -24, 'Feliz Natal! ✦', {
-          color: christmasTheme.color.snow,
-          fontFamily: 'system-ui, sans-serif',
-          fontSize: '27px',
-          fontStyle: 'bold',
-        })
-        .setOrigin(0.5);
-      const message = this.add
-        .text(0, 19, 'Você montou essa lembrança\nem ' + '00:00', {
-          color: christmasTheme.color.snow,
-          fontFamily: 'system-ui, sans-serif',
-          fontSize: '15px',
-          align: 'center',
-        })
-        .setOrigin(0.5)
-        .setName('puzzle-win-duration');
-      this.winDurationText = message;
-      const continueLabel = this.add
-        .text(0, 68, 'Use “Sair do jogo” para escolher outra foto.', {
-          color: christmasTheme.color.gold,
-          fontFamily: 'system-ui, sans-serif',
-          fontSize: '11px',
-          align: 'center',
-        })
-        .setOrigin(0.5);
-      this.winOverlay = this.add
-        .container(0, 0, [panel, eyebrow, title, message, continueLabel])
-        .setDepth(11)
-        .setVisible(false)
-        .setName('puzzle-win-overlay');
-    }
-
-    private createFeedbackDirector(): void {
-      const motion = this.reducedMotion ? 'reduced' : 'full';
-      const haptics = new HapticFeedback(context.haptics);
-      this.feedback = createChristmasEffects(
-        { quality: context.quality, motion, soundEnabled: true },
-        {
-          animate: (target, instruction): void => {
-            if (!target.active) return;
-            const scale = instruction.motion.scale ?? 1;
-            this.scope.resource(
-              this.tweens.add({
-                targets: target,
-                scaleX: scale,
-                scaleY: scale,
-                duration: instruction.motion.durationMs,
-                ease: instruction.motion.easing,
-                yoyo: scale !== 1,
-              }),
-            );
-          },
-          emitParticles: (target, instruction): void => {
-            if (!instruction.particles) return;
-            this.emitSparkles(
-              target.x,
-              target.y,
-              instruction.particles.count,
-              instruction.particles.lifetimeMs,
-            );
-          },
-          haptic: (cue) => haptics.cue(cue),
-          playSound: (cue) => this.playFeedbackSound(cue),
-        },
-      );
-    }
-
-    private emitSparkles(x: number, y: number, count: number, lifetimeMs: number): void {
-      for (let index = 0; index < count; index += 1) {
-        const angle = (Math.PI * 2 * index) / count;
-        const distance = 18 + context.random.next() * 28;
-        const sparkle = this.add
-          .text(x, y, '✦', {
-            color: index % 2 === 0 ? christmasTheme.color.gold : christmasTheme.color.snow,
-            fontFamily: 'system-ui, sans-serif',
-            fontSize: '14px',
-          })
-          .setOrigin(0.5)
-          .setDepth(10);
-        this.scope.add(() => sparkle.destroy());
-        this.scope.resource(
-          this.tweens.add({
-            targets: sparkle,
-            x: x + Math.cos(angle) * distance,
-            y: y + Math.sin(angle) * distance,
-            alpha: 0,
-            scaleX: 1.45,
-            scaleY: 1.45,
-            duration: lifetimeMs,
-            ease: 'Cubic.easeOut',
-            onComplete: () => sparkle.destroy(),
-          }),
-        );
-      }
-    }
-
-    private startMusicAfterGesture(): void {
-      if (!this.audioEnabled || this.music?.isPlaying || this.awaitingMusicUnlock) return;
-      const start = (): void => {
-        this.awaitingMusicUnlock = false;
-        if (!this.audioEnabled || this.music?.isPlaying) return;
-        this.music = this.sound.add(puzzleAudio.music.key, { loop: true, volume: 0.13 });
-        this.scope.resource(this.music);
-        this.music.play();
-      };
-      if (this.sound.locked) {
-        this.awaitingMusicUnlock = true;
-        this.sound.once(Phaser.Sound.Events.UNLOCKED, start);
-        this.scope.add(() => {
-          this.awaitingMusicUnlock = false;
-          this.sound.off(Phaser.Sound.Events.UNLOCKED, start);
-        });
-        return;
-      }
-      start();
-    }
-
-    private playFeedbackSound(cue: string): void {
-      if (!this.audioEnabled) return;
-      const key = puzzleSfxKeyByCue[cue];
-      if (!key) return;
-      const volume = cue === 'christmas.win' ? 0.36 : cue === 'feedback.correct' ? 0.3 : 0.2;
-      this.sound.play(key, { volume });
-    }
-
     private toggleAudio(): void {
-      this.audioEnabled = !this.audioEnabled;
+      const audio = this.audio;
+      if (!audio) return;
+      const audioEnabled = audio.toggleAfterGesture();
       const icon = this.children.getByName('puzzle-audio-button') as Phaser.GameObjects.Image;
       const label = this.children.getByName('puzzle-audio-button-label') as Phaser.GameObjects.Text;
       icon.setTexture(
-        this.audioEnabled ? puzzleVisualAssets.soundOn.key : puzzleVisualAssets.soundOff.key,
+        audioEnabled ? puzzleVisualAssets.soundOn.key : puzzleVisualAssets.soundOff.key,
       );
-      label.setText(this.audioEnabled ? 'Som' : 'Mudo');
-      if (!this.audioEnabled) {
-        this.awaitingMusicUnlock = false;
-        this.music?.stop();
-        this.music?.destroy();
-        this.music = undefined;
-      } else {
-        this.startMusicAfterGesture();
-      }
+      label.setText(audioEnabled ? 'Som' : 'Mudo');
     }
 
     private playEntrance(): void {
@@ -765,6 +538,88 @@ export function createPuzzleSwapGame(
       if (this.completed) return;
       this.interactive = true;
       context.run.start();
+      this.runDevelopmentScenario();
+    }
+
+    /**
+     * Development scenarios remain inside the Scene so they exercise the
+     * production hint, swap, pause, feedback and completion code. React only
+     * passes a local label through the typed context; it never reaches a Scene
+     * or mutates puzzle state itself.
+     */
+    private runDevelopmentScenario(): void {
+      if (this.developmentScenarioStarted) return;
+      const scenario = context.development?.scenario as PuzzlePerformanceScenario | undefined;
+      if (!scenario || scenario === 'idle') return;
+      this.developmentScenarioStarted = true;
+
+      if (scenario === 'selection') {
+        const cellIndex = this.firstIncorrectCellIndex();
+        this.selectedIndex = cellIndex;
+        this.updateSelectionBorders();
+        const border = this.borders[cellIndex];
+        if (border) this.feedback?.select(border);
+        this.showCoachMark('Agora toque em outra peça para trocar.');
+        return;
+      }
+      if (scenario === 'hint') {
+        this.showManualHint();
+        return;
+      }
+      if (scenario === 'correct') {
+        const hint = findPuzzleHintSwap(this.board);
+        if (hint)
+          this.applySwap({ firstIndex: hint.targetCellIndex, secondIndex: hint.sourceCellIndex });
+        return;
+      }
+      if (scenario === 'victory') {
+        this.playDevelopmentVictory();
+        return;
+      }
+      if (scenario === 'pause') this.togglePause();
+    }
+
+    private firstIncorrectCellIndex(): number {
+      const cellIndex = this.board.pieces.findIndex((pieceId, index) => pieceId !== index);
+      if (cellIndex < 0) throw new Error('Development scenario needs an unsolved puzzle board.');
+      return cellIndex;
+    }
+
+    private playDevelopmentVictory(): void {
+      const swaps = this.solveCurrentBoard();
+      const playNext = (): void => {
+        if (this.completed) return;
+        const swap = swaps[0];
+        if (!swap) return;
+        // A timer is not proof that the tween callback has run on a busy
+        // mobile frame. Keep the pending swap until the active move reports
+        // completion, otherwise a diagnostic run could silently skip a move.
+        if (this.movingPieces) {
+          this.scope.resource(this.time.delayedCall(16, playNext));
+          return;
+        }
+        swaps.shift();
+        this.applySwap(swap, () => {
+          if (!this.completed) this.scope.resource(this.time.delayedCall(48, playNext));
+        });
+      };
+      playNext();
+    }
+
+    private solveCurrentBoard(): PuzzleSwap[] {
+      let board = this.board;
+      const swaps: PuzzleSwap[] = [];
+      for (let targetCellIndex = 0; targetCellIndex < board.pieces.length; targetCellIndex += 1) {
+        if (board.pieces[targetCellIndex] === targetCellIndex) continue;
+        const sourceCellIndex = board.pieces.indexOf(targetCellIndex);
+        if (sourceCellIndex < 0) throw new Error('Puzzle board lost a required piece.');
+        const swap = { firstIndex: targetCellIndex, secondIndex: sourceCellIndex };
+        board = swapPuzzlePieces(board, swap);
+        swaps.push(swap);
+      }
+      if (!isPuzzleSolved(board))
+        throw new Error('Development victory sequence must solve the board.');
+      return swaps;
     }
 
     private tweenPiecesToCells(cellIndexes: readonly number[], onComplete: () => void): void {
@@ -829,38 +684,39 @@ export function createPuzzleSwapGame(
 
     private revealHint(cellIndex: number): void {
       if (context.run.state !== 'started' || this.completed) return;
+      if (this.time.now < this.nextHintAvailableAt) return;
       const hint = findPuzzleHintSwap(this.board, cellIndex);
       if (!hint) return;
-      this.hintIndexes = [hint.targetCellIndex, hint.sourceCellIndex];
+      this.clearHint();
+      this.nextHintAvailableAt = this.time.now + puzzleSwapTuning.hintCooldownMs;
       this.selectedIndex = null;
-      this.instructionsText?.setText('Troque as duas peças que estão brilhando.');
+      this.hintIndexes = [hint.targetCellIndex];
+      this.showCoachMark('Primeiro, encontre a borda verde.');
       this.updateSelectionBorders();
       const target = this.borders[hint.targetCellIndex];
-      const source = this.borders[hint.sourceCellIndex];
       if (target) this.feedback?.hint(target);
-      const hintBorders = [target, source].filter(
-        (border): border is Phaser.GameObjects.Rectangle => Boolean(border),
-      );
-      if (!this.reducedMotion && hintBorders.length > 0) {
-        this.scope.resource(
-          this.tweens.add({
-            targets: hintBorders,
-            alpha: 0.34,
-            duration: 220,
-            ease: 'Sine.easeInOut',
-            yoyo: true,
-            repeat: 2,
-          }),
-        );
-      }
-      this.scope.resource(
-        this.time.delayedCall(1_450, () => {
-          if (
-            this.hintIndexes[0] === hint.targetCellIndex &&
-            this.hintIndexes[1] === hint.sourceCellIndex
-          ) {
-            this.clearHint();
-          }
+      this.pulseHintBorder(target);
+      this.hintStageTimer = this.scope.resource(
+        this.time.delayedCall(puzzleSwapTuning.hintFirstStepDelayMs, () => {
+          this.hintStageTimer = undefined;
+          if (this.hintIndexes[0] !== hint.targetCellIndex || this.completed) return;
+          this.hintIndexes = [hint.targetCellIndex, hint.sourceCellIndex];
+          this.showCoachMark('Agora, troque a peça verde com a dourada.');
+          this.updateSelectionBorders();
+          this.pulseHintBorder(this.borders[hint.sourceCellIndex]);
+          this.hintTimer = this.scope.resource(
+            this.time.delayedCall(
+              puzzleSwapTuning.hintTotalDurationMs - puzzleSwapTuning.hintFirstStepDelayMs,
+              () => {
+                if (
+                  this.hintIndexes[0] === hint.targetCellIndex &&
+                  this.hintIndexes[1] === hint.sourceCellIndex
+                ) {
+                  this.clearHint();
+                }
+              },
+            ),
+          );
         }),
       );
     }
@@ -873,13 +729,65 @@ export function createPuzzleSwapGame(
 
     private clearHint(): void {
       this.hintIndexes = [];
-      this.instructionsText?.setText('Toque em duas peças ou arraste uma até outra.');
+      this.hintStageTimer?.remove();
+      this.hintStageTimer = undefined;
+      this.hintTimer?.remove();
+      this.hintTimer = undefined;
       this.updateSelectionBorders();
+      this.hideCoachMark();
+    }
+
+    private pulseHintBorder(border: Phaser.GameObjects.Rectangle | undefined): void {
+      if (this.reducedMotion || !border) return;
+      this.scope.resource(
+        this.tweens.add({
+          targets: border,
+          alpha: 0.34,
+          duration: 180,
+          ease: 'Sine.easeInOut',
+          yoyo: true,
+          repeat: 1,
+        }),
+      );
+    }
+
+    private showCoachMark(instruction: string): void {
+      const panel = this.instructionsPanel;
+      const text = this.instructionsText;
+      if (!panel || !text) return;
+      this.tweens.killTweensOf([panel, text]);
+      panel.setVisible(true).setAlpha(1);
+      text.setText(instruction).setVisible(true).setAlpha(1);
+    }
+
+    private hideCoachMark(): void {
+      const panel = this.instructionsPanel;
+      const text = this.instructionsText;
+      if (!panel || !text || !panel.visible) return;
+      if (this.reducedMotion) {
+        panel.setVisible(false);
+        text.setVisible(false);
+        return;
+      }
+      this.tweens.killTweensOf([panel, text]);
+      this.scope.resource(
+        this.tweens.add({
+          targets: [panel, text],
+          alpha: 0,
+          duration: 140,
+          ease: 'Sine.easeOut',
+          onComplete: () => {
+            panel.setVisible(false);
+            text.setVisible(false);
+          },
+        }),
+      );
     }
 
     private togglePause(): void {
       if (this.completed) return;
       this.paused = !this.paused;
+      if (this.paused) this.queuedTapIndexes.length = 0;
       this.pauseOverlay?.setVisible(this.paused);
       const pauseButton = this.children.getByName(
         'puzzle-pause-button',
@@ -891,16 +799,19 @@ export function createPuzzleSwapGame(
         this.paused ? puzzleVisualAssets.play.key : puzzleVisualAssets.pause.key,
       );
       pauseLabel.setText(this.paused ? 'Jogar' : 'Pausar');
+      if (this.paused) this.clearHint();
       if (this.paused) context.run.pause();
       else context.run.resume();
-      if (this.paused) this.music?.pause();
-      else this.music?.resume();
+      if (this.paused) this.audio?.pause();
+      else this.audio?.resume();
     }
 
     private completePuzzle(): void {
       if (this.completed) return;
       this.completed = true;
       this.interactive = false;
+      this.queuedTapIndexes.length = 0;
+      this.hideCoachMark();
       const elapsedMs = context.run.complete();
       this.winDurationText?.setText(`Você montou essa lembrança\nem ${formatDuration(elapsedMs)}.`);
       this.sourcePreview?.setVisible(true).setAlpha(0);
@@ -1009,6 +920,9 @@ export function createPuzzleSwapGame(
       const instructions = this.children.getByName(
         'puzzle-instructions',
       ) as Phaser.GameObjects.Text;
+      const instructionsPanel = this.children.getByName(
+        'puzzle-instruction-panel',
+      ) as Phaser.GameObjects.Rectangle;
       const hudPanel = this.children.getByName('puzzle-hud-panel') as Phaser.GameObjects.Rectangle;
       const backdrop = this.children.getByName('puzzle-backdrop') as Phaser.GameObjects.Rectangle;
       const backgroundArt = this.children.getByName(
@@ -1020,7 +934,7 @@ export function createPuzzleSwapGame(
       ) as Phaser.GameObjects.Rectangle;
       const leftStar = this.children.getByName('puzzle-star-left') as Phaser.GameObjects.Text;
       const rightStar = this.children.getByName('puzzle-star-right') as Phaser.GameObjects.Text;
-      const hudHeight = 74;
+      const hudHeight = puzzleSwapChromeMetrics.hudHeightCssPx;
       const backgroundFrame = this.textures.get(puzzleVisualAssets.background.key).get();
       const backgroundScale = Math.max(
         viewport.width / backgroundFrame.width,
@@ -1032,36 +946,66 @@ export function createPuzzleSwapGame(
         .setPosition(0, viewport.height - viewport.safeBottom - 72)
         .setSize(viewport.width, 72)
         .setOrigin(0);
-      ribbon.setPosition(0, viewport.safeTop + 82).setSize(viewport.width, 8);
+      ribbon.setPosition(0, viewport.safeTop + 72).setSize(viewport.width, 8);
       leftStar.setPosition(28, viewport.safeTop + 118);
       rightStar.setPosition(viewport.width - 26, viewport.height - viewport.safeBottom - 82);
       if (this.snowSpawnZone) this.snowSpawnZone.width = viewport.width;
       hudPanel
         .setPosition(viewport.width / 2, viewport.safeTop + hudHeight / 2 + 6)
         .setSize(Math.max(1, viewport.width - 16), hudHeight);
-      title.setPosition(22, viewport.safeTop + 22);
-      this.progressText?.setPosition(22, viewport.safeTop + 49);
-      this.timerText?.setPosition(viewport.width - 48, viewport.safeTop + 22);
-      this.positionHudButton('puzzle-audio-button', viewport.width - 128, viewport.safeTop + 56);
-      this.positionHudButton('puzzle-hint-button', viewport.width - 78, viewport.safeTop + 56);
-      this.positionHudButton('puzzle-pause-button', viewport.width - 28, viewport.safeTop + 56);
-      instructions.setPosition(viewport.width / 2, viewport.height - viewport.safeBottom - 34);
+      title.setPosition(22, viewport.safeTop + puzzleSwapChromeMetrics.titleOffsetCssPx);
+      this.progressText?.setPosition(
+        22,
+        viewport.safeTop + puzzleSwapChromeMetrics.progressOffsetCssPx,
+      );
+      this.timerText?.setPosition(
+        viewport.width - 48,
+        viewport.safeTop + puzzleSwapChromeMetrics.titleOffsetCssPx,
+      );
+      this.positionHudButton(
+        'puzzle-audio-button',
+        viewport.width - 128,
+        viewport.safeTop + puzzleSwapChromeMetrics.controlOffsetCssPx,
+      );
+      this.positionHudButton(
+        'puzzle-hint-button',
+        viewport.width - 78,
+        viewport.safeTop + puzzleSwapChromeMetrics.controlOffsetCssPx,
+      );
+      this.positionHudButton(
+        'puzzle-pause-button',
+        viewport.width - 28,
+        viewport.safeTop + puzzleSwapChromeMetrics.controlOffsetCssPx,
+      );
+      const instructionWidth = Math.min(330, Math.max(230, viewport.width - 28));
+      instructionsPanel
+        .setPosition(
+          viewport.width / 2,
+          viewport.height -
+            viewport.safeBottom -
+            puzzleSwapChromeMetrics.coachMarkOffsetFromBottomCssPx,
+        )
+        .setSize(instructionWidth, 50);
+      instructions
+        .setPosition(
+          viewport.width / 2,
+          viewport.height -
+            viewport.safeBottom -
+            puzzleSwapChromeMetrics.coachMarkOffsetFromBottomCssPx,
+        )
+        .setWordWrapWidth(instructionWidth - 28);
 
-      const headerHeight = 98;
-      const footerHeight = 74;
-      const availableHeight = Math.max(1, viewport.contentHeight - headerHeight - footerHeight);
-      const availableWidth = Math.max(1, viewport.width - puzzleSwapTuning.boardInsetCssPx * 2);
-      const plan = planPuzzleGrid({
+      const boardLayout = planPuzzleBoardLayout({
+        viewport,
         photoAspectRatio: context.selectedPhoto.aspectRatio,
-        availableWidth,
-        availableHeight,
+        columns: this.board.columns,
+        rows: this.board.rows,
         preferredPieceCount: this.board.pieces.length,
         minimumCellSizeCssPx: puzzleSwapTuning.minimumCellSizeCssPx,
-        candidates: [{ columns: this.board.columns, rows: this.board.rows }],
+        boardInsetCssPx: puzzleSwapTuning.boardInsetCssPx,
       });
+      const { plan, x: boardX, y: boardY } = boardLayout;
       this.assertPlanMatchesBoard(plan);
-      const boardX = (viewport.width - plan.boardWidth) / 2;
-      const boardY = viewport.safeTop + headerHeight + (availableHeight - plan.boardHeight) / 2;
       this.bounds = { x: boardX, y: boardY, plan };
       this.boardFrame
         ?.setPosition(viewport.width / 2, boardY + plan.boardHeight / 2)

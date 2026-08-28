@@ -5,13 +5,36 @@
 ## Tree
 
 ```text
+├── .agents
+│   └── skills
+│       ├── diretor-jogo-natal
+│       │   └── SKILL.md
+│       └── revisao-visual-mobile
+│           └── SKILL.md
 ├── .dependency-cruiser.cjs
 ├── .gitignore
 ├── .node-version
 ├── .prettierignore
 ├── AGENTS.md
-├── analise.zip
 ├── apps
+│   ├── catalog-server
+│   │   ├── ASSET_PROVENANCE.md
+│   │   ├── config
+│   │   │   └── social-preview.example.json
+│   │   ├── nginx
+│   │   │   └── catalog-social-preview.conf.example
+│   │   ├── package.json
+│   │   ├── public
+│   │   │   └── social
+│   │   │       └── evydencia-christmas-v1.webp
+│   │   ├── README.md
+│   │   └── src
+│   │       ├── CatalogServer.test.ts
+│   │       ├── CatalogServer.ts
+│   │       ├── filePreviewRepository.test.ts
+│   │       ├── filePreviewRepository.ts
+│   │       ├── main.ts
+│   │       └── socialPreview.ts
 │   └── play
 │       ├── AGENTS.md
 │       ├── index.html
@@ -52,21 +75,31 @@
 │       │   │   ├── AppNavigation.ts
 │       │   │   ├── AppRouter.tsx
 │       │   │   ├── AppServices.ts
+│       │   │   ├── ExperienceSettings.test.ts
+│       │   │   ├── ExperienceSettings.ts
+│       │   │   ├── FixtureArt.test.ts
 │       │   │   ├── GameQuality.test.ts
 │       │   │   ├── GameQuality.ts
 │       │   │   ├── LocalTestSession.test.ts
 │       │   │   └── LocalTestSession.ts
 │       │   ├── audio
+│       │   │   ├── playInterfaceTap.test.ts
 │       │   │   └── playInterfaceTap.ts
+│       │   ├── components
+│       │   │   ├── CompletionActions.tsx
+│       │   │   ├── ShareButton.tsx
+│       │   │   └── StudioSignature.tsx
 │       │   ├── dev
 │       │   ├── main.tsx
 │       │   ├── phaser
 │       │   │   ├── createGame.ts
+│       │   │   ├── createRunIdentity.test.ts
 │       │   │   ├── createRunIdentity.ts
 │       │   │   ├── gameRegistry.ts
 │       │   │   ├── PhaserHost.tsx
 │       │   │   └── PhaserMountCoordinator.ts
 │       │   ├── screens
+│       │   │   ├── AssetLab.tsx
 │       │   │   ├── ExperienceLab.tsx
 │       │   │   ├── GameCard.tsx
 │       │   │   ├── GameCover.tsx
@@ -74,24 +107,32 @@
 │       │   │   ├── GameScreen.tsx
 │       │   │   ├── Hub.tsx
 │       │   │   ├── LoadingState.tsx
+│       │   │   ├── PerformanceLab.tsx
 │       │   │   └── ThemeLab.tsx
+│       │   ├── sharing
+│       │   │   ├── shareLink.test.ts
+│       │   │   └── shareLink.ts
 │       │   ├── styles.css
 │       │   └── vite-env.d.ts
 │       ├── vite.config.ts
 │       └── vite.localTestMedia.ts
 ├── ARCHITECTURE.md
 ├── assets-src
+│   ├── catalog-social
+│   │   └── evydencia-christmas-v1.png
 │   └── puzzle-swap
 │       └── backgrounds
 │           └── vila-nevada-noite-v1.png
 ├── docs
 │   ├── ai
+│   │   ├── CODEX_CAPABILITY_STACK.md
 │   │   └── PHASER_SKILL_MAP.md
 │   ├── analytics
 │   │   └── CONTRACTS.md
 │   ├── architecture
 │   │   ├── FOUNDATION.md
-│   │   └── GAME_FACTORY.md
+│   │   ├── GAME_FACTORY.md
+│   │   └── SHARING_AND_SOCIAL_PREVIEW.md
 │   ├── assets
 │   │   └── ASSET_MANIFEST_CONTRACT.md
 │   ├── design
@@ -102,55 +143,98 @@
 │   │   │   └── .gitkeep
 │   │   ├── CG-CHRISTMAS-NATIVE-LIKE-MATURITY.md
 │   │   ├── CG-EXPERIENCE-FACTORY-ROADMAP.md
+│   │   ├── CG-EXPERIENCE-INTELLIGENCE-AND-MOBILE-MATURITY.md
+│   │   ├── CG-MEMORY-IMPLEMENTATION.md
 │   │   ├── CG-PUZZLE-NATIVE-LIKE-ITERATION.md
 │   │   └── completed
 │   │       ├── CG-BOOTSTRAP.md
 │   │       ├── CG-GAME-FACTORY-HARDENING.md
 │   │       └── CG-PRODUCTION-CORRECTNESS.md
 │   ├── experience
-│   │   └── christmas
-│   │       ├── ART_BIBLE.md
-│   │       ├── AUDIO_BIBLE.md
-│   │       ├── CHARACTER_BIBLE.md
-│   │       ├── COMPONENT_DICTIONARY.md
-│   │       ├── LIGHTING_BIBLE.md
-│   │       ├── MOTION_BIBLE.md
-│   │       ├── MUSIC_BIBLE.md
-│   │       ├── PROMPT_RECIPES.md
-│   │       ├── SCENE_GRAMMAR.md
-│   │       └── style-anchors
-│   │           ├── master-style-frame-v1.png
-│   │           └── README.md
+│   │   ├── christmas
+│   │   │   ├── ART_BIBLE.md
+│   │   │   ├── AUDIO_BIBLE.md
+│   │   │   ├── CHARACTER_BIBLE.md
+│   │   │   ├── COMPONENT_DICTIONARY.md
+│   │   │   ├── LIGHTING_BIBLE.md
+│   │   │   ├── MOTION_BIBLE.md
+│   │   │   ├── MUSIC_BIBLE.md
+│   │   │   ├── PROMPT_RECIPES.md
+│   │   │   ├── recipes
+│   │   │   │   ├── BOTAO-PRESSIONADO.md
+│   │   │   │   ├── DICA-DE-DUAS-PECAS.md
+│   │   │   │   ├── LUZES-QUENTES.md
+│   │   │   │   ├── NEVE-DE-VITORIA.md
+│   │   │   │   ├── NEVE-SUAVE.md
+│   │   │   │   ├── PECA-ESCOLHIDA.md
+│   │   │   │   ├── README.md
+│   │   │   │   ├── TROCA-CORRETA.md
+│   │   │   │   ├── TROCA-SEM-SOLUCAO.md
+│   │   │   │   └── VITORIA.md
+│   │   │   ├── SCENE_GRAMMAR.md
+│   │   │   └── style-anchors
+│   │   │       ├── master-style-frame-v1.png
+│   │   │       └── README.md
+│   │   └── EXPERIENCE_REQUIREMENTS_CONTRACT.md
 │   ├── generated
 │   │   ├── evidence
 │   │   │   ├── android-412-dev-smoke.png
+│   │   │   ├── android-412-performance-lab-victory.png
 │   │   │   ├── android-412-puzzle-swap-complete.png
+│   │   │   ├── android-412-puzzle-swap-cover-landscape.png
+│   │   │   ├── android-412-puzzle-swap-drag.png
+│   │   │   ├── android-412-puzzle-swap-first-swap.png
+│   │   │   ├── android-412-puzzle-swap-hint-first.png
+│   │   │   ├── android-412-puzzle-swap-hint-second.png
 │   │   │   ├── android-412-puzzle-swap-landscape-native.png
 │   │   │   ├── android-412-puzzle-swap-low-reduced.png
 │   │   │   ├── android-412-puzzle-swap-native.png
 │   │   │   ├── android-412-puzzle-swap-paused.png
+│   │   │   ├── android-412-puzzle-swap-selection.png
+│   │   │   ├── diagnostic-tablet-first-swap.png
 │   │   │   ├── iphone-390-dev-smoke.png
+│   │   │   ├── iphone-390-performance-lab-victory.png
 │   │   │   ├── iphone-390-puzzle-swap-complete.png
+│   │   │   ├── iphone-390-puzzle-swap-cover-landscape.png
+│   │   │   ├── iphone-390-puzzle-swap-drag.png
+│   │   │   ├── iphone-390-puzzle-swap-first-swap.png
+│   │   │   ├── iphone-390-puzzle-swap-hint-first.png
+│   │   │   ├── iphone-390-puzzle-swap-hint-second.png
 │   │   │   ├── iphone-390-puzzle-swap-landscape-native.png
 │   │   │   ├── iphone-390-puzzle-swap-low-reduced.png
 │   │   │   ├── iphone-390-puzzle-swap-native.png
 │   │   │   ├── iphone-390-puzzle-swap-paused.png
+│   │   │   ├── iphone-390-puzzle-swap-selection.png
 │   │   │   ├── large-phone-430-dev-smoke.png
+│   │   │   ├── large-phone-430-performance-lab-victory.png
 │   │   │   ├── large-phone-430-puzzle-swap-complete.png
+│   │   │   ├── large-phone-430-puzzle-swap-cover-landscape.png
+│   │   │   ├── large-phone-430-puzzle-swap-drag.png
+│   │   │   ├── large-phone-430-puzzle-swap-first-swap.png
+│   │   │   ├── large-phone-430-puzzle-swap-hint-first.png
+│   │   │   ├── large-phone-430-puzzle-swap-hint-second.png
 │   │   │   ├── large-phone-430-puzzle-swap-landscape-native.png
 │   │   │   ├── large-phone-430-puzzle-swap-low-reduced.png
 │   │   │   ├── large-phone-430-puzzle-swap-native.png
 │   │   │   ├── large-phone-430-puzzle-swap-paused.png
+│   │   │   ├── large-phone-430-puzzle-swap-selection.png
 │   │   │   ├── local-private-cover-390.png
 │   │   │   ├── local-private-puzzle-390.png
 │   │   │   ├── local-private-puzzle-hint-390-y74.png
 │   │   │   ├── local-private-puzzle-hint-390.png
 │   │   │   ├── tablet-768-dev-smoke.png
+│   │   │   ├── tablet-768-performance-lab-victory.png
 │   │   │   ├── tablet-768-puzzle-swap-complete.png
+│   │   │   ├── tablet-768-puzzle-swap-cover-landscape.png
+│   │   │   ├── tablet-768-puzzle-swap-drag.png
+│   │   │   ├── tablet-768-puzzle-swap-first-swap.png
+│   │   │   ├── tablet-768-puzzle-swap-hint-first.png
+│   │   │   ├── tablet-768-puzzle-swap-hint-second.png
 │   │   │   ├── tablet-768-puzzle-swap-landscape-native.png
 │   │   │   ├── tablet-768-puzzle-swap-low-reduced.png
 │   │   │   ├── tablet-768-puzzle-swap-native.png
-│   │   │   └── tablet-768-puzzle-swap-paused.png
+│   │   │   ├── tablet-768-puzzle-swap-paused.png
+│   │   │   └── tablet-768-puzzle-swap-selection.png
 │   │   └── repo-map.md
 │   ├── index.md
 │   ├── lessons.md
@@ -163,23 +247,34 @@
 │   ├── privacy
 │   │   └── DATA_HANDLING.md
 │   ├── product
-│   │   └── games
-│   │       ├── present-match.md
-│   │       └── puzzle-slide.md
+│   │   ├── games
+│   │   │   ├── present-match.md
+│   │   │   └── puzzle-slide.md
+│   │   └── PRODUCT_DECISIONS_2026-08-25.md
 │   ├── quality
+│   │   ├── ANDROID_REFERENCE_PROTOCOL.md
+│   │   ├── ASSET_LAB_CONTRACT.md
+│   │   ├── GAME_EXPERIENCE_REVIEW.md
+│   │   ├── PERFORMANCE_MEASUREMENT_CONTRACT.md
 │   │   ├── QUALITY_GATES.md
 │   │   └── TRACEABILITY.md
 │   └── references
 │       ├── ASSET_FACTORY_OFFICIAL_VALIDATION.md
 │       ├── CHRISTMAS_NATIVE_LIKE_MATURITY_VALIDATION.md
+│       ├── EXPERIENCE_INTELLIGENCE_OFFICIAL_VALIDATION.md
+│       ├── MEMORY_OFFICIAL_VALIDATION.md
 │       ├── OFFICIAL_VALIDATION.md
 │       ├── PHASE_9_5_OFFICIAL_VALIDATION.md
 │       ├── PRODUCTION_CORRECTNESS_VALIDATION.md
+│       ├── PUZZLE_SWAP_BASELINE_2026-08-24.md
 │       ├── PUZZLE_SWAP_CORE_SOURCES.txt
+│       ├── PUZZLE_SWAP_COVER_REVIEW_2026-08-25.md
+│       ├── PUZZLE_SWAP_HUD_OWNERSHIP_2026-08-25.md
 │       ├── PUZZLE_SWAP_NATIVE_LIKE_VALIDATION.md
 │       └── REFERENCE_AUDIT.md
 ├── eslint.config.js
 ├── games.zip
+├── gptgames.zip
 ├── knip.json
 ├── package.json
 ├── packages
@@ -201,19 +296,33 @@
 │   │   │   ├── package.json
 │   │   │   ├── SPEC.md
 │   │   │   ├── src
+│   │   │   │   ├── definition.ts
 │   │   │   │   ├── domain
-│   │   │   │   │   └── .gitkeep
-│   │   │   │   └── index.ts
+│   │   │   │   │   ├── .gitkeep
+│   │   │   │   │   ├── MemoryDeck.ts
+│   │   │   │   │   ├── MemoryPhotoSelection.ts
+│   │   │   │   │   ├── MemoryProgress.ts
+│   │   │   │   │   └── MemoryTurn.ts
+│   │   │   │   ├── index.ts
+│   │   │   │   └── runtime
+│   │   │   │       ├── MemoryBoardLayout.ts
+│   │   │   │       ├── MemoryInteractionArbiter.ts
+│   │   │   │       └── phaser
+│   │   │   │           └── createMemoryGame.ts
 │   │   │   └── tests
 │   │   │       └── .gitkeep
 │   │   ├── puzzle-swap
 │   │   │   ├── ASSET_PROVENANCE.md
 │   │   │   ├── assets
 │   │   │   │   └── manifest.json
+│   │   │   ├── EXPERIENCE_REQUIREMENTS.json
+│   │   │   ├── EXPERIENCE.md
 │   │   │   ├── package.json
 │   │   │   ├── PLAN.md
 │   │   │   ├── SPEC.md
 │   │   │   ├── src
+│   │   │   │   ├── assets
+│   │   │   │   │   └── assetLabCatalog.ts
 │   │   │   │   ├── definition.ts
 │   │   │   │   ├── domain
 │   │   │   │   │   ├── .gitkeep
@@ -226,18 +335,28 @@
 │   │   │   │   │   ├── PuzzleTopology.ts
 │   │   │   │   │   └── Swap.ts
 │   │   │   │   ├── index.ts
+│   │   │   │   ├── lab
+│   │   │   │   │   └── PuzzlePerformanceScenario.ts
 │   │   │   │   ├── runtime
 │   │   │   │   │   └── phaser
 │   │   │   │   │       ├── .gitkeep
 │   │   │   │   │       ├── audioAssets.ts
 │   │   │   │   │       ├── createPuzzleSwapGame.ts
+│   │   │   │   │       ├── presentation
+│   │   │   │   │       │   ├── PuzzleAudioDirector.ts
+│   │   │   │   │       │   ├── PuzzleFeedback.ts
+│   │   │   │   │       │   └── PuzzleScenePresentation.ts
+│   │   │   │   │       ├── PuzzleBoardLayout.ts
 │   │   │   │   │       └── visualAssets.ts
 │   │   │   │   └── tuning.ts
 │   │   │   └── tests
 │   │   │       ├── .gitkeep
+│   │   │       ├── AssetLabCatalog.test.ts
 │   │   │       ├── GridPlanner.test.ts
 │   │   │       ├── PuzzleBoard.test.ts
+│   │   │       ├── PuzzleBoardLayout.test.ts
 │   │   │       ├── PuzzleInteraction.test.ts
+│   │   │       ├── PuzzlePerformanceScenario.test.ts
 │   │   │       ├── PuzzleShuffle.test.ts
 │   │   │       └── PuzzleTopology.test.ts
 │   │   └── tic-tac-toe
@@ -264,6 +383,7 @@
 │   │   │   │   ├── GameRunController.ts
 │   │   │   │   ├── HapticFeedback.ts
 │   │   │   │   ├── PageVisibilityController.ts
+│   │   │   │   ├── PerformanceMeasurements.ts
 │   │   │   │   ├── PhotoSurface.ts
 │   │   │   │   ├── SceneScope.ts
 │   │   │   │   └── TouchTarget.ts
@@ -305,11 +425,866 @@
 │       │       └── theme.ts
 │       └── tests
 │           └── game-feel.test.ts
+├── playwright-report-release-4221
+│   ├── data
+│   │   ├── 2511c19b54a67b0bcef8473e8acbc3f6b253e07a.md
+│   │   ├── 34d58279eededf00741c0f4ff536d939130ce718.md
+│   │   ├── 75452361dffe7da75a3d052670e0784be7b2daea.png
+│   │   ├── 8fc6bf75e2cf495b79240bb76a1b3506b84b0412.png
+│   │   ├── a230f8df0a99318813b1c874460b81376be1b663.md
+│   │   ├── a49ac6c1cd87bce0146afbfcb387b90ccf86baa1.zip
+│   │   ├── b9717c88f3d853e41923aef59a41002fc80d4134.png
+│   │   ├── c2712d44a5311a82766d13a5b7dd051e029e3d9c.zip
+│   │   └── f596a3777545d125ecfeb5bb8123ded17be56d3a.zip
+│   ├── index.html
+│   └── trace
+│       ├── assets
+│       │   ├── codeMirrorModule-rXmQmLUY.js
+│       │   ├── defaultSettingsView-B-dXF5JN.js
+│       │   └── urlMatch-L3liM589.js
+│       ├── codeMirrorModule.-QdMvsKi.css
+│       ├── codicon.DCmgc-ay.ttf
+│       ├── defaultSettingsView.BLFoOugd.css
+│       ├── index.B_TqY17P.css
+│       ├── index.html
+│       ├── index.KZ4wOW1K.js
+│       ├── manifest.webmanifest
+│       ├── playwright-logo.svg
+│       ├── snapshot.B_Jk1wbt.js
+│       ├── snapshot.html
+│       ├── sw.bundle.js
+│       ├── uiMode.C7UW1sC9.css
+│       ├── uiMode.Dzuouizj.js
+│       ├── uiMode.html
+│       └── xtermModule.kHJ-D0s7.css
+├── playwright-report-release-4223
+│   └── index.html
+├── playwright-report-release-4224
+│   ├── data
+│   │   ├── 1eebdb241ac12c1dc5adc994bbf605e0cf2c7573.zip
+│   │   ├── 38c490a2c6505f79c627a09d6c3bebeefed14947.png
+│   │   └── 9f84e6acd8f2cc462cbcab9f3de0a531a61179ff.md
+│   ├── index.html
+│   └── trace
+│       ├── assets
+│       │   ├── codeMirrorModule-rXmQmLUY.js
+│       │   ├── defaultSettingsView-B-dXF5JN.js
+│       │   └── urlMatch-L3liM589.js
+│       ├── codeMirrorModule.-QdMvsKi.css
+│       ├── codicon.DCmgc-ay.ttf
+│       ├── defaultSettingsView.BLFoOugd.css
+│       ├── index.B_TqY17P.css
+│       ├── index.html
+│       ├── index.KZ4wOW1K.js
+│       ├── manifest.webmanifest
+│       ├── playwright-logo.svg
+│       ├── snapshot.B_Jk1wbt.js
+│       ├── snapshot.html
+│       ├── sw.bundle.js
+│       ├── uiMode.C7UW1sC9.css
+│       ├── uiMode.Dzuouizj.js
+│       ├── uiMode.html
+│       └── xtermModule.kHJ-D0s7.css
+├── playwright-report-release-4225
+│   └── index.html
+├── playwright-report-release-4226
+│   ├── data
+│   │   ├── 049ca18eefacd3bb0a01388e9cedf2380bf03440.zip
+│   │   ├── 5da13661d35fb52d816d8cbb856ff62534b787b5.zip
+│   │   ├── 7cc9dc0327348e6d3ebb60f26b0bae01a77a0c7e.md
+│   │   ├── 83065fb8b36873fdf260c59ef1b80f1c83d29bf7.png
+│   │   ├── ca6b77c4d70f83241638271326c28940344310fe.md
+│   │   └── cef744ed0cdc6750e4bb2331440dd5e3eb94aa8b.png
+│   ├── index.html
+│   └── trace
+│       ├── assets
+│       │   ├── codeMirrorModule-rXmQmLUY.js
+│       │   ├── defaultSettingsView-B-dXF5JN.js
+│       │   └── urlMatch-L3liM589.js
+│       ├── codeMirrorModule.-QdMvsKi.css
+│       ├── codicon.DCmgc-ay.ttf
+│       ├── defaultSettingsView.BLFoOugd.css
+│       ├── index.B_TqY17P.css
+│       ├── index.html
+│       ├── index.KZ4wOW1K.js
+│       ├── manifest.webmanifest
+│       ├── playwright-logo.svg
+│       ├── snapshot.B_Jk1wbt.js
+│       ├── snapshot.html
+│       ├── sw.bundle.js
+│       ├── uiMode.C7UW1sC9.css
+│       ├── uiMode.Dzuouizj.js
+│       ├── uiMode.html
+│       └── xtermModule.kHJ-D0s7.css
+├── playwright-report-release-4227
+│   └── index.html
+├── playwright-report-release-4228
+│   └── index.html
+├── playwright-report-release-4230
+│   ├── data
+│   │   ├── 0521175c843abd0ab7a81c97096cc237dc5b2923.png
+│   │   ├── 1bf7ef24da78772bb999e6bf8819a87d5161cf75.md
+│   │   └── 9106ea9d81429859cb6e3788176488457f49e4b5.zip
+│   ├── index.html
+│   └── trace
+│       ├── assets
+│       │   ├── codeMirrorModule-rXmQmLUY.js
+│       │   ├── defaultSettingsView-B-dXF5JN.js
+│       │   └── urlMatch-L3liM589.js
+│       ├── codeMirrorModule.-QdMvsKi.css
+│       ├── codicon.DCmgc-ay.ttf
+│       ├── defaultSettingsView.BLFoOugd.css
+│       ├── index.B_TqY17P.css
+│       ├── index.html
+│       ├── index.KZ4wOW1K.js
+│       ├── manifest.webmanifest
+│       ├── playwright-logo.svg
+│       ├── snapshot.B_Jk1wbt.js
+│       ├── snapshot.html
+│       ├── sw.bundle.js
+│       ├── uiMode.C7UW1sC9.css
+│       ├── uiMode.Dzuouizj.js
+│       ├── uiMode.html
+│       └── xtermModule.kHJ-D0s7.css
+├── playwright-report-release-4234
+│   ├── data
+│   │   ├── 4e656ef5cd4cdc976ef1e11851ee996f045a7671.zip
+│   │   ├── 7a4ee624c407f0e9dd3c348cebaaf8e50ba98d75.md
+│   │   └── e4adcb28f04170d5eccbee9c6007ef33c624b367.png
+│   ├── index.html
+│   └── trace
+│       ├── assets
+│       │   ├── codeMirrorModule-rXmQmLUY.js
+│       │   ├── defaultSettingsView-B-dXF5JN.js
+│       │   └── urlMatch-L3liM589.js
+│       ├── codeMirrorModule.-QdMvsKi.css
+│       ├── codicon.DCmgc-ay.ttf
+│       ├── defaultSettingsView.BLFoOugd.css
+│       ├── index.B_TqY17P.css
+│       ├── index.html
+│       ├── index.KZ4wOW1K.js
+│       ├── manifest.webmanifest
+│       ├── playwright-logo.svg
+│       ├── snapshot.B_Jk1wbt.js
+│       ├── snapshot.html
+│       ├── sw.bundle.js
+│       ├── uiMode.C7UW1sC9.css
+│       ├── uiMode.Dzuouizj.js
+│       ├── uiMode.html
+│       └── xtermModule.kHJ-D0s7.css
+├── playwright-report-release-4246
+│   └── index.html
+├── playwright-report-targeted-4233
+│   └── index.html
 ├── playwright.config.ts
 ├── pnpm-lock.yaml
 ├── pnpm-workspace.yaml
 ├── prettier.config.mjs
 ├── README.md
+├── test-results-release-4221
+│   ├── .last-run.json
+│   ├── lifecycle-Puzzle-Swap-acce-a7788-only-deterministic-solution-large-phone-430
+│   │   ├── error-context.md
+│   │   ├── test-failed-1.png
+│   │   └── trace.zip
+│   ├── lifecycle-Puzzle-Swap-pres-583a6-through-a-responsive-resize-android-412
+│   │   ├── error-context.md
+│   │   ├── test-failed-1.png
+│   │   └── trace.zip
+│   └── lifecycle-Puzzle-Swap-pres-583a6-through-a-responsive-resize-large-phone-430
+│       ├── error-context.md
+│       ├── test-failed-1.png
+│       └── trace.zip
+├── test-results-release-4222
+│   └── .playwright-artifacts-0
+│       ├── 0fa9ed8181f46634ae8a29f10de89dff.png
+│       ├── 13f1760920242b4ff59e7344d06a7033.png
+│       ├── 58781e75dcbe228435a1dbad4236df0e.png
+│       ├── 66d05e9c1b312bb2462eafb4fc5a77ce.png
+│       ├── bc22e4f4c86bb2de867b667a48d36625.png
+│       └── traces
+│           ├── 1f1785dee40219527314-078861006369a238b984.network
+│           ├── 1f1785dee40219527314-078861006369a238b984.trace
+│           ├── 1f1785dee40219527314-3d0184d0a4fc2be7f1f1-recording1.network
+│           ├── 1f1785dee40219527314-3d0184d0a4fc2be7f1f1-recording1.trace
+│           ├── 1f1785dee40219527314-5884285838ff81c3c685-recording2.network
+│           ├── 1f1785dee40219527314-5884285838ff81c3c685-recording2.trace
+│           ├── 1f1785dee40219527314-b7ccd29f83b078ba4655-recording5.network
+│           ├── 1f1785dee40219527314-b7ccd29f83b078ba4655-recording5.trace
+│           ├── 1f1785dee40219527314-c66a4738ce37d8a89f8a-recording3.network
+│           ├── 1f1785dee40219527314-c66a4738ce37d8a89f8a-recording3.trace
+│           ├── 1f1785dee40219527314-d612b9e8961828c31a40-recording4.network
+│           ├── 1f1785dee40219527314-d612b9e8961828c31a40-recording4.trace
+│           └── resources
+│               ├── 00acc98c99c5c479f7e6cee0963d7b01b22d2679.m4a
+│               ├── 05060f2b0eda831dbaa3cec3f2c9847f6db301a1.svg
+│               ├── 0e26378eaced0f2aa76ad7a6c1604be5f84f744e.html
+│               ├── 1ee3ea3e5f32cb77257d533510fdd82bfbf04bd9.svg
+│               ├── 237dba8946d7951037c7e073631eb1cddf82cf37.svg
+│               ├── 266095c837bc388fa4fc13dc29a05fe851a7ddbb.svg
+│               ├── 3d92e959fa743ba841df275488c38056f90e6eaf.m4a
+│               ├── 5316d6a57ddff193eb056e80da5734e01b4fdcd2.webp
+│               ├── 599311da6269aeb629294fc5db587d3d8396fb0b.m4a
+│               ├── 61bcca9c97221ae3c8e7d820a043a5ea.jsonl
+│               ├── 65d5cc7080b75d0433315a993c287a33.jsonl
+│               ├── 75d6cb9097d4e927dbb9d9a9dfd01a1c68fb05b8.svg
+│               ├── 87fc3cf20e12c0c98198d522c3458052450d3f31.svg
+│               ├── 8c652fb7144a43680aa32d25775091f5a4760448.svg
+│               ├── 9952a510a0fbddcc73a9665c0843aa4bb5e4e200.m4a
+│               ├── a40c4975072e0bbc4c9a47fd9961e97fbdd67c16.m4a
+│               ├── a8d0d83bb773610ce3e4486452a067c1.jsonl
+│               ├── ac158cdf950c2abb2124a26f54636fdbd84d97d7.m4a
+│               ├── be19bd5dfaa2d0db4a3aff56d93ddd16bdd7d0b1.svg
+│               ├── beeedbf5a73a8b867a9ef59263ef2e72.jsonl
+│               ├── bf79e7470dc1ab7c5c7dc68ac59c023aa3fc6226.svg
+│               ├── c1d90c0c8b55900267be82a5959a092b6e0d1412.svg
+│               ├── d4e472097641806715e0547c1ec6bb7492df166b.svg
+│               ├── e2ce19ea3d5d17b7b7f6fb9fc0168252.jsonl
+│               ├── f7b1fc626f9c993195e7e8c418e708c9b8e59207.svg
+│               ├── facd9815a51a6b2dbcbd470a81083ede1d2b400e.svg
+│               ├── ffd78da4245348eac8042b8e7690b35ee9d1efb6.svg
+│               ├── page@06145d396071db035b1d63c652a7971d-1787690929474.jpeg
+│               ├── page@06145d396071db035b1d63c652a7971d-1787690929514.jpeg
+│               ├── page@06145d396071db035b1d63c652a7971d-1787690930023.jpeg
+│               ├── page@06145d396071db035b1d63c652a7971d-1787690930124.jpeg
+│               ├── page@06145d396071db035b1d63c652a7971d-1787690930149.jpeg
+│               ├── page@06145d396071db035b1d63c652a7971d-1787690930194.jpeg
+│               ├── page@06145d396071db035b1d63c652a7971d-1787690930202.jpeg
+│               ├── page@51ba8f62cc3b7e9d26432e7d9b6ac1ff-1787690911770.jpeg
+│               ├── page@51ba8f62cc3b7e9d26432e7d9b6ac1ff-1787690911787.jpeg
+│               ├── page@51ba8f62cc3b7e9d26432e7d9b6ac1ff-1787690912054.jpeg
+│               ├── page@51ba8f62cc3b7e9d26432e7d9b6ac1ff-1787690912089.jpeg
+│               ├── page@51ba8f62cc3b7e9d26432e7d9b6ac1ff-1787690912401.jpeg
+│               ├── page@51ba8f62cc3b7e9d26432e7d9b6ac1ff-1787690912463.jpeg
+│               ├── page@51ba8f62cc3b7e9d26432e7d9b6ac1ff-1787690912510.jpeg
+│               ├── page@51ba8f62cc3b7e9d26432e7d9b6ac1ff-1787690912972.jpeg
+│               ├── page@51ba8f62cc3b7e9d26432e7d9b6ac1ff-1787690914262.jpeg
+│               ├── page@51ba8f62cc3b7e9d26432e7d9b6ac1ff-1787690914469.jpeg
+│               ├── page@51ba8f62cc3b7e9d26432e7d9b6ac1ff-1787690914695.jpeg
+│               ├── page@51ba8f62cc3b7e9d26432e7d9b6ac1ff-1787690914908.jpeg
+│               ├── page@51ba8f62cc3b7e9d26432e7d9b6ac1ff-1787690915130.jpeg
+│               ├── page@51ba8f62cc3b7e9d26432e7d9b6ac1ff-1787690915363.jpeg
+│               ├── page@51ba8f62cc3b7e9d26432e7d9b6ac1ff-1787690915599.jpeg
+│               ├── page@51ba8f62cc3b7e9d26432e7d9b6ac1ff-1787690915833.jpeg
+│               ├── page@51ba8f62cc3b7e9d26432e7d9b6ac1ff-1787690916058.jpeg
+│               ├── page@51ba8f62cc3b7e9d26432e7d9b6ac1ff-1787690916288.jpeg
+│               ├── page@51ba8f62cc3b7e9d26432e7d9b6ac1ff-1787690916538.jpeg
+│               ├── page@51ba8f62cc3b7e9d26432e7d9b6ac1ff-1787690916756.jpeg
+│               ├── page@51ba8f62cc3b7e9d26432e7d9b6ac1ff-1787690916973.jpeg
+│               ├── page@51ba8f62cc3b7e9d26432e7d9b6ac1ff-1787690917187.jpeg
+│               ├── page@51ba8f62cc3b7e9d26432e7d9b6ac1ff-1787690917194.jpeg
+│               ├── page@51ba8f62cc3b7e9d26432e7d9b6ac1ff-1787690917379.jpeg
+│               ├── page@51ba8f62cc3b7e9d26432e7d9b6ac1ff-1787690917380.jpeg
+│               ├── page@51ba8f62cc3b7e9d26432e7d9b6ac1ff-1787690917502.jpeg
+│               ├── page@51ba8f62cc3b7e9d26432e7d9b6ac1ff-1787690917516.jpeg
+│               ├── page@51ba8f62cc3b7e9d26432e7d9b6ac1ff-1787690917517.jpeg
+│               ├── page@51ba8f62cc3b7e9d26432e7d9b6ac1ff-1787690917554.jpeg
+│               ├── page@51ba8f62cc3b7e9d26432e7d9b6ac1ff-1787690917761.jpeg
+│               ├── page@51ba8f62cc3b7e9d26432e7d9b6ac1ff-1787690917832.jpeg
+│               ├── page@51ba8f62cc3b7e9d26432e7d9b6ac1ff-1787690917889.jpeg
+│               ├── page@51ba8f62cc3b7e9d26432e7d9b6ac1ff-1787690918118.jpeg
+│               ├── page@51ba8f62cc3b7e9d26432e7d9b6ac1ff-1787690918199.jpeg
+│               ├── page@51ba8f62cc3b7e9d26432e7d9b6ac1ff-1787690918201.jpeg
+│               ├── page@51ba8f62cc3b7e9d26432e7d9b6ac1ff-1787690918231.jpeg
+│               ├── page@51ba8f62cc3b7e9d26432e7d9b6ac1ff-1787690918313.jpeg
+│               ├── page@51ba8f62cc3b7e9d26432e7d9b6ac1ff-1787690918466.jpeg
+│               ├── page@51ba8f62cc3b7e9d26432e7d9b6ac1ff-1787690918615.jpeg
+│               ├── page@51ba8f62cc3b7e9d26432e7d9b6ac1ff-1787690918652.jpeg
+│               ├── page@51ba8f62cc3b7e9d26432e7d9b6ac1ff-1787690918686.jpeg
+│               ├── page@51ba8f62cc3b7e9d26432e7d9b6ac1ff-1787690918769.jpeg
+│               ├── page@51ba8f62cc3b7e9d26432e7d9b6ac1ff-1787690918807.jpeg
+│               ├── page@51ba8f62cc3b7e9d26432e7d9b6ac1ff-1787690918815.jpeg
+│               ├── page@51ba8f62cc3b7e9d26432e7d9b6ac1ff-1787690918829.jpeg
+│               ├── page@51ba8f62cc3b7e9d26432e7d9b6ac1ff-1787690918904.jpeg
+│               ├── page@51ba8f62cc3b7e9d26432e7d9b6ac1ff-1787690918968.jpeg
+│               ├── page@51ba8f62cc3b7e9d26432e7d9b6ac1ff-1787690919004.jpeg
+│               ├── page@51ba8f62cc3b7e9d26432e7d9b6ac1ff-1787690919032.jpeg
+│               ├── page@51ba8f62cc3b7e9d26432e7d9b6ac1ff-1787690919036.jpeg
+│               ├── page@51ba8f62cc3b7e9d26432e7d9b6ac1ff-1787690919053.jpeg
+│               ├── page@51ba8f62cc3b7e9d26432e7d9b6ac1ff-1787690919067.jpeg
+│               ├── page@51ba8f62cc3b7e9d26432e7d9b6ac1ff-1787690919165.jpeg
+│               ├── page@51ba8f62cc3b7e9d26432e7d9b6ac1ff-1787690919173.jpeg
+│               ├── page@51ba8f62cc3b7e9d26432e7d9b6ac1ff-1787690919211.jpeg
+│               ├── page@51ba8f62cc3b7e9d26432e7d9b6ac1ff-1787690919254.jpeg
+│               ├── page@51ba8f62cc3b7e9d26432e7d9b6ac1ff-1787690919304.jpeg
+│               ├── page@51ba8f62cc3b7e9d26432e7d9b6ac1ff-1787690919311.jpeg
+│               ├── page@51ba8f62cc3b7e9d26432e7d9b6ac1ff-1787690919312.jpeg
+│               ├── page@51ba8f62cc3b7e9d26432e7d9b6ac1ff-1787690919339.jpeg
+│               ├── page@51ba8f62cc3b7e9d26432e7d9b6ac1ff-1787690919363.jpeg
+│               ├── page@51ba8f62cc3b7e9d26432e7d9b6ac1ff-1787690919400.jpeg
+│               ├── page@51ba8f62cc3b7e9d26432e7d9b6ac1ff-1787690919427.jpeg
+│               ├── page@51ba8f62cc3b7e9d26432e7d9b6ac1ff-1787690919436.jpeg
+│               ├── page@51ba8f62cc3b7e9d26432e7d9b6ac1ff-1787690919440.jpeg
+│               ├── page@51ba8f62cc3b7e9d26432e7d9b6ac1ff-1787690919476.jpeg
+│               ├── page@51ba8f62cc3b7e9d26432e7d9b6ac1ff-1787690919753.jpeg
+│               ├── page@51ba8f62cc3b7e9d26432e7d9b6ac1ff-1787690920085.jpeg
+│               ├── page@51ba8f62cc3b7e9d26432e7d9b6ac1ff-1787690920312.jpeg
+│               ├── page@51ba8f62cc3b7e9d26432e7d9b6ac1ff-1787690920525.jpeg
+│               ├── page@51ba8f62cc3b7e9d26432e7d9b6ac1ff-1787690920632.jpeg
+│               ├── page@51ba8f62cc3b7e9d26432e7d9b6ac1ff-1787690920662.jpeg
+│               ├── page@51ba8f62cc3b7e9d26432e7d9b6ac1ff-1787690920713.jpeg
+│               ├── page@51ba8f62cc3b7e9d26432e7d9b6ac1ff-1787690920714.jpeg
+│               ├── page@51ba8f62cc3b7e9d26432e7d9b6ac1ff-1787690920730.jpeg
+│               ├── page@51ba8f62cc3b7e9d26432e7d9b6ac1ff-1787690920801.jpeg
+│               ├── page@51ba8f62cc3b7e9d26432e7d9b6ac1ff-1787690920843.jpeg
+│               ├── page@51ba8f62cc3b7e9d26432e7d9b6ac1ff-1787690920844.jpeg
+│               ├── page@51ba8f62cc3b7e9d26432e7d9b6ac1ff-1787690920908.jpeg
+│               ├── page@51ba8f62cc3b7e9d26432e7d9b6ac1ff-1787690920913.jpeg
+│               ├── page@51ba8f62cc3b7e9d26432e7d9b6ac1ff-1787690920956.jpeg
+│               ├── page@51ba8f62cc3b7e9d26432e7d9b6ac1ff-1787690921084.jpeg
+│               ├── page@51ba8f62cc3b7e9d26432e7d9b6ac1ff-1787690921118.jpeg
+│               ├── page@51ba8f62cc3b7e9d26432e7d9b6ac1ff-1787690921258.jpeg
+│               ├── page@51ba8f62cc3b7e9d26432e7d9b6ac1ff-1787690921371.jpeg
+│               ├── page@51ba8f62cc3b7e9d26432e7d9b6ac1ff-1787690921403.jpeg
+│               ├── page@51ba8f62cc3b7e9d26432e7d9b6ac1ff-1787690921526.jpeg
+│               ├── page@51ba8f62cc3b7e9d26432e7d9b6ac1ff-1787690921528.jpeg
+│               ├── page@51ba8f62cc3b7e9d26432e7d9b6ac1ff-1787690921563.jpeg
+│               ├── page@51ba8f62cc3b7e9d26432e7d9b6ac1ff-1787690921603.jpeg
+│               ├── page@51ba8f62cc3b7e9d26432e7d9b6ac1ff-1787690921627.jpeg
+│               ├── page@51ba8f62cc3b7e9d26432e7d9b6ac1ff-1787690921654.jpeg
+│               ├── page@51ba8f62cc3b7e9d26432e7d9b6ac1ff-1787690921750.jpeg
+│               ├── page@51ba8f62cc3b7e9d26432e7d9b6ac1ff-1787690921765.jpeg
+│               ├── page@51ba8f62cc3b7e9d26432e7d9b6ac1ff-1787690921831.jpeg
+│               ├── page@51ba8f62cc3b7e9d26432e7d9b6ac1ff-1787690921876.jpeg
+│               ├── page@51ba8f62cc3b7e9d26432e7d9b6ac1ff-1787690921911.jpeg
+│               ├── page@51ba8f62cc3b7e9d26432e7d9b6ac1ff-1787690921937.jpeg
+│               ├── page@51ba8f62cc3b7e9d26432e7d9b6ac1ff-1787690921975.jpeg
+│               ├── page@51ba8f62cc3b7e9d26432e7d9b6ac1ff-1787690921977.jpeg
+│               ├── page@51ba8f62cc3b7e9d26432e7d9b6ac1ff-1787690922000.jpeg
+│               ├── page@51ba8f62cc3b7e9d26432e7d9b6ac1ff-1787690922013.jpeg
+│               ├── page@51ba8f62cc3b7e9d26432e7d9b6ac1ff-1787690922027.jpeg
+│               ├── page@51ba8f62cc3b7e9d26432e7d9b6ac1ff-1787690922042.jpeg
+│               ├── page@51ba8f62cc3b7e9d26432e7d9b6ac1ff-1787690922058.jpeg
+│               ├── page@51ba8f62cc3b7e9d26432e7d9b6ac1ff-1787690922077.jpeg
+│               ├── page@51ba8f62cc3b7e9d26432e7d9b6ac1ff-1787690922112.jpeg
+│               ├── page@51ba8f62cc3b7e9d26432e7d9b6ac1ff-1787690922124.jpeg
+│               ├── page@51ba8f62cc3b7e9d26432e7d9b6ac1ff-1787690922342.jpeg
+│               ├── page@51ba8f62cc3b7e9d26432e7d9b6ac1ff-1787690922580.jpeg
+│               ├── page@51ba8f62cc3b7e9d26432e7d9b6ac1ff-1787690922791.jpeg
+│               ├── page@51ba8f62cc3b7e9d26432e7d9b6ac1ff-1787690922995.jpeg
+│               ├── page@51ba8f62cc3b7e9d26432e7d9b6ac1ff-1787690923108.jpeg
+│               ├── page@51ba8f62cc3b7e9d26432e7d9b6ac1ff-1787690923134.jpeg
+│               ├── page@51ba8f62cc3b7e9d26432e7d9b6ac1ff-1787690923169.jpeg
+│               ├── page@51ba8f62cc3b7e9d26432e7d9b6ac1ff-1787690923178.jpeg
+│               ├── page@51ba8f62cc3b7e9d26432e7d9b6ac1ff-1787690923192.jpeg
+│               ├── page@51ba8f62cc3b7e9d26432e7d9b6ac1ff-1787690923219.jpeg
+│               ├── page@51ba8f62cc3b7e9d26432e7d9b6ac1ff-1787690923241.jpeg
+│               ├── page@51ba8f62cc3b7e9d26432e7d9b6ac1ff-1787690923245.jpeg
+│               ├── page@51ba8f62cc3b7e9d26432e7d9b6ac1ff-1787690923271.jpeg
+│               ├── page@51ba8f62cc3b7e9d26432e7d9b6ac1ff-1787690923288.jpeg
+│               ├── page@51ba8f62cc3b7e9d26432e7d9b6ac1ff-1787690923349.jpeg
+│               ├── page@51ba8f62cc3b7e9d26432e7d9b6ac1ff-1787690923353.jpeg
+│               ├── page@51ba8f62cc3b7e9d26432e7d9b6ac1ff-1787690923378.jpeg
+│               ├── page@51ba8f62cc3b7e9d26432e7d9b6ac1ff-1787690923390.jpeg
+│               ├── page@51ba8f62cc3b7e9d26432e7d9b6ac1ff-1787690923423.jpeg
+│               ├── page@51ba8f62cc3b7e9d26432e7d9b6ac1ff-1787690923433.jpeg
+│               ├── page@51ba8f62cc3b7e9d26432e7d9b6ac1ff-1787690923463.jpeg
+│               ├── page@51ba8f62cc3b7e9d26432e7d9b6ac1ff-1787690923470.jpeg
+│               ├── page@51ba8f62cc3b7e9d26432e7d9b6ac1ff-1787690923517.jpeg
+│               ├── page@51ba8f62cc3b7e9d26432e7d9b6ac1ff-1787690923522.jpeg
+│               ├── page@51ba8f62cc3b7e9d26432e7d9b6ac1ff-1787690923523.jpeg
+│               ├── page@51ba8f62cc3b7e9d26432e7d9b6ac1ff-1787690923543.jpeg
+│               ├── page@51ba8f62cc3b7e9d26432e7d9b6ac1ff-1787690923553.jpeg
+│               ├── page@51ba8f62cc3b7e9d26432e7d9b6ac1ff-1787690923566.jpeg
+│               ├── page@9d306f40e0f97597c52273a4290a88f6-1787690906558.jpeg
+│               ├── page@9d306f40e0f97597c52273a4290a88f6-1787690906616.jpeg
+│               ├── page@9d306f40e0f97597c52273a4290a88f6-1787690906948.jpeg
+│               ├── page@9d306f40e0f97597c52273a4290a88f6-1787690907022.jpeg
+│               ├── page@9d306f40e0f97597c52273a4290a88f6-1787690907029.jpeg
+│               ├── page@9d306f40e0f97597c52273a4290a88f6-1787690907042.jpeg
+│               ├── page@9d306f40e0f97597c52273a4290a88f6-1787690907056.jpeg
+│               ├── page@9d306f40e0f97597c52273a4290a88f6-1787690907075.jpeg
+│               ├── page@9d306f40e0f97597c52273a4290a88f6-1787690907091.jpeg
+│               ├── page@9d306f40e0f97597c52273a4290a88f6-1787690907125.jpeg
+│               ├── page@9d306f40e0f97597c52273a4290a88f6-1787690907156.jpeg
+│               ├── page@9d306f40e0f97597c52273a4290a88f6-1787690907176.jpeg
+│               ├── page@9d306f40e0f97597c52273a4290a88f6-1787690907186.jpeg
+│               ├── page@9d306f40e0f97597c52273a4290a88f6-1787690907194.jpeg
+│               ├── page@9d306f40e0f97597c52273a4290a88f6-1787690907213.jpeg
+│               ├── page@9d306f40e0f97597c52273a4290a88f6-1787690907222.jpeg
+│               ├── page@9d306f40e0f97597c52273a4290a88f6-1787690907239.jpeg
+│               ├── page@9d306f40e0f97597c52273a4290a88f6-1787690907255.jpeg
+│               ├── page@9d306f40e0f97597c52273a4290a88f6-1787690907272.jpeg
+│               ├── page@9d306f40e0f97597c52273a4290a88f6-1787690907288.jpeg
+│               ├── page@9d306f40e0f97597c52273a4290a88f6-1787690907306.jpeg
+│               ├── page@9d306f40e0f97597c52273a4290a88f6-1787690907324.jpeg
+│               ├── page@9d306f40e0f97597c52273a4290a88f6-1787690907340.jpeg
+│               ├── page@9d306f40e0f97597c52273a4290a88f6-1787690907355.jpeg
+│               ├── page@9d306f40e0f97597c52273a4290a88f6-1787690907372.jpeg
+│               ├── page@9d306f40e0f97597c52273a4290a88f6-1787690907389.jpeg
+│               ├── page@9d306f40e0f97597c52273a4290a88f6-1787690907405.jpeg
+│               ├── page@9d306f40e0f97597c52273a4290a88f6-1787690907421.jpeg
+│               ├── page@9d306f40e0f97597c52273a4290a88f6-1787690907437.jpeg
+│               ├── page@9d306f40e0f97597c52273a4290a88f6-1787690907454.jpeg
+│               ├── page@9d306f40e0f97597c52273a4290a88f6-1787690907471.jpeg
+│               ├── page@9d306f40e0f97597c52273a4290a88f6-1787690907487.jpeg
+│               ├── page@9d306f40e0f97597c52273a4290a88f6-1787690907505.jpeg
+│               ├── page@9d306f40e0f97597c52273a4290a88f6-1787690907536.jpeg
+│               ├── page@9d306f40e0f97597c52273a4290a88f6-1787690907554.jpeg
+│               ├── page@9d306f40e0f97597c52273a4290a88f6-1787690907562.jpeg
+│               ├── page@9d306f40e0f97597c52273a4290a88f6-1787690907572.jpeg
+│               ├── page@9d306f40e0f97597c52273a4290a88f6-1787690907602.jpeg
+│               ├── page@9d306f40e0f97597c52273a4290a88f6-1787690907620.jpeg
+│               ├── page@9d306f40e0f97597c52273a4290a88f6-1787690907638.jpeg
+│               ├── page@9d306f40e0f97597c52273a4290a88f6-1787690907651.jpeg
+│               ├── page@9d306f40e0f97597c52273a4290a88f6-1787690907669.jpeg
+│               ├── page@9d306f40e0f97597c52273a4290a88f6-1787690907687.jpeg
+│               ├── page@9d306f40e0f97597c52273a4290a88f6-1787690907705.jpeg
+│               ├── page@9d306f40e0f97597c52273a4290a88f6-1787690907720.jpeg
+│               ├── page@9d306f40e0f97597c52273a4290a88f6-1787690907940.jpeg
+│               ├── page@9d306f40e0f97597c52273a4290a88f6-1787690908156.jpeg
+│               ├── page@9d306f40e0f97597c52273a4290a88f6-1787690908958.jpeg
+│               ├── page@9d306f40e0f97597c52273a4290a88f6-1787690909171.jpeg
+│               ├── page@9d306f40e0f97597c52273a4290a88f6-1787690909372.jpeg
+│               ├── page@9d306f40e0f97597c52273a4290a88f6-1787690909474.jpeg
+│               ├── page@9d306f40e0f97597c52273a4290a88f6-1787690909491.jpeg
+│               ├── page@9d306f40e0f97597c52273a4290a88f6-1787690909509.jpeg
+│               ├── page@9d306f40e0f97597c52273a4290a88f6-1787690909758.jpeg
+│               ├── page@9d306f40e0f97597c52273a4290a88f6-1787690909792.jpeg
+│               ├── page@9d306f40e0f97597c52273a4290a88f6-1787690909807.jpeg
+│               ├── page@9d306f40e0f97597c52273a4290a88f6-1787690909825.jpeg
+│               ├── page@9d306f40e0f97597c52273a4290a88f6-1787690910090.jpeg
+│               ├── page@9d306f40e0f97597c52273a4290a88f6-1787690910107.jpeg
+│               ├── page@9d306f40e0f97597c52273a4290a88f6-1787690910123.jpeg
+│               ├── page@9d306f40e0f97597c52273a4290a88f6-1787690910140.jpeg
+│               ├── page@9d306f40e0f97597c52273a4290a88f6-1787690910155.jpeg
+│               ├── page@9d306f40e0f97597c52273a4290a88f6-1787690910173.jpeg
+│               ├── page@9d306f40e0f97597c52273a4290a88f6-1787690910190.jpeg
+│               ├── page@9d306f40e0f97597c52273a4290a88f6-1787690910207.jpeg
+│               ├── page@9d306f40e0f97597c52273a4290a88f6-1787690910228.jpeg
+│               ├── page@9d306f40e0f97597c52273a4290a88f6-1787690910244.jpeg
+│               ├── page@9d306f40e0f97597c52273a4290a88f6-1787690910261.jpeg
+│               ├── page@9d306f40e0f97597c52273a4290a88f6-1787690910275.jpeg
+│               ├── page@9d306f40e0f97597c52273a4290a88f6-1787690910293.jpeg
+│               ├── page@9d306f40e0f97597c52273a4290a88f6-1787690910307.jpeg
+│               ├── page@9d306f40e0f97597c52273a4290a88f6-1787690910324.jpeg
+│               ├── page@9d306f40e0f97597c52273a4290a88f6-1787690910341.jpeg
+│               ├── page@9d306f40e0f97597c52273a4290a88f6-1787690910358.jpeg
+│               ├── page@9d306f40e0f97597c52273a4290a88f6-1787690910375.jpeg
+│               ├── page@9d306f40e0f97597c52273a4290a88f6-1787690910391.jpeg
+│               ├── page@9d306f40e0f97597c52273a4290a88f6-1787690910409.jpeg
+│               ├── page@9d306f40e0f97597c52273a4290a88f6-1787690910425.jpeg
+│               ├── page@9d306f40e0f97597c52273a4290a88f6-1787690910441.jpeg
+│               ├── page@9d306f40e0f97597c52273a4290a88f6-1787690910458.jpeg
+│               ├── page@9d306f40e0f97597c52273a4290a88f6-1787690910478.jpeg
+│               ├── page@9d306f40e0f97597c52273a4290a88f6-1787690910490.jpeg
+│               ├── page@9d306f40e0f97597c52273a4290a88f6-1787690910508.jpeg
+│               ├── page@9d306f40e0f97597c52273a4290a88f6-1787690910525.jpeg
+│               ├── page@9d306f40e0f97597c52273a4290a88f6-1787690910546.jpeg
+│               ├── page@9d306f40e0f97597c52273a4290a88f6-1787690910560.jpeg
+│               ├── page@9d306f40e0f97597c52273a4290a88f6-1787690910579.jpeg
+│               ├── page@9d306f40e0f97597c52273a4290a88f6-1787690910595.jpeg
+│               ├── page@9d306f40e0f97597c52273a4290a88f6-1787690910611.jpeg
+│               ├── page@9d306f40e0f97597c52273a4290a88f6-1787690910629.jpeg
+│               ├── page@9d306f40e0f97597c52273a4290a88f6-1787690910640.jpeg
+│               ├── page@9d306f40e0f97597c52273a4290a88f6-1787690910658.jpeg
+│               ├── page@9d306f40e0f97597c52273a4290a88f6-1787690910673.jpeg
+│               ├── page@9d306f40e0f97597c52273a4290a88f6-1787690910689.jpeg
+│               ├── page@9d306f40e0f97597c52273a4290a88f6-1787690910705.jpeg
+│               ├── page@9d306f40e0f97597c52273a4290a88f6-1787690910725.jpeg
+│               ├── page@9d306f40e0f97597c52273a4290a88f6-1787690910741.jpeg
+│               ├── page@9d306f40e0f97597c52273a4290a88f6-1787690910758.jpeg
+│               ├── page@9d306f40e0f97597c52273a4290a88f6-1787690910775.jpeg
+│               ├── page@9d306f40e0f97597c52273a4290a88f6-1787690910790.jpeg
+│               ├── page@9d306f40e0f97597c52273a4290a88f6-1787690910807.jpeg
+│               ├── page@9d306f40e0f97597c52273a4290a88f6-1787690910822.jpeg
+│               ├── page@9d306f40e0f97597c52273a4290a88f6-1787690910839.jpeg
+│               ├── page@9d306f40e0f97597c52273a4290a88f6-1787690910856.jpeg
+│               ├── page@9d306f40e0f97597c52273a4290a88f6-1787690910874.jpeg
+│               ├── page@9d306f40e0f97597c52273a4290a88f6-1787690910889.jpeg
+│               ├── page@9d306f40e0f97597c52273a4290a88f6-1787690910910.jpeg
+│               ├── page@9d306f40e0f97597c52273a4290a88f6-1787690910925.jpeg
+│               ├── page@9d306f40e0f97597c52273a4290a88f6-1787690910943.jpeg
+│               ├── page@9d306f40e0f97597c52273a4290a88f6-1787690910960.jpeg
+│               ├── page@9d306f40e0f97597c52273a4290a88f6-1787690910974.jpeg
+│               ├── page@9d306f40e0f97597c52273a4290a88f6-1787690910989.jpeg
+│               ├── page@9d306f40e0f97597c52273a4290a88f6-1787690911007.jpeg
+│               ├── page@9d306f40e0f97597c52273a4290a88f6-1787690911022.jpeg
+│               ├── page@9d306f40e0f97597c52273a4290a88f6-1787690911039.jpeg
+│               ├── page@9d306f40e0f97597c52273a4290a88f6-1787690911055.jpeg
+│               ├── page@9d306f40e0f97597c52273a4290a88f6-1787690911076.jpeg
+│               ├── page@9d306f40e0f97597c52273a4290a88f6-1787690911092.jpeg
+│               ├── page@9d306f40e0f97597c52273a4290a88f6-1787690911108.jpeg
+│               ├── page@9d306f40e0f97597c52273a4290a88f6-1787690911124.jpeg
+│               ├── page@9d306f40e0f97597c52273a4290a88f6-1787690911140.jpeg
+│               ├── page@aabe6ee205fce6a16547fbe2b70ed97b-1787690930952.jpeg
+│               ├── page@aabe6ee205fce6a16547fbe2b70ed97b-1787690930970.jpeg
+│               ├── page@aabe6ee205fce6a16547fbe2b70ed97b-1787690931248.jpeg
+│               ├── page@aabe6ee205fce6a16547fbe2b70ed97b-1787690931382.jpeg
+│               ├── page@aabe6ee205fce6a16547fbe2b70ed97b-1787690931390.jpeg
+│               ├── page@aabe6ee205fce6a16547fbe2b70ed97b-1787690931407.jpeg
+│               ├── page@aabe6ee205fce6a16547fbe2b70ed97b-1787690931424.jpeg
+│               ├── page@aabe6ee205fce6a16547fbe2b70ed97b-1787690931440.jpeg
+│               ├── page@aabe6ee205fce6a16547fbe2b70ed97b-1787690931456.jpeg
+│               ├── page@aabe6ee205fce6a16547fbe2b70ed97b-1787690931471.jpeg
+│               ├── page@aabe6ee205fce6a16547fbe2b70ed97b-1787690931487.jpeg
+│               ├── page@aabe6ee205fce6a16547fbe2b70ed97b-1787690931502.jpeg
+│               ├── page@aabe6ee205fce6a16547fbe2b70ed97b-1787690931519.jpeg
+│               ├── page@aabe6ee205fce6a16547fbe2b70ed97b-1787690931539.jpeg
+│               ├── page@aabe6ee205fce6a16547fbe2b70ed97b-1787690931553.jpeg
+│               ├── page@aabe6ee205fce6a16547fbe2b70ed97b-1787690931569.jpeg
+│               ├── page@aabe6ee205fce6a16547fbe2b70ed97b-1787690931588.jpeg
+│               ├── page@aabe6ee205fce6a16547fbe2b70ed97b-1787690931605.jpeg
+│               ├── page@aabe6ee205fce6a16547fbe2b70ed97b-1787690931621.jpeg
+│               ├── page@aabe6ee205fce6a16547fbe2b70ed97b-1787690931639.jpeg
+│               ├── page@aabe6ee205fce6a16547fbe2b70ed97b-1787690931658.jpeg
+│               ├── page@aabe6ee205fce6a16547fbe2b70ed97b-1787690931671.jpeg
+│               ├── page@aabe6ee205fce6a16547fbe2b70ed97b-1787690931689.jpeg
+│               ├── page@aabe6ee205fce6a16547fbe2b70ed97b-1787690931705.jpeg
+│               ├── page@aabe6ee205fce6a16547fbe2b70ed97b-1787690931723.jpeg
+│               ├── page@af3ef893ad02c374e15073e2bb3c12a1-1787690901351.jpeg
+│               ├── page@af3ef893ad02c374e15073e2bb3c12a1-1787690901361.jpeg
+│               ├── page@af3ef893ad02c374e15073e2bb3c12a1-1787690901378.jpeg
+│               ├── page@af3ef893ad02c374e15073e2bb3c12a1-1787690901402.jpeg
+│               ├── page@af3ef893ad02c374e15073e2bb3c12a1-1787690901409.jpeg
+│               ├── page@af3ef893ad02c374e15073e2bb3c12a1-1787690901437.jpeg
+│               ├── page@af3ef893ad02c374e15073e2bb3c12a1-1787690901479.jpeg
+│               ├── page@af3ef893ad02c374e15073e2bb3c12a1-1787690901484.jpeg
+│               ├── page@af3ef893ad02c374e15073e2bb3c12a1-1787690901502.jpeg
+│               ├── page@af3ef893ad02c374e15073e2bb3c12a1-1787690901512.jpeg
+│               ├── page@af3ef893ad02c374e15073e2bb3c12a1-1787690901528.jpeg
+│               ├── page@af3ef893ad02c374e15073e2bb3c12a1-1787690901547.jpeg
+│               ├── page@af3ef893ad02c374e15073e2bb3c12a1-1787690901564.jpeg
+│               ├── page@af3ef893ad02c374e15073e2bb3c12a1-1787690901589.jpeg
+│               ├── page@af3ef893ad02c374e15073e2bb3c12a1-1787690901591.jpeg
+│               ├── page@af3ef893ad02c374e15073e2bb3c12a1-1787690901609.jpeg
+│               ├── page@af3ef893ad02c374e15073e2bb3c12a1-1787690901627.jpeg
+│               ├── page@af3ef893ad02c374e15073e2bb3c12a1-1787690901644.jpeg
+│               ├── page@af3ef893ad02c374e15073e2bb3c12a1-1787690901657.jpeg
+│               ├── page@af3ef893ad02c374e15073e2bb3c12a1-1787690901673.jpeg
+│               ├── page@af3ef893ad02c374e15073e2bb3c12a1-1787690901689.jpeg
+│               ├── page@af3ef893ad02c374e15073e2bb3c12a1-1787690901706.jpeg
+│               ├── page@af3ef893ad02c374e15073e2bb3c12a1-1787690901723.jpeg
+│               ├── page@af3ef893ad02c374e15073e2bb3c12a1-1787690901740.jpeg
+│               ├── page@af3ef893ad02c374e15073e2bb3c12a1-1787690901761.jpeg
+│               ├── page@af3ef893ad02c374e15073e2bb3c12a1-1787690901776.jpeg
+│               ├── page@af3ef893ad02c374e15073e2bb3c12a1-1787690901793.jpeg
+│               ├── page@af3ef893ad02c374e15073e2bb3c12a1-1787690901808.jpeg
+│               ├── page@af3ef893ad02c374e15073e2bb3c12a1-1787690901825.jpeg
+│               ├── page@af3ef893ad02c374e15073e2bb3c12a1-1787690901842.jpeg
+│               ├── page@af3ef893ad02c374e15073e2bb3c12a1-1787690901857.jpeg
+│               ├── page@af3ef893ad02c374e15073e2bb3c12a1-1787690901873.jpeg
+│               ├── page@af3ef893ad02c374e15073e2bb3c12a1-1787690901892.jpeg
+│               ├── page@af3ef893ad02c374e15073e2bb3c12a1-1787690901910.jpeg
+│               ├── page@af3ef893ad02c374e15073e2bb3c12a1-1787690901922.jpeg
+│               ├── page@af3ef893ad02c374e15073e2bb3c12a1-1787690901941.jpeg
+│               ├── page@af3ef893ad02c374e15073e2bb3c12a1-1787690901957.jpeg
+│               ├── page@af3ef893ad02c374e15073e2bb3c12a1-1787690901974.jpeg
+│               ├── page@af3ef893ad02c374e15073e2bb3c12a1-1787690901990.jpeg
+│               ├── page@af3ef893ad02c374e15073e2bb3c12a1-1787690902008.jpeg
+│               ├── page@af3ef893ad02c374e15073e2bb3c12a1-1787690902024.jpeg
+│               ├── page@af3ef893ad02c374e15073e2bb3c12a1-1787690902040.jpeg
+│               ├── page@af3ef893ad02c374e15073e2bb3c12a1-1787690902057.jpeg
+│               ├── page@af3ef893ad02c374e15073e2bb3c12a1-1787690902073.jpeg
+│               ├── page@af3ef893ad02c374e15073e2bb3c12a1-1787690902293.jpeg
+│               ├── page@af3ef893ad02c374e15073e2bb3c12a1-1787690902507.jpeg
+│               ├── page@af3ef893ad02c374e15073e2bb3c12a1-1787690902725.jpeg
+│               ├── page@af3ef893ad02c374e15073e2bb3c12a1-1787690902940.jpeg
+│               ├── page@af3ef893ad02c374e15073e2bb3c12a1-1787690903157.jpeg
+│               ├── page@af3ef893ad02c374e15073e2bb3c12a1-1787690904206.jpeg
+│               ├── page@af3ef893ad02c374e15073e2bb3c12a1-1787690904434.jpeg
+│               ├── page@af3ef893ad02c374e15073e2bb3c12a1-1787690904660.jpeg
+│               ├── page@af3ef893ad02c374e15073e2bb3c12a1-1787690904732.jpeg
+│               ├── page@af3ef893ad02c374e15073e2bb3c12a1-1787690904744.jpeg
+│               ├── page@af3ef893ad02c374e15073e2bb3c12a1-1787690904760.jpeg
+│               ├── page@af3ef893ad02c374e15073e2bb3c12a1-1787690904778.jpeg
+│               ├── page@af3ef893ad02c374e15073e2bb3c12a1-1787690904806.jpeg
+│               ├── page@af3ef893ad02c374e15073e2bb3c12a1-1787690904808.jpeg
+│               ├── page@af3ef893ad02c374e15073e2bb3c12a1-1787690904829.jpeg
+│               ├── page@af3ef893ad02c374e15073e2bb3c12a1-1787690905258.jpeg
+│               ├── page@af3ef893ad02c374e15073e2bb3c12a1-1787690905273.jpeg
+│               ├── page@af3ef893ad02c374e15073e2bb3c12a1-1787690905278.jpeg
+│               ├── page@af3ef893ad02c374e15073e2bb3c12a1-1787690905293.jpeg
+│               ├── page@af3ef893ad02c374e15073e2bb3c12a1-1787690905309.jpeg
+│               ├── page@af3ef893ad02c374e15073e2bb3c12a1-1787690905325.jpeg
+│               ├── page@af3ef893ad02c374e15073e2bb3c12a1-1787690905341.jpeg
+│               ├── page@af3ef893ad02c374e15073e2bb3c12a1-1787690905359.jpeg
+│               ├── page@af3ef893ad02c374e15073e2bb3c12a1-1787690905383.jpeg
+│               ├── page@af3ef893ad02c374e15073e2bb3c12a1-1787690905393.jpeg
+│               ├── page@af3ef893ad02c374e15073e2bb3c12a1-1787690905410.jpeg
+│               ├── page@af3ef893ad02c374e15073e2bb3c12a1-1787690905425.jpeg
+│               ├── page@af3ef893ad02c374e15073e2bb3c12a1-1787690905445.jpeg
+│               ├── page@af3ef893ad02c374e15073e2bb3c12a1-1787690905460.jpeg
+│               ├── page@af3ef893ad02c374e15073e2bb3c12a1-1787690905478.jpeg
+│               ├── page@af3ef893ad02c374e15073e2bb3c12a1-1787690905494.jpeg
+│               ├── page@e59e2780b175f695697ebef05bbb68d8-1787690924292.jpeg
+│               ├── page@e59e2780b175f695697ebef05bbb68d8-1787690924331.jpeg
+│               ├── page@e59e2780b175f695697ebef05bbb68d8-1787690924863.jpeg
+│               ├── page@e59e2780b175f695697ebef05bbb68d8-1787690924978.jpeg
+│               ├── page@e59e2780b175f695697ebef05bbb68d8-1787690924995.jpeg
+│               ├── page@e59e2780b175f695697ebef05bbb68d8-1787690925009.jpeg
+│               ├── page@e59e2780b175f695697ebef05bbb68d8-1787690925031.jpeg
+│               ├── page@e59e2780b175f695697ebef05bbb68d8-1787690925043.jpeg
+│               ├── page@e59e2780b175f695697ebef05bbb68d8-1787690925058.jpeg
+│               ├── page@e59e2780b175f695697ebef05bbb68d8-1787690925074.jpeg
+│               ├── page@e59e2780b175f695697ebef05bbb68d8-1787690925092.jpeg
+│               ├── page@e59e2780b175f695697ebef05bbb68d8-1787690925108.jpeg
+│               ├── page@e59e2780b175f695697ebef05bbb68d8-1787690925125.jpeg
+│               ├── page@e59e2780b175f695697ebef05bbb68d8-1787690925143.jpeg
+│               ├── page@e59e2780b175f695697ebef05bbb68d8-1787690925160.jpeg
+│               ├── page@e59e2780b175f695697ebef05bbb68d8-1787690925176.jpeg
+│               ├── page@e59e2780b175f695697ebef05bbb68d8-1787690925195.jpeg
+│               ├── page@e59e2780b175f695697ebef05bbb68d8-1787690925208.jpeg
+│               ├── page@e59e2780b175f695697ebef05bbb68d8-1787690925226.jpeg
+│               ├── page@e59e2780b175f695697ebef05bbb68d8-1787690925241.jpeg
+│               ├── page@e59e2780b175f695697ebef05bbb68d8-1787690925258.jpeg
+│               ├── page@e59e2780b175f695697ebef05bbb68d8-1787690925275.jpeg
+│               ├── page@e59e2780b175f695697ebef05bbb68d8-1787690925291.jpeg
+│               ├── page@e59e2780b175f695697ebef05bbb68d8-1787690925309.jpeg
+│               ├── page@e59e2780b175f695697ebef05bbb68d8-1787690925325.jpeg
+│               ├── page@e59e2780b175f695697ebef05bbb68d8-1787690925343.jpeg
+│               ├── page@e59e2780b175f695697ebef05bbb68d8-1787690925358.jpeg
+│               ├── page@e59e2780b175f695697ebef05bbb68d8-1787690925376.jpeg
+│               ├── page@e59e2780b175f695697ebef05bbb68d8-1787690925396.jpeg
+│               ├── page@e59e2780b175f695697ebef05bbb68d8-1787690925419.jpeg
+│               ├── page@e59e2780b175f695697ebef05bbb68d8-1787690925435.jpeg
+│               ├── page@e59e2780b175f695697ebef05bbb68d8-1787690925446.jpeg
+│               ├── page@e59e2780b175f695697ebef05bbb68d8-1787690925475.jpeg
+│               ├── page@e59e2780b175f695697ebef05bbb68d8-1787690925508.jpeg
+│               ├── page@e59e2780b175f695697ebef05bbb68d8-1787690925509.jpeg
+│               ├── page@e59e2780b175f695697ebef05bbb68d8-1787690925544.jpeg
+│               ├── page@e59e2780b175f695697ebef05bbb68d8-1787690925577.jpeg
+│               ├── page@e59e2780b175f695697ebef05bbb68d8-1787690925588.jpeg
+│               ├── page@e59e2780b175f695697ebef05bbb68d8-1787690925595.jpeg
+│               ├── page@e59e2780b175f695697ebef05bbb68d8-1787690925616.jpeg
+│               ├── page@e59e2780b175f695697ebef05bbb68d8-1787690925628.jpeg
+│               ├── page@e59e2780b175f695697ebef05bbb68d8-1787690925650.jpeg
+│               ├── page@e59e2780b175f695697ebef05bbb68d8-1787690925704.jpeg
+│               ├── page@e59e2780b175f695697ebef05bbb68d8-1787690925721.jpeg
+│               ├── page@e59e2780b175f695697ebef05bbb68d8-1787690925829.jpeg
+│               ├── page@e59e2780b175f695697ebef05bbb68d8-1787690925882.jpeg
+│               ├── page@e59e2780b175f695697ebef05bbb68d8-1787690925932.jpeg
+│               ├── page@e59e2780b175f695697ebef05bbb68d8-1787690925981.jpeg
+│               ├── page@e59e2780b175f695697ebef05bbb68d8-1787690926024.jpeg
+│               ├── page@e59e2780b175f695697ebef05bbb68d8-1787690926069.jpeg
+│               ├── page@e59e2780b175f695697ebef05bbb68d8-1787690926120.jpeg
+│               ├── page@e59e2780b175f695697ebef05bbb68d8-1787690926172.jpeg
+│               ├── page@e59e2780b175f695697ebef05bbb68d8-1787690926376.jpeg
+│               ├── page@e59e2780b175f695697ebef05bbb68d8-1787690926638.jpeg
+│               ├── page@e59e2780b175f695697ebef05bbb68d8-1787690928389.jpeg
+│               ├── page@e59e2780b175f695697ebef05bbb68d8-1787690928393.jpeg
+│               ├── page@e59e2780b175f695697ebef05bbb68d8-1787690928416.jpeg
+│               └── page@e59e2780b175f695697ebef05bbb68d8-1787690928426.jpeg
+├── test-results-release-4223
+│   └── .last-run.json
+├── test-results-release-4224
+│   ├── .last-run.json
+│   └── lifecycle-Puzzle-Swap-pres-583a6-through-a-responsive-resize-large-phone-430
+│       ├── error-context.md
+│       ├── test-failed-1.png
+│       └── trace.zip
+├── test-results-release-4225
+│   └── .last-run.json
+├── test-results-release-4226
+│   ├── .last-run.json
+│   ├── lifecycle-Puzzle-Swap-anim-ab5a9-its-authorized-sound-bundle-tablet-768
+│   │   ├── error-context.md
+│   │   ├── test-failed-1.png
+│   │   └── trace.zip
+│   └── lifecycle-Puzzle-Swap-pres-583a6-through-a-responsive-resize-large-phone-430
+│       ├── error-context.md
+│       ├── test-failed-1.png
+│       └── trace.zip
+├── test-results-release-4227
+│   └── .last-run.json
+├── test-results-release-4228
+│   └── .last-run.json
+├── test-results-release-4230
+│   ├── .last-run.json
+│   └── lifecycle-Puzzle-Swap-anim-ab5a9-its-authorized-sound-bundle-tablet-768
+│       ├── error-context.md
+│       ├── test-failed-1.png
+│       └── trace.zip
+├── test-results-release-4234
+│   ├── .last-run.json
+│   ├── lifecycle-five-mount-unmou-e3f4e-ot-leave-a-duplicate-canvas-tablet-768
+│   │   ├── error-context.md
+│   │   ├── test-failed-1.png
+│   │   └── trace.zip
+│   ├── lifecycle-Hub-loads-only-t-c1286-mounts-and-disposes-cleanly-android-412
+│   │   └── android-412-dev-smoke.png
+│   ├── lifecycle-Hub-loads-only-t-c1286-mounts-and-disposes-cleanly-iphone-390
+│   │   └── iphone-390-dev-smoke.png
+│   ├── lifecycle-Hub-loads-only-t-c1286-mounts-and-disposes-cleanly-large-phone-430
+│   │   └── large-phone-430-dev-smoke.png
+│   ├── lifecycle-Hub-loads-only-t-c1286-mounts-and-disposes-cleanly-tablet-768
+│   │   └── tablet-768-dev-smoke.png
+│   ├── lifecycle-mobile-photo-sel-97fed-d-opens-the-selected-puzzle-android-412
+│   │   └── android-412-puzzle-swap-cover-landscape.png
+│   ├── lifecycle-mobile-photo-sel-97fed-d-opens-the-selected-puzzle-iphone-390
+│   │   └── iphone-390-puzzle-swap-cover-landscape.png
+│   ├── lifecycle-mobile-photo-sel-97fed-d-opens-the-selected-puzzle-large-phone-430
+│   │   └── large-phone-430-puzzle-swap-cover-landscape.png
+│   ├── lifecycle-mobile-photo-sel-97fed-d-opens-the-selected-puzzle-tablet-768
+│   │   └── tablet-768-puzzle-swap-cover-landscape.png
+│   ├── lifecycle-Performance-Lab--f7231-ictory-through-Phaser-input-android-412
+│   │   └── android-412-performance-lab-victory.png
+│   ├── lifecycle-Performance-Lab--f7231-ictory-through-Phaser-input-iphone-390
+│   │   └── iphone-390-performance-lab-victory.png
+│   ├── lifecycle-Performance-Lab--f7231-ictory-through-Phaser-input-large-phone-430
+│   │   └── large-phone-430-performance-lab-victory.png
+│   ├── lifecycle-Performance-Lab--f7231-ictory-through-Phaser-input-tablet-768
+│   │   └── tablet-768-performance-lab-victory.png
+│   ├── lifecycle-Puzzle-Swap-acce-a7788-only-deterministic-solution-android-412
+│   │   └── android-412-puzzle-swap-drag.png
+│   ├── lifecycle-Puzzle-Swap-acce-a7788-only-deterministic-solution-iphone-390
+│   │   └── iphone-390-puzzle-swap-drag.png
+│   ├── lifecycle-Puzzle-Swap-acce-a7788-only-deterministic-solution-large-phone-430
+│   │   └── large-phone-430-puzzle-swap-drag.png
+│   ├── lifecycle-Puzzle-Swap-acce-a7788-only-deterministic-solution-tablet-768
+│   │   └── tablet-768-puzzle-swap-drag.png
+│   ├── lifecycle-Puzzle-Swap-anim-ab5a9-its-authorized-sound-bundle-android-412
+│   │   ├── android-412-puzzle-swap-complete.png
+│   │   ├── android-412-puzzle-swap-first-swap.png
+│   │   └── android-412-puzzle-swap-selection.png
+│   ├── lifecycle-Puzzle-Swap-anim-ab5a9-its-authorized-sound-bundle-iphone-390
+│   │   ├── iphone-390-puzzle-swap-complete.png
+│   │   ├── iphone-390-puzzle-swap-first-swap.png
+│   │   └── iphone-390-puzzle-swap-selection.png
+│   ├── lifecycle-Puzzle-Swap-anim-ab5a9-its-authorized-sound-bundle-large-phone-430
+│   │   ├── large-phone-430-puzzle-swap-complete.png
+│   │   ├── large-phone-430-puzzle-swap-first-swap.png
+│   │   └── large-phone-430-puzzle-swap-selection.png
+│   ├── lifecycle-Puzzle-Swap-anim-ab5a9-its-authorized-sound-bundle-tablet-768
+│   │   ├── tablet-768-puzzle-swap-complete.png
+│   │   ├── tablet-768-puzzle-swap-first-swap.png
+│   │   └── tablet-768-puzzle-swap-selection.png
+│   ├── lifecycle-Puzzle-Swap-hono-c9aa9-tion-without-disabling-play-android-412
+│   │   └── android-412-puzzle-swap-low-reduced.png
+│   ├── lifecycle-Puzzle-Swap-hono-c9aa9-tion-without-disabling-play-iphone-390
+│   │   └── iphone-390-puzzle-swap-low-reduced.png
+│   ├── lifecycle-Puzzle-Swap-hono-c9aa9-tion-without-disabling-play-large-phone-430
+│   │   └── large-phone-430-puzzle-swap-low-reduced.png
+│   ├── lifecycle-Puzzle-Swap-hono-c9aa9-tion-without-disabling-play-tablet-768
+│   │   └── tablet-768-puzzle-swap-low-reduced.png
+│   ├── lifecycle-Puzzle-Swap-moun-05732--textures-and-exits-cleanly-android-412
+│   │   ├── android-412-puzzle-swap-landscape-native.png
+│   │   └── android-412-puzzle-swap-native.png
+│   ├── lifecycle-Puzzle-Swap-moun-05732--textures-and-exits-cleanly-iphone-390
+│   │   ├── iphone-390-puzzle-swap-landscape-native.png
+│   │   └── iphone-390-puzzle-swap-native.png
+│   ├── lifecycle-Puzzle-Swap-moun-05732--textures-and-exits-cleanly-large-phone-430
+│   │   ├── large-phone-430-puzzle-swap-landscape-native.png
+│   │   └── large-phone-430-puzzle-swap-native.png
+│   ├── lifecycle-Puzzle-Swap-moun-05732--textures-and-exits-cleanly-tablet-768
+│   │   ├── tablet-768-puzzle-swap-landscape-native.png
+│   │   └── tablet-768-puzzle-swap-native.png
+│   ├── lifecycle-Puzzle-Swap-paus-35aad--and-resumes-the-active-run-android-412
+│   │   └── android-412-puzzle-swap-paused.png
+│   ├── lifecycle-Puzzle-Swap-paus-35aad--and-resumes-the-active-run-iphone-390
+│   │   └── iphone-390-puzzle-swap-paused.png
+│   ├── lifecycle-Puzzle-Swap-paus-35aad--and-resumes-the-active-run-large-phone-430
+│   │   └── large-phone-430-puzzle-swap-paused.png
+│   ├── lifecycle-Puzzle-Swap-paus-35aad--and-resumes-the-active-run-tablet-768
+│   │   └── tablet-768-puzzle-swap-paused.png
+│   ├── lifecycle-Puzzle-Swap-pres-66bf2--without-blocking-the-child-android-412
+│   │   ├── android-412-puzzle-swap-hint-first.png
+│   │   └── android-412-puzzle-swap-hint-second.png
+│   ├── lifecycle-Puzzle-Swap-pres-66bf2--without-blocking-the-child-iphone-390
+│   │   ├── iphone-390-puzzle-swap-hint-first.png
+│   │   └── iphone-390-puzzle-swap-hint-second.png
+│   ├── lifecycle-Puzzle-Swap-pres-66bf2--without-blocking-the-child-large-phone-430
+│   │   ├── large-phone-430-puzzle-swap-hint-first.png
+│   │   └── large-phone-430-puzzle-swap-hint-second.png
+│   └── lifecycle-Puzzle-Swap-pres-66bf2--without-blocking-the-child-tablet-768
+│       ├── tablet-768-puzzle-swap-hint-first.png
+│       └── tablet-768-puzzle-swap-hint-second.png
+├── test-results-release-4246
+│   ├── .last-run.json
+│   ├── lifecycle-Hub-loads-only-t-c1286-mounts-and-disposes-cleanly-android-412
+│   │   └── android-412-dev-smoke.png
+│   ├── lifecycle-Hub-loads-only-t-c1286-mounts-and-disposes-cleanly-iphone-390
+│   │   └── iphone-390-dev-smoke.png
+│   ├── lifecycle-Hub-loads-only-t-c1286-mounts-and-disposes-cleanly-large-phone-430
+│   │   └── large-phone-430-dev-smoke.png
+│   ├── lifecycle-Hub-loads-only-t-c1286-mounts-and-disposes-cleanly-tablet-768
+│   │   └── tablet-768-dev-smoke.png
+│   ├── lifecycle-mobile-photo-sel-97fed-d-opens-the-selected-puzzle-android-412
+│   │   └── android-412-puzzle-swap-cover-landscape.png
+│   ├── lifecycle-mobile-photo-sel-97fed-d-opens-the-selected-puzzle-iphone-390
+│   │   └── iphone-390-puzzle-swap-cover-landscape.png
+│   ├── lifecycle-mobile-photo-sel-97fed-d-opens-the-selected-puzzle-large-phone-430
+│   │   └── large-phone-430-puzzle-swap-cover-landscape.png
+│   ├── lifecycle-mobile-photo-sel-97fed-d-opens-the-selected-puzzle-tablet-768
+│   │   └── tablet-768-puzzle-swap-cover-landscape.png
+│   ├── lifecycle-Performance-Lab--f7231-ictory-through-Phaser-input-android-412
+│   │   └── android-412-performance-lab-victory.png
+│   ├── lifecycle-Performance-Lab--f7231-ictory-through-Phaser-input-iphone-390
+│   │   └── iphone-390-performance-lab-victory.png
+│   ├── lifecycle-Performance-Lab--f7231-ictory-through-Phaser-input-large-phone-430
+│   │   └── large-phone-430-performance-lab-victory.png
+│   ├── lifecycle-Performance-Lab--f7231-ictory-through-Phaser-input-tablet-768
+│   │   └── tablet-768-performance-lab-victory.png
+│   ├── lifecycle-Puzzle-Swap-acce-a7788-only-deterministic-solution-android-412
+│   │   └── android-412-puzzle-swap-drag.png
+│   ├── lifecycle-Puzzle-Swap-acce-a7788-only-deterministic-solution-iphone-390
+│   │   └── iphone-390-puzzle-swap-drag.png
+│   ├── lifecycle-Puzzle-Swap-acce-a7788-only-deterministic-solution-large-phone-430
+│   │   └── large-phone-430-puzzle-swap-drag.png
+│   ├── lifecycle-Puzzle-Swap-acce-a7788-only-deterministic-solution-tablet-768
+│   │   └── tablet-768-puzzle-swap-drag.png
+│   ├── lifecycle-Puzzle-Swap-anim-ab5a9-its-authorized-sound-bundle-android-412
+│   │   ├── android-412-puzzle-swap-complete.png
+│   │   ├── android-412-puzzle-swap-first-swap.png
+│   │   └── android-412-puzzle-swap-selection.png
+│   ├── lifecycle-Puzzle-Swap-anim-ab5a9-its-authorized-sound-bundle-iphone-390
+│   │   ├── iphone-390-puzzle-swap-complete.png
+│   │   ├── iphone-390-puzzle-swap-first-swap.png
+│   │   └── iphone-390-puzzle-swap-selection.png
+│   ├── lifecycle-Puzzle-Swap-anim-ab5a9-its-authorized-sound-bundle-large-phone-430
+│   │   ├── large-phone-430-puzzle-swap-complete.png
+│   │   ├── large-phone-430-puzzle-swap-first-swap.png
+│   │   └── large-phone-430-puzzle-swap-selection.png
+│   ├── lifecycle-Puzzle-Swap-anim-ab5a9-its-authorized-sound-bundle-tablet-768
+│   │   ├── tablet-768-puzzle-swap-complete.png
+│   │   ├── tablet-768-puzzle-swap-first-swap.png
+│   │   └── tablet-768-puzzle-swap-selection.png
+│   ├── lifecycle-Puzzle-Swap-hono-c9aa9-tion-without-disabling-play-android-412
+│   │   └── android-412-puzzle-swap-low-reduced.png
+│   ├── lifecycle-Puzzle-Swap-hono-c9aa9-tion-without-disabling-play-iphone-390
+│   │   └── iphone-390-puzzle-swap-low-reduced.png
+│   ├── lifecycle-Puzzle-Swap-hono-c9aa9-tion-without-disabling-play-large-phone-430
+│   │   └── large-phone-430-puzzle-swap-low-reduced.png
+│   ├── lifecycle-Puzzle-Swap-hono-c9aa9-tion-without-disabling-play-tablet-768
+│   │   └── tablet-768-puzzle-swap-low-reduced.png
+│   ├── lifecycle-Puzzle-Swap-moun-05732--textures-and-exits-cleanly-android-412
+│   │   ├── android-412-puzzle-swap-landscape-native.png
+│   │   └── android-412-puzzle-swap-native.png
+│   ├── lifecycle-Puzzle-Swap-moun-05732--textures-and-exits-cleanly-iphone-390
+│   │   ├── iphone-390-puzzle-swap-landscape-native.png
+│   │   └── iphone-390-puzzle-swap-native.png
+│   ├── lifecycle-Puzzle-Swap-moun-05732--textures-and-exits-cleanly-large-phone-430
+│   │   ├── large-phone-430-puzzle-swap-landscape-native.png
+│   │   └── large-phone-430-puzzle-swap-native.png
+│   ├── lifecycle-Puzzle-Swap-moun-05732--textures-and-exits-cleanly-tablet-768
+│   │   ├── tablet-768-puzzle-swap-landscape-native.png
+│   │   └── tablet-768-puzzle-swap-native.png
+│   ├── lifecycle-Puzzle-Swap-paus-35aad--and-resumes-the-active-run-android-412
+│   │   └── android-412-puzzle-swap-paused.png
+│   ├── lifecycle-Puzzle-Swap-paus-35aad--and-resumes-the-active-run-iphone-390
+│   │   └── iphone-390-puzzle-swap-paused.png
+│   ├── lifecycle-Puzzle-Swap-paus-35aad--and-resumes-the-active-run-large-phone-430
+│   │   └── large-phone-430-puzzle-swap-paused.png
+│   ├── lifecycle-Puzzle-Swap-paus-35aad--and-resumes-the-active-run-tablet-768
+│   │   └── tablet-768-puzzle-swap-paused.png
+│   ├── lifecycle-Puzzle-Swap-pres-66bf2--without-blocking-the-child-android-412
+│   │   ├── android-412-puzzle-swap-hint-first.png
+│   │   └── android-412-puzzle-swap-hint-second.png
+│   ├── lifecycle-Puzzle-Swap-pres-66bf2--without-blocking-the-child-iphone-390
+│   │   ├── iphone-390-puzzle-swap-hint-first.png
+│   │   └── iphone-390-puzzle-swap-hint-second.png
+│   ├── lifecycle-Puzzle-Swap-pres-66bf2--without-blocking-the-child-large-phone-430
+│   │   ├── large-phone-430-puzzle-swap-hint-first.png
+│   │   └── large-phone-430-puzzle-swap-hint-second.png
+│   └── lifecycle-Puzzle-Swap-pres-66bf2--without-blocking-the-child-tablet-768
+│       ├── tablet-768-puzzle-swap-hint-first.png
+│       └── tablet-768-puzzle-swap-hint-second.png
+├── test-results-targeted-4233
+│   ├── .last-run.json
+│   └── lifecycle-Puzzle-Swap-anim-ab5a9-its-authorized-sound-bundle-tablet-768
+│       ├── tablet-768-puzzle-swap-complete.png
+│       ├── tablet-768-puzzle-swap-first-swap.png
+│       └── tablet-768-puzzle-swap-selection.png
 ├── tests
 │   ├── e2e
 │   │   └── lifecycle.spec.ts
@@ -367,6 +1342,7 @@
 │   ├── game-generator
 │   │   ├── package.json
 │   │   ├── src
+│   │   │   ├── experienceRequirements.ts
 │   │   │   └── index.ts
 │   │   └── tests
 │   │       └── game-generator.test.ts
@@ -446,7 +1422,7 @@
 | `@christmas-games/theme`             | `packages\theme\package.json`             | `./src/index.ts`  |
 | `@christmas-games/dev-smoke`         | `packages\games\dev-smoke\package.json`   | `[object Object]` |
 | `@christmas-games/puzzle-swap`       | `packages\games\puzzle-swap\package.json` | `[object Object]` |
-| `@christmas-games/memory`            | `packages\games\memory\package.json`      | `./src/index.ts`  |
+| `@christmas-games/memory`            | `packages\games\memory\package.json`      | `[object Object]` |
 | `@christmas-games/tic-tac-toe`       | `packages\games\tic-tac-toe\package.json` | `./src/index.ts`  |
 | `@christmas-games/media-pipeline`    | `tools\media-pipeline\package.json`       | `—`               |
 | `@christmas-games/fixture-generator` | `tools\fixture-generator\package.json`    | `—`               |

@@ -14,6 +14,7 @@ idêntica.
 | criar/ajustar efeitos, música, mudo, pausa ou saída     | `AUDIO_BIBLE.md` e `MUSIC_BIBLE.md`             |
 | propor Papai Noel, rena, elfo ou outro personagem       | `CHARACTER_BIBLE.md`                            |
 | pedir uma imagem de referência ou avaliar uma candidata | `PROMPT_RECIPES.md` e `style-anchors/README.md` |
+| implementar uma resposta já decidida                    | `recipes/README.md` e a receita correspondente  |
 
 As regras curtas desta Bíblia continuam obrigatórias. Os documentos roteados
 acima detalham como aplicá-las sem transformar preferência pessoal em regra

@@ -1,6 +1,7 @@
 import { access, mkdir, writeFile } from 'node:fs/promises';
 import { dirname, join, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { renderExperienceRequirementsFile } from './experienceRequirements.js';
 
 export interface NewGameCommand {
   id: string;
@@ -74,6 +75,10 @@ export function renderGameFiles(id: string): readonly GeneratedFile[] {
     {
       relativePath: 'EXPERIENCE.md',
       contents: `# ${pascal} — experiência natalina\n\nUse \`docs/experience/christmas/ART_BIBLE.md\` antes de escolher uma arte ou um efeito. Este arquivo descreve a experiência deste jogo; ele não coloca regras em \`domain/\`.\n\n## Primeiros cinco segundos\n\n- **Foto protagonista:** explique como a foto escolhida aparece sem distorção.\n- **Primeira ação:** descreva uma ação que uma criança entende em até cinco segundos.\n- **Convite:** registre o texto curto, em português simples, e a resposta imediata ao toque.\n\n## Roteiro de resposta\n\n| Momento | Visual | Som / haptic | LOW e movimento reduzido |\n| --- | --- | --- | --- |\n| Tocar | Definir confirmação. | Definir ou justificar silêncio. | Manter confirmação sem animação repetida. |\n| Mover | Definir resposta durante a ação. | Definir resposta curta. | Manter alternativa de toque se houver arraste. |\n| Acertar | Definir reforço positivo. | Definir pista positiva. | Manter leitura e resultado. |\n| Erro | Ensinar sem punir. | Definir pista discreta. | Nunca depender de movimento. |\n| Dica | Mostrar próximo passo sem resolver. | Definir pista opcional. | Manter contraste estático. |\n| Vitória | Dar prioridade à foto completa. | Definir celebração curta. | Sem loop decorativo. |\n\n## Assets necessários\n\nListe somente papéis, não arquivos improvisados: cenário, moldura, controles, efeitos, sons e música. Antes de integrar, cada arquivo browser-deliverable precisa de proveniência e de uma entrada em \`assets/manifest.json\` conforme \`docs/assets/ASSET_MANIFEST_CONTRACT.md\`.\n`,
+    },
+    {
+      relativePath: 'EXPERIENCE_REQUIREMENTS.json',
+      contents: renderExperienceRequirementsFile(id),
     },
   ];
 }

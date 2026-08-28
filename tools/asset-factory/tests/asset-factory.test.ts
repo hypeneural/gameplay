@@ -3,7 +3,12 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
 import { parseAssetCommand, runAssetCommand } from '../src/index.js';
-import { auditAssetManifest, parseAssetManifest } from '../src/manifest.js';
+import {
+  auditAssetManifest,
+  loadAssetManifest,
+  migrateAssetManifest,
+  parseAssetManifest,
+} from '../src/manifest.js';
 
 const temporaryRoots: string[] = [];
 
@@ -56,6 +61,57 @@ describe('asset factory', () => {
     ]);
     expect(afterUntracked.errors).toContain(
       'untracked public asset: apps/play/public/assets/test-game/untracked.svg',
+    );
+  });
+
+  it('migrates v1 explicitly, preserves it idempotently, and audits the resulting hash', async () => {
+    const root = await fixtureRoot();
+    const assetPath = join(root, 'apps/play/public/assets/test-game/backgrounds/snow.webp');
+    await writeFile(assetPath, '1234', 'utf8');
+
+    const v1 = await loadAssetManifest(root, 'test-game');
+    const v2 = await migrateAssetManifest(root, v1);
+    expect(v2.version).toBe(2);
+    expect(v2.assets[0]?.runtime.sha256).toMatch(/^[a-f0-9]{64}$/);
+    expect(await migrateAssetManifest(root, v2)).toBe(v2);
+    expect(parseAssetManifest(v2)).toEqual(v2);
+
+    await writeFile(
+      join(root, 'packages/games/test-game/assets/manifest.json'),
+      `${JSON.stringify(v2, null, 2)}\n`,
+      'utf8',
+    );
+    await writeFile(assetPath, '4321', 'utf8');
+    const audit = await auditAssetManifest(root, 'test-game');
+    expect(audit.errors).toContain(
+      'winter-background: SHA-256 does not match the declared runtime file.',
+    );
+  });
+
+  it('rejects a v2 public asset that has not reached runtime approval', async () => {
+    const root = await fixtureRoot();
+    await writeFile(
+      join(root, 'apps/play/public/assets/test-game/backgrounds/snow.webp'),
+      '1234',
+      'utf8',
+    );
+    const v1 = await loadAssetManifest(root, 'test-game');
+    const v2 = await migrateAssetManifest(root, v1);
+    const unreviewed = {
+      ...v2,
+      assets: v2.assets.map((asset) => ({
+        ...asset,
+        art: { ...asset.art, state: 'PREPARADO' as const },
+      })),
+    };
+    await writeFile(
+      join(root, 'packages/games/test-game/assets/manifest.json'),
+      `${JSON.stringify(unreviewed, null, 2)}\n`,
+      'utf8',
+    );
+    expect(parseAssetManifest(unreviewed)).toMatchObject({ version: 2 });
+    expect((await auditAssetManifest(root, 'test-game')).errors).toContain(
+      'winter-background: art review state must be PRONTO_PARA_RUNTIME for public delivery.',
     );
   });
 

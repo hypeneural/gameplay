@@ -1,0 +1,74 @@
+import { readFile } from 'node:fs/promises';
+import { genericPreviewVersion, isOpaquePublicToken } from './socialPreview.js';
+import type { SocialPreviewRecord, SocialPreviewRepository } from './socialPreview.js';
+
+/**
+ * Small deployment adapter for a private, atomically replaced JSON file. It
+ * reloads on every decision so consent revocation does not wait for a process
+ * restart. A database adapter can replace it through the same interface.
+ */
+export function createFilePreviewRepository(configPath: string): SocialPreviewRepository {
+  return {
+    async getByPublicToken(token) {
+      const source = await readFile(configPath, 'utf8');
+      const parsed: unknown = JSON.parse(source);
+      return parsePreviewConfiguration(parsed).get(token);
+    },
+  };
+}
+
+export function parsePreviewConfiguration(
+  value: unknown,
+): ReadonlyMap<string, SocialPreviewRecord> {
+  if (!isRecord(value) || value.version !== 1 || !Array.isArray(value.sessions)) {
+    throw new Error('A configuração de prévia social deve conter version 1 e sessions.');
+  }
+  const records = new Map<string, SocialPreviewRecord>();
+  for (const entry of value.sessions) {
+    if (
+      !isRecord(entry) ||
+      typeof entry.token !== 'string' ||
+      !isOpaquePublicToken(entry.token) ||
+      records.has(entry.token)
+    ) {
+      throw new Error('A configuração de prévia social contém uma sessão inválida ou repetida.');
+    }
+    records.set(entry.token, parsePreviewRecord(entry));
+  }
+  return records;
+}
+
+function parsePreviewRecord(value: Record<string, unknown>): SocialPreviewRecord {
+  if (value.status === 'revoked') return { status: 'revoked' };
+  if (
+    value.status !== 'active' ||
+    !isRecord(value.preview) ||
+    typeof value.preview.kind !== 'string'
+  ) {
+    throw new Error('A configuração de prévia social contém um estado inválido.');
+  }
+  if (value.preview.kind === 'generic' && value.preview.version === genericPreviewVersion) {
+    return { status: 'active', preview: { kind: 'generic', version: genericPreviewVersion } };
+  }
+  if (
+    value.preview.kind === 'customer-photo' &&
+    (value.preview.consent === 'granted' || value.preview.consent === 'revoked') &&
+    typeof value.preview.derivativeKey === 'string' &&
+    typeof value.preview.version === 'string'
+  ) {
+    return {
+      status: 'active',
+      preview: {
+        kind: 'customer-photo',
+        consent: value.preview.consent,
+        derivativeKey: value.preview.derivativeKey,
+        version: value.preview.version,
+      },
+    };
+  }
+  throw new Error('A configuração de prévia social contém uma prévia inválida.');
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
+}

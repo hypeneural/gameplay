@@ -31,10 +31,10 @@ module.exports = {
       to: { path: '^packages/games/' },
     },
     {
-      name: 'media-not-in-browser-graph',
+      name: 'tools-not-in-browser-graph',
       severity: 'error',
       from: { path: '^apps/' },
-      to: { path: '^tools/media-pipeline/' },
+      to: { path: '^tools/' },
     },
   ],
   options: {

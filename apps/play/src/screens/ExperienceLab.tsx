@@ -6,16 +6,7 @@ import type {
   MotionPreference,
   QualityProfile,
 } from '@christmas-games/theme';
-
-type PhotoShape = 'portrait' | 'landscape';
-
-interface ExperienceSettings {
-  motion: MotionPreference;
-  photo: PhotoShape;
-  quality: QualityProfile;
-  seed: string;
-  soundEnabled: boolean;
-}
+import { useExperienceSettings, type ExperiencePhotoShape } from '../app/ExperienceSettings.js';
 
 const feedbackCues: readonly FeedbackCue[] = [
   'tap',
@@ -35,7 +26,7 @@ const cueLabels: Record<FeedbackCue, string> = {
   celebrate: 'Comemoração',
 };
 
-function photoShapeLabel(shape: PhotoShape): string {
+function photoShapeLabel(shape: ExperiencePhotoShape): string {
   return shape === 'landscape' ? 'horizontal' : 'vertical';
 }
 
@@ -47,7 +38,7 @@ function qualityLabel(quality: QualityProfile): string {
 
 /** Deterministic dev-only reference for the shared feedback vocabulary. */
 export function ExperienceLab(): React.JSX.Element {
-  const [settings, setSettings] = useState<ExperienceSettings>(() => readExperienceSettings());
+  const [settings, update] = useExperienceSettings();
   const [lastInstruction, setLastInstruction] = useState<FeedbackInstruction | undefined>(
     undefined,
   );
@@ -65,17 +56,6 @@ export function ExperienceLab(): React.JSX.Element {
       ),
     [settings.motion, settings.quality, settings.soundEnabled],
   );
-
-  const update = <Key extends keyof ExperienceSettings>(
-    key: Key,
-    value: ExperienceSettings[Key],
-  ): void => {
-    setSettings((current) => {
-      const next = { ...current, [key]: value };
-      writeExperienceSettings(next);
-      return next;
-    });
-  };
 
   return (
     <main className="shell experience-lab">
@@ -113,7 +93,7 @@ export function ExperienceLab(): React.JSX.Element {
           <select
             data-testid="experience-photo"
             value={settings.photo}
-            onChange={(event) => update('photo', event.target.value as PhotoShape)}
+            onChange={(event) => update('photo', event.target.value as ExperiencePhotoShape)}
           >
             <option value="portrait">Vertical</option>
             <option value="landscape">Horizontal</option>
@@ -168,34 +148,4 @@ export function ExperienceLab(): React.JSX.Element {
       </p>
     </main>
   );
-}
-
-function readExperienceSettings(): ExperienceSettings {
-  const search = new URLSearchParams(window.location.search);
-  return {
-    quality: parseQuality(search.get('quality')),
-    motion: search.get('motion') === 'reduce' ? 'reduced' : 'full',
-    photo: search.get('photo') === 'landscape' ? 'landscape' : 'portrait',
-    soundEnabled: search.get('sound') !== 'off',
-    seed: normalizeSeed(search.get('seed')),
-  };
-}
-
-function writeExperienceSettings(settings: ExperienceSettings): void {
-  const search = new URLSearchParams({
-    quality: settings.quality,
-    motion: settings.motion === 'reduced' ? 'reduce' : 'full',
-    photo: settings.photo,
-    sound: settings.soundEnabled ? 'on' : 'off',
-    seed: settings.seed,
-  });
-  window.history.replaceState(window.history.state, '', `/__dev/experience?${search.toString()}`);
-}
-
-function parseQuality(value: string | null): QualityProfile {
-  return value === 'LOW' || value === 'HIGH' ? value : 'NORMAL';
-}
-
-function normalizeSeed(value: string | null): string {
-  return value && /^\d{1,10}$/.test(value) ? value : '1234';
 }

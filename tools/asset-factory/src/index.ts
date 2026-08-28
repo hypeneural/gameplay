@@ -1,8 +1,21 @@
 import { fileURLToPath } from 'node:url';
-import { assetManifestRelativePath, auditAssetManifest, loadAssetManifest } from './manifest.js';
+import {
+  assetManifestRelativePath,
+  auditAssetManifest,
+  loadAssetManifest,
+  migrateAssetManifest,
+} from './manifest.js';
 
 const workspaceRoot = fileURLToPath(new URL('../../../', import.meta.url));
-const commands = ['doctor', 'validate', 'audit', 'catalog', 'budget', 'manifest'] as const;
+const commands = [
+  'doctor',
+  'validate',
+  'audit',
+  'catalog',
+  'budget',
+  'manifest',
+  'migrate',
+] as const;
 type AssetCommand = (typeof commands)[number];
 
 export interface AssetCommandOptions {
@@ -36,7 +49,11 @@ export async function runAssetCommand(
     return { exitCode: 0, lines: [assetManifestRelativePath(options.gameId)] };
   }
 
-  const manifest = await loadAssetManifest(root, options.gameId);
+  const document = await loadAssetManifest(root, options.gameId);
+  const manifest = await migrateAssetManifest(root, document);
+  if (options.command === 'migrate') {
+    return { exitCode: 0, lines: [JSON.stringify(manifest, null, 2)] };
+  }
   const audit = await auditAssetManifest(root, options.gameId);
   const prefix = `Assets de ${manifest.gameId}`;
   const errors = audit.errors.map((error) => `ERRO: ${error}`);
@@ -51,8 +68,10 @@ export async function runAssetCommand(
   if (options.command === 'catalog') {
     const catalog = manifest.assets.map((asset) => {
       const role =
-        asset.kind === 'audio' ? `som:${asset.cue}` : `${asset.kind}:${asset.textureKey}`;
-      return `${asset.id} — ${role} — ${asset.bytes} bytes — ${asset.provenance.source}`;
+        asset.kind === 'audio'
+          ? `som:${asset.runtime.cue}`
+          : `${asset.kind}:${asset.runtime.textureKey}`;
+      return `${asset.id} — ${role} — ${asset.runtime.bytes} bytes — ${asset.source.origin}`;
     });
     return {
       exitCode: errors.length === 0 ? 0 : 1,

@@ -4,6 +4,14 @@ import { localTestMediaPlugin } from './vite.localTestMedia.js';
 
 export default defineConfig({
   plugins: [localTestMediaPlugin()],
+  server: {
+    watch: {
+      // Playwright writes visual evidence here during a suite. Those PNGs are
+      // not application source; watching them causes a Vite full reload in the
+      // following test and interrupts an otherwise healthy Phaser mount.
+      ignored: ['**/docs/generated/evidence/**'],
+    },
+  },
   resolve: {
     alias: {
       '@christmas-games/platform': fileURLToPath(
@@ -20,6 +28,15 @@ export default defineConfig({
       ),
       '@christmas-games/puzzle-swap/definition': fileURLToPath(
         new URL('../../packages/games/puzzle-swap/src/definition.ts', import.meta.url),
+      ),
+      '@christmas-games/puzzle-swap/asset-lab': fileURLToPath(
+        new URL('../../packages/games/puzzle-swap/src/assets/assetLabCatalog.ts', import.meta.url),
+      ),
+      '@christmas-games/puzzle-swap/performance-lab': fileURLToPath(
+        new URL(
+          '../../packages/games/puzzle-swap/src/lab/PuzzlePerformanceScenario.ts',
+          import.meta.url,
+        ),
       ),
       '@christmas-games/puzzle-swap': fileURLToPath(
         new URL('../../packages/games/puzzle-swap/src/index.ts', import.meta.url),

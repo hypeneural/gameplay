@@ -19,6 +19,15 @@ export default defineConfig({
       '@christmas-games/puzzle-swap/definition': fileURLToPath(
         new URL('./packages/games/puzzle-swap/src/definition.ts', import.meta.url),
       ),
+      '@christmas-games/puzzle-swap/asset-lab': fileURLToPath(
+        new URL('./packages/games/puzzle-swap/src/assets/assetLabCatalog.ts', import.meta.url),
+      ),
+      '@christmas-games/puzzle-swap/performance-lab': fileURLToPath(
+        new URL(
+          './packages/games/puzzle-swap/src/lab/PuzzlePerformanceScenario.ts',
+          import.meta.url,
+        ),
+      ),
       '@christmas-games/puzzle-swap': fileURLToPath(
         new URL('./packages/games/puzzle-swap/src/index.ts', import.meta.url),
       ),

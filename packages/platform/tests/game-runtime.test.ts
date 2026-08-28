@@ -8,13 +8,36 @@ import {
   GameRunController,
   HapticFeedback,
   PageVisibilityController,
+  PresentationFrameSampler,
   SceneScope,
   createPhotoSurface,
   createTouchHitArea,
+  estimateDecodedRgbaTextureBytes,
+  summarizeFrameDeltas,
 } from '../src/index.js';
 import { MemoryAnalytics, noOpHaptics } from '../src/testing/fakes.js';
 
 describe('ActiveGameClock and GameRunController', () => {
+  it('keeps only the latest bridge event for an active run and releases it at teardown', () => {
+    const clock = new ActiveGameClock({ now: () => 0 });
+    const analytics = new MemoryAnalytics();
+    const bridge = new GameBridge();
+    const run = new GameRunController(
+      'generated-game',
+      'run-test-latest',
+      clock,
+      analytics,
+      bridge,
+    );
+
+    run.open();
+    run.ready();
+    expect(bridge.latest('run-test-latest')?.type).toBe('GAME_READY');
+
+    bridge.release('run-test-latest');
+    expect(bridge.latest('run-test-latest')).toBeUndefined();
+  });
+
   it('excludes hidden time and emits one ordered run', () => {
     let now = 100;
     const clock = new ActiveGameClock({ now: () => now });
@@ -28,6 +51,7 @@ describe('ActiveGameClock and GameRunController', () => {
     now = 150;
     run.ready();
     run.start();
+    run.interactionSettled();
     now = 650;
     run.pause();
     now = 5_650;
@@ -42,22 +66,26 @@ describe('ActiveGameClock and GameRunController', () => {
       'GAME_OPENED',
       'GAME_READY',
       'GAME_STARTED',
+      'GAME_INTERACTION_SETTLED',
       'GAME_PAUSED',
       'GAME_RESUMED',
       'GAME_COMPLETED',
       'GAME_EXITED',
     ]);
-    expect(analytics.events.map((event) => event.type)).toEqual(events);
-    expect(analytics.events.map((event) => event.runId)).toEqual([
-      'run-test-001',
-      'run-test-001',
-      'run-test-001',
-      'run-test-001',
-      'run-test-001',
-      'run-test-001',
-      'run-test-001',
+    expect(analytics.events.map((event) => event.type)).toEqual([
+      'GAME_OPENED',
+      'GAME_READY',
+      'GAME_STARTED',
+      'GAME_PAUSED',
+      'GAME_RESUMED',
+      'GAME_COMPLETED',
+      'GAME_EXITED',
     ]);
-    expect(analytics.events.map((event) => event.sequence)).toEqual([1, 2, 3, 4, 5, 6, 7]);
+    expect(analytics.events.map((event) => event.runId)).toEqual(
+      Array<string>(7).fill('run-test-001'),
+    );
+    expect(events).toHaveLength(8);
+    expect(analytics.events.map((event) => event.sequence)).toEqual([1, 2, 3, 5, 6, 7, 8]);
   });
 
   it('stops an active clock without counting time after stop', () => {
@@ -215,6 +243,63 @@ describe('feedback and performance quality', () => {
     });
     for (let index = 0; index < 10; index += 1) monitor.record(30);
     expect(monitor.record(3)).toEqual({ tier: 'NORMAL', measuredFrames: 10, locked: true });
+  });
+
+  it('summarizes frame deltas with stable percentiles and excludes invalid samples', () => {
+    expect(summarizeFrameDeltas([10, 12, 16, 20, 40, 80, 0, Number.NaN], 25)).toEqual({
+      framesAboveThreshold: 2,
+      p50Ms: 16,
+      p95Ms: 80,
+      p99Ms: 80,
+      sampleCount: 6,
+      thresholdMs: 25,
+    });
+  });
+
+  it('uses presentation timestamps rather than a real clock and cancels the pending frame', () => {
+    const callbacks = new Map<number, (timestampMs: number) => void>();
+    let nextRequestId = 0;
+    const sampler = new PresentationFrameSampler(
+      {
+        cancelFrame: (requestId) => callbacks.delete(requestId),
+        requestFrame: (callback) => {
+          nextRequestId += 1;
+          callbacks.set(nextRequestId, callback);
+          return nextRequestId;
+        },
+      },
+      20,
+    );
+    const present = (timestampMs: number): void => {
+      const entry = callbacks.entries().next().value as
+        [number, (timestamp: number) => void] | undefined;
+      if (!entry) throw new Error('Expected a scheduled presentation frame.');
+      callbacks.delete(entry[0]);
+      entry[1](timestampMs);
+    };
+
+    sampler.start();
+    present(100);
+    present(118);
+    present(143);
+    expect(sampler.stop()).toEqual({
+      framesAboveThreshold: 1,
+      p50Ms: 18,
+      p95Ms: 25,
+      p99Ms: 25,
+      sampleCount: 2,
+      thresholdMs: 20,
+    });
+    expect(callbacks.size).toBe(0);
+    sampler.reset();
+    expect(sampler.summary().sampleCount).toBe(0);
+  });
+
+  it('estimates decoded texture bytes conservatively as RGBA pixels', () => {
+    expect(estimateDecodedRgbaTextureBytes({ width: 1024, height: 1536 })).toBe(6_291_456);
+    expect(() => estimateDecodedRgbaTextureBytes({ width: 0, height: 16 })).toThrow(
+      'texture width',
+    );
   });
 });
 

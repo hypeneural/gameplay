@@ -2,13 +2,19 @@ import type { GameDefinition } from '@christmas-games/platform';
 import { playInterfaceTap } from '../audio/playInterfaceTap.js';
 
 interface GameCardProps {
+  available: boolean;
   definition: GameDefinition;
   onOpen(gameId: string): void;
   onPrefetch(gameId: string): void;
 }
 
 /** Product metadata drives cards; a card never loads a photo-game derivative. */
-export function GameCard({ definition, onOpen, onPrefetch }: GameCardProps): React.JSX.Element {
+export function GameCard({
+  available,
+  definition,
+  onOpen,
+  onPrefetch,
+}: GameCardProps): React.JSX.Element {
   return (
     <article className="game-card">
       <div aria-label={definition.cover.alt} className="game-card-preview" role="img" />
@@ -18,15 +24,21 @@ export function GameCard({ definition, onOpen, onPrefetch }: GameCardProps): Rea
         <button
           className="button game-card-cta"
           data-testid={`open-game-${definition.id}`}
+          disabled={!available}
           type="button"
           onClick={() => {
+            if (!available) return;
             playInterfaceTap();
             onOpen(definition.id);
           }}
-          onFocus={() => onPrefetch(definition.id)}
-          onPointerDown={() => onPrefetch(definition.id)}
+          onFocus={() => {
+            if (available) onPrefetch(definition.id);
+          }}
+          onPointerDown={() => {
+            if (available) onPrefetch(definition.id);
+          }}
         >
-          Ver jogo
+          {available ? 'Ver jogo' : `Precisa de ${definition.minPhotos} fotos`}
         </button>
       </div>
     </article>

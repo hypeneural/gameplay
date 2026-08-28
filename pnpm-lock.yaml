@@ -50,11 +50,16 @@ importers:
         specifier: 4.1.11
         version: 4.1.11(@types/node@24.13.3)(vite@8.2.2(@types/node@24.13.3)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.12)(yaml@2.9.0))
 
+  apps/catalog-server: {}
+
   apps/play:
     dependencies:
       '@christmas-games/dev-smoke':
         specifier: workspace:*
         version: link:../../packages/games/dev-smoke
+      '@christmas-games/memory':
+        specifier: workspace:*
+        version: link:../../packages/games/memory
       '@christmas-games/platform':
         specifier: workspace:*
         version: link:../../packages/platform
@@ -89,7 +94,17 @@ importers:
         specifier: 4.2.1
         version: 4.2.1
 
-  packages/games/memory: {}
+  packages/games/memory:
+    dependencies:
+      '@christmas-games/platform':
+        specifier: workspace:*
+        version: link:../../platform
+      '@christmas-games/theme':
+        specifier: workspace:*
+        version: link:../../theme
+      phaser:
+        specifier: 4.2.1
+        version: 4.2.1
 
   packages/games/puzzle-swap:
     dependencies:

@@ -15,7 +15,7 @@ quebra-cabeça.
 ## Entregas desta rodada
 
 - [x] Traduzir as mensagens técnicas visíveis: os códigos internos continuam
-      tipados, mas a pessoa vê frases como “Brincadeira iniciada” e “Foto montada!”.
+      tipados, mas a pessoa vê frases como “Brincadeira iniciada” e “Brincadeira concluída!”.
 - [x] Traduzir orientação, amostra de sessão e laboratório de desenvolvimento
       para português simples.
 - [x] Criar fundo natalino próprio, com centro de leitura calmo para a foto.

@@ -1,7 +1,7 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="700" height="500" viewBox="0 0 700 500" role="img" aria-label="Foto de teste horizontal">
+<svg xmlns="http://www.w3.org/2000/svg" width="700" height="500" viewBox="0 0 700 500" role="img" aria-label="Foto de teste de Natal">
   <rect width="700" height="500" fill="#0f4a3c"/>
   <path d="M0 0h700v146L0 248z" fill="#247765" opacity=".65"/>
   <circle cx="350" cy="235" r="105" fill="#f8dfa0" opacity=".2"/>
   <path d="m350 103 18 52 56 1-44 35 16 56-46-33-47 33 17-56-45-35 57-1z" fill="#f8dfa0"/>
-  <text x="350" y="400" fill="#fffaf0" font-family="Arial, sans-serif" font-size="30" font-weight="700" text-anchor="middle">FOTO HORIZONTAL</text>
+  <text x="350" y="400" fill="#fffaf0" font-family="Arial, sans-serif" font-size="30" font-weight="700" text-anchor="middle">MEMÓRIA DE NATAL</text>
 </svg>

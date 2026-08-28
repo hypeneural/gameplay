@@ -9,6 +9,7 @@
     "packages/games/memory": {},
     "packages/games/tic-tac-toe": {},
     "tools/media-pipeline": {},
-    "tools/fixture-generator": {}
+    "tools/fixture-generator": {},
+    "tools/asset-factory": {}
   }
 }

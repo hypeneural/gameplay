@@ -1,0 +1,23 @@
+{
+  "version": 1,
+  "sessions": [
+    {
+      "token": "replace-with-an-opaque-token",
+      "status": "active",
+      "preview": {
+        "kind": "generic",
+        "version": "evydencia-christmas-v1"
+      }
+    },
+    {
+      "token": "replace-with-a-second-token",
+      "status": "active",
+      "preview": {
+        "kind": "customer-photo",
+        "consent": "granted",
+        "derivativeKey": "replace-with-an-opaque-social-derivative-key",
+        "version": "social-v1"
+      }
+    }
+  ]
+}

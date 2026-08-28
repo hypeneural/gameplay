@@ -35,6 +35,7 @@
     "asset:catalog": "pnpm --filter @christmas-games/asset-factory run catalog",
     "asset:budget": "pnpm --filter @christmas-games/asset-factory run budget",
     "asset:manifest": "pnpm --filter @christmas-games/asset-factory run manifest",
+    "asset:migrate": "pnpm --filter @christmas-games/asset-factory run migrate",
     "puzzle:source-reader": "node tools/export-puzzle-source-reader.mjs"
   },
   "devDependencies": {

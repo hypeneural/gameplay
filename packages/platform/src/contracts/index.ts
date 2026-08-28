@@ -5,6 +5,7 @@
 export type GameId = string;
 export type PhotoVariant = 'thumb' | 'card' | 'game';
 export type QualityTier = 'LOW' | 'NORMAL' | 'HIGH';
+export type GameDifficulty = 'normal' | 'desafio';
 
 export interface GameCover {
   /** Optional local artwork; the shell has a CSS fallback while assets are deferred. */
@@ -60,6 +61,7 @@ export type AnalyticsEvent =
 
 export type GameBridgeEvent =
   | AnalyticsEvent
+  | (GameEventIdentity & { type: 'GAME_INTERACTION_SETTLED' })
   | (GameEventIdentity & { type: 'GAME_ASSET_RETRY'; attempt: number })
   | (GameEventIdentity & { type: 'GAME_ASSET_FAILED'; reason: string });
 
@@ -89,6 +91,8 @@ export interface GameRun {
   open(): void;
   ready(): void;
   start(): void;
+  /** Signals that a player interaction has completed its visible game-side work. */
+  interactionSettled(): void;
   pause(): void;
   resume(): void;
   /** Emits a bounded, non-analytics diagnostic for a retried required asset. */
@@ -110,6 +114,26 @@ export interface GameContext {
   analytics: Analytics;
   haptics: Haptics;
   quality: QualityTier;
+  /**
+   * Voluntary player-selected progression. A game without a challenge mode
+   * keeps its normal rules when the shell omits this value.
+   */
+  difficulty?: GameDifficulty;
+  /**
+   * Explicit player preferences supplied by the app shell. A game must retain
+   * its safe defaults when a host from an older shell omits these values.
+   */
+  preferences?: Readonly<{
+    reducedMotion?: boolean;
+    soundEnabled?: boolean;
+  }>;
+  /**
+   * Local-only diagnostic input. It is never derived from a session URL or
+   * transmitted by the platform; a game treats an omitted value as production.
+   */
+  development?: Readonly<{
+    scenario?: string;
+  }>;
   run: GameRun;
 }
 

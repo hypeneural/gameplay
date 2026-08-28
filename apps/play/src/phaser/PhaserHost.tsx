@@ -1,11 +1,16 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import {
   ActiveGameClock,
   GameRunController,
   PageVisibilityController,
   SeededRandom,
 } from '@christmas-games/platform';
-import type { GameBridge, GameContextSeed, GameController } from '@christmas-games/platform';
+import type {
+  GameBridge,
+  GameBridgeEvent,
+  GameContextSeed,
+  GameController,
+} from '@christmas-games/platform';
 import { PhaserMountCoordinator } from './PhaserMountCoordinator.js';
 import { loadGameRuntime, mountLoadedGame } from './createGame.js';
 import { createRunIdentity } from './createRunIdentity.js';
@@ -20,7 +25,9 @@ interface PhaserHostProps {
   exitRequest: number;
   gameId: AvailableGameId;
   onExit(): void;
-  onStateChange(status: PhaserHostStatus, lastEvent: string): void;
+  onStateChange(status: PhaserHostStatus, lastEvent: string, sequence: number): void;
+  /** Development labs can inject a seed to replay the same board exactly. */
+  runSeed?: number;
 }
 
 /** One coordinator is intentionally shared across route transitions. */
@@ -33,6 +40,7 @@ export function PhaserHost({
   gameId,
   onExit,
   onStateChange,
+  runSeed,
 }: PhaserHostProps): React.JSX.Element {
   const hostRef = useRef<HTMLDivElement>(null);
   const destroyRef = useRef<(() => Promise<void>) | undefined>(undefined);
@@ -43,28 +51,36 @@ export function PhaserHost({
   // A new host must ignore a completed request from its predecessor and react
   // only to a later navigation request.
   const handledExitRequestRef = useRef(exitRequest);
-  const [status, setStatus] = useState<PhaserHostStatus>('loading');
-  const [lastEvent, setLastEvent] = useState('NONE');
-
   useEffect(() => {
     onExitRef.current = onExit;
     onStateChangeRef.current = onStateChange;
   }, [onExit, onStateChange]);
 
-  useEffect(() => {
-    onStateChangeRef.current(status, lastEvent);
-  }, [lastEvent, status]);
+  const publishBridgeEvent = useCallback((event: GameBridgeEvent): void => {
+    const status: PhaserHostStatus =
+      event.type === 'GAME_ASSET_FAILED'
+        ? 'error'
+        : event.type === 'GAME_OPENED'
+          ? 'loading'
+          : 'ready';
+    onStateChangeRef.current(status, event.type, event.sequence);
+  }, []);
 
-  useEffect(
-    () =>
-      bridge.subscribe((event) => {
-        if (event.runId !== activeRunIdRef.current) return;
-        setLastEvent(event.type);
-        if (event.type === 'GAME_READY') setStatus('ready');
-        if (event.type === 'GAME_ASSET_FAILED') setStatus('error');
-      }),
-    [bridge],
+  const publishLoading = useCallback(
+    (): void => onStateChangeRef.current('loading', 'NONE', 0),
+    [],
   );
+
+  const publishError = useCallback((): void => onStateChangeRef.current('error', 'NONE', 0), []);
+
+  useEffect(() => {
+    const receiveBridgeEvent = (event: GameBridgeEvent): void => {
+      if (event.runId !== activeRunIdRef.current) return;
+      publishBridgeEvent(event);
+    };
+    const unsubscribe = bridge.subscribe(receiveBridgeEvent);
+    return () => unsubscribe();
+  }, [bridge, publishBridgeEvent]);
 
   useEffect(() => {
     let cancelled = false;
@@ -97,7 +113,10 @@ export function PhaserHost({
           detachVisibility = undefined;
           releaseLease?.();
           releaseLease = undefined;
-          if (activeRunIdRef.current === runId) activeRunIdRef.current = undefined;
+          if (runId && activeRunIdRef.current === runId) {
+            activeRunIdRef.current = undefined;
+            bridge.release(runId);
+          }
           if (destroyRef.current === requestDestroy) destroyRef.current = undefined;
         }
       })();
@@ -119,7 +138,7 @@ export function PhaserHost({
       } catch (error) {
         if (!cancelled) {
           console.error('Unable to load the Phaser game runtime.', error);
-          setStatus('error');
+          publishError();
         }
         return;
       }
@@ -132,11 +151,10 @@ export function PhaserHost({
         return;
       }
 
-      const identity = createRunIdentity();
+      const identity = createRunIdentity(runSeed);
       runId = identity.runId;
       activeRunIdRef.current = runId;
-      setStatus('loading');
-      setLastEvent('NONE');
+      publishLoading();
 
       const activeClock = new ActiveGameClock(context.clock);
       const runtimeContext = {
@@ -153,11 +171,18 @@ export function PhaserHost({
         const controller = await creatingController;
         creatingController = undefined;
         controllerDestroy = controller.destroy;
+        // Phaser can finish its synchronous Scene setup before a React effect
+        // observes the first bridge event. Reapply the bounded latest event
+        // for this exact run; no Scene or game state crosses this boundary.
+        const latestEvent = bridge.latest(identity.runId);
+        if (latestEvent?.runId === activeRunIdRef.current) {
+          publishBridgeEvent(latestEvent);
+        }
         if (cancelled) await destroy();
       } catch (error) {
         if (!cancelled) {
           console.error('Unable to start the Phaser game.', error);
-          setStatus('error');
+          publishError();
         }
         await destroy().catch((destroyError: unknown) => {
           console.error('Unable to destroy a failed Phaser mount.', destroyError);
@@ -170,7 +195,7 @@ export function PhaserHost({
       cancelled = true;
       void destroy().catch((error: unknown) => console.error('Unable to destroy Phaser.', error));
     };
-  }, [bridge, context, gameId]);
+  }, [bridge, context, gameId, publishBridgeEvent, publishError, publishLoading, runSeed]);
 
   const exit = (): Promise<void> => {
     if (exitPromiseRef.current) return exitPromiseRef.current;
@@ -190,8 +215,12 @@ export function PhaserHost({
   return (
     <div
       className="phaser-host"
+      data-difficulty={context.difficulty ?? 'normal'}
       data-quality={context.quality}
-      data-reduced-motion={window.matchMedia('(prefers-reduced-motion: reduce)').matches}
+      data-reduced-motion={
+        context.preferences?.reducedMotion ??
+        window.matchMedia('(prefers-reduced-motion: reduce)').matches
+      }
       data-testid="phaser-host"
       ref={hostRef}
     />

@@ -1,6 +1,7 @@
 import type { GameDefinition, GameModule } from '@christmas-games/platform';
 import type * as PhaserModule from 'phaser';
 import { devSmokeDefinition } from '@christmas-games/dev-smoke/definition';
+import { memoryDefinition } from '@christmas-games/memory/definition';
 import { puzzleSwapDefinition } from '@christmas-games/puzzle-swap/definition';
 
 export type PhaserGameModule = GameModule<typeof PhaserModule, HTMLElement>;
@@ -21,6 +22,10 @@ const installedGames = {
   'puzzle-swap': {
     definition: puzzleSwapDefinition,
     load: async () => (await import('@christmas-games/puzzle-swap')).puzzleSwapGameModule,
+  },
+  memory: {
+    definition: memoryDefinition,
+    load: async () => (await import('@christmas-games/memory')).memoryGameModule,
   },
 } satisfies Record<string, InstalledGame>;
 

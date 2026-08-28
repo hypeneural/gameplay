@@ -17,7 +17,21 @@ interface ExperienceLabRoute {
   kind: 'experience-lab';
 }
 
-export type AppRoute = SessionRoute | GameCoverRoute | ThemeLabRoute | ExperienceLabRoute;
+interface AssetLabRoute {
+  kind: 'asset-lab';
+}
+
+interface PerformanceLabRoute {
+  kind: 'performance-lab';
+}
+
+export type AppRoute =
+  | SessionRoute
+  | GameCoverRoute
+  | ThemeLabRoute
+  | ExperienceLabRoute
+  | AssetLabRoute
+  | PerformanceLabRoute;
 
 const fallbackSessionRoute: SessionRoute = { kind: 'session', token: 'local-demo-token' };
 
@@ -26,6 +40,8 @@ export function parseAppRoute(pathname: string): AppRoute {
   const segments = pathname.split('/').filter(Boolean);
   if (segments[0] === '__dev' && segments[1] === 'theme') return { kind: 'theme-lab' };
   if (segments[0] === '__dev' && segments[1] === 'experience') return { kind: 'experience-lab' };
+  if (segments[0] === '__dev' && segments[1] === 'assets') return { kind: 'asset-lab' };
+  if (segments[0] === '__dev' && segments[1] === 'performance') return { kind: 'performance-lab' };
   if (segments[0] !== 's' || !segments[1]) return fallbackSessionRoute;
 
   const token = decodeSegment(segments[1]);
@@ -47,8 +63,12 @@ export function sameRoute(first: AppRoute, second: AppRoute): boolean {
   if (
     first.kind === 'theme-lab' ||
     first.kind === 'experience-lab' ||
+    first.kind === 'asset-lab' ||
+    first.kind === 'performance-lab' ||
     second.kind === 'theme-lab' ||
-    second.kind === 'experience-lab'
+    second.kind === 'experience-lab' ||
+    second.kind === 'asset-lab' ||
+    second.kind === 'performance-lab'
   ) {
     return true;
   }

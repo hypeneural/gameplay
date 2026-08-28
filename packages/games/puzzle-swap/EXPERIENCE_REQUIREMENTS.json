@@ -1,0 +1,39 @@
+{
+  "version": 1,
+  "gameId": "puzzle-swap",
+  "fantasy": "montar a lembrança de Natal em um quebra-cabeça",
+  "playerVerbs": ["tocar", "arrastar", "trocar", "observar", "escolher"],
+  "interactionStates": [
+    "parado",
+    "pressionado",
+    "selecionado",
+    "em-movimento",
+    "acertou",
+    "tente-de-novo",
+    "dica",
+    "pausado",
+    "concluido"
+  ],
+  "targetSessionSeconds": 180,
+  "victory": {
+    "nextAction": "escolher-outra-foto",
+    "photoPriority": "alta"
+  },
+  "assetRoles": [
+    "foto-protagonista",
+    "cenario",
+    "moldura-da-foto",
+    "acao-principal",
+    "feedback-de-selecao",
+    "feedback-de-dica",
+    "feedback-de-acerto",
+    "feedback-de-vitoria",
+    "som-de-toque",
+    "som-de-acerto",
+    "som-de-vitoria"
+  ],
+  "quality": {
+    "low": "sem-efeitos-decorativos",
+    "reducedMotion": "sem-movimento-continuo"
+  }
+}

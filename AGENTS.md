@@ -23,6 +23,8 @@ Build a safe, local-VPS, mobile-first factory for personalized photo minigames. 
 - `packages/theme`: tokens and quality profiles shared by React and Phaser.
 - `packages/games/<game>`: isolated game domain/runtime/spec.
 - `tools/media-pipeline`: Node/VPS-only Sharp processing; never browser code.
+- `tools/asset-factory`: Node/VPS-only inspection, preparation, provenance and
+  budgeting of game assets; never browser code.
 - `docs`: system of record. Generated map must match the real tree.
 
 ## Non-negotiable boundaries
