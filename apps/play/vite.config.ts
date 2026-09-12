@@ -26,6 +26,12 @@ export default defineConfig({
       '@christmas-games/dev-smoke': fileURLToPath(
         new URL('../../packages/games/dev-smoke/src/index.ts', import.meta.url),
       ),
+      '@christmas-games/expresso-das-fotos/definition': fileURLToPath(
+        new URL('../../packages/games/expresso-das-fotos/src/definition.ts', import.meta.url),
+      ),
+      '@christmas-games/expresso-das-fotos': fileURLToPath(
+        new URL('../../packages/games/expresso-das-fotos/src/index.ts', import.meta.url),
+      ),
       '@christmas-games/puzzle-swap/definition': fileURLToPath(
         new URL('../../packages/games/puzzle-swap/src/definition.ts', import.meta.url),
       ),
@@ -41,10 +47,59 @@ export default defineConfig({
       '@christmas-games/puzzle-swap': fileURLToPath(
         new URL('../../packages/games/puzzle-swap/src/index.ts', import.meta.url),
       ),
+      '@christmas-games/tic-tac-toe/definition': fileURLToPath(
+        new URL('../../packages/games/tic-tac-toe/src/definition.ts', import.meta.url),
+      ),
+      '@christmas-games/tic-tac-toe': fileURLToPath(
+        new URL('../../packages/games/tic-tac-toe/src/index.ts', import.meta.url),
+      ),
+      '@christmas-games/magic-photo/definition': fileURLToPath(
+        new URL('../../packages/games/magic-photo/src/definition.ts', import.meta.url),
+      ),
+      '@christmas-games/magic-photo': fileURLToPath(
+        new URL('../../packages/games/magic-photo/src/index.ts', import.meta.url),
+      ),
+      '@christmas-games/memory/definition': fileURLToPath(
+        new URL('../../packages/games/memory/src/definition.ts', import.meta.url),
+      ),
+      '@christmas-games/memory': fileURLToPath(
+        new URL('../../packages/games/memory/src/index.ts', import.meta.url),
+      ),
+      '@christmas-games/guirlanda-das-lembrancas/definition': fileURLToPath(
+        new URL('../../packages/games/guirlanda-das-lembrancas/src/definition.ts', import.meta.url),
+      ),
+      '@christmas-games/guirlanda-das-lembrancas': fileURLToPath(
+        new URL('../../packages/games/guirlanda-das-lembrancas/src/index.ts', import.meta.url),
+      ),
+      '@christmas-games/mosaico-em-queda/definition': fileURLToPath(
+        new URL('../../packages/games/mosaico-em-queda/src/definition.ts', import.meta.url),
+      ),
+      '@christmas-games/mosaico-em-queda': fileURLToPath(
+        new URL('../../packages/games/mosaico-em-queda/src/index.ts', import.meta.url),
+      ),
+      '@christmas-games/rena-das-lembrancas/definition': fileURLToPath(
+        new URL('../../packages/games/rena-das-lembrancas/src/definition.ts', import.meta.url),
+      ),
+      '@christmas-games/rena-das-lembrancas': fileURLToPath(
+        new URL('../../packages/games/rena-das-lembrancas/src/index.ts', import.meta.url),
+      ),
     },
   },
   build: {
     target: 'es2024',
     sourcemap: true,
+    chunkSizeWarningLimit: 1500,
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (id.includes('node_modules/phaser/')) {
+            return 'phaser-vendor';
+          }
+          if (id.includes('node_modules/react/') || id.includes('node_modules/react-dom/')) {
+            return 'react-vendor';
+          }
+        },
+      },
+    },
   },
 });

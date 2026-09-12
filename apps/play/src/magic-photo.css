@@ -1,0 +1,237 @@
+.game-screen--magic-photo .completion-actions--magic-photo {
+  position: absolute;
+  inset: auto 12px 12px;
+  width: min(560px, calc(100% - 24px));
+  max-height: 120px;
+  margin: 0 auto;
+  padding: 8px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+.game-screen--magic-photo .completion-actions--magic-photo h2 {
+  width: fit-content;
+  max-width: 100%;
+  margin: 0 auto 10px;
+  padding: 5px 14px;
+  border: 1px solid #b6d8c6;
+  border-radius: 14px;
+  background: #123a35;
+  box-shadow:
+    inset 0 1px 0 #f1ffe938,
+    0 3px 8px #020c204d;
+  color: #fff9e9;
+  font:
+    700 clamp(14px, 3.8vw, 18px) Nunito,
+    sans-serif;
+  text-align: center;
+}
+.game-screen--magic-photo .completion-action-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.game-screen--magic-photo .completion-action-grid .button {
+  grid-column: auto;
+  min-height: 52px;
+  padding: 8px;
+  font-size: 13px;
+}
+/* The same snow, satin and paper materials are used in the cover and the game. */
+.christmas-shell.game-cover--magic-photo {
+  background: #07172a;
+  overflow: clip;
+}
+.game-cover--magic-photo .christmas-night {
+  height: 100%;
+  opacity: 1;
+  background:
+    linear-gradient(#04102108 20%, #07172912 58%, #04102148),
+    url('/assets/magic-photo/art/winter-night-v2.webp') center bottom / cover;
+}
+.game-cover--magic-photo .christmas-snow {
+  height: 100%;
+}
+.game-cover--magic-photo .game-cover-panel h1 {
+  text-shadow: 0 3px 18px #020c20;
+}
+.game-cover--magic-photo .game-cover-preview {
+  height: clamp(230px, 34svh, 335px);
+  overflow: visible;
+}
+.game-cover--magic-photo .intro-stage-base {
+  left: 3%;
+  bottom: 0;
+  width: 94%;
+  height: 18%;
+  border: 0;
+  box-shadow: 0 12px 18px #05162c60;
+  background: radial-gradient(
+    ellipse at 50% 10%,
+    #edf7ffd9,
+    #a3c4dfb0 28%,
+    #577da354 57%,
+    transparent 73%
+  );
+}
+.game-cover--magic-photo .intro-stage-stars {
+  opacity: 0.4;
+  color: #d4efff;
+}
+.game-object--magic-photo .game-object-ribbon {
+  display: none;
+}
+.game-object--magic-photo .game-object-photo,
+.game-object--large.game-object--magic-photo[data-photo-shape] .game-object-photo {
+  inset: 9% 3% 35% 60%;
+  width: auto;
+  height: auto;
+  aspect-ratio: auto;
+  transform: rotate(9deg);
+  padding: 4px;
+  border: 2px solid #c5a772;
+  box-shadow:
+    0 7px 14px #010b2080,
+    inset 0 0 0 1px #fff2d6;
+  z-index: 2;
+}
+.game-object--large.game-object--magic-photo[data-photo-shape='landscape'] .game-object-photo {
+  inset: 10% 6% auto 48%;
+  width: 46%;
+  aspect-ratio: 7 / 5;
+}
+.magic-photo-preview-gift {
+  position: absolute;
+  z-index: 3;
+  left: 5%;
+  bottom: 2%;
+  width: 73%;
+  height: 96%;
+  object-fit: contain;
+  filter: drop-shadow(0 12px 12px #00091e80);
+  transform-origin: 50% 88%;
+  user-select: none;
+  pointer-events: none;
+}
+.game-object--magic-photo .game-object-shadow {
+  display: none;
+}
+.magic-gift-open:active .magic-photo-preview-gift {
+  transform: scale(1.035, 0.95) rotate(-2deg);
+}
+.magic-gift-open .magic-photo-preview-gift {
+  transition: transform 240ms cubic-bezier(0.2, 1.5, 0.4, 1);
+}
+.game-cover--magic-photo .intro-demo-hint,
+.game-cover--magic-photo .cover-rule {
+  text-shadow:
+    0 2px 8px #020c20,
+    0 0 20px #020c20;
+}
+.game-cover--magic-photo .intro-demo-hint {
+  color: #d5e9f6;
+}
+.game-cover--magic-photo > .magic-cover-winter {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+}
+.magic-cover-icicles {
+  position: absolute;
+  inset: -15px 0 auto;
+  height: 115px;
+  background: url('/assets/magic-photo/art/snow-edge-v2.webp') center top / 100% 100% no-repeat;
+  filter: drop-shadow(0 3px 3px #01102450);
+}
+.magic-cover-winter::before,
+.magic-cover-winter::after {
+  content: '';
+  position: absolute;
+  top: 55px;
+  bottom: 0;
+  width: 14px;
+  background: url('/assets/magic-photo/art/frost-real-v2.webp') left top / 160px auto;
+  opacity: 0.48;
+  mask-image: linear-gradient(90deg, #000 0%, transparent 100%);
+}
+.magic-cover-winter::before {
+  left: 0;
+}
+.magic-cover-winter::after {
+  right: 0;
+  transform: scaleX(-1);
+}
+.magic-snow-touch {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 29%;
+  height: 44px;
+  border: 0;
+  border-radius: 0 0 10px 0;
+  padding: 0;
+  background: transparent;
+  pointer-events: auto;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+.magic-snow-touch[data-side='1'] {
+  left: auto;
+  right: 0;
+}
+.magic-snow-touch:active {
+  background: #def7ff12;
+}
+.magic-snow-powder {
+  position: absolute;
+  left: 0;
+  top: 17px;
+  width: 28%;
+  height: 2px;
+}
+.magic-snow-powder[data-side='1'] {
+  left: auto;
+  right: 0;
+}
+.magic-snow-powder i {
+  position: absolute;
+  top: 0;
+  border-radius: 50%;
+  background: #effaff;
+  box-shadow: 0 0 3px #e6faff;
+  animation: magic-snow-fall 1100ms ease-in both;
+}
+@keyframes magic-snow-fall {
+  0% {
+    transform: translate(0, 0);
+    opacity: 0.9;
+  }
+  100% {
+    transform: translate(24px, 160px);
+    opacity: 0;
+  }
+}
+.game-cover--magic-photo:has(dialog[open]) .magic-cover-winter * {
+  animation-play-state: paused;
+}
+.game-cover--magic-photo[data-calm='true'] .magic-photo-preview-gift {
+  transition: none;
+}
+@media (max-height: 740px) {
+  .game-cover--magic-photo .game-cover-preview {
+    height: clamp(180px, 30svh, 250px);
+  }
+  .christmas-shell.game-cover--magic-photo .game-cover-panel {
+    padding-top: 12px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .magic-snow-powder {
+    display: none;
+  }
+  .magic-gift-open .magic-photo-preview-gift {
+    transition: none;
+  }
+}

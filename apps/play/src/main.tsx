@@ -3,6 +3,10 @@ import { createRoot } from 'react-dom/client';
 import { themeCssVariables } from '@christmas-games/theme';
 import { App } from './app/App.js';
 import './styles.css';
+import './shell.css';
+import './christmas-magic.css';
+import './crystal-controls.css';
+import './magic-photo.css';
 
 const preloadRecoveryKey = 'christmas-games:preload-recovery';
 window.addEventListener('vite:preloadError', (event) => {

@@ -1,6 +1,7 @@
 import { Suspense, lazy, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { createFixtureSession } from '@christmas-games/platform';
 import type { GameContextSeed, GameDifficulty } from '@christmas-games/platform';
+import { memoryStandardPairCount } from '@christmas-games/memory/definition';
 import { PhaserHost } from '../phaser/PhaserHost.js';
 import type { PhaserHostStatus } from '../phaser/PhaserHost.js';
 import { prefetchGame } from '../phaser/createGame.js';
@@ -14,6 +15,12 @@ import { ThemeLab } from '../screens/ThemeLab.js';
 import { createAppServices } from './AppServices.js';
 import { parseAppRoute, routePath } from './AppNavigation.js';
 import { resolveGameQuality } from './GameQuality.js';
+import {
+  disposeInterfaceAudio,
+  playInterfaceTap,
+  setInterfaceSoundEnabled,
+  stopInterfaceTap,
+} from '../audio/playInterfaceTap.js';
 import type { AppRoute, GameCoverRoute, SessionRoute } from './AppNavigation.js';
 import { fetchLocalTestSession, shouldUseLocalTestMedia } from './LocalTestSession.js';
 import type { Session } from '@christmas-games/platform';
@@ -56,7 +63,7 @@ export function AppRouter(): React.JSX.Element {
   const developmentScenario = useMemo(() => {
     if (!import.meta.env.DEV) return undefined;
     const scenario = new URLSearchParams(window.location.search).get('scenario');
-    return scenario === 'victory' ? scenario : undefined;
+    return scenario === 'victory' || scenario === 'rudolph-review' ? scenario : undefined;
   }, []);
   const [route, setRoute] = useState<AppRoute>(initialRoute);
   const [fixtureCount, setFixtureCount] = useState<FixtureCount>(12);
@@ -64,6 +71,10 @@ export function AppRouter(): React.JSX.Element {
   const [localSession, setLocalSession] = useState<Session>();
   const [localSessionError, setLocalSessionError] = useState<string>();
   const [playing, setPlaying] = useState(false);
+  const [soundEnabled, setSoundEnabled] = useState(true);
+  const soundPreferenceRef = useRef(true);
+  const [calm, setCalm] = useState(false);
+  const hubScrollRef = useRef(0);
   const [gameAttempt, setGameAttempt] = useState(0);
   const [difficulty, setDifficulty] = useState<GameDifficulty>('normal');
   const [gameView, setGameView] = useState(initialGameView);
@@ -86,13 +97,53 @@ export function AppRouter(): React.JSX.Element {
       quality,
       difficulty,
       preferences: {
-        reducedMotion: window.matchMedia('(prefers-reduced-motion: reduce)').matches,
-        soundEnabled: true,
+        reducedMotion: calm || window.matchMedia('(prefers-reduced-motion: reduce)').matches,
+        // The next run reads the latest preference. Updating mute during a run
+        // must not replace the context object and remount its Phaser canvas.
+        get soundEnabled() {
+          return soundPreferenceRef.current;
+        },
       },
-      ...(developmentScenario ? { development: { scenario: developmentScenario } } : {}),
+      ...(developmentScenario && gameAttempt === 0
+        ? { development: { scenario: developmentScenario } }
+        : {}),
     }),
-    [developmentScenario, difficulty, quality, selectedPhoto, services, session],
+    [calm, developmentScenario, difficulty, gameAttempt, quality, selectedPhoto, services, session],
   );
+
+  const shellControls = {
+    soundEnabled,
+    calm,
+    animationsLocked:
+      quality === 'LOW' || window.matchMedia('(prefers-reduced-motion: reduce)').matches,
+    onToggleSound: (): void => {
+      soundPreferenceRef.current = !soundEnabled;
+      setInterfaceSoundEnabled(!soundEnabled);
+      setSoundEnabled(!soundEnabled);
+      if (!soundEnabled) playInterfaceTap('toggle');
+    },
+    onToggleCalm: (): void => {
+      playInterfaceTap(calm ? 'magic' : 'toggle');
+      setCalm((value) => !value);
+    },
+  };
+
+  useEffect(() => {
+    setInterfaceSoundEnabled(true);
+    const silenceHiddenPage = (): void => {
+      if (document.hidden) stopInterfaceTap();
+    };
+    document.addEventListener('visibilitychange', silenceHiddenPage);
+    return () => {
+      document.removeEventListener('visibilitychange', silenceHiddenPage);
+      disposeInterfaceAudio();
+    };
+  }, []);
+
+  useEffect(() => {
+    if (route.kind === 'session') window.scrollTo(0, hubScrollRef.current);
+    else if (route.kind === 'game-cover' && !playing) window.scrollTo(0, 0);
+  }, [route, playing]);
 
   useEffect(() => {
     if (!usesLocalTestMedia) return;
@@ -184,6 +235,7 @@ export function AppRouter(): React.JSX.Element {
       (route.kind !== 'session' && route.kind !== 'game-cover')
     )
       return;
+    if (route.kind === 'session') hubScrollRef.current = window.scrollY;
     writeRoute({ kind: 'game-cover', token: route.token, gameId }, 'push');
   };
 
@@ -277,6 +329,8 @@ export function AppRouter(): React.JSX.Element {
   if (route.kind === 'session') {
     return (
       <Hub
+        {...shellControls}
+        lowQuality={quality === 'LOW'}
         fixtureCount={fixtureCount}
         games={gameDefinitions}
         onFixtureChange={setFixtureCount}
@@ -292,6 +346,11 @@ export function AppRouter(): React.JSX.Element {
 
   const gameRoute = route as GameCoverRoute;
   const game = getInstalledGame(gameRoute.gameId);
+  const availablePhotoCount = new Set(session.photos.map((photo) => photo.id)).size;
+  const canOfferMoreMemoryCards =
+    gameRoute.gameId === 'memory' &&
+    difficulty !== 'desafio' &&
+    availablePhotoCount >= memoryStandardPairCount;
   if (!game) {
     return (
       <main className="shell unavailable-game" role="alert">
@@ -318,6 +377,10 @@ export function AppRouter(): React.JSX.Element {
     }
     return (
       <GameCover
+        {...shellControls}
+        lowQuality={quality === 'LOW'}
+        session={session}
+        onSelectPhoto={setSelectedPhotoId}
         definition={game.definition}
         photo={selectedPhoto}
         onBack={() => goToSession(gameRoute.token)}
@@ -329,6 +392,7 @@ export function AppRouter(): React.JSX.Element {
 
   return (
     <GameScreen
+      calm={calm || quality === 'LOW'}
       definition={game.definition}
       eventSequence={gameView.eventSequence}
       lastEvent={gameView.lastEvent}
@@ -336,7 +400,11 @@ export function AppRouter(): React.JSX.Element {
       onBrowseGames={() => goToSession(gameRoute.token)}
       onRetry={retry}
       status={gameView.status}
-      {...(gameRoute.gameId === 'puzzle-swap' ? { onChallenge: startChallenge } : {})}
+      {...(gameRoute.gameId === 'puzzle-swap'
+        ? { onChallenge: startChallenge }
+        : canOfferMoreMemoryCards
+          ? { challengeLabel: 'Mais cartas', onChallenge: startChallenge }
+          : {})}
     >
       <PhaserHost
         bridge={services.bridge}
@@ -345,6 +413,11 @@ export function AppRouter(): React.JSX.Element {
         gameId={gameRoute.gameId as Parameters<typeof prefetchGame>[0]}
         key={gameAttempt}
         onExit={handleGameExit}
+        onSoundChange={(enabled) => {
+          soundPreferenceRef.current = enabled;
+          setInterfaceSoundEnabled(enabled);
+          setSoundEnabled(enabled);
+        }}
         onStateChange={(status, lastEvent, eventSequence) => {
           setGameView((current) =>
             eventSequence < current.eventSequence ||

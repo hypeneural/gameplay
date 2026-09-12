@@ -1,0 +1,277 @@
+/* Faceted glass controls: a raised rim, dark physical edge and warm reflected light. */
+:is(.christmas-shell, .crystal-game-shell) .crystal-control {
+  --crystal-top: #568a817d;
+  --crystal-face: #214e47e8;
+  --crystal-bottom: #12352f;
+  --crystal-edge: #061e1d;
+  position: relative;
+  isolation: isolate;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 44px;
+  border: 1px solid #d9edcf75;
+  border-radius: 15px;
+  color: #fff0c9;
+  background:
+    radial-gradient(ellipse at 16% 0%, #eefff642, transparent 58%),
+    linear-gradient(160deg, var(--crystal-top), var(--crystal-face) 49%, var(--crystal-bottom));
+  box-shadow:
+    inset 0 1px 0 #f8fff5a3,
+    inset 1px 0 0 #dcf0e430,
+    inset -1px -2px 0 #031e305c,
+    0 4px 0 var(--crystal-edge),
+    0 5px 0 #c2d9ae35,
+    0 7px 10px #00181166;
+  text-shadow: 0 1px 1px #001714b3;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  transition:
+    transform 130ms ease-out,
+    box-shadow 130ms ease-out,
+    border-color 150ms;
+}
+:is(.christmas-shell, .crystal-game-shell) .crystal-control::before {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  pointer-events: none;
+  inset: 3px 4px 48%;
+  border-radius: 11px 11px 45% 45%;
+  background: linear-gradient(172deg, #fffde533, #d2f5ed12 55%, transparent 58%);
+  border-top: 1px solid #ffffff32;
+}
+:is(.christmas-shell, .crystal-game-shell) .crystal-control:not(:disabled):active {
+  transform: translateY(3px) scale(0.97);
+  box-shadow:
+    inset 0 1px 1px #f8fff55c,
+    inset 0 -1px 1px #031e3090,
+    0 1px 0 var(--crystal-edge),
+    0 3px 5px #00181166;
+  border-color: #f9eac9;
+}
+:is(.christmas-shell, .crystal-game-shell) .crystal-control:disabled {
+  opacity: 0.58;
+  cursor: default;
+}
+.shell-glyph {
+  display: block;
+  width: 25px;
+  height: 25px;
+  flex: 0 0 25px;
+  overflow: visible;
+  filter: drop-shadow(0 1.5px 0 #715c3290) drop-shadow(0 2px 2px #001e1bb3);
+  transform-origin: 50% 60%;
+  pointer-events: none;
+}
+.christmas-shell .shell-controls {
+  gap: 9px;
+  padding-bottom: 4px;
+}
+.christmas-shell .shell-icon-button {
+  width: 48px;
+  min-width: 48px;
+  height: 53px;
+  padding: 5px 3px 6px;
+  flex-direction: column;
+  gap: 2px;
+  border-radius: 16px;
+}
+.christmas-shell .shell-icon-button > span {
+  font-size: 0.59rem;
+  font-weight: 800;
+  letter-spacing: 0.01em;
+  line-height: 1.1;
+}
+.christmas-shell .shell-icon-button[aria-pressed='true'] {
+  border-color: #ecd7a89e;
+}
+.christmas-shell .shell-icon-button[aria-pressed='false'] {
+  --crystal-top: #657d8566;
+  --crystal-face: #244047e0;
+  --crystal-bottom: #162e36;
+}
+.christmas-shell .intro-back {
+  min-height: 48px;
+  padding: 7px 12px 7px 8px;
+  gap: 5px;
+  border-radius: 17px;
+  font-size: 0.72rem;
+}
+.christmas-shell .intro-back > span {
+  font-size: inherit;
+  line-height: 1.2;
+}
+.christmas-shell .album-arrow {
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  padding: 8px;
+  border-radius: 50%;
+}
+.christmas-shell .album-arrow .shell-glyph {
+  width: 23px;
+  height: 23px;
+  flex-basis: 23px;
+}
+.christmas-shell .album-pagination {
+  gap: 5px;
+  padding-bottom: 4px;
+}
+.christmas-shell .album-actions {
+  padding-bottom: 4px;
+}
+.christmas-shell .album-open {
+  min-height: 44px;
+  padding: 4px 8px;
+  font-size: 0.69rem;
+  line-height: 1.15;
+  text-decoration: none;
+  gap: 5px;
+}
+.christmas-shell .album-open span {
+  padding: 0;
+  margin: 0;
+  font-size: inherit;
+}
+.christmas-shell .album-open .shell-glyph {
+  width: 23px;
+  height: 23px;
+  flex-basis: 23px;
+}
+.christmas-shell .snow-globe-button {
+  gap: 5px;
+  font-size: 0.69rem;
+}
+:is(.christmas-shell, .crystal-game-shell) .crystal-control--ruby {
+  --crystal-top: #f697a273;
+  --crystal-face: #af344eea;
+  --crystal-bottom: #862039;
+  --crystal-edge: #591c30;
+  border-color: #ffc5b592;
+}
+.christmas-shell .cover-play {
+  min-height: 58px;
+  border-radius: 20px;
+  padding-inline: 18px;
+  justify-content: space-between;
+}
+.christmas-shell .cover-play .shell-glyph {
+  width: 27px;
+  height: 27px;
+  flex-basis: 27px;
+}
+.christmas-shell .intro-footer .share-button {
+  padding: 7px 9px;
+  min-height: 44px;
+  border-radius: 13px;
+  font-size: 0.66rem;
+  gap: 5px;
+}
+.share-button .shell-glyph {
+  width: 20px;
+  height: 20px;
+  flex-basis: 20px;
+}
+.crystal-game-shell .completion-actions {
+  border: 1px solid #f6deb1a3;
+  background:
+    radial-gradient(ellipse at 15% 0%, #d3ead333, transparent 55%),
+    linear-gradient(160deg, #346050fa, #102e29fc 70%);
+  box-shadow:
+    inset 0 2px 0 #f8ffe866,
+    inset 0 -3px 0 #00181499,
+    0 10px 25px #00120ed9;
+}
+.crystal-game-shell .completion-action-grid .crystal-control {
+  min-height: 52px;
+  gap: 5px;
+  font-size: clamp(0.69rem, 2.9vw, 0.82rem);
+}
+.crystal-game-shell .completion-action-grid .shell-glyph {
+  width: 20px;
+  height: 20px;
+  flex-basis: 20px;
+}
+.crystal-game-shell[data-calm='true'] .crystal-control {
+  transition: none;
+}
+.christmas-shell .game-card-cta {
+  position: relative;
+  border: 1px solid #edbfa75c;
+  background: linear-gradient(165deg, #d7687b, #a8334f 42%, #79253b);
+  box-shadow:
+    inset 0 1px 0 #ffe2c75e,
+    0 4px 0 #591a2d,
+    0 6px 8px #041d1840;
+}
+.christmas-shell .game-card-cta .shell-glyph {
+  width: 22px;
+  height: 22px;
+  flex-basis: 22px;
+}
+.christmas-shell .game-card-button:active .game-card-cta {
+  box-shadow:
+    inset 0 1px 0 #ffe2c75e,
+    0 1px 0 #591a2d;
+}
+.christmas-shell .studio-links a:active {
+  transform: translateY(2px) scale(0.97);
+  background: #d9efdb24;
+}
+.christmas-shell .photo-card:active {
+  transform: scale(0.95);
+}
+.christmas-shell .photo-print[data-status='ready'] img {
+  animation: crystal-photo-arrive 200ms ease-out both;
+}
+.christmas-shell .photo-picker[open] {
+  animation: crystal-sheet-arrive 240ms cubic-bezier(0.22, 0.8, 0.32, 1) both;
+}
+.christmas-shell .game-cover-panel,
+.christmas-shell .games-section {
+  animation: crystal-content-arrive 220ms ease-out both;
+}
+@keyframes crystal-sheet-arrive {
+  from {
+    opacity: 0.55;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes crystal-content-arrive {
+  from {
+    opacity: 0.65;
+    transform: translateY(7px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes crystal-photo-arrive {
+  from {
+    opacity: 0.4;
+    transform: translateY(3px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  :is(.christmas-shell, .crystal-game-shell) .crystal-control {
+    transition: none;
+  }
+}
+@media (max-height: 700px) and (max-width: 559px) {
+  .crystal-game-shell:not(.game-screen--garland) {
+    padding-top: max(12px, env(safe-area-inset-top));
+    padding-bottom: max(12px, env(safe-area-inset-bottom));
+    gap: 6px;
+  }
+}

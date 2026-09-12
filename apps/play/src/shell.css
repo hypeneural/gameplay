@@ -1,0 +1,1150 @@
+/* The family-facing shell uses small DOM scenes. Gameplay keeps its own CSS. */
+.christmas-shell {
+  position: relative;
+  isolation: isolate;
+  max-width: 560px;
+  padding: max(48px, env(safe-area-inset-top)) 16px max(28px, env(safe-area-inset-bottom));
+  background: linear-gradient(180deg, #071e31 0%, #0b332e 48%, #061e21 100%);
+  min-height: 100svh;
+}
+.christmas-shell > :not(.christmas-atmosphere) {
+  position: relative;
+  z-index: 1;
+}
+.christmas-shell button {
+  -webkit-tap-highlight-color: transparent;
+}
+.christmas-shell button:focus-visible,
+.christmas-shell a:focus-visible {
+  outline: 3px solid #fff2c9;
+  outline-offset: 4px;
+}
+.christmas-shell .eyebrow {
+  font-size: 0.62rem;
+  letter-spacing: 0.16em;
+  color: #e8c993;
+}
+.christmas-atmosphere {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  z-index: 0;
+  pointer-events: none;
+}
+.christmas-night {
+  position: absolute;
+  inset: 0 0 auto;
+  height: 760px;
+  opacity: 0.4;
+  background:
+    linear-gradient(180deg, #061a2870, #092e29 90%),
+    url('/assets/puzzle-swap/backgrounds/vila-nevada-noite-v1.webp') center top / cover;
+}
+.christmas-snow {
+  position: absolute;
+  inset: 0 0 auto;
+  height: min(100svh, 960px);
+  overflow: hidden;
+}
+.christmas-snow i {
+  position: absolute;
+  top: -18px;
+  border-radius: 50%;
+  background: #fffae9;
+  opacity: 0.65;
+  animation: shell-snow 11s linear infinite;
+}
+.christmas-cord {
+  position: absolute;
+  top: -11px;
+  right: -3%;
+  left: -3%;
+  height: 47px;
+  border-bottom: 3px solid #203629;
+  border-radius: 0 0 48% 52%;
+  display: flex;
+  justify-content: space-around;
+  transform: rotate(-2deg);
+}
+.christmas-bulb {
+  position: relative;
+  display: block;
+  width: 8px;
+  height: 14px;
+  border: 1px solid #ffe9a0;
+  border-radius: 40% 40% 48% 48%;
+  background: linear-gradient(100deg, #9d6e22, #fff9cf 45%, #ffca65 72%, #d58c34);
+  box-shadow: 0 2px 4px #fff1ad;
+}
+.christmas-bulb::before {
+  position: absolute;
+  content: '';
+  width: 6px;
+  height: 6px;
+  background: #526142;
+  left: 0;
+  top: -6px;
+  border-radius: 2px 2px 0 0;
+}
+.christmas-bulb i {
+  position: absolute;
+  inset: -14px;
+  border-radius: 50%;
+  background: radial-gradient(ellipse, #ffd98170, #ffbd4128 32%, transparent 70%);
+  animation: shell-light 3.8s ease-in-out infinite alternate;
+  animation-delay: inherit;
+}
+.christmas-bulb:nth-child(3n) i {
+  animation-duration: 5.1s;
+}
+.christmas-atmosphere[data-still='true'] *,
+.christmas-shell:has(dialog[open]) .christmas-atmosphere * {
+  animation-play-state: paused;
+}
+.hub-header,
+.intro-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+.hub-header h1 {
+  font-size: clamp(1.55rem, 6vw, 2rem);
+  line-height: 1.05;
+  margin: 7px 0 0;
+  letter-spacing: -0.035em;
+}
+.shell-controls {
+  display: flex;
+  gap: 5px;
+  flex: 0 0 auto;
+}
+.shell-icon-button {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 2px;
+  min-width: 44px;
+  min-height: 48px;
+  padding: 5px;
+  border: 1px solid #d7c58d45;
+  border-radius: 14px;
+  color: #ffedc5;
+  background: #081d23b8;
+  cursor: pointer;
+  font-size: 0.6rem;
+  box-shadow: inset 0 1px #fff3;
+}
+.shell-icon-button > span:first-child {
+  font-size: 1.15rem;
+  line-height: 1;
+}
+.shell-icon-button:active {
+  transform: scale(0.94);
+}
+.session-album {
+  position: relative;
+  display: grid;
+  grid-template-columns: 44% 1fr;
+  gap: 4px 18px;
+  align-items: center;
+  padding: 12px 15px 8px;
+  margin: 21px 0 0;
+  border: 1px solid #d4c9a343;
+  border-radius: 23px;
+  background:
+    radial-gradient(ellipse at 10% 30%, #b99f6e29, transparent 65%),
+    linear-gradient(145deg, #193f36, #0b2e29);
+  box-shadow:
+    inset 0 1px #e9deb51c,
+    0 10px 25px #00121040;
+}
+.album-stack {
+  position: relative;
+  height: 145px;
+  padding: 5px 9px 2px;
+  touch-action: pan-y;
+}
+.album-stack > .photo-print {
+  position: relative;
+  transform: rotate(-5deg);
+  border: 6px solid #f8efda;
+  border-bottom-width: 15px;
+  box-shadow: 2px 6px 10px #0019158c;
+  border-radius: 3px;
+}
+.album-paper {
+  position: absolute;
+  inset: 7px 9px;
+  border: 4px solid #d7ceb7;
+  background: #a02842;
+  border-radius: 3px;
+  box-shadow: 0 5px 8px #01171460;
+}
+.album-paper--back {
+  transform: rotate(11deg);
+}
+.album-paper--middle {
+  transform: rotate(3deg);
+  background: #d4ac6a;
+}
+.album-photo-seal {
+  position: absolute;
+  bottom: -3px;
+  left: 3px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #9c2b40;
+  border: 1px solid #dda763;
+  color: #f7daa0;
+  display: grid;
+  place-items: center;
+  font-size: 13px;
+}
+.photo-print {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  background: #173c31;
+  overflow: hidden;
+}
+.photo-print img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.photo-print-fallback {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: grid;
+  place-items: center;
+  padding: 8px;
+  color: #e6dfc8;
+  font-size: 0.75rem;
+  text-align: center;
+}
+.photo-print[data-status='loading'] img {
+  opacity: 0;
+}
+.album-copy h2 {
+  font-size: clamp(1.35rem, 5.6vw, 1.8rem);
+  line-height: 1.05;
+  color: #fcf0d9;
+  margin: 7px 0;
+}
+.album-copy > p:not(.eyebrow) {
+  font-size: 0.74rem;
+  line-height: 1.4;
+  margin: 4px 0;
+  color: #cfddd1;
+}
+.album-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px;
+}
+.album-pagination button {
+  border: 0;
+  background: transparent;
+  min-height: 44px;
+  min-width: 44px;
+  color: #f5d79d;
+  font-size: 1.7rem;
+  cursor: pointer;
+}
+.album-pagination > span {
+  font-size: 0.65rem;
+  color: #eee3c9;
+  white-space: nowrap;
+}
+.album-open {
+  grid-column: 1 / -1;
+  justify-self: center;
+  min-height: 44px;
+  border: 0;
+  padding: 6px 18px;
+  color: #efddb8;
+  background: transparent;
+  font-size: 0.74rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+.album-open span {
+  padding-left: 8px;
+}
+.christmas-hub .games-section {
+  margin: 23px 0 0;
+  padding: 0;
+}
+.games-heading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 11px;
+}
+.games-heading h2 {
+  font-size: 1.42rem;
+  margin: 0;
+  letter-spacing: -0.03em;
+}
+.games-heading > span {
+  color: #cfbc91;
+  font-size: 0.63rem;
+}
+.christmas-hub .game-card-list {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 13px 12px;
+  margin: 0;
+}
+.christmas-shell .game-card {
+  display: block;
+  min-width: 0;
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid #d6b98266;
+  border-radius: 21px;
+  background: #163c32;
+  box-shadow:
+    0 6px 0 #051d1b,
+    0 8px 18px #00151555,
+    inset 0 1px #ffedce1a;
+}
+.game-card-button {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  text-align: left;
+  color: #fff2d8;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  transition: transform 120ms ease;
+}
+.game-card-button:active {
+  transform: scale(0.97) translateY(2px);
+}
+.christmas-shell .game-card-copy {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  gap: 8px;
+  padding: 0 11px 11px;
+}
+.game-card-title {
+  font-family: Georgia, serif;
+  font-size: 1.08rem;
+  line-height: 1.1;
+  min-height: 2.2em;
+  display: flex;
+  align-items: center;
+  font-weight: bold;
+}
+.christmas-shell .game-card-cta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  min-height: 36px;
+  margin: 0;
+  padding: 6px 10px;
+  border-radius: 11px;
+  color: #fceacd;
+  background: linear-gradient(130deg, #a5394a, #782137);
+  box-shadow:
+    inset 0 1px #eaa5a342,
+    0 3px #4e1b2e;
+  font-size: 0.72rem;
+  font-weight: 750;
+}
+.game-card-cta > span {
+  font-size: 1.2rem;
+}
+.game-object {
+  position: relative;
+  width: 100%;
+  height: 135px;
+  overflow: hidden;
+  background: radial-gradient(ellipse at 50% 70%, #d5b15e24, transparent 65%);
+}
+.game-object-poster {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.game-object-shadow {
+  position: absolute;
+  left: 19%;
+  right: 15%;
+  bottom: 9%;
+  height: 14%;
+  border-radius: 50%;
+  background: #00171673;
+  transform: rotate(-5deg);
+}
+.game-object-photo {
+  display: block;
+  position: absolute;
+  left: 21%;
+  right: 21%;
+  top: 16%;
+  bottom: 17%;
+  padding: 4px;
+  background: #e7c48b;
+  border: 2px solid #8b6035;
+  box-shadow:
+    3px 4px #715035,
+    4px 9px 10px #001d2077;
+  border-radius: 4px;
+  transform: rotate(-7deg);
+}
+.game-object-ribbon {
+  position: absolute;
+  top: 9%;
+  left: 45%;
+  background: #ad344b;
+  color: #f8dba7;
+  width: 24px;
+  height: 19px;
+  text-align: center;
+  border-radius: 50% 50% 4px 4px;
+  transform: rotate(-7deg);
+  box-shadow: 1px 2px #6b1c36;
+}
+.preview-tile-grid {
+  display: grid;
+  position: absolute;
+  inset: 16% 21% 17%;
+  grid-template-columns: repeat(3, 1fr);
+  transform: rotate(-7deg);
+  padding: 4px;
+  pointer-events: none;
+}
+.preview-tile-grid i {
+  border: 1px solid #feeacd99;
+  box-shadow: inset 1px 1px #173d3960;
+}
+.game-object--puzzle-swap {
+  background: radial-gradient(ellipse at 55% 40%, #b585334f, transparent 68%);
+}
+.game-object--mosaico-em-queda .game-object-photo,
+.game-object--mosaico-em-queda .preview-tile-grid {
+  left: 16%;
+  right: 16%;
+  transform: rotate(4deg);
+}
+.game-object--mosaico-em-queda .preview-tile-grid i:nth-child(10) {
+  background: #c4a371;
+  transform: translateY(-9px);
+}
+.game-object--mosaico-em-queda {
+  background: radial-gradient(ellipse, #a8754938, transparent 70%);
+}
+.memory-preview-card {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  border: 3px solid #dec294;
+  box-shadow:
+    2px 3px #f9e9c6,
+    4px 5px #967143,
+    5px 9px 12px #00141480;
+  border-radius: 5px;
+  background: #8c243d;
+}
+.memory-preview-card--back {
+  inset: 20% 46% 16% 17%;
+  transform: rotate(-17deg);
+  outline: 1px solid #7e352f;
+}
+.memory-preview-card--back::before {
+  position: absolute;
+  content: '';
+  inset: 5px;
+  border: 1px solid #e8b768;
+}
+.memory-preview-card--back > span {
+  font-size: 1.7rem;
+  color: #efd79c;
+}
+.memory-preview-card--back small {
+  font-size: 0.44rem;
+  color: #eddca9;
+  letter-spacing: 0.12em;
+}
+.memory-preview-card--front {
+  inset: 14% 16% 18% 45%;
+  padding: 3px;
+  transform: rotate(12deg);
+  background: #ffebc4;
+}
+.memory-preview-card--pair {
+  display: none;
+}
+.game-object--memory {
+  background: radial-gradient(ellipse, #9c344546, transparent 68%);
+}
+.preview-track {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 16%;
+  height: 10px;
+  border-block: 2px solid #b18c56;
+  transform: rotate(-4deg);
+  background: repeating-linear-gradient(90deg, transparent 0 12px, #875e33 12px 17px);
+}
+.preview-train {
+  position: absolute;
+  left: 1%;
+  top: 9%;
+  width: 67%;
+  height: 74%;
+  object-fit: contain;
+  filter: none;
+}
+.preview-wagon {
+  position: absolute;
+  width: 35%;
+  right: 7%;
+  bottom: 25%;
+  height: 48%;
+  padding: 3px 3px 9px;
+  background: #9d3244;
+  border: 2px solid #cca260;
+  transform: rotate(-4deg);
+  box-shadow: 2px 3px #592135;
+}
+.preview-wagon i {
+  position: absolute;
+  bottom: -9px;
+  width: 13px;
+  height: 13px;
+  border: 3px solid #bf9d59;
+  border-radius: 50%;
+  background: #143d36;
+}
+.preview-wagon i:first-of-type {
+  left: 1px;
+}
+.preview-wagon i:last-of-type {
+  right: 1px;
+}
+.preview-wreath {
+  position: absolute;
+  inset: 10% 18%;
+  border: 16px solid #315b3c;
+  border-radius: 50%;
+  box-shadow:
+    inset 0 0 0 5px #163e30,
+    0 4px 0 #142c20;
+  color: #f8d890;
+  font-size: 19px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #112b26;
+}
+.preview-wreath i {
+  position: absolute;
+  inset: -11px;
+  border: 2px dotted #e5bd6c;
+  border-radius: 50%;
+}
+.game-object--guirlanda-das-lembrancas .game-object-photo {
+  inset: 27% 37% 24%;
+  border-width: 1px;
+  padding: 2px;
+  transform: rotate(2deg);
+}
+.game-object--guirlanda-das-lembrancas .game-object-ribbon {
+  top: 7%;
+  left: 43%;
+  width: 28px;
+  height: 20px;
+}
+.preview-trinca-grid {
+  position: absolute;
+  inset: 16% 21% 17%;
+  transform: rotate(-7deg);
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  background: #15382e60;
+  padding: 3px;
+}
+.preview-trinca-grid i {
+  display: grid;
+  place-items: center;
+  border: 1px solid #e7c998;
+  color: #ffe3a2;
+  font-style: normal;
+  text-shadow: 0 2px 3px #062523;
+}
+.christmas-hub .studio-signature {
+  margin-top: 32px;
+  padding: 23px 16px;
+  border: 0;
+  border-top: 1px solid #d8bd7f42;
+  border-radius: 0;
+  background: transparent;
+}
+.christmas-hub .studio-signature strong {
+  font-family: Georgia, serif;
+  font-size: 1.3rem;
+  line-height: 1.3;
+  margin: 6px 0 10px;
+}
+.christmas-hub .studio-links {
+  gap: 4px 12px;
+}
+.christmas-hub .studio-links a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  font-size: 0.76rem;
+}
+.hub-development {
+  border-top: 1px solid #dbcb9244;
+  padding-top: 18px;
+  margin-top: 24px;
+  font-size: 0.75rem;
+  color: #c9d9cf;
+}
+.hub-development summary {
+  min-height: 44px;
+  cursor: pointer;
+}
+.hub-development .game-card {
+  max-width: 180px;
+}
+.photo-picker {
+  width: min(calc(100% - 16px), 540px);
+  max-height: calc(100dvh - max(24px, env(safe-area-inset-top)));
+  margin: auto auto 0;
+  padding: 0;
+  border: 1px solid #ddc395;
+  border-bottom: 0;
+  border-radius: 25px 25px 0 0;
+  background: #10362e;
+  color: #fff0d7;
+  box-shadow: 0 -12px 45px #0006;
+}
+.photo-picker::backdrop {
+  background: #021319c9;
+}
+.photo-picker-header {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 22px 20px 12px;
+  background: #10362e;
+}
+.photo-picker-header h2 {
+  font-size: 1.6rem;
+}
+.photo-picker-scroll {
+  overflow-y: auto;
+  max-height: calc(100dvh - 155px);
+  overscroll-behavior: contain;
+  padding: 4px 20px max(28px, env(safe-area-inset-bottom));
+}
+.photo-picker .photo-grid {
+  padding-bottom: 0;
+  margin-top: 10px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px 12px;
+}
+.photo-picker .photo-card {
+  position: relative;
+  aspect-ratio: 4 / 5;
+  padding: 4px;
+  background: #ece2c8;
+  border-radius: 6px;
+  transform: none;
+  animation: none;
+}
+.photo-picker .photo-card[aria-pressed='true'] {
+  outline: 3px solid #f2cf83;
+  outline-offset: 3px;
+}
+.photo-picker .photo-card img {
+  object-fit: contain;
+}
+.photo-check {
+  position: absolute;
+  right: 3px;
+  bottom: 3px;
+  border-radius: 50%;
+  background: #842c3d;
+  color: #fff4d5;
+  min-width: 21px;
+  min-height: 21px;
+  display: grid;
+  place-items: center;
+  font-size: 0.65rem;
+}
+.photo-picker .photo-sentinel {
+  text-align: center;
+  font-size: 0.78rem;
+}
+.photo-picker .photo-sentinel .button {
+  min-height: 52px;
+  width: 100%;
+}
+.christmas-shell.game-cover {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding-top: max(41px, env(safe-area-inset-top));
+}
+.intro-back {
+  min-height: 48px;
+  border: 0;
+  padding: 6px 0;
+  background: transparent;
+  color: #f5e3bb;
+  font-size: 0.76rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.intro-back > span {
+  font-size: 1.9rem;
+}
+.christmas-shell .game-cover-panel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+  gap: 0;
+  padding: 22px 0 10px;
+  border: 0;
+  overflow: visible;
+  background: none;
+  box-shadow: none;
+}
+.christmas-shell .game-cover-panel::before,
+.christmas-shell .game-cover-panel::after {
+  content: none;
+}
+.christmas-shell .game-cover-panel h1 {
+  max-width: 380px;
+  font-size: clamp(1.95rem, 8vw, 2.75rem);
+  line-height: 1.04;
+  text-wrap: balance;
+  margin: 10px 0 5px;
+  color: #fff1d7;
+  letter-spacing: -0.035em;
+}
+.christmas-shell .game-cover-preview {
+  display: block;
+  width: 100%;
+  height: clamp(190px, 33svh, 310px);
+  min-height: 0;
+  flex: 0 0 auto;
+  padding: 0;
+  margin: 0;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
+  isolation: isolate;
+  overflow: hidden;
+}
+.christmas-shell .game-cover-preview::before,
+.christmas-shell .game-cover-preview::after {
+  content: none;
+}
+.game-object--large {
+  height: 100%;
+  z-index: 2;
+  overflow: visible;
+  background: none;
+}
+.game-object--large .game-object-photo {
+  inset: 12% 28% 15%;
+  padding: 7px;
+  border-width: 3px;
+}
+.game-object--large .preview-tile-grid,
+.game-object--large .preview-trinca-grid {
+  inset: 12% 28% 15%;
+  padding: 7px;
+}
+.game-object--large .game-object-ribbon {
+  width: 38px;
+  height: 26px;
+  font-size: 21px;
+  left: 44%;
+  top: 8%;
+}
+.game-object--large .memory-preview-card--front {
+  inset: 10% 25% 16% 35%;
+  transform: rotate(10deg);
+  border-width: 5px;
+  padding: 5px;
+}
+.game-object--large .memory-preview-card--back {
+  inset: 15% 47% 14% 12%;
+  transform: rotate(-16deg);
+  border-width: 5px;
+}
+.game-object--large .memory-preview-card--back > span {
+  font-size: 3rem;
+}
+.game-object--large .memory-preview-card--back small {
+  font-size: 0.7rem;
+}
+.game-object--large .memory-preview-card--pair {
+  display: flex;
+  inset: 15% 47% 14% 12%;
+  transform: rotate(-16deg) rotateY(90deg);
+  opacity: 0;
+  padding: 5px;
+  border-width: 5px;
+  transition:
+    transform 260ms ease,
+    opacity 200ms ease;
+}
+.game-object--large[data-revealed='true'] .memory-preview-card--pair {
+  transform: rotate(-16deg) rotateY(0deg);
+  opacity: 1;
+}
+.intro-demo {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  padding: 0;
+  cursor: pointer;
+  position: relative;
+  z-index: 2;
+}
+.intro-demo:active {
+  transform: scale(0.98);
+}
+.intro-stage-base {
+  position: absolute;
+  bottom: 7%;
+  width: 82%;
+  height: 19%;
+  left: 9%;
+  border-radius: 50%;
+  background: linear-gradient(180deg, #ac8e5555, #375242);
+  border-bottom: 7px solid #0a2522;
+  box-shadow: 0 11px 18px #011a219c;
+  transform: rotate(-2deg);
+  z-index: 0;
+}
+.intro-stage-stars {
+  position: absolute;
+  left: 4%;
+  right: 4%;
+  top: 10%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: #e4c28e;
+  font-size: 1.9rem;
+  opacity: 0.7;
+  z-index: 0;
+}
+.intro-stage-stars i {
+  position: relative;
+  top: 150px;
+  font-size: 1rem;
+  font-style: normal;
+}
+.intro-demo-hint {
+  font-size: 0.73rem;
+  color: #ddc997;
+  line-height: 1.4;
+  margin: 0 0 3px;
+}
+.session-album--compact {
+  display: block;
+  background: none;
+  border: 0;
+  box-shadow: none;
+  margin: 0;
+  padding: 0;
+}
+.session-album--compact .album-open {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+.christmas-shell .cover-rule {
+  margin: 8px 0 18px;
+  max-width: 285px;
+  font-size: 1rem;
+  line-height: 1.4;
+  color: #f6eedb;
+}
+.intro-action-dock {
+  width: 100%;
+  margin-top: auto;
+  padding: 0 5px;
+}
+.christmas-shell .cover-play {
+  width: 100%;
+  max-width: none;
+  min-height: 58px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin: 0;
+  padding: 14px 20px;
+  font-size: 1.05rem;
+  border: 1px solid #eeb89770;
+  border-radius: 19px;
+  background: linear-gradient(135deg, #b13e51, #8d243e);
+  box-shadow:
+    inset 0 2px #f6bdad44,
+    0 5px 0 #531f31,
+    0 8px 18px #02121b66;
+  animation: none;
+  transition: transform 120ms ease;
+}
+.christmas-shell .cover-play::after {
+  content: none;
+}
+.christmas-shell .cover-play:active {
+  transform: translateY(3px);
+}
+.intro-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 17px 4px 0;
+}
+.intro-footer .share-control {
+  margin: 0;
+}
+.intro-footer .share-button {
+  min-height: 44px;
+  padding: 8px 0;
+  border: 0;
+  box-shadow: none;
+  background: transparent;
+  font-size: 0.7rem;
+}
+.intro-footer .studio-signature.compact {
+  display: block;
+  margin: 0;
+  padding: 0;
+  width: auto;
+  background: none;
+  border: 0;
+  font-size: 0.63rem;
+  color: #c5c9af;
+  text-align: right;
+}
+.intro-footer .studio-signature.compact strong {
+  display: block;
+  font-size: 0.75rem;
+  color: #f0d8a6;
+  margin-top: 4px;
+}
+.christmas-shell[data-calm='true'] *,
+.christmas-shell[data-calm='true'] *::before,
+.christmas-shell[data-calm='true'] *::after {
+  animation: none !important;
+  transition: none !important;
+}
+@keyframes shell-snow {
+  from {
+    transform: translate3d(0, -10px, 0);
+  }
+  to {
+    transform: translate3d(22px, 100svh, 0);
+  }
+}
+@keyframes shell-light {
+  from {
+    opacity: 0.35;
+  }
+  to {
+    opacity: 0.95;
+  }
+}
+@media (max-height: 700px) {
+  .christmas-shell {
+    padding-top: max(36px, env(safe-area-inset-top));
+  }
+  .christmas-shell.game-cover {
+    padding-top: max(32px, env(safe-area-inset-top));
+  }
+  .session-album {
+    margin-top: 15px;
+    padding-top: 9px;
+  }
+  .album-stack {
+    height: 117px;
+  }
+  .album-copy h2 {
+    font-size: 1.4rem;
+  }
+  .album-copy > p:not(.eyebrow) {
+    display: none;
+  }
+  .christmas-hub .games-section {
+    margin-top: 18px;
+  }
+  .christmas-shell .game-cover-panel {
+    padding-top: 10px;
+  }
+  .christmas-shell .game-cover-preview {
+    height: 180px;
+  }
+  .christmas-shell .game-cover-panel h1 {
+    font-size: 1.9rem;
+  }
+  .christmas-shell .cover-rule {
+    margin: 2px 0 10px;
+    font-size: 0.9rem;
+  }
+  .intro-footer {
+    padding-top: 10px;
+  }
+  .session-album--compact {
+    margin: 0;
+    padding: 0;
+  }
+}
+@media (max-width: 359px) {
+  .hub-header {
+    align-items: start;
+  }
+  .hub-header h1 {
+    font-size: 1.6rem;
+  }
+  .christmas-hub .game-card-list {
+    grid-template-columns: 1fr;
+  }
+  .game-card-button {
+    display: grid;
+    grid-template-columns: 42% 1fr;
+    align-items: center;
+  }
+  .game-card-title {
+    min-height: 0;
+  }
+  .game-card .game-card-copy {
+    padding: 12px;
+  }
+  .games-heading > span {
+    display: none;
+  }
+  .session-album {
+    gap: 4px 8px;
+    padding-inline: 9px;
+  }
+  .photo-picker .photo-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .christmas-snow {
+    display: none;
+  }
+  .christmas-shell *,
+  .christmas-shell *::before,
+  .christmas-shell *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+.game-object--large[data-photo-shape='landscape'] .memory-preview-card--front {
+  inset: auto 4% 18% auto;
+  width: 48%;
+  height: auto;
+  aspect-ratio: 7 / 5;
+}
+.game-object--large[data-photo-shape='landscape'] .memory-preview-card--back,
+.game-object--large[data-photo-shape='landscape'] .memory-preview-card--pair {
+  inset: auto auto 26% 5%;
+  width: 48%;
+  height: auto;
+  aspect-ratio: 7 / 5;
+}
+.game-object--large[data-photo-shape='landscape'] .game-object-photo,
+.game-object--large[data-photo-shape='landscape'] .preview-tile-grid,
+.game-object--large[data-photo-shape='landscape'] .preview-trinca-grid {
+  inset: 12% auto auto 19%;
+  width: 62%;
+  height: auto;
+  aspect-ratio: 7 / 5;
+}
+.game-object--large[data-photo-shape='portrait'] .game-object-photo,
+.game-object--large[data-photo-shape='portrait'] .preview-tile-grid,
+.game-object--large[data-photo-shape='portrait'] .preview-trinca-grid {
+  inset: 12% 29% 15%;
+}
+
+/* Rudolph keeps the selected photograph above its own plush character. */
+.rudolph-preview-character {
+  position: absolute;
+  width: 42%;
+  height: 50%;
+  right: 1%;
+  bottom: 2%;
+  pointer-events: none;
+}
+.rudolph-preview-body {
+  position: absolute;
+  width: 82%;
+  right: 12%;
+  bottom: 0;
+}
+.rudolph-preview-head {
+  position: absolute;
+  width: 62%;
+  right: 0;
+  bottom: 31%;
+}
+.game-object--rena-das-lembrancas .game-object-photo {
+  left: 14%;
+  right: 29%;
+  top: 7%;
+  bottom: 26%;
+}
+.game-object--rena-das-lembrancas .game-object-ribbon {
+  left: 29%;
+  top: 0;
+}
+.game-object--rena-das-lembrancas.game-object--large .rudolph-preview-character {
+  width: 29%;
+  height: 60%;
+  right: 8%;
+}
+.game-object--rena-das-lembrancas.game-object--large .game-object-photo {
+  left: 23%;
+  right: 35%;
+  top: 4%;
+  bottom: 15%;
+}
+.game-object--rena-das-lembrancas.game-object--large .game-object-ribbon {
+  left: 36%;
+  top: 0;
+}

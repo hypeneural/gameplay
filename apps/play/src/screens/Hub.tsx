@@ -1,10 +1,14 @@
-import { useEffect, useRef, useState } from 'react';
 import type { GameDefinition, Session } from '@christmas-games/platform';
-import { playInterfaceTap } from '../audio/playInterfaceTap.js';
+import { ChristmasAtmosphere } from '../components/ChristmasAtmosphere.js';
+import { SessionPhotoAlbum } from '../components/SessionPhotoAlbum.js';
+import { ShellControls } from '../components/ShellControls.js';
+import type { ShellControlProps } from '../components/ShellControls.js';
 import { StudioSignature } from '../components/StudioSignature.js';
 import { GameCard } from './GameCard.js';
+import { useChristmasMagic } from '../experience/useChristmasMagic.js';
+import { useShellInteractions } from '../experience/useShellInteractions.js';
 
-interface HubProps {
+interface HubProps extends ShellControlProps {
   session: Session;
   fixtureCount: 4 | 12 | 120 | 172;
   games: readonly GameDefinition[];
@@ -14,9 +18,8 @@ interface HubProps {
   onSelectPhoto(photoId: string): void;
   selectedPhotoId: string;
   showFixtureSelector: boolean;
+  lowQuality: boolean;
 }
-
-const photoChunkSize = 12;
 
 export function Hub({
   session,
@@ -28,154 +31,87 @@ export function Hub({
   onSelectPhoto,
   selectedPhotoId,
   showFixtureSelector,
+  lowQuality,
+  ...controls
 }: HubProps): React.JSX.Element {
-  const [visiblePhotos, setVisiblePhotos] = useState(photoChunkSize);
-  const [selectionVersion, setSelectionVersion] = useState(0);
-  const sentinelRef = useRef<HTMLDivElement>(null);
-  const renderedPhotos = session.photos.slice(0, visiblePhotos);
-  const hasMorePhotos = renderedPhotos.length < session.photos.length;
+  const { snowBurst, makeSnow } = useChristmasMagic();
+  const interactionsRef = useShellInteractions();
   const selectedPhoto =
     session.photos.find((photo) => photo.id === selectedPhotoId) ?? session.photos[0]!;
-  const primaryGame = games.find((game) => game.id === 'puzzle-swap') ?? games[0];
-  const loadMorePhotos = (): void => {
-    setVisiblePhotos((current) => Math.min(current + photoChunkSize, session.photos.length));
-  };
-
-  useEffect(() => {
-    setVisiblePhotos(photoChunkSize);
-  }, [session.id]);
-
-  useEffect(() => {
-    const sentinel = sentinelRef.current;
-    if (!sentinel || !hasMorePhotos || typeof window.IntersectionObserver !== 'function') {
-      return;
-    }
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries.some((entry) => entry.isIntersecting)) {
-          loadMorePhotos();
-        }
-      },
-      { rootMargin: '160px' },
-    );
-    observer.observe(sentinel);
-    return () => observer.disconnect();
-  }, [hasMorePhotos, renderedPhotos.length, session.photos.length]);
-
+  const familyGames = games.filter((game) => game.id !== 'dev-smoke');
+  const developmentGame = games.find((game) => game.id === 'dev-smoke');
+  const photoCount = new Set(session.photos.map((photo) => photo.id)).size;
   return (
-    <main className="shell">
-      <p className="eyebrow">FOTOS DE NATAL</p>
-      <h1>{session.displayName}</h1>
-      <p className="intro">
-        Escolha uma foto para virar uma brincadeira de Natal. Sua foto aparece sempre sem distorção.
-      </p>
-      {showFixtureSelector ? (
-        <label className="field">
-          Amostra da sessão
-          <select
-            value={fixtureCount}
-            onChange={(event) => onFixtureChange(Number(event.target.value) as 4 | 12 | 120 | 172)}
-          >
-            <option value={4}>4 fotos</option>
-            <option value={12}>12 fotos mistas</option>
-            <option value={120}>120 fotos mistas</option>
-            <option value={172}>172 fotos mistas</option>
-          </select>
-        </label>
-      ) : (
-        <p className="hint">Modo privado de teste: somente derivados otimizados são carregados.</p>
-      )}
-      <div className="photo-grid" aria-label="Fotos da sessão">
-        {renderedPhotos.map((photo) => (
-          <button
-            aria-pressed={photo.id === selectedPhotoId}
-            className={`photo-card ${photo.orientation}`}
-            data-testid={`photo-${photo.id}`}
-            key={photo.id}
-            type="button"
-            onClick={() => {
-              playInterfaceTap();
-              onSelectPhoto(photo.id);
-              setSelectionVersion((current) => current + 1);
-              if (primaryGame) onPrefetchGame(primaryGame.id);
-            }}
-          >
-            <img
-              alt="Foto da sessão"
-              decoding="async"
-              height={photo.height}
-              loading="lazy"
-              src={photo.variants.thumb}
-              width={photo.width}
-            />
-          </button>
-        ))}
-      </div>
-      {primaryGame ? (
-        <section
-          aria-label="Foto escolhida"
-          className="photo-selection"
-          data-testid="photo-selection"
-          key={`${selectedPhoto.id}-${selectionVersion}`}
-        >
-          <div aria-hidden="true" className="photo-selection-sparkles">
-            ✦ ✧
-          </div>
-          <div aria-hidden="true" className="photo-selection-preview">
-            <img decoding="async" src={selectedPhoto.variants.thumb} />
-          </div>
-          <div>
-            <p className="eyebrow">FOTO SELECIONADA</p>
-            <h2>Sua foto está pronta!</h2>
-            <p className="photo-selection-meta">Ela vai virar um quebra-cabeça cheio de magia.</p>
-          </div>
-          <button
-            className="button primary-game-cta"
-            data-testid="start-selected-photo"
-            type="button"
-            onClick={() => {
-              playInterfaceTap();
-              onOpenGame(primaryGame.id);
-            }}
-            onFocus={() => onPrefetchGame(primaryGame.id)}
-            onPointerDown={() => onPrefetchGame(primaryGame.id)}
-          >
-            Jogar agora <span aria-hidden="true">✦ →</span>
-          </button>
-        </section>
-      ) : null}
-      {hasMorePhotos ? (
-        <div className="photo-sentinel" data-testid="photo-sentinel" ref={sentinelRef}>
-          <p className="hint">
-            Mostrando {renderedPhotos.length} miniaturas de {session.photos.length}; as versões para
-            jogar ainda não foram carregadas.
-          </p>
-          <button
-            className="button secondary"
-            data-testid="load-more-photos"
-            type="button"
-            onClick={loadMorePhotos}
-          >
-            Carregar mais fotos
-          </button>
+    <main
+      ref={interactionsRef}
+      className="shell christmas-shell christmas-hub"
+      data-calm={controls.calm || lowQuality}
+    >
+      <ChristmasAtmosphere calm={controls.calm || lowQuality} snowBurst={snowBurst} />
+      <header className="hub-header">
+        <div>
+          <p className="eyebrow">NATAL EM FAMÍLIA</p>
+          <h1>Escolha seus jogos</h1>
         </div>
-      ) : null}
+        <ShellControls {...controls} />
+      </header>
+      <SessionPhotoAlbum
+        key={session.id}
+        session={session}
+        photo={selectedPhoto}
+        onSelect={onSelectPhoto}
+        snowBurst={snowBurst}
+        onSnow={makeSnow}
+      />
       <section className="games-section" aria-labelledby="games-heading">
-        <p className="eyebrow">JOGOS</p>
-        <h2 id="games-heading">Escolha uma brincadeira</h2>
+        <div className="games-heading">
+          <h2 id="games-heading">Vamos brincar?</h2>
+          <span>
+            Com as suas fotos <span aria-hidden="true">✦</span>
+          </span>
+        </div>
         <div className="game-card-list">
-          {games.map((game) => (
+          {familyGames.map((game) => (
             <GameCard
-              available={session.photos.length >= game.minPhotos}
+              available={photoCount >= game.minPhotos}
               definition={game}
+              photo={selectedPhoto}
               key={game.id}
               onOpen={onOpenGame}
-              onPrefetch={onPrefetchGame}
+              onPrefetch={lowQuality ? () => undefined : onPrefetchGame}
             />
           ))}
         </div>
       </section>
       <StudioSignature />
+      {showFixtureSelector && import.meta.env.DEV ? (
+        <details className="hub-development">
+          <summary>Ferramentas de desenvolvimento</summary>
+          <label className="field">
+            Amostra da sessão
+            <select
+              value={fixtureCount}
+              onChange={(event) =>
+                onFixtureChange(Number(event.target.value) as 4 | 12 | 120 | 172)
+              }
+            >
+              <option value={4}>4 fotos</option>
+              <option value={12}>12 fotos mistas</option>
+              <option value={120}>120 fotos mistas</option>
+              <option value={172}>172 fotos mistas</option>
+            </select>
+          </label>
+          {developmentGame ? (
+            <GameCard
+              definition={developmentGame}
+              photo={selectedPhoto}
+              available
+              onOpen={onOpenGame}
+              onPrefetch={onPrefetchGame}
+            />
+          ) : null}
+        </details>
+      ) : null}
     </main>
   );
 }

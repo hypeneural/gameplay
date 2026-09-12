@@ -8,9 +8,16 @@
     "build": "tsc --noEmit --project ../../tsconfig.json && vite build"
   },
   "dependencies": {
+    "@christmas-games/rena-das-lembrancas": "workspace:*",
+    "@christmas-games/magic-photo": "workspace:*",
     "@christmas-games/dev-smoke": "workspace:*",
+    "@christmas-games/expresso-das-fotos": "workspace:*",
+    "@christmas-games/guirlanda-das-lembrancas": "workspace:*",
+    "@christmas-games/memory": "workspace:*",
+    "@christmas-games/mosaico-em-queda": "workspace:*",
     "@christmas-games/platform": "workspace:*",
     "@christmas-games/puzzle-swap": "workspace:*",
+    "@christmas-games/tic-tac-toe": "workspace:*",
     "@christmas-games/theme": "workspace:*",
     "phaser": "4.2.1",
     "react": "19.2.8",

@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="1120" viewBox="0 0 640 1120" fill="none">
+  <defs>
+    <linearGradient id="felt" x1="0" y1="0" x2="640" y2="1120" gradientUnits="userSpaceOnUse"><stop stop-color="#214E43"/><stop offset=".35" stop-color="#10392F"/><stop offset="1" stop-color="#061E1E"/></linearGradient>
+    <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#FFF2B9"/><stop offset=".23" stop-color="#BA873C"/><stop offset=".48" stop-color="#FFE9AD"/><stop offset=".7" stop-color="#806027"/><stop offset="1" stop-color="#D7B575"/></linearGradient>
+    <linearGradient id="wood" x1="0" y1="0" x2="1" y2="0"><stop stop-color="#221611"/><stop offset=".14" stop-color="#715035"/><stop offset=".48" stop-color="#362A1D"/><stop offset=".83" stop-color="#67452D"/><stop offset="1" stop-color="#171813"/></linearGradient>
+  </defs>
+  <rect x="4" y="10" width="632" height="1110" rx="40" fill="#020E0D"/>
+  <rect x="8" y="5" width="624" height="1102" rx="38" fill="url(#wood)" stroke="url(#gold)" stroke-width="10"/>
+  <rect x="19" y="15" width="602" height="1084" rx="30" stroke="#FFF4C7" stroke-opacity=".36" stroke-width="2"/>
+  <rect x="30" y="28" width="580" height="1060" rx="25" fill="url(#felt)" stroke="#041A18" stroke-width="8"/>
+  <path d="M57 36H581M38 55V1060" stroke="#E2F5D9" stroke-opacity=".17" stroke-width="3"/>
+  <path d="M70 90H570M70 190H570M70 290H570M70 390H570M70 490H570M70 590H570M70 690H570M70 790H570M70 890H570M70 990H570" stroke="#8BB18A" stroke-width="2" opacity=".14"/>
+  <path d="M90 70V1050M160 70V1050M230 70V1050M300 70V1050M370 70V1050M440 70V1050M510 70V1050" stroke="#8BB18A" stroke-width="2" opacity=".12"/>
+</svg>

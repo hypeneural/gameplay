@@ -1,106 +1,148 @@
-import type { GameDefinition, Photo } from '@christmas-games/platform';
+import { useEffect, useState } from 'react';
+import type { GameDefinition, Photo, Session } from '@christmas-games/platform';
 import { playInterfaceTap } from '../audio/playInterfaceTap.js';
+import { ChristmasAtmosphere } from '../components/ChristmasAtmosphere.js';
+import { SessionPhotoAlbum } from '../components/SessionPhotoAlbum.js';
+import { ShellControls } from '../components/ShellControls.js';
+import type { ShellControlProps } from '../components/ShellControls.js';
 import { ShareButton } from '../components/ShareButton.js';
 import { StudioSignature } from '../components/StudioSignature.js';
+import { GamePreview } from './GamePreview.js';
+import { useChristmasMagic } from '../experience/useChristmasMagic.js';
+import { useShellInteractions } from '../experience/useShellInteractions.js';
+import { ShellIcon } from '../components/ShellIcon.js';
+import { MagicPhotoWinter } from '../components/MagicPhotoWinter.js';
 
-interface GameCoverProps {
+interface GameCoverProps extends ShellControlProps {
   definition: GameDefinition;
   photo: Photo;
+  session: Session;
+  lowQuality: boolean;
+  onSelectPhoto(id: string): void;
   onBack(): void;
   onPlay(): void;
   onPrefetch(): void;
 }
 
-const coverSnowflakes = [
-  { delay: '-3.8s', duration: '6.4s', left: '7%', size: '5px' },
-  { delay: '-1.2s', duration: '5.7s', left: '17%', size: '3px' },
-  { delay: '-4.6s', duration: '7.1s', left: '31%', size: '6px' },
-  { delay: '-2.4s', duration: '6.1s', left: '48%', size: '4px' },
-  { delay: '-5.2s', duration: '7.4s', left: '62%', size: '7px' },
-  { delay: '-0.8s', duration: '5.5s', left: '75%', size: '4px' },
-  { delay: '-3.1s', duration: '6.8s', left: '89%', size: '5px' },
-] as const;
-
-/** A React-owned cover keeps navigation and first instructions outside Phaser. */
+/** A material preview teaches the gesture while navigation stays in React. */
 export function GameCover({
   definition,
   photo,
+  session,
+  lowQuality,
+  onSelectPhoto,
   onBack,
   onPlay,
   onPrefetch,
+  ...controls
 }: GameCoverProps): React.JSX.Element {
+  const { snowBurst, makeSnow } = useChristmasMagic();
+  const interactionsRef = useShellInteractions();
+  const [revealed, setRevealed] = useState(controls.calm || controls.animationsLocked === true);
+  useEffect(() => {
+    if (controls.calm || controls.animationsLocked) setRevealed(true);
+  }, [controls.calm, controls.animationsLocked]);
+  const memory = definition.id === 'memory';
   return (
-    <main className="game-cover shell">
-      <button
-        className="button secondary cover-back"
-        type="button"
-        onClick={() => {
-          playInterfaceTap();
-          onBack();
-        }}
-      >
-        Voltar para a sessão
-      </button>
-      <section className="game-cover-panel" aria-labelledby="game-cover-title">
-        <div className="game-cover-preview">
-          <div aria-hidden="true" className="cover-scene-sparkles">
-            <span>✦</span>
-            <span>✧</span>
-            <span>✦</span>
-          </div>
-          <div className="cover-photo-frame">
-            <span aria-hidden="true" className="cover-frame-ribbon" />
-            <span aria-hidden="true" className="cover-frame-bow" />
-            <img
-              alt="Foto escolhida para esta brincadeira"
-              decoding="async"
-              src={photo.variants.card}
-            />
-            <div aria-hidden="true" className="cover-snowfall">
-              {coverSnowflakes.map((flake, index) => (
-                <span
-                  key={index}
-                  style={{
-                    animationDelay: flake.delay,
-                    animationDuration: flake.duration,
-                    height: flake.size,
-                    left: flake.left,
-                    width: flake.size,
-                  }}
-                />
-              ))}
-            </div>
-            <span aria-hidden="true" className="cover-photo-glint">
-              ✦
-            </span>
-          </div>
-        </div>
-        <p className="eyebrow">VAMOS BRINCAR</p>
-        <h1 id="game-cover-title">{definition.displayName}</h1>
-        <p className="cover-rule">{definition.shortRule}</p>
-        <p className="cover-photo-meta">Sua foto é a estrela desta brincadeira de Natal.</p>
+    <main
+      ref={interactionsRef}
+      className={`shell christmas-shell game-cover game-cover--${definition.id}`}
+      data-calm={controls.calm || lowQuality}
+    >
+      <ChristmasAtmosphere calm={controls.calm || lowQuality} snowBurst={snowBurst} />
+      {definition.id === 'magic-photo' ? (
+        <MagicPhotoWinter calm={controls.calm || lowQuality} onSnow={makeSnow} />
+      ) : null}
+      <header className="intro-header">
         <button
-          className="button cover-play"
-          data-testid="play-selected-game"
+          className="intro-back crystal-control"
           type="button"
           onClick={() => {
-            playInterfaceTap();
-            onPlay();
+            playInterfaceTap('back');
+            onBack();
           }}
-          onFocus={onPrefetch}
-          onPointerDown={onPrefetch}
         >
-          <span aria-hidden="true" className="cover-play-sparkle">
-            ✦
-          </span>
-          <span>Começar a brincadeira</span>
-          <span aria-hidden="true" className="cover-play-arrow">
-            →
-          </span>
+          <ShellIcon name="back" /> <span>Voltar aos jogos</span>
         </button>
-        <ShareButton className="cover-share" />
+        <ShellControls {...controls} />
+      </header>
+      <section className="game-cover-panel" aria-labelledby="game-cover-title">
+        <p className="eyebrow">UMA LEMBRANÇA, UMA BRINCADEIRA</p>
+        <h1 id="game-cover-title">{definition.displayName}</h1>
+        <div className="game-cover-preview">
+          <span className="intro-stage-stars" aria-hidden="true">
+            ✧ <i>✦</i> ✧
+          </span>
+          {memory ? (
+            <button
+              className="intro-demo"
+              type="button"
+              aria-label={revealed ? 'Esconder o par de fotos' : 'Revelar o par de fotos'}
+              aria-pressed={revealed}
+              onClick={() => {
+                playInterfaceTap(revealed ? 'photo' : 'reveal');
+                setRevealed((value) => !value);
+              }}
+            >
+              <GamePreview definition={definition} photo={photo} large revealed={revealed} />
+            </button>
+          ) : definition.id === 'magic-photo' ? (
+            <button
+              className="intro-demo magic-gift-open"
+              type="button"
+              aria-label="Abrir o presente de Natal"
+              onClick={() => {
+                playInterfaceTap('start');
+                onPlay();
+              }}
+              onFocus={lowQuality ? undefined : onPrefetch}
+            >
+              <GamePreview definition={definition} photo={photo} large />
+            </button>
+          ) : (
+            <GamePreview definition={definition} photo={photo} large />
+          )}
+          <span className="intro-stage-base" aria-hidden="true" />
+        </div>
+        <p className="intro-demo-hint">
+          {memory
+            ? revealed
+              ? 'Olha só, um par da sua foto!'
+              : 'Toque nas cartas e descubra um par'
+            : 'Sua foto é a estrela desta brincadeira de Natal.'}
+        </p>
+        <SessionPhotoAlbum
+          key={session.id}
+          session={session}
+          photo={photo}
+          onSelect={onSelectPhoto}
+          snowBurst={snowBurst}
+          onSnow={makeSnow}
+          compact
+        />
+        <p className="cover-rule">{definition.shortRule}</p>
+        <div className="intro-action-dock">
+          <button
+            className="button cover-play crystal-control crystal-control--ruby"
+            data-testid="play-selected-game"
+            type="button"
+            onClick={() => {
+              playInterfaceTap('start');
+              onPlay();
+            }}
+            onFocus={lowQuality ? undefined : onPrefetch}
+            onPointerDown={lowQuality ? undefined : onPrefetch}
+          >
+            <ShellIcon name="magic" />
+            <span>Vamos brincar</span>
+            <ShellIcon name="play" />
+          </button>
+        </div>
       </section>
-      <StudioSignature compact />
+      <footer className="intro-footer">
+        <ShareButton className="cover-share" />
+        <StudioSignature compact />
+      </footer>
     </main>
   );
 }

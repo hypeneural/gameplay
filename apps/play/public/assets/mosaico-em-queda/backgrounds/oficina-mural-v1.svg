@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="768" height="1536" viewBox="0 0 768 1536" fill="none">
+  <defs>
+    <linearGradient id="night" x1="384" y1="0" x2="384" y2="1536" gradientUnits="userSpaceOnUse"><stop stop-color="#071D35"/><stop offset=".48" stop-color="#123B47"/><stop offset="1" stop-color="#08251F"/></linearGradient>
+    <linearGradient id="wall" x1="0" y1="0" x2="768" y2="0" gradientUnits="userSpaceOnUse"><stop stop-color="#153D35"/><stop offset=".5" stop-color="#235143"/><stop offset="1" stop-color="#11382F"/></linearGradient>
+    <linearGradient id="wood" x1="0" y1="0" x2="0" y2="260" gradientUnits="userSpaceOnUse"><stop stop-color="#75482B"/><stop offset="1" stop-color="#3D241A"/></linearGradient>
+  </defs>
+  <rect width="768" height="1536" fill="url(#night)"/>
+  <circle cx="106" cy="155" r="3" fill="#F8DFA0" opacity=".75"/><circle cx="657" cy="229" r="2" fill="#F8DFA0" opacity=".7"/><circle cx="592" cy="75" r="3" fill="#F8DFA0" opacity=".55"/><circle cx="205" cy="310" r="2" fill="#F8DFA0" opacity=".5"/>
+  <path d="M0 192C118 157 218 164 319 202C455 253 570 220 768 163V0H0V192Z" fill="#0B2A42" opacity=".75"/>
+  <rect x="24" y="160" width="720" height="1132" rx="48" fill="url(#wall)" opacity=".92"/>
+  <path d="M24 286H744M24 506H744M24 726H744M24 946H744M24 1166H744" stroke="#4D795C" stroke-width="3" opacity=".28"/>
+  <rect y="1280" width="768" height="256" fill="url(#wood)"/>
+  <path d="M0 1324H768M0 1415H768M0 1502H768" stroke="#A97642" stroke-width="5" opacity=".3"/>
+  <path d="M54 1292C103 1258 143 1259 196 1292M546 1292C602 1258 655 1260 711 1292" stroke="#F8DFA0" stroke-width="4" stroke-linecap="round" opacity=".65"/>
+</svg>

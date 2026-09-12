@@ -25,6 +25,7 @@ interface PhaserHostProps {
   exitRequest: number;
   gameId: AvailableGameId;
   onExit(): void;
+  onSoundChange?(enabled: boolean): void;
   onStateChange(status: PhaserHostStatus, lastEvent: string, sequence: number): void;
   /** Development labs can inject a seed to replay the same board exactly. */
   runSeed?: number;
@@ -39,6 +40,7 @@ export function PhaserHost({
   exitRequest,
   gameId,
   onExit,
+  onSoundChange,
   onStateChange,
   runSeed,
 }: PhaserHostProps): React.JSX.Element {
@@ -46,6 +48,7 @@ export function PhaserHost({
   const destroyRef = useRef<(() => Promise<void>) | undefined>(undefined);
   const activeRunIdRef = useRef<string | undefined>(undefined);
   const onExitRef = useRef(onExit);
+  const onSoundChangeRef = useRef(onSoundChange);
   const onStateChangeRef = useRef(onStateChange);
   const exitPromiseRef = useRef<Promise<void> | undefined>(undefined);
   // A new host must ignore a completed request from its predecessor and react
@@ -53,10 +56,15 @@ export function PhaserHost({
   const handledExitRequestRef = useRef(exitRequest);
   useEffect(() => {
     onExitRef.current = onExit;
+    onSoundChangeRef.current = onSoundChange;
     onStateChangeRef.current = onStateChange;
-  }, [onExit, onStateChange]);
+  }, [onExit, onStateChange, onSoundChange]);
 
   const publishBridgeEvent = useCallback((event: GameBridgeEvent): void => {
+    if (event.type === 'GAME_SOUND_CHANGED') {
+      onSoundChangeRef.current?.(event.enabled);
+      return;
+    }
     const status: PhaserHostStatus =
       event.type === 'GAME_ASSET_FAILED'
         ? 'error'

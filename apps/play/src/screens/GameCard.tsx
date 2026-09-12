@@ -1,46 +1,65 @@
-import type { GameDefinition } from '@christmas-games/platform';
+import type { GameDefinition, Photo } from '@christmas-games/platform';
 import { playInterfaceTap } from '../audio/playInterfaceTap.js';
+import { GamePreview } from './GamePreview.js';
+import { ShellIcon } from '../components/ShellIcon.js';
 
 interface GameCardProps {
   available: boolean;
   definition: GameDefinition;
+  photo: Photo;
   onOpen(gameId: string): void;
   onPrefetch(gameId: string): void;
 }
 
-/** Product metadata drives cards; a card never loads a photo-game derivative. */
+const shortNames: Record<string, string> = {
+  'puzzle-swap': 'Quebra-cabeça',
+  memory: 'Memórias de Natal',
+  'guirlanda-das-lembrancas': 'Guirlanda das Lembranças',
+};
+
+/** A single activation target; preview photographs use thumbnails only. */
 export function GameCard({
   available,
   definition,
+  photo,
   onOpen,
   onPrefetch,
 }: GameCardProps): React.JSX.Element {
   return (
-    <article className="game-card">
-      <div aria-label={definition.cover.alt} className="game-card-preview" role="img" />
-      <div className="game-card-copy">
-        <h2>{definition.displayName}</h2>
-        <p>{definition.shortDescription}</p>
-        <button
-          className="button game-card-cta"
-          data-testid={`open-game-${definition.id}`}
-          disabled={!available}
-          type="button"
-          onClick={() => {
-            if (!available) return;
-            playInterfaceTap();
-            onOpen(definition.id);
-          }}
-          onFocus={() => {
-            if (available) onPrefetch(definition.id);
-          }}
-          onPointerDown={() => {
-            if (available) onPrefetch(definition.id);
-          }}
-        >
-          {available ? 'Ver jogo' : `Precisa de ${definition.minPhotos} fotos`}
-        </button>
-      </div>
+    <article className={`game-card game-card--${definition.id}`}>
+      <button
+        className="game-card-button"
+        type="button"
+        data-testid={`open-game-${definition.id}`}
+        disabled={!available}
+        aria-label={
+          available
+            ? `Abrir ${definition.displayName}`
+            : `${definition.displayName}: precisa de ${definition.minPhotos} fotos`
+        }
+        onClick={() => {
+          if (!available) return;
+          playInterfaceTap('open');
+          onOpen(definition.id);
+        }}
+        onFocus={() => {
+          if (available) onPrefetch(definition.id);
+        }}
+        onPointerDown={() => {
+          if (available) onPrefetch(definition.id);
+        }}
+      >
+        <GamePreview definition={definition} photo={photo} />
+        <span className="game-card-copy">
+          <span className="game-card-title">
+            {shortNames[definition.id] ?? definition.displayName}
+          </span>
+          <span className="game-card-cta">
+            {available ? 'Vamos jogar' : `${definition.minPhotos} fotos para brincar`}
+            <ShellIcon name={available ? 'play' : 'heart'} />
+          </span>
+        </span>
+      </button>
     </article>
   );
 }

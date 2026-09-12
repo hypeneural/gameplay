@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { playInterfaceTap } from '../audio/playInterfaceTap.js';
+import { ShellIcon } from './ShellIcon.js';
 import {
   createBrowserShareAdapter,
   createCurrentSharePayload,
@@ -24,7 +25,7 @@ export function ShareButton({ className }: ShareButtonProps): React.JSX.Element 
   const payload = createCurrentSharePayload(window.location);
 
   const handleShare = async (): Promise<void> => {
-    playInterfaceTap();
+    playInterfaceTap('open');
     const nextResult = await shareLink(payload, createBrowserShareAdapter(navigator));
     setResult(nextResult);
   };
@@ -32,12 +33,12 @@ export function ShareButton({ className }: ShareButtonProps): React.JSX.Element 
   return (
     <div className={`share-control ${className ?? ''}`.trim()}>
       <button
-        className="button secondary share-button"
+        className="button secondary share-button crystal-control"
         data-testid="share-link"
         type="button"
         onClick={() => void handleShare()}
       >
-        <span aria-hidden="true">↗</span>
+        <ShellIcon name="share" />
         Compartilhar
       </button>
       {result ? (

@@ -1,0 +1,400 @@
+/* Physical materials and gesture-owned effects for the family shell. */
+.christmas-shell,
+.christmas-shell.game-cover {
+  padding-top: max(64px, env(safe-area-inset-top));
+}
+.christmas-snow {
+  contain: layout paint style;
+}
+.christmas-snow i {
+  top: 0;
+  left: 0;
+  animation: none;
+  background: radial-gradient(circle, #fffef6 0 28%, #f0f5ffae 48%, #e3eefa10 73%, transparent 80%);
+}
+.christmas-snow .snow-bokeh {
+  background: radial-gradient(
+    circle,
+    #f8fbff60 0 12%,
+    #e8effa45 32%,
+    #eaf4fc0a 68%,
+    transparent 76%
+  );
+  scale: 1.65;
+}
+.snow-crystal::before,
+.snow-crystal::after {
+  content: '';
+  position: absolute;
+  inset: 42% -16%;
+  background: linear-gradient(90deg, transparent, #f7fbffad 30% 70%, transparent);
+  transform: rotate(60deg);
+}
+.snow-crystal::after {
+  transform: rotate(-60deg);
+}
+.christmas-cord {
+  inset: 0 0 auto;
+  height: 58px;
+  border: 0;
+  border-radius: 0;
+  transform: none;
+}
+.christmas-wire {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 50px;
+}
+.christmas-light-gap {
+  width: 8px;
+}
+.christmas-bulb {
+  height: 16px;
+  border-color: #f3dba27d;
+  background: linear-gradient(
+    102deg,
+    #86521bb0 0%,
+    #d99636bb 20%,
+    #ffedb5 46%,
+    #fff9df 55%,
+    #e0a144b3 75%,
+    #6b431780 100%
+  );
+  box-shadow:
+    inset 1px 0 1px #fffce992,
+    0 1px 4px #ffde9170;
+}
+.christmas-bulb::before {
+  width: 8px;
+  left: -1px;
+  top: -6px;
+  background: repeating-linear-gradient(0deg, #24372a 0 1px, #566043 1px 2px);
+}
+.christmas-filament {
+  position: absolute;
+  inset: 4px 2px 3px;
+  border: 1px solid #fffbd4;
+  border-radius: 40%;
+  box-shadow: 0 0 3px #fffac9;
+}
+.christmas-bulb i {
+  inset: -17px;
+  background: radial-gradient(ellipse, #ffe6a475 0%, #ffd58932 23%, #ffcb7010 48%, transparent 72%);
+  animation-duration: 4.8s;
+}
+.christmas-bulb:nth-child(4n) i {
+  animation-duration: 6.3s;
+}
+.christmas-bulb .christmas-light-wave {
+  position: absolute;
+  inset: -19px;
+  border-radius: 50%;
+  opacity: 0;
+  background: radial-gradient(ellipse, #fff9dfbd, #ffd99652 25%, #f1b35010 55%, transparent 74%);
+  animation: christmas-light-wave 1250ms ease-out both;
+}
+.christmas-bell-button {
+  position: absolute;
+  top: 19px;
+  left: calc(50% - 24px);
+  width: 48px;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  pointer-events: auto;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  touch-action: manipulation;
+}
+.christmas-bell {
+  overflow: visible;
+  transform-origin: 50% 5%;
+  filter: drop-shadow(0 3px 2px #00180f90);
+}
+.christmas-bulb {
+  --bulb-body: #eead39;
+  --bulb-dark: #653b0d;
+  --bulb-core: #fff0b6;
+  --bulb-glow: #ffbd43;
+  width: 10px;
+  height: 19px;
+  border-color: color-mix(in srgb, var(--bulb-core) 65%, transparent);
+  border-radius: 42% 42% 48% 48%;
+  transform-origin: 50% -6px;
+  background:
+    radial-gradient(ellipse at 47% 64%, var(--bulb-core), transparent 48%),
+    linear-gradient(
+      100deg,
+      var(--bulb-dark),
+      var(--bulb-body) 28%,
+      var(--bulb-core) 48%,
+      var(--bulb-body) 72%,
+      var(--bulb-dark)
+    );
+  box-shadow:
+    inset 1px 0 1px #fffaf68c,
+    inset -1px -1px 2px #06172970,
+    0 1px 3px var(--bulb-dark);
+}
+.christmas-bulb[data-color='ruby'] {
+  --bulb-body: #ed425b;
+  --bulb-dark: #651324;
+  --bulb-core: #ffbeb5;
+  --bulb-glow: #ff385d;
+}
+.christmas-bulb[data-color='emerald'] {
+  --bulb-body: #38ce83;
+  --bulb-dark: #0c5637;
+  --bulb-core: #cbffd2;
+  --bulb-glow: #3eff93;
+}
+.christmas-bulb[data-color='sapphire'] {
+  --bulb-body: #448ef3;
+  --bulb-dark: #193c7c;
+  --bulb-core: #d4edff;
+  --bulb-glow: #489dff;
+}
+.christmas-bulb::before {
+  width: 9px;
+  background: repeating-linear-gradient(0deg, #17291f 0 1px, #69795a 1px 2px);
+  box-shadow: inset 1px 0 1px #c4c4a140;
+}
+.christmas-bulb .christmas-filament {
+  inset: 5px 3px 4px;
+  border-color: var(--bulb-core);
+  box-shadow: 0 0 4px 1px var(--bulb-glow);
+  animation: christmas-filament-glow 3.8s ease-in-out infinite;
+  animation-delay: inherit;
+}
+.christmas-glass-reflection {
+  position: absolute;
+  inset: 2px auto 5px 1px;
+  width: 2px;
+  border-radius: 50%;
+  background: linear-gradient(#ffffffde, #ffffff22);
+  box-shadow: 4px 1px 0 -0.5px #ffffff52;
+  pointer-events: none;
+}
+.christmas-bulb i {
+  inset: -23px -19px;
+  background: radial-gradient(
+    ellipse,
+    color-mix(in srgb, var(--bulb-core) 62%, transparent),
+    color-mix(in srgb, var(--bulb-glow) 38%, transparent) 24%,
+    color-mix(in srgb, var(--bulb-glow) 8%, transparent) 50%,
+    transparent 73%
+  );
+  animation: christmas-color-glow 3.8s ease-in-out infinite;
+  animation-delay: inherit;
+}
+.christmas-bulb:nth-child(4n) i {
+  animation-duration: 4.7s;
+}
+.christmas-bulb .christmas-light-wave {
+  background: radial-gradient(
+    ellipse,
+    #fffcebd9,
+    color-mix(in srgb, var(--bulb-glow) 70%, transparent) 23%,
+    transparent 70%
+  );
+}
+@keyframes christmas-color-glow {
+  0%,
+  100% {
+    opacity: 0.22;
+    transform: scale(0.75);
+  }
+  32%,
+  51% {
+    opacity: 0.98;
+    transform: scale(1.08);
+  }
+  72% {
+    opacity: 0.35;
+    transform: scale(0.86);
+  }
+}
+@keyframes christmas-filament-glow {
+  0%,
+  100% {
+    opacity: 0.4;
+  }
+  32%,
+  51% {
+    opacity: 1;
+  }
+  72% {
+    opacity: 0.55;
+  }
+}
+.christmas-bell-button:active .christmas-bell {
+  transform: rotate(-12deg);
+}
+.christmas-bell--ringing {
+  animation: christmas-bell-ring 720ms ease-out;
+}
+.christmas-bell-button[data-rings]:not([data-rings='0']) {
+  background: radial-gradient(ellipse, #ffdfa323, transparent 68%);
+}
+.album-actions {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+}
+.album-actions .album-open {
+  padding-inline: 8px;
+  flex: 1;
+}
+.session-album--compact {
+  width: 100%;
+  max-width: 330px;
+}
+.snow-globe-button {
+  min-height: 44px;
+  min-width: 0;
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  color: #f4dfb4;
+  font-size: 0.72rem;
+  font-weight: 800;
+  border: 1px solid #d3b77c3d;
+  border-radius: 13px;
+  background: linear-gradient(130deg, #274941a0, #153a3260);
+  padding: 2px 8px;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+.snow-globe-button:active {
+  background: #36614c;
+}
+.snow-globe-button[data-burst]:not([data-burst='0']) {
+  border-color: #edd99a7d;
+}
+.snow-globe {
+  display: block;
+  position: relative;
+  width: 31px;
+  height: 37px;
+  flex: 0 0 31px;
+  transform-origin: 50% 85%;
+}
+.snow-globe-glass {
+  position: absolute;
+  inset: 0 0 6px;
+  border: 1px solid #cbefedaa;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 26% 20%, #fcfffdd9 0 2%, #b7e6df43 9%, transparent 30%),
+    radial-gradient(circle at 60% 60%, #164942, #3a747761);
+  box-shadow:
+    inset -2px -1px 3px #cbefed80,
+    0 3px 3px #001d1c70;
+  overflow: hidden;
+}
+.snow-globe-glass i {
+  position: absolute;
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-bottom: 14px solid #549a71;
+  left: 9px;
+  bottom: 4px;
+}
+.snow-globe-glass b {
+  position: absolute;
+  font-size: 8px;
+  top: 3px;
+  left: 12px;
+  color: #fff1b4;
+}
+.snow-globe-glass em {
+  position: absolute;
+  font-style: normal;
+  font-size: 19px;
+  left: 1px;
+  bottom: 1px;
+  color: #fffbe9;
+}
+.snow-globe-foot {
+  position: absolute;
+  bottom: 2px;
+  left: 3px;
+  width: 25px;
+  height: 7px;
+  border-radius: 3px 3px 5px 5px;
+  background: linear-gradient(#d4b37b, #9b6a39 45%, #efd09b);
+  box-shadow: 0 2px 3px #03262490;
+}
+.snow-globe--shaken {
+  animation: christmas-globe-shake 580ms ease-out;
+}
+.magic-announcement {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+@keyframes christmas-light-wave {
+  0% {
+    opacity: 0;
+  }
+  25% {
+    opacity: 0.85;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+@keyframes christmas-bell-ring {
+  0%,
+  100% {
+    transform: rotate(0);
+  }
+  18% {
+    transform: rotate(19deg);
+  }
+  40% {
+    transform: rotate(-14deg);
+  }
+  62% {
+    transform: rotate(8deg);
+  }
+  82% {
+    transform: rotate(-4deg);
+  }
+}
+@keyframes christmas-globe-shake {
+  0%,
+  100% {
+    transform: rotate(0);
+  }
+  20% {
+    transform: rotate(-13deg);
+  }
+  45% {
+    transform: rotate(11deg);
+  }
+  70% {
+    transform: rotate(-6deg);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .christmas-shell *,
+  .christmas-shell *::before,
+  .christmas-shell *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}

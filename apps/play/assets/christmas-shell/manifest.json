@@ -1,0 +1,995 @@
+{
+  "version": 2,
+  "gameId": "christmas-shell",
+  "budget": {
+    "publicBytesMax": 260000,
+    "runtimeBytesMax": 150000,
+    "visualBytesMax": 0
+  },
+  "assets": [
+    {
+      "id": "tap-mp3",
+      "kind": "audio",
+      "format": "mp3",
+      "source": {
+        "provider": "Kenney",
+        "origin": "third-party-licensed",
+        "identifier": "Audio/click_001.ogg",
+        "referenceUrl": "https://kenney.nl/assets/interface-sounds",
+        "license": "CC0-1.0",
+        "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+        "reviewedOn": "2026-09-07",
+        "reviewedBy": "Codex-owner-request-2026-09-07",
+        "record": "ASSET_PROVENANCE.md#tap"
+      },
+      "art": {
+        "family": "christmas-photo-first",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Resposta curta ao gesto; normalizacao a -6 dBFS, volume reduzido e retorno visual equivalente. Avaliacao auditiva em aparelho permanece no gate de release."
+      },
+      "processing": {
+        "recipe": "prepare-shell-audio.mjs:tap",
+        "tools": ["ffmpeg:8.0.1-essentials_build-www.gyan.dev"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/christmas-shell/audio/tap-v1.mp3",
+        "publicPath": "/assets/christmas-shell/audio/tap-v1.mp3",
+        "bytes": 2395,
+        "sha256": "c809c6c54eff4a22875a715f92ae674d7321f3e52be90e4d46dc26385f295745",
+        "durationSeconds": 0.18,
+        "cue": "tap",
+        "deliveryGroup": "tap",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        }
+      }
+    },
+    {
+      "id": "tap-m4a",
+      "kind": "audio",
+      "format": "m4a",
+      "source": {
+        "provider": "Kenney",
+        "origin": "third-party-licensed",
+        "identifier": "Audio/click_001.ogg",
+        "referenceUrl": "https://kenney.nl/assets/interface-sounds",
+        "license": "CC0-1.0",
+        "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+        "reviewedOn": "2026-09-07",
+        "reviewedBy": "Codex-owner-request-2026-09-07",
+        "record": "ASSET_PROVENANCE.md#tap"
+      },
+      "art": {
+        "family": "christmas-photo-first",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Resposta curta ao gesto; normalizacao a -6 dBFS, volume reduzido e retorno visual equivalente. Avaliacao auditiva em aparelho permanece no gate de release."
+      },
+      "processing": {
+        "recipe": "prepare-shell-audio.mjs:tap",
+        "tools": ["ffmpeg:8.0.1-essentials_build-www.gyan.dev"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/christmas-shell/audio/tap-v1.m4a",
+        "publicPath": "/assets/christmas-shell/audio/tap-v1.m4a",
+        "bytes": 2257,
+        "sha256": "671d200bccaa271793f4d2e9963c62f9833f87ef2e5cde8272e279f08c8c492a",
+        "durationSeconds": 0.18,
+        "cue": "tap",
+        "deliveryGroup": "tap",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        }
+      }
+    },
+    {
+      "id": "toggle-mp3",
+      "kind": "audio",
+      "format": "mp3",
+      "source": {
+        "provider": "Kenney",
+        "origin": "third-party-licensed",
+        "identifier": "Audio/switch_002.ogg",
+        "referenceUrl": "https://kenney.nl/assets/interface-sounds",
+        "license": "CC0-1.0",
+        "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+        "reviewedOn": "2026-09-07",
+        "reviewedBy": "Codex-owner-request-2026-09-07",
+        "record": "ASSET_PROVENANCE.md#toggle"
+      },
+      "art": {
+        "family": "christmas-photo-first",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Resposta curta ao gesto; normalizacao a -6 dBFS, volume reduzido e retorno visual equivalente. Avaliacao auditiva em aparelho permanece no gate de release."
+      },
+      "processing": {
+        "recipe": "prepare-shell-audio.mjs:toggle",
+        "tools": ["ffmpeg:8.0.1-essentials_build-www.gyan.dev"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/christmas-shell/audio/toggle-v1.mp3",
+        "publicPath": "/assets/christmas-shell/audio/toggle-v1.mp3",
+        "bytes": 3179,
+        "sha256": "8b9fee68918a4a734b536175f190a7c6aa8278e3a06e9c1d42704f84ffb60001",
+        "durationSeconds": 0.24,
+        "cue": "toggle",
+        "deliveryGroup": "toggle",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        }
+      }
+    },
+    {
+      "id": "toggle-m4a",
+      "kind": "audio",
+      "format": "m4a",
+      "source": {
+        "provider": "Kenney",
+        "origin": "third-party-licensed",
+        "identifier": "Audio/switch_002.ogg",
+        "referenceUrl": "https://kenney.nl/assets/interface-sounds",
+        "license": "CC0-1.0",
+        "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+        "reviewedOn": "2026-09-07",
+        "reviewedBy": "Codex-owner-request-2026-09-07",
+        "record": "ASSET_PROVENANCE.md#toggle"
+      },
+      "art": {
+        "family": "christmas-photo-first",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Resposta curta ao gesto; normalizacao a -6 dBFS, volume reduzido e retorno visual equivalente. Avaliacao auditiva em aparelho permanece no gate de release."
+      },
+      "processing": {
+        "recipe": "prepare-shell-audio.mjs:toggle",
+        "tools": ["ffmpeg:8.0.1-essentials_build-www.gyan.dev"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/christmas-shell/audio/toggle-v1.m4a",
+        "publicPath": "/assets/christmas-shell/audio/toggle-v1.m4a",
+        "bytes": 3047,
+        "sha256": "30621182e6aa2acd1e0dfc7267ccb5ef3185ce4223115cfe24e97e3f7b657ef3",
+        "durationSeconds": 0.24,
+        "cue": "toggle",
+        "deliveryGroup": "toggle",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        }
+      }
+    },
+    {
+      "id": "magic-mp3",
+      "kind": "audio",
+      "format": "mp3",
+      "source": {
+        "provider": "Kenney",
+        "origin": "third-party-licensed",
+        "identifier": "Audio/glass_002.ogg",
+        "referenceUrl": "https://kenney.nl/assets/interface-sounds",
+        "license": "CC0-1.0",
+        "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+        "reviewedOn": "2026-09-07",
+        "reviewedBy": "Codex-owner-request-2026-09-07",
+        "record": "ASSET_PROVENANCE.md#magic"
+      },
+      "art": {
+        "family": "christmas-photo-first",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Resposta curta ao gesto; normalizacao a -6 dBFS, volume reduzido e retorno visual equivalente. Avaliacao auditiva em aparelho permanece no gate de release."
+      },
+      "processing": {
+        "recipe": "prepare-shell-audio.mjs:magic",
+        "tools": ["ffmpeg:8.0.1-essentials_build-www.gyan.dev"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/christmas-shell/audio/magic-v1.mp3",
+        "publicPath": "/assets/christmas-shell/audio/magic-v1.mp3",
+        "bytes": 7097,
+        "sha256": "cfec2a0abd50f3210fbba9a8f162c6125803d517b89f9073005048ba38a0389a",
+        "durationSeconds": 0.65,
+        "cue": "magic",
+        "deliveryGroup": "magic",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        }
+      }
+    },
+    {
+      "id": "magic-m4a",
+      "kind": "audio",
+      "format": "m4a",
+      "source": {
+        "provider": "Kenney",
+        "origin": "third-party-licensed",
+        "identifier": "Audio/glass_002.ogg",
+        "referenceUrl": "https://kenney.nl/assets/interface-sounds",
+        "license": "CC0-1.0",
+        "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+        "reviewedOn": "2026-09-07",
+        "reviewedBy": "Codex-owner-request-2026-09-07",
+        "record": "ASSET_PROVENANCE.md#magic"
+      },
+      "art": {
+        "family": "christmas-photo-first",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Resposta curta ao gesto; normalizacao a -6 dBFS, volume reduzido e retorno visual equivalente. Avaliacao auditiva em aparelho permanece no gate de release."
+      },
+      "processing": {
+        "recipe": "prepare-shell-audio.mjs:magic",
+        "tools": ["ffmpeg:8.0.1-essentials_build-www.gyan.dev"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/christmas-shell/audio/magic-v1.m4a",
+        "publicPath": "/assets/christmas-shell/audio/magic-v1.m4a",
+        "bytes": 4526,
+        "sha256": "0b7c0d80b9f00f4d0677cdd3f985a6750579c6b840b4edb86657682beb9107d1",
+        "durationSeconds": 0.65,
+        "cue": "magic",
+        "deliveryGroup": "magic",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        }
+      }
+    },
+    {
+      "id": "paper-a-mp3",
+      "kind": "audio",
+      "format": "mp3",
+      "source": {
+        "provider": "Kenney",
+        "origin": "third-party-licensed",
+        "identifier": "Audio2/card-slide-1.ogg",
+        "referenceUrl": "https://kenney.nl/assets/casino-audio",
+        "license": "CC0-1.0",
+        "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+        "reviewedOn": "2026-09-07",
+        "reviewedBy": "Codex-owner-request-2026-09-07",
+        "record": "ASSET_PROVENANCE.md#paper-a"
+      },
+      "art": {
+        "family": "christmas-photo-first",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Resposta curta ao gesto; normalizacao a -6 dBFS, volume reduzido e retorno visual equivalente. Avaliacao auditiva em aparelho permanece no gate de release."
+      },
+      "processing": {
+        "recipe": "prepare-shell-audio.mjs:paper-a",
+        "tools": ["ffmpeg:8.0.1-essentials_build-www.gyan.dev"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/christmas-shell/audio/paper-a-v1.mp3",
+        "publicPath": "/assets/christmas-shell/audio/paper-a-v1.mp3",
+        "bytes": 5530,
+        "sha256": "4019b0e6352efbfa90fde4e9839472264f773e121d6cc8f39099700e9a68c1e7",
+        "durationSeconds": 0.48,
+        "cue": "paper-a",
+        "deliveryGroup": "paper-a",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        }
+      }
+    },
+    {
+      "id": "paper-a-m4a",
+      "kind": "audio",
+      "format": "m4a",
+      "source": {
+        "provider": "Kenney",
+        "origin": "third-party-licensed",
+        "identifier": "Audio2/card-slide-1.ogg",
+        "referenceUrl": "https://kenney.nl/assets/casino-audio",
+        "license": "CC0-1.0",
+        "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+        "reviewedOn": "2026-09-07",
+        "reviewedBy": "Codex-owner-request-2026-09-07",
+        "record": "ASSET_PROVENANCE.md#paper-a"
+      },
+      "art": {
+        "family": "christmas-photo-first",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Resposta curta ao gesto; normalizacao a -6 dBFS, volume reduzido e retorno visual equivalente. Avaliacao auditiva em aparelho permanece no gate de release."
+      },
+      "processing": {
+        "recipe": "prepare-shell-audio.mjs:paper-a",
+        "tools": ["ffmpeg:8.0.1-essentials_build-www.gyan.dev"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/christmas-shell/audio/paper-a-v1.m4a",
+        "publicPath": "/assets/christmas-shell/audio/paper-a-v1.m4a",
+        "bytes": 6201,
+        "sha256": "605fb18a28af58568e4b5e241f4e01218e86dca6ca729dc005a584349b0e3b60",
+        "durationSeconds": 0.48,
+        "cue": "paper-a",
+        "deliveryGroup": "paper-a",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        }
+      }
+    },
+    {
+      "id": "paper-b-mp3",
+      "kind": "audio",
+      "format": "mp3",
+      "source": {
+        "provider": "Kenney",
+        "origin": "third-party-licensed",
+        "identifier": "Audio2/card-slide-2.ogg",
+        "referenceUrl": "https://kenney.nl/assets/casino-audio",
+        "license": "CC0-1.0",
+        "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+        "reviewedOn": "2026-09-07",
+        "reviewedBy": "Codex-owner-request-2026-09-07",
+        "record": "ASSET_PROVENANCE.md#paper-b"
+      },
+      "art": {
+        "family": "christmas-photo-first",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Resposta curta ao gesto; normalizacao a -6 dBFS, volume reduzido e retorno visual equivalente. Avaliacao auditiva em aparelho permanece no gate de release."
+      },
+      "processing": {
+        "recipe": "prepare-shell-audio.mjs:paper-b",
+        "tools": ["ffmpeg:8.0.1-essentials_build-www.gyan.dev"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/christmas-shell/audio/paper-b-v1.mp3",
+        "publicPath": "/assets/christmas-shell/audio/paper-b-v1.mp3",
+        "bytes": 5530,
+        "sha256": "1e84e4b6067181c98640858551263c519e1489f21fe82e41d9e63e7409f6449a",
+        "durationSeconds": 0.48,
+        "cue": "paper-b",
+        "deliveryGroup": "paper-b",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        }
+      }
+    },
+    {
+      "id": "paper-b-m4a",
+      "kind": "audio",
+      "format": "m4a",
+      "source": {
+        "provider": "Kenney",
+        "origin": "third-party-licensed",
+        "identifier": "Audio2/card-slide-2.ogg",
+        "referenceUrl": "https://kenney.nl/assets/casino-audio",
+        "license": "CC0-1.0",
+        "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+        "reviewedOn": "2026-09-07",
+        "reviewedBy": "Codex-owner-request-2026-09-07",
+        "record": "ASSET_PROVENANCE.md#paper-b"
+      },
+      "art": {
+        "family": "christmas-photo-first",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Resposta curta ao gesto; normalizacao a -6 dBFS, volume reduzido e retorno visual equivalente. Avaliacao auditiva em aparelho permanece no gate de release."
+      },
+      "processing": {
+        "recipe": "prepare-shell-audio.mjs:paper-b",
+        "tools": ["ffmpeg:8.0.1-essentials_build-www.gyan.dev"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/christmas-shell/audio/paper-b-v1.m4a",
+        "publicPath": "/assets/christmas-shell/audio/paper-b-v1.m4a",
+        "bytes": 6193,
+        "sha256": "25ee3169698867a8e55e697d21371215fac328c92388bef0ade3b5f5744e0f9c",
+        "durationSeconds": 0.48,
+        "cue": "paper-b",
+        "deliveryGroup": "paper-b",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        }
+      }
+    },
+    {
+      "id": "open-mp3",
+      "kind": "audio",
+      "format": "mp3",
+      "source": {
+        "provider": "Kenney",
+        "origin": "third-party-licensed",
+        "identifier": "Audio2/cards-pack-take-out-2.ogg",
+        "referenceUrl": "https://kenney.nl/assets/casino-audio",
+        "license": "CC0-1.0",
+        "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+        "reviewedOn": "2026-09-07",
+        "reviewedBy": "Codex-owner-request-2026-09-07",
+        "record": "ASSET_PROVENANCE.md#open"
+      },
+      "art": {
+        "family": "christmas-photo-first",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Resposta curta ao gesto; normalizacao a -6 dBFS, volume reduzido e retorno visual equivalente. Avaliacao auditiva em aparelho permanece no gate de release."
+      },
+      "processing": {
+        "recipe": "prepare-shell-audio.mjs:open",
+        "tools": ["ffmpeg:8.0.1-essentials_build-www.gyan.dev"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/christmas-shell/audio/open-v1.mp3",
+        "publicPath": "/assets/christmas-shell/audio/open-v1.mp3",
+        "bytes": 7097,
+        "sha256": "b1d41b22c06fd5451c9d2c4ae83c913f840c531de774d67c3ce7320bd594bdfd",
+        "durationSeconds": 0.64,
+        "cue": "open",
+        "deliveryGroup": "open",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        }
+      }
+    },
+    {
+      "id": "open-m4a",
+      "kind": "audio",
+      "format": "m4a",
+      "source": {
+        "provider": "Kenney",
+        "origin": "third-party-licensed",
+        "identifier": "Audio2/cards-pack-take-out-2.ogg",
+        "referenceUrl": "https://kenney.nl/assets/casino-audio",
+        "license": "CC0-1.0",
+        "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+        "reviewedOn": "2026-09-07",
+        "reviewedBy": "Codex-owner-request-2026-09-07",
+        "record": "ASSET_PROVENANCE.md#open"
+      },
+      "art": {
+        "family": "christmas-photo-first",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Resposta curta ao gesto; normalizacao a -6 dBFS, volume reduzido e retorno visual equivalente. Avaliacao auditiva em aparelho permanece no gate de release."
+      },
+      "processing": {
+        "recipe": "prepare-shell-audio.mjs:open",
+        "tools": ["ffmpeg:8.0.1-essentials_build-www.gyan.dev"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/christmas-shell/audio/open-v1.m4a",
+        "publicPath": "/assets/christmas-shell/audio/open-v1.m4a",
+        "bytes": 7730,
+        "sha256": "0fe73261a3438cd315a27b778f4b8f07079aafca947446653ced34a04d110cb2",
+        "durationSeconds": 0.64,
+        "cue": "open",
+        "deliveryGroup": "open",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        }
+      }
+    },
+    {
+      "id": "back-mp3",
+      "kind": "audio",
+      "format": "mp3",
+      "source": {
+        "provider": "Kenney",
+        "origin": "third-party-licensed",
+        "identifier": "Audio/close_001.ogg",
+        "referenceUrl": "https://kenney.nl/assets/interface-sounds",
+        "license": "CC0-1.0",
+        "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+        "reviewedOn": "2026-09-07",
+        "reviewedBy": "Codex-owner-request-2026-09-07",
+        "record": "ASSET_PROVENANCE.md#back"
+      },
+      "art": {
+        "family": "christmas-photo-first",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Resposta curta ao gesto; normalizacao a -6 dBFS, volume reduzido e retorno visual equivalente. Avaliacao auditiva em aparelho permanece no gate de release."
+      },
+      "processing": {
+        "recipe": "prepare-shell-audio.mjs:back",
+        "tools": ["ffmpeg:8.0.1-essentials_build-www.gyan.dev"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/christmas-shell/audio/back-v1.mp3",
+        "publicPath": "/assets/christmas-shell/audio/back-v1.mp3",
+        "bytes": 2918,
+        "sha256": "9e63c38900561df7dc96a145bc323c0bae3cbb2d0fd6cdac9ba7e3f85338e899",
+        "durationSeconds": 0.22,
+        "cue": "back",
+        "deliveryGroup": "back",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        }
+      }
+    },
+    {
+      "id": "back-m4a",
+      "kind": "audio",
+      "format": "m4a",
+      "source": {
+        "provider": "Kenney",
+        "origin": "third-party-licensed",
+        "identifier": "Audio/close_001.ogg",
+        "referenceUrl": "https://kenney.nl/assets/interface-sounds",
+        "license": "CC0-1.0",
+        "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+        "reviewedOn": "2026-09-07",
+        "reviewedBy": "Codex-owner-request-2026-09-07",
+        "record": "ASSET_PROVENANCE.md#back"
+      },
+      "art": {
+        "family": "christmas-photo-first",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Resposta curta ao gesto; normalizacao a -6 dBFS, volume reduzido e retorno visual equivalente. Avaliacao auditiva em aparelho permanece no gate de release."
+      },
+      "processing": {
+        "recipe": "prepare-shell-audio.mjs:back",
+        "tools": ["ffmpeg:8.0.1-essentials_build-www.gyan.dev"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/christmas-shell/audio/back-v1.m4a",
+        "publicPath": "/assets/christmas-shell/audio/back-v1.m4a",
+        "bytes": 2632,
+        "sha256": "fc290032bdc3f90a748910bb77ba2a56a8ef8cca604af1a37de90c9f21a3aaa7",
+        "durationSeconds": 0.22,
+        "cue": "back",
+        "deliveryGroup": "back",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        }
+      }
+    },
+    {
+      "id": "reveal-mp3",
+      "kind": "audio",
+      "format": "mp3",
+      "source": {
+        "provider": "Kenney",
+        "origin": "third-party-licensed",
+        "identifier": "Audio/glass_001.ogg",
+        "referenceUrl": "https://kenney.nl/assets/interface-sounds",
+        "license": "CC0-1.0",
+        "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+        "reviewedOn": "2026-09-07",
+        "reviewedBy": "Codex-owner-request-2026-09-07",
+        "record": "ASSET_PROVENANCE.md#reveal"
+      },
+      "art": {
+        "family": "christmas-photo-first",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Resposta curta ao gesto; normalizacao a -6 dBFS, volume reduzido e retorno visual equivalente. Avaliacao auditiva em aparelho permanece no gate de release."
+      },
+      "processing": {
+        "recipe": "prepare-shell-audio.mjs:reveal",
+        "tools": ["ffmpeg:8.0.1-essentials_build-www.gyan.dev"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/christmas-shell/audio/reveal-v1.mp3",
+        "publicPath": "/assets/christmas-shell/audio/reveal-v1.mp3",
+        "bytes": 10232,
+        "sha256": "6b1794c3b27c8ef6c9f31f59b29bba1373a2cc92b7b36d2f71a0ae7f6b2dd8b4",
+        "durationSeconds": 0.95,
+        "cue": "reveal",
+        "deliveryGroup": "reveal",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        }
+      }
+    },
+    {
+      "id": "reveal-m4a",
+      "kind": "audio",
+      "format": "m4a",
+      "source": {
+        "provider": "Kenney",
+        "origin": "third-party-licensed",
+        "identifier": "Audio/glass_001.ogg",
+        "referenceUrl": "https://kenney.nl/assets/interface-sounds",
+        "license": "CC0-1.0",
+        "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+        "reviewedOn": "2026-09-07",
+        "reviewedBy": "Codex-owner-request-2026-09-07",
+        "record": "ASSET_PROVENANCE.md#reveal"
+      },
+      "art": {
+        "family": "christmas-photo-first",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Resposta curta ao gesto; normalizacao a -6 dBFS, volume reduzido e retorno visual equivalente. Avaliacao auditiva em aparelho permanece no gate de release."
+      },
+      "processing": {
+        "recipe": "prepare-shell-audio.mjs:reveal",
+        "tools": ["ffmpeg:8.0.1-essentials_build-www.gyan.dev"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/christmas-shell/audio/reveal-v1.m4a",
+        "publicPath": "/assets/christmas-shell/audio/reveal-v1.m4a",
+        "bytes": 6933,
+        "sha256": "eeb459f1669ebab07068f92eaa17f93c2221269bced1a15ac1687bceecd3e2cb",
+        "durationSeconds": 0.95,
+        "cue": "reveal",
+        "deliveryGroup": "reveal",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        }
+      }
+    },
+    {
+      "id": "bells-a-mp3",
+      "kind": "audio",
+      "format": "mp3",
+      "source": {
+        "provider": "Kenney",
+        "origin": "third-party-licensed",
+        "identifier": "Audio/glass_001.ogg",
+        "referenceUrl": "https://kenney.nl/assets/interface-sounds",
+        "license": "CC0-1.0",
+        "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+        "reviewedOn": "2026-09-07",
+        "reviewedBy": "Codex-owner-request-2026-09-07",
+        "record": "ASSET_PROVENANCE.md#bells-a"
+      },
+      "art": {
+        "family": "christmas-photo-first",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Resposta curta ao gesto; normalizacao a -6 dBFS, volume reduzido e retorno visual equivalente. Avaliacao auditiva em aparelho permanece no gate de release."
+      },
+      "processing": {
+        "recipe": "prepare-shell-audio.mjs:bells-a",
+        "tools": ["ffmpeg:8.0.1-essentials_build-www.gyan.dev"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/christmas-shell/audio/bells-a-v1.mp3",
+        "publicPath": "/assets/christmas-shell/audio/bells-a-v1.mp3",
+        "bytes": 11799,
+        "sha256": "9069dfcd2f0972725d3214938c9e8b74abf844810555b1767c63d426f3cdd16b",
+        "durationSeconds": 1.1,
+        "cue": "bells-a",
+        "deliveryGroup": "bells-a",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        }
+      }
+    },
+    {
+      "id": "bells-a-m4a",
+      "kind": "audio",
+      "format": "m4a",
+      "source": {
+        "provider": "Kenney",
+        "origin": "third-party-licensed",
+        "identifier": "Audio/glass_001.ogg",
+        "referenceUrl": "https://kenney.nl/assets/interface-sounds",
+        "license": "CC0-1.0",
+        "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+        "reviewedOn": "2026-09-07",
+        "reviewedBy": "Codex-owner-request-2026-09-07",
+        "record": "ASSET_PROVENANCE.md#bells-a"
+      },
+      "art": {
+        "family": "christmas-photo-first",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Resposta curta ao gesto; normalizacao a -6 dBFS, volume reduzido e retorno visual equivalente. Avaliacao auditiva em aparelho permanece no gate de release."
+      },
+      "processing": {
+        "recipe": "prepare-shell-audio.mjs:bells-a",
+        "tools": ["ffmpeg:8.0.1-essentials_build-www.gyan.dev"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/christmas-shell/audio/bells-a-v1.m4a",
+        "publicPath": "/assets/christmas-shell/audio/bells-a-v1.m4a",
+        "bytes": 12036,
+        "sha256": "3d353357de2158c9de8b46e63c12a80b06f1d36e9ef695a4f1fc5f937247494c",
+        "durationSeconds": 1.1,
+        "cue": "bells-a",
+        "deliveryGroup": "bells-a",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        }
+      }
+    },
+    {
+      "id": "bells-b-mp3",
+      "kind": "audio",
+      "format": "mp3",
+      "source": {
+        "provider": "Kenney",
+        "origin": "third-party-licensed",
+        "identifier": "Audio/glass_001.ogg",
+        "referenceUrl": "https://kenney.nl/assets/interface-sounds",
+        "license": "CC0-1.0",
+        "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+        "reviewedOn": "2026-09-07",
+        "reviewedBy": "Codex-owner-request-2026-09-07",
+        "record": "ASSET_PROVENANCE.md#bells-b"
+      },
+      "art": {
+        "family": "christmas-photo-first",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Resposta curta ao gesto; normalizacao a -6 dBFS, volume reduzido e retorno visual equivalente. Avaliacao auditiva em aparelho permanece no gate de release."
+      },
+      "processing": {
+        "recipe": "prepare-shell-audio.mjs:bells-b",
+        "tools": ["ffmpeg:8.0.1-essentials_build-www.gyan.dev"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/christmas-shell/audio/bells-b-v1.mp3",
+        "publicPath": "/assets/christmas-shell/audio/bells-b-v1.mp3",
+        "bytes": 11799,
+        "sha256": "86f9e51c2a35d45ddc5b6d3d79bb90eb87fad384b2630325a4353c167f2ac7d0",
+        "durationSeconds": 1.1,
+        "cue": "bells-b",
+        "deliveryGroup": "bells-b",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        }
+      }
+    },
+    {
+      "id": "bells-b-m4a",
+      "kind": "audio",
+      "format": "m4a",
+      "source": {
+        "provider": "Kenney",
+        "origin": "third-party-licensed",
+        "identifier": "Audio/glass_001.ogg",
+        "referenceUrl": "https://kenney.nl/assets/interface-sounds",
+        "license": "CC0-1.0",
+        "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+        "reviewedOn": "2026-09-07",
+        "reviewedBy": "Codex-owner-request-2026-09-07",
+        "record": "ASSET_PROVENANCE.md#bells-b"
+      },
+      "art": {
+        "family": "christmas-photo-first",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Resposta curta ao gesto; normalizacao a -6 dBFS, volume reduzido e retorno visual equivalente. Avaliacao auditiva em aparelho permanece no gate de release."
+      },
+      "processing": {
+        "recipe": "prepare-shell-audio.mjs:bells-b",
+        "tools": ["ffmpeg:8.0.1-essentials_build-www.gyan.dev"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/christmas-shell/audio/bells-b-v1.m4a",
+        "publicPath": "/assets/christmas-shell/audio/bells-b-v1.m4a",
+        "bytes": 12361,
+        "sha256": "3450e0a8975e57dd33f8c9f285fc7d21dcd4d6fa89ff7efe731bc60d0b34a7cc",
+        "durationSeconds": 1.1,
+        "cue": "bells-b",
+        "deliveryGroup": "bells-b",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        }
+      }
+    },
+    {
+      "id": "snow-mp3",
+      "kind": "audio",
+      "format": "mp3",
+      "source": {
+        "provider": "Kenney",
+        "origin": "third-party-licensed",
+        "identifier": "Audio/glass_001.ogg",
+        "referenceUrl": "https://kenney.nl/assets/interface-sounds",
+        "license": "CC0-1.0",
+        "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+        "reviewedOn": "2026-09-07",
+        "reviewedBy": "Codex-owner-request-2026-09-07",
+        "record": "ASSET_PROVENANCE.md#snow"
+      },
+      "art": {
+        "family": "christmas-photo-first",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Resposta curta ao gesto; normalizacao a -6 dBFS, volume reduzido e retorno visual equivalente. Avaliacao auditiva em aparelho permanece no gate de release."
+      },
+      "processing": {
+        "recipe": "prepare-shell-audio.mjs:snow",
+        "tools": ["ffmpeg:8.0.1-essentials_build-www.gyan.dev"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/christmas-shell/audio/snow-v1.mp3",
+        "publicPath": "/assets/christmas-shell/audio/snow-v1.mp3",
+        "bytes": 12583,
+        "sha256": "4c524f3f4706ece6be6dbf72e555b4d3f3d48bc04f1e54ea305575a38082ce41",
+        "durationSeconds": 1.2,
+        "cue": "snow",
+        "deliveryGroup": "snow",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        }
+      }
+    },
+    {
+      "id": "snow-m4a",
+      "kind": "audio",
+      "format": "m4a",
+      "source": {
+        "provider": "Kenney",
+        "origin": "third-party-licensed",
+        "identifier": "Audio/glass_001.ogg",
+        "referenceUrl": "https://kenney.nl/assets/interface-sounds",
+        "license": "CC0-1.0",
+        "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+        "reviewedOn": "2026-09-07",
+        "reviewedBy": "Codex-owner-request-2026-09-07",
+        "record": "ASSET_PROVENANCE.md#snow"
+      },
+      "art": {
+        "family": "christmas-photo-first",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Resposta curta ao gesto; normalizacao a -6 dBFS, volume reduzido e retorno visual equivalente. Avaliacao auditiva em aparelho permanece no gate de release."
+      },
+      "processing": {
+        "recipe": "prepare-shell-audio.mjs:snow",
+        "tools": ["ffmpeg:8.0.1-essentials_build-www.gyan.dev"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/christmas-shell/audio/snow-v1.m4a",
+        "publicPath": "/assets/christmas-shell/audio/snow-v1.m4a",
+        "bytes": 9591,
+        "sha256": "0266f76dd7b067cf218db632fccf933789351e27fa81e949d797ff6f6994ada2",
+        "durationSeconds": 1.2,
+        "cue": "snow",
+        "deliveryGroup": "snow",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        }
+      }
+    },
+    {
+      "id": "start-mp3",
+      "kind": "audio",
+      "format": "mp3",
+      "source": {
+        "provider": "Kenney",
+        "origin": "third-party-licensed",
+        "identifier": "Audio/confirmation_004.ogg",
+        "referenceUrl": "https://kenney.nl/assets/interface-sounds",
+        "license": "CC0-1.0",
+        "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+        "reviewedOn": "2026-09-07",
+        "reviewedBy": "Codex-owner-request-2026-09-07",
+        "record": "ASSET_PROVENANCE.md#start"
+      },
+      "art": {
+        "family": "christmas-photo-first",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Resposta curta ao gesto; normalizacao a -6 dBFS, volume reduzido e retorno visual equivalente. Avaliacao auditiva em aparelho permanece no gate de release."
+      },
+      "processing": {
+        "recipe": "prepare-shell-audio.mjs:start",
+        "tools": ["ffmpeg:8.0.1-essentials_build-www.gyan.dev"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/christmas-shell/audio/start-v1.mp3",
+        "publicPath": "/assets/christmas-shell/audio/start-v1.mp3",
+        "bytes": 6313,
+        "sha256": "bc8a683a174c875143ae507198c3f65f7d1c370b5a447efdde5e431e9025b68f",
+        "durationSeconds": 0.56,
+        "cue": "start",
+        "deliveryGroup": "start",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        }
+      }
+    },
+    {
+      "id": "start-m4a",
+      "kind": "audio",
+      "format": "m4a",
+      "source": {
+        "provider": "Kenney",
+        "origin": "third-party-licensed",
+        "identifier": "Audio/confirmation_004.ogg",
+        "referenceUrl": "https://kenney.nl/assets/interface-sounds",
+        "license": "CC0-1.0",
+        "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+        "reviewedOn": "2026-09-07",
+        "reviewedBy": "Codex-owner-request-2026-09-07",
+        "record": "ASSET_PROVENANCE.md#start"
+      },
+      "art": {
+        "family": "christmas-photo-first",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Resposta curta ao gesto; normalizacao a -6 dBFS, volume reduzido e retorno visual equivalente. Avaliacao auditiva em aparelho permanece no gate de release."
+      },
+      "processing": {
+        "recipe": "prepare-shell-audio.mjs:start",
+        "tools": ["ffmpeg:8.0.1-essentials_build-www.gyan.dev"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/christmas-shell/audio/start-v1.m4a",
+        "publicPath": "/assets/christmas-shell/audio/start-v1.m4a",
+        "bytes": 6185,
+        "sha256": "14a8322ea532dc7ce8adfaa39e986d4896cd3532ca0c83a32956d14a20e57054",
+        "durationSeconds": 0.56,
+        "cue": "start",
+        "deliveryGroup": "start",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        }
+      }
+    }
+  ]
+}
