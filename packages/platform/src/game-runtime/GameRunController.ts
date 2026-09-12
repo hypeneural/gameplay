@@ -19,6 +19,9 @@ export interface GameEventSink {
 export class GameRunController implements GameRun {
   private currentState: GameRunState = 'idle';
   private eventSequence = 0;
+  private lastSoundEnabled: boolean | undefined;
+  private readonly pauseReasons = new Set<'game' | 'visibility'>();
+  private readonly milestones = new Set<string>();
 
   constructor(
     private readonly gameId: GameId,
@@ -56,14 +59,46 @@ export class GameRunController implements GameRun {
     this.bridge.emit({ type: 'GAME_INTERACTION_SETTLED', ...this.nextIdentity() });
   }
 
-  pause(): void {
-    if (this.currentState !== 'started') return;
+  milestone(name: string): void {
+    if (this.currentState !== 'started' && this.currentState !== 'completed') return;
+    if (
+      !/^[a-z][a-z0-9-]{0,47}$/.test(name) ||
+      this.milestones.size >= 64 ||
+      this.milestones.has(name)
+    )
+      return;
+    this.milestones.add(name);
+    this.analytics.track({
+      type: 'GAME_MILESTONE',
+      ...this.nextIdentity(),
+      name,
+      elapsedMs: this.clock.elapsedMs(),
+    });
+  }
+
+  pause(reason: 'game' | 'visibility' = 'game'): void {
+    if (this.currentState !== 'started' && this.currentState !== 'paused') return;
+    this.pauseReasons.add(reason);
+    if (this.currentState === 'paused') return;
     this.currentState = 'paused';
     this.clock.pause();
     this.emit('GAME_PAUSED');
   }
 
-  resume(): void {
+  soundChanged(enabled: boolean): void {
+    if (
+      this.currentState === 'idle' ||
+      this.currentState === 'exited' ||
+      this.lastSoundEnabled === enabled
+    )
+      return;
+    this.lastSoundEnabled = enabled;
+    this.bridge.emit({ type: 'GAME_SOUND_CHANGED', ...this.nextIdentity(), enabled });
+  }
+
+  resume(reason: 'game' | 'visibility' = 'game'): void {
+    this.pauseReasons.delete(reason);
+    if (this.pauseReasons.size > 0) return;
     if (this.currentState !== 'paused') return;
     this.currentState = 'started';
     this.clock.resume();
@@ -101,6 +136,7 @@ export class GameRunController implements GameRun {
   exit(): void {
     if (this.currentState === 'exited') return;
     this.clock.stop();
+    this.pauseReasons.clear();
     this.currentState = 'exited';
     const event = { type: 'GAME_EXITED' as const, ...this.nextIdentity() };
     this.analytics.track(event);

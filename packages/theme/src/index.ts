@@ -8,5 +8,6 @@ export * from './game-feel/ParticlePresets.js';
 export * from './game-feel/SfxCues.js';
 export * from './game-feel/TouchProfile.js';
 export * from './phaser/quality.js';
+export * from './phaser/CrystalControl.js';
 export * from './react/index.js';
 export * from './tokens/theme.js';

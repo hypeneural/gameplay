@@ -18,6 +18,62 @@ import {
 import { MemoryAnalytics, noOpHaptics } from '../src/testing/fakes.js';
 
 describe('ActiveGameClock and GameRunController', () => {
+  it('does not resume a manual pause when the page becomes visible', () => {
+    let now = 0;
+    const run = new GameRunController(
+      'generated-game',
+      'run-pause-owners',
+      new ActiveGameClock({ now: () => now }),
+      new MemoryAnalytics(),
+      new GameBridge(),
+    );
+    run.open();
+    run.ready();
+    run.start();
+    now = 120;
+    run.pause();
+    run.pause('visibility');
+    now = 2000;
+    run.resume('visibility');
+    expect(run.state).toBe('paused');
+    expect(run.elapsedMs()).toBe(120);
+    run.resume();
+    expect(run.state).toBe('started');
+    run.pause('visibility');
+    run.pause();
+    run.resume();
+    expect(run.state).toBe('paused');
+    run.resume('visibility');
+    expect(run.state).toBe('started');
+  });
+  it('keeps mute changes ordered and local without changing a paused run or analytics', () => {
+    const analytics = new MemoryAnalytics();
+    const bridge = new GameBridge();
+    const run = new GameRunController(
+      'generated-game',
+      'run-sound',
+      new ActiveGameClock({ now: () => 0 }),
+      analytics,
+      bridge,
+    );
+    run.open();
+    run.ready();
+    run.start();
+    run.pause();
+    run.soundChanged(false);
+    expect(bridge.latest(run.runId)).toMatchObject({
+      type: 'GAME_SOUND_CHANGED',
+      enabled: false,
+      sequence: 5,
+    });
+    run.soundChanged(false);
+    expect(bridge.latest(run.runId)?.sequence).toBe(5);
+    expect(run.state).toBe('paused');
+    expect(analytics.events).toHaveLength(4);
+    run.exit();
+    run.soundChanged(true);
+    expect(bridge.latest(run.runId)?.type).toBe('GAME_EXITED');
+  });
   it('keeps only the latest bridge event for an active run and releases it at teardown', () => {
     const clock = new ActiveGameClock({ now: () => 0 });
     const analytics = new MemoryAnalytics();

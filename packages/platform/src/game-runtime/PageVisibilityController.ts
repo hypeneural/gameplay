@@ -16,9 +16,9 @@ export class PageVisibilityController {
   attach(): () => void {
     const onChange = (): void => {
       if (this.document.visibilityState === 'hidden') {
-        this.run.pause();
+        this.run.pause('visibility');
       } else if (this.document.visibilityState === 'visible') {
-        this.run.resume();
+        this.run.resume('visibility');
       }
     };
 

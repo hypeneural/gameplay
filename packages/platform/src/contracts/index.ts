@@ -34,6 +34,10 @@ export interface Photo {
   aspectRatio: number;
   orientation: 'portrait' | 'landscape' | 'square';
   variants: Record<PhotoVariant, string>;
+  /** Optional normalized photographer metadata. No recognition runs in the browser. */
+  focalPoint?: Readonly<{ x: number; y: number }>;
+  faceSafeZone?: Readonly<{ x: number; y: number; width: number; height: number }>;
+  subjectBounds?: Readonly<{ x: number; y: number; width: number; height: number }>;
 }
 
 export interface Session {
@@ -51,6 +55,7 @@ export interface GameEventIdentity {
 }
 
 export type AnalyticsEvent =
+  | (GameEventIdentity & { type: 'GAME_MILESTONE'; name: string; elapsedMs: number })
   | (GameEventIdentity & { type: 'GAME_OPENED' })
   | (GameEventIdentity & { type: 'GAME_READY' })
   | (GameEventIdentity & { type: 'GAME_STARTED' })
@@ -60,6 +65,7 @@ export type AnalyticsEvent =
   | (GameEventIdentity & { type: 'GAME_EXITED' });
 
 export type GameBridgeEvent =
+  | (GameEventIdentity & { type: 'GAME_SOUND_CHANGED'; enabled: boolean })
   | AnalyticsEvent
   | (GameEventIdentity & { type: 'GAME_INTERACTION_SETTLED' })
   | (GameEventIdentity & { type: 'GAME_ASSET_RETRY'; attempt: number })
@@ -93,8 +99,12 @@ export interface GameRun {
   start(): void;
   /** Signals that a player interaction has completed its visible game-side work. */
   interactionSettled(): void;
-  pause(): void;
-  resume(): void;
+  /** One bounded, privacy-safe gameplay milestone per name, analytics only. */
+  milestone?(name: string): void;
+  /** Session preference, without changing run state or sending analytics. */
+  soundChanged?(enabled: boolean): void;
+  pause(reason?: 'game' | 'visibility'): void;
+  resume(reason?: 'game' | 'visibility'): void;
   /** Emits a bounded, non-analytics diagnostic for a retried required asset. */
   assetRetry(attempt: number): void;
   /** Emits a privacy-safe asset failure code; it must not contain a URL or user data. */
