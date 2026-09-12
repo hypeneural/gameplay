@@ -30,6 +30,23 @@ Cada `file` precisa ficar exatamente sob
 O auditor rejeita caminhos absolutos, travessia de diretório, links não
 regulares, arquivos ausentes e qualquer arquivo público não catalogado.
 
+## Owner da aplicação
+
+O identificador reservado `christmas-shell` pertence à aplicação, sem um pacote
+de jogo correspondente. Seu manifesto está em
+`apps/play/assets/christmas-shell/manifest.json` e sua proveniência em
+`apps/play/assets/christmas-shell/ASSET_PROVENANCE.md`. Os arquivos continuam
+restritos a `apps/play/public/assets/christmas-shell/`. Para compatibilidade
+com os auditores v2, o identificador ainda ocupa o campo histórico `gameId`.
+Use `--owner christmas-shell` na CLI. A extensão muda somente a localização do
+manifesto; não relaxa hashes, fontes, caminhos, formatos ou orçamento.
+
+O script separado `tools/asset-factory/scripts/prepare-shell-audio.mjs` prepara
+o pacote a partir de arquivos locais explicitamente fornecidos. Os comandos
+de auditoria permanecem somente leitura.
+
+Preparação explícita: `pnpm --filter @christmas-games/asset-factory run prepare:shell-audio <diretorio-Sonoros>`.
+
 ## Versão 2 e migração explícita
 
 O Puzzle já usa a versão 2. A fábrica ainda lê a versão 1 para que um jogo
@@ -108,14 +125,20 @@ modelo, receita/prompt referenciável, seed quando houver e versão disponível.
 
 Nenhum provider, busca, download, licença ou geração é executado no browser,
 durante uma partida ou por estes comandos. Assim, o build publicado continua
-reproduzível mesmo se a fonte externa deixar de existir.
+reproduzível mesmo se a fonte externa deixar de existir. Um asset
+`third-party-licensed` só é aceito no manifesto v2 quando tem `referenceUrl`,
+`licenseUrl` e um identificador de licença não vazio; a auditoria rejeita
+`project-owned` para essa origem. A aprovação humana ainda confirma se o termo
+permite a entrega comercial específica antes de o arquivo entrar em `public`.
 
 ## Limites desta versão
 
 - Sem busca na internet, crawler ou download de terceiros.
 - Sem geração de atlas, conversão de áudio ou adaptação automática do runtime.
-- Sem aceitar licenças vagas: a primeira versão usa somente assets criados para
-  o projeto ou áudio legado explicitamente autorizado pelo proprietário.
+- Sem aceitar licenças vagas: assets próprios e legado autorizado seguem sendo o
+  caminho padrão. Exceção: áudio ou arte de terceiro com origem, item, termo e
+  URL da licença revisados; o manifesto exige esses vínculos e a proveniência
+  explica a decisão humana.
 - Sem tratar hash como licença ou aprovação estética: o SHA-256 prova apenas o
   conteúdo que foi revisado, não a origem ou a adequação da arte.
 - Sem afirmar desempenho apenas pelo tamanho: a medição em aparelho real

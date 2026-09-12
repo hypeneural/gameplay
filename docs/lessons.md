@@ -277,3 +277,704 @@ journeys that intentionally verify visible copy in the same patch, while
 lifecycle journeys should prefer the event sequence or event code whenever
 available. A stale expectation can make a correctly completed game look
 broken and waste a full mobile matrix run.
+
+## LESSON-040 — Architecture validation must run within the declared Node window
+
+`dependency-cruiser` rejects Node 25.1.0 before it analyzes the project, while
+this repository declares Node 24 as its supported release line. A failed
+architecture step on Node 25 is an environment incompatibility, not evidence
+of a dependency-boundary regression. Run the release gate in Node 24 (or a
+dependency-cruiser-supported future line) and report the distinction plainly.
+
+## LESSON-041 — Realismo 2D mobile vem primeiro da arte preparada e da hierarquia
+
+Filtros WebGL podem adicionar luz ou profundidade, mas são opcionais, têm custo
+e não podem salvar uma composição, uma textura ou um movimento incoerente. Para
+um jogo de fotos, construa primeiro material, sombra, profundidade e luz nos
+assets preparados; preserve a derivada da sessão sem filtro ou distorção. Um
+experimento de shader só entra depois em um objeto decorativo isolado, com
+fallback visual equivalente e medição no aparelho de referência.
+
+## LESSON-042 — Um manifesto de assets sem arquivo não é um contrato válido
+
+O schema v2 da fábrica exige uma lista não vazia de assets. Antes de existir um
+arquivo browser-deliverable aprovado, o pacote deve reservar o diretório e
+documentar sua política, mas não versionar um `manifest.json` vazio ou fictício.
+Criar o manifesto junto do primeiro asset aprovado mantém auditoria, orçamento
+e proveniência honestos.
+
+## LESSON-042 — Cartão responsivo precisa de geometria de toque própria
+
+Um `Container` Phaser pode agrupar a apresentação, mas não é uma superfície de
+toque tão previsível quanto um objeto com geometria concreta após um reflow.
+Para cartas redimensionadas, mantenha o `Container` somente como transform da
+apresentação e entregue o evento a um `Rectangle` transparente filho, cujo
+tamanho acompanha exatamente a carta. A revisão deve tocar o canvas real nas
+larguras mobile, porque testes do domínio e asserts do DOM não revelam uma área
+interativa ausente.
+
+## LESSON-043 — Uma grade mobile deve escolher a densidade pela área útil
+
+“Três cartas por linha” não é uma regra de aparelho: é uma decisão de
+geometria. Para o Memórias, o planejador avalia a largura e a altura realmente
+disponíveis, só adota três colunas quando a carta visual alcança 88 CSS px e
+mantém área de toque de 52 CSS px. A linha incompleta é centralizada com base
+na quantidade efetiva de cartas, o que preserva o equilíbrio do tabuleiro em
+EASY e evita uma exceção visual quando STANDARD tiver outra quantidade.
+
+## LESSON-044 — Material de carta responsivo precisa ser uma decisão pura
+
+O mesmo cartão aparece pequeno em telefone e grande em tablet; proporções
+fixas de moldura, selo e texto deixam de parecer físicas em uma das pontas. Um
+planejador puro de material, testado com tamanhos reais de grade, permite que
+o runtime Phaser apenas aplique medidas a objetos já criados. Assim a foto
+continua em `contain`, o resize não recria o baralho e a revisão visual pode
+ajustar uma decisão explícita em vez de caçar números soltos na Scene.
+
+## LESSON-045 — Ocultar a aba durante uma resolução precisa preservar a verdade já aceita
+
+O estado puro pode já conter duas cartas abertas quando a visibilidade muda,
+mas a apresentação ainda pode estar no meio da virada. Ao pausar, estabilizar
+cada cartão a partir do estado puro e armar a resolução com timer pausado
+impede uma meia carta ou um turno eterno. O E2E deve atravessar a mudança real
+de `document.hidden` e, depois do retorno, provar uma nova jogada e a saída;
+simular apenas um `pause` da Scene não cobre o handler de visibilidade do
+Phaser.
+
+## LESSON-046 — Áudio desbloqueado por gesto também precisa pertencer ao ciclo de vida
+
+O browser pode manter uma fonte de áudio bloqueada até o primeiro gesto, logo o
+callback de desbloqueio pode sobreviver à saída da Scene se for registrado sem
+owner. Um diretor local deve guardar e remover esse listener antes de destruir
+sons e cache; mudo, pausa e saída passam pela mesma política. A prova de
+browser deve confirmar o carregamento dos arquivos autorizados, alternar
+Som/Mudo e aceitar uma carta depois da alternância, em vez de tratar uma
+captura de tela como prova de som funcional.
+
+## LESSON-047 — Duas linhas de HUD exigem reservar a altura do alvo, não só a linha do texto
+
+Um botão de 52 CSS px centrado apenas 30 px abaixo da primeira linha ainda
+invade o relógio, mesmo quando seus rótulos parecem estar em linhas diferentes.
+O planejador do tabuleiro precisa reservar toda a altura do segundo grupo de
+comandos e os helpers E2E devem usar a mesma geometria. A captura do telefone
+e a do tablet são complementares: uma revela a densidade da grade, a outra
+expõe colisões horizontais que a tela menor pode disfarçar.
+
+## LESSON-048 — Vitória visual precisa de uma prova determinística e não de um cronômetro de animações
+
+Para revisar a folha pós-vitória, um cenário local pode resolver a mesma
+máquina de turnos pura até o estado terminal e então apresentar suas cartas
+como concluídas. Ele não deve tentar encadear uma partida inteira por delays
+de animação: sob WebGL contendido, o último delay pode produzir um falso
+negativo. O cenário é diagnóstico local; a partida publicada continua usando
+toque e a apresentação normal. A prova verifica a sequência álbum visível,
+ações, novo GameRun e saída, em vez de pular diretamente para uma tela falsa.
+
+## LESSON-049 — Progressão de Memórias precisa trocar a identidade da rodada, não o deck terminal
+
+Em 2026-08-28, STANDARD foi ligado somente pela ação pós-vitória do shell e
+cria um `GameRun` novo com 6 pares/12 cartas. A Scene concluída não recebe
+cartas novas e sessões com menos de seis fotos únicas não mostram a ação.
+
+## LESSON-050 — Variação sonora pode ser determinística sem multiplicar assets
+
+Em 2026-08-28, `MemorySoundPolicy` passou a alternar velocidades discretas por
+ocorrência e a reduzir a música durante acerto/vitória. A política mantém um
+único arquivo por papel, preserva o orçamento e permite testar a sequência sem
+Phaser, `Math.random` ou áudio do navegador.
+
+## LESSON-051 — Sessão pequena precisa deduplicar textura antes do Loader
+
+Uma rota pode repetir a mesma foto para completar seis estações, mas registrar
+o mesmo `textureKey` várias vezes no Loader não cria seis recursos válidos e
+pode mascarar o contrato de readiness. Planeje primeiro as fotos únicas: a
+âncora usa uma única derivada `game` e cada coadjuvante uma única derivada
+`card`. A rota continua livre para repetir o identificador; a Scene reutiliza a
+textura já aprovada, sem baixar o catálogo inteiro nem emitir chave duplicada.
+
+## LESSON-052 — O xadrez de uma prévia não comprova canal alpha
+
+Uma imagem pode parecer transparente no preview e ainda carregar o xadrez como
+pixels opacos. Antes de aceitar um sprite raster, o preparo precisa confirmar
+`hasAlpha` no arquivo browser-deliverable, além de inspecioná-lo sobre fundos
+claros e escuros. Em 28-08-2026, um candidato de locomotiva falhou essa prova e
+foi removido antes de entrar no diretório público ou no manifesto; a promessa
+de transparência no prompt não substitui a validação do binário.
+
+## LESSON-053 — Paisagem curta precisa proteger a faixa antes de preservar a escala da foto
+
+Em 28-08-2026, a revisão de canvas do Expresso das Fotos em 844 × 390 revelou
+que uma altura de foto calculada apenas como proporção da viewport fazia a
+moldura encostar nas faixas jogáveis. Em paisagem, calcule primeiro a faixa e
+reserve um intervalo físico para ela; então limite a altura de foto e portal ao
+espaço restante. A instrução pode migrar para o cabeçalho, mas a área de toque
+nunca deve competir visualmente com uma foto ou portal.
+
+## LESSON-054 — A transição de estado após o primeiro layout precisa sincronizar a apresentação
+
+Em 28-08-2026, o Expresso das Fotos fazia seu primeiro reflow ainda em `ready`
+e só depois iniciava a jornada. Como a posição de repouso do trem era aplicada
+apenas pelo layout quando já estava em `awaiting-lane`, a locomotiva ficava na
+origem do canvas até a primeira viagem. Sempre que o estado lógico muda depois
+do layout inicial, o presenter precisa aplicar a posição derivada desse novo
+estado ou disparar um reflow idempotente; não presuma que a primeira chamada de
+layout já conhecia a fase jogável.
+
+## LESSON-055 — A versão do Node faz parte da prova de arquitetura
+
+Em 29-08-2026, o repositório declarava Node 24, mas o ambiente estava no Node
+25.1.0, que o `dependency-cruiser` recusa antes de examinar dependências. Ao
+ativar o Node 24.20.0 LTS, a ferramenta revelou um ciclo real no Expresso das
+Fotos: a Scene importava o barrel que também a reexportava. Validar na versão
+declarada não é só remover ruído de ambiente; é o que permite encontrar a
+violação de arquitetura e corrigi-la com imports diretos de domínio.
+
+## LESSON-056 — Uma foto só é mecânica quando sua relação com a ação é visível
+
+Em 29-08-2026, a revisão privada do primeiro protótipo do Expresso mostrou que
+um portal-foto, três faixas e a instrução “toque no caminho que brilha” podem
+estar tecnicamente funcionais e ainda assim não formar uma missão compreensível.
+Antes de validar em uma matriz de aparelhos, a cena precisa permitir explicar
+em um olhar “foto-alvo → estação correspondente → trilho → entrega”. Quando a
+foto é central para o jogo, ela deve determinar uma escolha visual legível, e
+nunca virar um painel pequeno separado do controle e da consequência.
+
+## LESSON-057 — Geometria de rota precisa sobreviver fora do renderer
+
+Em 29-08-2026, o redesign do Expresso eliminou a escolha de faixa abstrata em
+favor de estações e trilhos físicos. A regra e o layout devem conservar uma
+especificação de rota normalizada e pura; somente o runtime transforma essa
+especificação em `Phaser.Curves.Path`. Assim, o mesmo traçado posiciona a
+agulha, desenha a ferrovia e move a locomotiva, enquanto pausa e resize podem
+recriar o path no progresso já apresentado sem vazar Phaser ao domínio ou usar
+um tween independente de `x/y`.
+
+## LESSON-058 — O ângulo do sprite precisa respeitar o ponto de vista da arte
+
+Em 29-08-2026, a revisão focal do Expresso mostrou que uma locomotiva em vista
+lateral, mesmo se bem ilustrada, parece quebrada quando recebe a rotação total
+da tangente de um trilho que sobe na vertical do celular. O Path continua
+sendo a única fonte de posição, mas a inclinação do rig deve ser limitada ao
+intervalo adequado à sua perspectiva; o terminal também precisa ficar abaixo
+da foto da estação. Movimento fiel ao trilho não exige girar um sprite para
+uma vista que a arte não suporta.
+
+## LESSON-059 — Um loop de cena precisa ter dono, pausa e destruição próprios
+
+Em 29-08-2026, a primeira camada de som ferroviário do Expresso mostrou que
+rodas em loop não podem usar o mesmo caminho de efeitos descartáveis. Um
+diretor do jogo precisa reter a única instância, pausá-la quando a apresentação
+for invalidada, reiniciá-la somente com a viagem e destruí-la no shutdown. Isso
+evita que resize, pause, mute ou saída deixem um trem audível sem trem visível,
+sem recorrer a `stopAll` no SoundManager compartilhado.
+
+## LESSON-060 — Efeito decorativo também precisa obedecer ao estado da partida
+
+Em 29-08-2026, vapor e faíscas do Expresso passaram a ser objetos finitos
+registrados pela cena. Parar só os tweens numa pausa ou reflow deixa a última
+pose visual congelada; por isso a apresentação invalida e destrói esses objetos
+transitórios junto com seus timers e animações. Um glint de trilho é derivado do
+mesmo `railProgress` que posiciona a locomotiva, não de outro relógio. Assim a
+decoração não se adianta ao trem, não invade a foto do cliente e permanece
+estática quando a preferência de movimento reduzido está ativa.
+
+## LESSON-061 — A jornada E2E deve tocar o objeto da regra atual
+
+Em 29-08-2026, a suíte de lifecycle do Expresso ainda calculava e tocava a
+posição da antiga faixa, embora a regra V2 seja tocar a estação que contém a
+foto correspondente. A cena funcionava no navegador, mas a prova automatizada
+esperava um evento que não existia mais. O helper foi refeito a partir da
+geometria pura de `ExpressLayout`: ele toca o centro da estação escolhida,
+preservando o teste de pause, reflow e descarte de canvas sem reintroduzir a
+metáfora antiga no runtime.
+
+## LESSON-062 — Desempates Minimax exigem scores exatos na raiz
+
+Em 30-08-2026, o laboratório da Trinca de Natal confirmou que alpha-beta pode
+podar normalmente dentro de cada candidato, mas reutilizar a janela podada da
+raiz pode transformar um limite em falso empate. Quando a experiência precisa
+sortear deterministicamente entre todas as jogadas ótimas, avalie cada jogada
+raiz com uma janela nova e reúna apenas scores exatos. Para um tabuleiro 3 × 3,
+isso preserva variedade sem justificar cache de transposição na V1.
+
+## LESSON-063 — Canvas Phaser em grid precisa poder encolher
+
+Em 30-08-2026, a revisão da Trinca de Natal ao voltar de um viewport de tablet
+para telefone mostrou que a largura intrínseca do canvas podia se tornar o
+mínimo de uma célula CSS Grid. O host permanecia largo, o canvas era cortado e
+`Scale.RESIZE` nunca recebia a largura móvel. A camada React que contém jogos
+Phaser deve declarar `min-width: 0` tanto no estágio quanto no host: assim o
+layout pode encolher e o Scale Manager reposiciona os objetos existentes.
+
+## LESSON-064 — Pressionar não é confirmar uma jogada
+
+Em 30-08-2026, a Trinca de Natal passou a separar `pointerdown` de
+`pointerup`: o down pertence ao feedback imediato, enquanto o domínio só é
+chamado no up do mesmo ponteiro, na mesma Zone, dentro do slop e no mesmo epoch
+de apresentação. Guardar essa pequena transação fora da Scene torna arrasto,
+resize, pausa e `POINTER_UP_OUTSIDE` cancelamentos explícitos, sem duplicar a
+regra pura. O evento `GAME_STARTED` também só deve acompanhar o primeiro
+tabuleiro interativo; o relógio compartilhado permanece dono da sua semântica
+de duração desde `open()`.
+
+## LESSON-065 — Reconciliar o mural preserva a memória visual da jogada
+
+Em 30-08-2026, a Trinca de Natal deixou de apagar e recriar as nove possíveis
+peças em cada `refreshBoard`. O runtime reconcilia o tabuleiro canônico contra
+um `Map<CellIndex, PieceView>`: só cria a casa recém-aceita, remove uma peça
+quando a nova rodada realmente a esvazia e reposiciona as instâncias existentes
+no resize. A regra continua sem conhecer Phaser, mas a fotografia já colocada
+mantém identidade visual durante a partida.
+
+## LESSON-066 — Duas mensagens dinâmicas não podem disputar a mesma faixa
+
+Em 30-08-2026, as capturas da Trinca de Natal mostraram que dois textos
+centrados, mesmo com posições diferentes, se sobrepõem quando ambos quebram em
+duas linhas. HUDs mobile precisam reservar bandas verticais por função e não
+por uma altura presumida de texto: marca, progresso, mensagem e contexto.
+Durante a jogada, somente uma mensagem contextual permanece ativa; o contexto
+é exclusivo de telas de escolha. A prova visual deve incluir resultado e
+pensamento, porque são justamente os estados que fazem a cópia crescer.
+
+## LESSON-067 — Navegação contextual também precisa caber no plano de layout
+
+Em 30-08-2026, a primeira versão responsiva da Trinca de Natal ainda permitia
+que a marca longa invadisse `← Voltar` na tela de dificuldade: separar faixas
+verticais não basta quando dois controles dividem o cabeçalho. O layout puro
+deve reservar retângulos para voltar, pausa, título, score, mensagem, contexto,
+board e dock, e a marca pode usar sua forma compacta quando o retorno está
+visível. O painel de pausa bloqueia o input abaixo e confirma o retorno ao
+menu; sem isso, um botão oculto da rodada pode aceitar uma ação enquanto a
+partida parece congelada.
+
+## LESSON-068 — A foto pode orientar sem virar uma nova ação
+
+Em 30-08-2026, a Trinca de Natal passou a reaproveitar a textura `A.card` em
+um porta-retrato de menu, proporcional e sem qualquer input. O layout puro
+reserva esse espaço antes de posicionar cartões de modo e dificuldade; assim a
+lembrança explica o contexto nos primeiros segundos, enquanto a única decisão
+continua sendo um botão de pelo menos 52 px. Reusar a textura já autorizada
+evita novo request, não cria associações visíveis de dados da sessão e mantém
+o mesmo contrato de foto do mural.
+
+## LESSON-069 — Materialidade no toque não precisa esperar arte final
+
+Em 30-08-2026, a Trinca de Natal ganhou sombra de contato, bevel interno,
+ornamento, compressão e halo dourado no próprio cartão de ação. Esses estados
+pertencem aos objetos de UI, não à foto; por isso dão profundidade e resposta
+imediata mesmo enquanto a arte raster aguarda proveniência, preparo e
+aprovação. O haptic leve é disparado junto do `pointerup` confirmado e nunca
+atrasa a transição ou depende de áudio ainda não manifestado.
+
+## LESSON-070 — Nunca anime a escala de uma imagem já dimensionada
+
+Em 30-08-2026, a entrada do menu da Trinca de Natal chamou `setScale()` numa
+imagem depois de `setDisplaySize()`. Em Phaser, o segundo método já expressa o
+tamanho renderizado por escala; a animação substituiu essa escala proporcional
+e ampliou a foto da sessão até ela parecer fundo, deixando a moldura como um
+retângulo solto. A correção é animar somente alfa em `Image` já ajustada e
+reservar escala para moldura, placa e texto. A mesma regra vale para qualquer
+peça fotográfica que entra em uma célula.
+
+## LESSON-071 — Ação que cria o board precisa bloquear o próprio pointer-up
+
+Em 31-08-2026, a Trinca de Natal revelou que o `pointerup` que confirmava uma
+lembrança no picker podia alcançar uma Zone de célula criada durante a mesma
+transição e aceitar uma peça fantasma. Cada entrada de rodada agora guarda uma
+janela curta no runtime antes de aceitar `pointerdown` do board. A janela não
+substitui o arbiter nem a regra pura: ela somente separa semanticamente o
+gesto de setup do primeiro gesto de jogo. Essa proteção deve existir em todo
+fluxo Phaser no qual um botão ou picker materializa superfícies interativas sob
+o mesmo ponteiro.
+
+## LESSON-072 — Placar não pode ser uma segunda frase de status
+
+Em 02-09-2026, a Trinca de Natal substituiu a string única de placar por uma
+placa com objetos separados para rodada, cada lado, separador e empate. A
+mensagem contextual voltou a carregar somente intenção e resultado, enquanto a
+placa fica estável durante encaixe e animação. Em jogo de foto para criança,
+isso reduz a competição de leitura sem depender apenas da cor: os emblemas e
+os docks continuam identificando os dois lados mesmo quando o som e o haptic
+não estão disponíveis.
+
+## LESSON-073 — O emblema é fallback de uma foto, não sua legenda
+
+Em 02-09-2026, a revisão visual da Trinca de Natal encontrou o `N`/estrela do
+dock desenhado sobre a mini foto já carregada. Embora o runtime conhecesse
+corretamente o segundo jogador, o resultado parecia um placeholder e a foto
+perdia sua função de identidade. Docks devem ocultar o emblema quando possuem
+uma lembrança real e voltar a exibi-lo somente para uma identidade sem foto,
+como Noel. O mesmo significado precisa atravessar o hero final: o `N` é
+exclusivo do modo Noel; fotos vencedoras usam a marca fotográfica neutra.
+
+## LESSON-074 — Visual final não impede prova técnica mobile antecipada
+
+Em 03-09-2026, o plano do Mosaico em Queda passou a distinguir duas evidências
+que não devem ser confundidas. Antes do design freeze são obrigatórias provas
+de domínio, integração, lifecycle, assets e um probe técnico local de canvas,
+toque, cancelamento, RAF, área útil e recursos; elas observam eventos, digests e
+métricas, sem screenshot, preferência estética ou avaliação humana. Capturas,
+matriz visual de viewport, comparação de tela, aparelho como aprovação de UX e
+observação focal só começam após o design integrado estar aprovado. Se a etapa
+visual revelar mudança material, a aprovação de design reabre e a bateria final
+é repetida sobre a construção revisada.
+
+## LESSON-075 — Gerar um jogo não basta para compor o catálogo
+
+Em 03-09-2026, o scaffold de Mosaico em Queda confirmou que o gerador cria o
+pacote isolado e seu contrato inicial, mas a composição em `apps/play` ainda
+exige três passos explícitos: declarar o pacote como dependência workspace do
+app, importar somente a definição estática no registry e registrar um loader
+dinâmico para o módulo. Ao criar um pacote, atualizar o lockfile e regenerar
+`docs/generated/repo-map.md` também fazem parte do check de integração; sem
+isso, TypeScript não resolve o módulo ou o mapa canônico fica obsoleto.
+
+## LESSON-076 — Recuperação de ruleset não pode avançar a fila
+
+Em 03-09-2026, o Mosaico em Queda separou o ato de abrir espaço do spawn da
+próxima peça. A Ajuda da Oficina só pode alterar linhas visíveis, contadores e
+fase para `entry-delay`; sortear a próxima peça continua sendo trabalho do tick
+normal do engine. Isso mantém fila, seed e streams aleatórias auditáveis durante
+uma recuperação e evita que uma animação ou confirmação de apresentação altere
+a partida. Limites de recuperação também pertencem ao modo: normal admite duas
+e desafio uma, conforme a especificação de produto.
+
+## LESSON-077 — Passo fixo exige tolerância de ponto flutuante
+
+Em 03-09-2026, o acumulador de 60 Hz do Mosaico em Queda contou quatro passos
+quando recebeu exatamente `5 × (1000 / 60)` ms: a representação binária ficou
+uma fração abaixo do quinto limiar. O relógio técnico agora compara com uma
+epsilon mínima em milissegundos, satura em cinco passos e zera o restante. Isso
+mantém o limite de catch-up e evita que um frame nominalmente exato perca uma
+simulação por arredondamento; reset de lifecycle continua descartando todo
+acúmulo de forma deliberada.
+
+## LESSON-078 — Controle interativo não deve cair novamente no gesto da Scene
+
+Em 03-09-2026, o runtime técnico do Mosaico em Queda confirmou nos tipos do
+Phaser que o `pointerdown` de um GameObject interativo precede o evento amplo
+da Scene. Sem interromper essa propagação, um segundo toque na dock podia
+cancelar a interação atual e ser reinterpretado pelo handler global como novo
+arraste do mural. A dock agora é um adaptador separado, confirma apenas seu
+ponteiro elegível e chama `EventData.stopPropagation()`. O arbiter de ponteiro
+continua a cancelar a transação anterior; a propagação interrompida impede que
+o mesmo evento comece uma transação diferente.
+
+## LESSON-079 — A pausa visual de Recovery não pode virar uma regra paralela
+
+Em 03-09-2026, o Mosaico em Queda passou a manter a Ajuda da Oficina visível
+por uma janela finita antes de aplicar o relief. A apresentação guarda somente
+um horário de prontidão e cancela input; a Scene chama a transição pura já
+autorizada, que continua escolhendo e removendo as linhas sem callback de tween
+ou VFX. Isso preserva a leitura de “vamos abrir espaço” sem transformar tempo
+de animação em fonte de RNG, fila ou colisão.
+
+## LESSON-080 — Dica visual deve transportar conselho, nunca intenção de input
+
+Em 03-09-2026, o Mosaico em Queda passou a projetar o destino já calculado pela
+BFS como um contorno de apresentação. O componente aceita a dica com o serial
+da peça, confirma que ela ainda corresponde à peça ativa e entrega apenas a
+geometria do alvo ao mural e o convite breve à dock. Ele não chama o latch, não
+recalcula a rota e não lê o board para descobrir uma jogada. Assim, ghost
+continua sendo pouso físico atual e hint permanece conselho opcional mesmo com
+resize, pausa ou troca de peça entre a busca e a apresentação.
+
+## LESSON-081 — “Tocou o chão” precisa de evento, não de leitura visual tardia
+
+Em 03-09-2026, o Mosaico em Queda precisou dar peso ao início do lock delay sem
+deixar a renderização inferir contato pelo estado do board. A simulação passou
+a emitir `piece-grounded` somente na borda `false → true`, antes de qualquer
+lock subsequente. A apresentação usa esse efeito para acomodar a moldura por
+48 ms; ela não modifica `lockTicks`, não reposiciona a peça e não repete a
+resposta a cada tick em solo. Esse padrão mantém feedback físico explícito e
+o replay/digest independente de animação.
+
+## LESSON-082 — Fixed-step pode sair da Scene sem entregar lifecycle ao domínio
+
+Em 03-09-2026, o Mosaico em Queda separou o relógio de 60 Hz e a composição de
+experiência em um runtime sem Phaser. O adaptador de Scene continua dono de
+resize, pausa, ponteiro, áudio e GameObjects, mas fornece frames de input e
+recebe atualizações já ordenadas para repassar aos diretores. Essa divisão evita
+que a Scene reinterprete lock, recovery, dica ou progresso e, ao mesmo tempo,
+não permite que o domínio conheça um callback de RAF, tween ou lifecycle de
+canvas. O contrato mínimo é provar que um passo fixo encaminha o efeito e a
+resolução de interação exatamente uma vez.
+
+## LESSON-083 — Asset preparado deve substituir o fallback quando o perfil permite
+
+Em 03-09-2026, a luz quente do Mosaico em Queda já tinha manifesto, proveniência
+e carregamento por run, mas o porta-retrato ainda usava sempre um retângulo de
+fallback. A apresentação passou a preferir a textura própria e a manter o
+primitive somente para ausência legítima do arquivo ou perfis que o omitem.
+Assim, LOW e movimento reduzido continuam estáveis, enquanto NORMAL exercita o
+asset que foi orçado e aprovado para esse papel — sem introduzir uma segunda
+fonte de layout ou um efeito por cima da foto.
+
+## LESSON-084 — Moldura sobre foto precisa de abertura, e não de preenchimento
+
+Em 04-09-2026, a confirmação local do Mosaico em Queda revelou que os SVGs de
+moldura eram desenhados acima das imagens e ainda continham retângulos opacos:
+a foto carregava corretamente, mas ficava invisível. Moldura usada como camada
+superior deve ter somente contorno e detalhes fora da abertura; a base de cor
+pertence a uma camada abaixo da foto. A mesma inspeção mostrou que `setScale(1)`
+depois de `setDisplaySize()` restaura a dimensão nativa de um SVG no Phaser. Em
+controles responsivos, estado pressionado deve recalcular `displaySize`, nunca
+resetar a escala da imagem.
+
+## LESSON-085 — Máscara clássica não é uma base segura para WebGL no Phaser 4
+
+Em 04-09-2026, a Guirlanda das Lembranças revelou que `GeometryMask.setMask`
+emite aviso de não suporte no renderizador WebGL atual do Phaser 4.2.1. Para
+assets gerados com transparência, faça o recorte offline e use a textura alfa
+diretamente; se for necessário esconder uma área residual, coloque uma camada
+visual opaca de composição, nunca uma máscara que só funciona em um renderer.
+
+## LESSON-086 — A orientação da foto é uma decisão de composição antes da moldura
+
+Em 04-09-2026, a passagem privada da Guirlanda das Lembranças mostrou dois
+grupos nítidos de proporção em fotos de sessão: retrato próximo de 0,714 e
+paisagem próximo de 1,400. Forçar ambos em uma abertura retrato não corta a
+foto quando se usa `contain`, mas cria passe-partout excessivo e reduz sua
+presença emocional. A Scene deve escolher primeiro a moldura alpha e a janela
+interna pela orientação declarada, então posicionar a mesma derivada
+proporcional. Essa decisão é visual e fica no runtime: o domínio continua vendo
+somente ids e a passagem de validação não deve copiar originais ou caminhos para
+`public`, manifesto, logs ou screenshots versionados.
+
+## LESSON-087 — A abertura alpha, e não o tamanho do PNG, define o limite da foto
+
+Em 04-09-2026, a revisão de conclusão da Guirlanda das Lembranças mostrou que
+um passe-partout calculado pelo tamanho externo da moldura podia aparecer pelo
+alpha entre a alça de veludo e o arco superior. Um `photoInset` deve encolher a
+foto dentro de uma abertura já segura; nunca deve aumentar o suporte visual
+para fora dela. Calibre uma janela por orientação a partir da abertura real do
+asset, prefira um fundo interno escuro a uma faixa branca e confirme o estado
+de vitória com derivadas autorizadas em viewport móvel. Se uma moldura grande
+encostar em um alvo, a prioridade de input deve recuar quando a peça já está
+selecionada; o gesto de arrastar mantém o alvo que capturou o ponteiro.
+
+## LESSON-088 — Foto montada exige margem de arte e estado final recuperável
+
+Na Guirlanda V2, validar somente a hit area de 72 px deixou passar molduras
+materiais mais largas que essa área nas bordas do telefone. Layout deve testar
+também os limites da arte e a separação da foto central. O domínio pode aceitar
+o último encaixe antes da animação acabar: pause/resize deve preservar essa
+decisão e concluir a apresentação uma única vez, mesmo se cancelar o callback
+de snap. Separar esse estado de apresentação evita perder o painel de vitória
+ou contar uma colocação duas vezes. Uma captura do canvas continua necessária
+para julgar o encontro entre materiais, não apenas suas coordenadas.
+
+## LESSON-089 — Suítes independentes precisam ser donas do servidor de teste
+
+Dois Playwrights com reuseExistingServer podem compartilhar o mesmo Vite:
+encerrar a execução que criou o servidor quebra a outra com connection refused.
+Use porta e diretórios de relatório próprios para uma execução independente e
+evite concorrer inicializações WebGL em validação visual. Timeout de cold start
+não mede fluidez nem prova regressão do jogo: repita isoladamente e registre
+a diferença entre falha de infraestrutura e falha reproduzível de produto.
+
+## LESSON-090 — Galeria antes do catálogo pode esconder a escolha principal
+
+Na análise mobile do Hub em 04-09-2026, nove fotos antes dos jogos colocaram o
+início do catálogo em cerca de 1.444 px em uma tela de 390 × 844. A barra fixa
+de começar ainda favorecia Puzzle, mesmo enquanto a pessoa procurava outro
+jogo. A galeria deve ter altura limitada na entrada, e sua expansão deve ocorrer
+em uma superfície própria. Contar fotos carregadas ou testar a existência do
+card no DOM não prova que a criança consegue descobrir a brincadeira.
+
+## LESSON-091 — Autorização de HTML social não integra as fotos do shell
+
+O servidor de HTML/OG pode autorizar um link enquanto o React ainda usa fixtures
+ou um endpoint local. Na revisão de 04-09-2026, o AppRouter não consumia um
+catálogo remoto pela sessão da rota. A liberação precisa provar separadamente
+HTML autorizado, catálogo JSON autorizado e entrega de cada derivado vinculado
+à sessão. Um desses caminhos funcionando não é evidência dos demais.
+
+## LESSON-092 — Uma constante pode desfazer o carregamento separado do jogo
+
+Importar uma constante pura pelo barrel que também exporta o runtime de um jogo
+pode inserir o runtime no grafo inicial, mesmo quando seu loader é dinâmico.
+Na primeira fatia do novo Hub, a contagem de pares de Memory vinha desse barrel.
+Expor a constante pelo entrypoint de metadados remove a dependência do shell
+ao runtime. Inspecionar o grafo e os avisos do build além de contar canvas:
+zero canvas não significa zero código de motor carregado.
+
+## LESSON-093 — Geometria herdada exige revisão nas larguras de borda
+
+Uma capa nova com width de 100% ainda pode herdar um max-width antigo. Em 768 px,
+o botão principal do novo shell ficava limitado a 340 px e desalinhado, embora
+passasse nos testes de visibilidade do telefone baixo. A revisão visual
+identificou o limite; remover o max-width no escopo da nova capa preservou o
+restante da aplicação e corrigiu o alinhamento.
+
+## LESSON-094 — Preparação de áudio precisa de limites independentes do filtro
+
+Um `apad` ilimitado combinado com corte baseado em timestamps produziu um WAV
+temporário muito maior que o cue pretendido. Cortar por amostras e limitar a
+saída também por duração, bytes e timeout evita que um timestamp inesperado
+esgote o disco. Conferir duração e tamanho do intermediário antes de codificar;
+o cleanup deve verificar o caminho absoluto e remover apenas o temporário
+criado pela própria execução. Fades e normalização não substituem esses limites.
+
+## LESSON-095 — Pausar CSS não cancela a simulação em JavaScript
+
+Uma atmosfera que migra de keyframes para partículas físicas precisa de dono
+explícito do rAF. Galeria, background, interseção e movimento reduzido devem
+cancelar o frame e zerar o tempo anterior; só esconder ou pausar CSS mantém
+trabalho desnecessário. A prova de pausa compara posições por vários frames
+reais; uma captura estática ou contagem de partículas não demonstra suspensão.
+
+## LESSON-096 — Evidência privada e relatórios não pertencem ao mapa público
+
+O mapa gerado ignorava somente nomes exatos de `test-results` e
+`playwright-report`, enquanto as suítes independentes usavam sufixos. Excluir
+também essas variantes e a mídia privada impede que capturas, catálogos locais
+e arquivos voláteis apareçam no inventário versionado. Git, formatter e mapa
+devem concordar com os diretórios privados de evidência; preservar os arquivos
+no disco não exige expor seus nomes no mapa do repositório.
+
+## LESSON-097 — Mudo não deve reconstruir o contexto da partida
+
+O evento tipado de preferência não é um evento de progresso. Atualizar o som
+no Hub por bridge, mantendo estável o objeto entregue ao PhaserHost, preserva
+canvas, relógio e tabuleiro. O próximo run lê a preferência vigente. Testar a
+identidade do canvas e ausência de novos inícios de áudio após mudo/saída.
+
+## LESSON-098 — Visibilidade não pode desfazer uma pausa manual
+
+Separar razões `game` e `visibility` no dono do relógio. Resume de uma razão
+remove somente essa razão; nenhuma ordem de eventos de foco/visibilidade deve
+liberar uma partida que a criança decidiu manter parada. O runtime também
+preserva sua pausa manual e seus efeitos ao receber foco novamente.
+
+## LESSON-099 — Skin tem o mesmo tempo de vida do alvo
+
+Menus substituem botões sem encerrar a Scene. Um skin registrado só no shutdown
+mantinha recursos e callback de update além do alvo. Observar também `destroy`
+do alvo, remover listeners e destruir Graphics com cleanup idempotente. Para
+espessura/vidro arredondado em Graphics, faixas sólidas evitam a limitação do
+gradiente por triângulo documentada nos tipos de Phaser 4.2.1.
+
+## LESSON-100 — Telefone baixo precisa otimizar área, não só largura
+
+Forçar duas colunas por um limiar de largura pode produzir quatro ou seis
+fileiras minúsculas quando sobra pouca altura. Após os presets confortáveis,
+escolher o maior tamanho de carta viável. Conferir canvas real, margens externas
+e safe areas; teste em 390 × 844 sozinho não revela o problema de 360 × 640.
+
+## LESSON-101 — Material compartilhado não pode diminuir o alvo principal
+
+Uma regra genérica de botão cristalino com 48 px de altura venceu o mínimo de
+52 px das ações de conclusão por especificidade. Definir o mínimo no escopo
+final do CTA e conferir o bounding box real na vitória; testar somente os
+botões do cabeçalho não cobre a composição React que aparece após o canvas.
+
+## LESSON-102 — Scratch em Phaser 4 precisa provar origem e pixels
+
+RenderTexture tem comandos diferidos: erase/stamp exigem render explícito. Uma
+textura por chave desenhada em 0,0 ainda pode usar origem central; no frost isso
+produziu um único quadrante de gelo, embora o domínio e a conclusão passassem.
+Usar stamp com originX/originY zero para preencher toda a superfície. A prova
+precisa inspecionar gelo e raspagem no canvas, além de verificar progresso.
+
+## LESSON-103 — A superfície lógica pode sobreviver à orientação
+
+Manter a resolução lógica do frost e alterar somente posição/displaySize evita
+que resize apague um scratch já feito. Progresso deve usar distância ao segmento
+nas unidades da menor dimensão fotográfica, para pincel circular e varreduras
+rápidas tanto em retrato quanto em paisagem. Reconstituir por células normalizadas
+permite recuperar o conteúdo após perda de contexto WebGL sem ler pixels.
+
+## LESSON-104 — Espera fixa não prova uma fase curta de contemplação
+
+Swipes e capturas também consomem tempo, principalmente em tablet emulado. Parar
+a raspagem quando a quebra aparece e aguardar o label semântico do canvas prova
+o hero de três segundos sem depender da velocidade da máquina. Descrever a fase
+em português melhora também o nome acessível; não expor Scene ou códigos de
+estado à composição React apenas para testar.
+
+## LESSON-105 — Reutilização precisa conferir owner e capacidades reais
+
+Ao planejar Rudolph, a inspeção confirmou que a composição de molduras pertence
+à Guirlanda, o AudioManager não implementa ducking e a galeria da sessão não
+persiste resgates. Reutilizar a linguagem visual exige composição no novo owner
+ou extração comprovada, sem import entre jogos. O manifesto aceita WebP/SVG e
+M4A/MP3, mas não atlas JSON: spritesheets regulares com metadados no runtime
+permitem planejar animação sem pressupor suporte inexistente na fábrica.
+
+## LESSON-106 — Material realista precisa sobreviver ao layout e ao movimento
+
+Uma cornija fotográfica comprimida em uma faixa perde o aspecto de neve e gelo.
+Manter proporção, inspecionar alpha sobre o fundo real e evitar cortes rígidos
+em acúmulos orgânicos. Capa e partida devem usar a mesma textura de presente,
+com pivôs/frames coerentes. O teste de raspagem deve comparar um trecho da foto
+após as partículas acabarem; comparar o canvas inteiro pode aprovar apenas uma
+mudança na neve do cenário. Não formatar código com HMR durante um E2E ativo:
+a recarga pode desmontar a partida e invalidar evidência de lifecycle.
+
+## LESSON-107 — Contraste de HUD depende do cenário real
+
+Texto marfim legível no céu escuro desaparece sobre um chão nevado. Usar painel
+material com fundo estável e reservar espaço fora da foto. Progresso interativo
+precisa de alvos maiores que o desenho da estrela, distinção preenchida/vazia e
+resposta finita. Uma dica aponta o alvo, nunca marca o item como encontrado;
+testar essa invariância por input real e conferir também a tela girada.
+
+Ao reposicionar uma impressão de foto na capa, redefinir também largura,
+altura e aspect-ratio herdados. Mudar apenas inset não anula uma largura
+explícita de outra orientação; conferir os quatro limites do retângulo já
+rotacionado no viewport. Nos testes de fases temporizadas, aguardar o estado
+semântico antes de enviar gestos evita raspar durante a formação do gelo.
+
+No Phaser 4.2.1, `setWordWrapWidth` reprocessa a textura mesmo com o mesmo valor.
+Atualizar só quando a largura muda; medir as chamadas de desenho em quadros
+estáveis evita pagar esse custo em cada frame. Quando vários trabalhos editam
+o checkout, revisar um snapshot do build com derivadas locais evita que HMR
+desmonte uma partida durante a validação. Esperar backgrounds CSS carregarem
+antes de julgar a composição da capa.
+
+## LESSON-108 — Rig único e apresentação própria preservam a foto
+
+Peças de um mesmo modelo raster mantêm proporção e material durante a corrida
+sem gerar poses incompatíveis. No preparo Sharp, extrair a célula para um
+buffer intermediário antes de trim evita que a ordem interna corte outra célula.
+A moldura pendente legível na queda pode consumir área demais no visor: usar
+passe-partout com a foto inteira aumenta o destaque sem distorcer o asset.
+Revisar retrato e paisagem no canvas; conter um fundo vertical deixa faixas,
+enquanto esticá-lo deforma a vila. Uma composição panorâmica própria resolve.
+
+## LESSON-109 — Remover o canvas não prova o descarte do jogo
+
+No Phaser 4.2.1, `Game.runDestroy` chama `SceneManager.destroy` diretamente:
+`SHUTDOWN` não é garantido antes de `DESTROY`. Conectar o mesmo descarte
+idempotente aos dois eventos. A inspeção CDP de um canvas já removido encontrou
+oito listeners próprios e um `wheel` ainda ligados; a fonte de `MouseManager`
+também omite a remoção de `wheel`. O adaptador de Rudolph remove essa inscrição
+explicitamente. Testar dez ciclos pela navegação da mesma página, sem `goto`
+entre eles, e conferir listeners e encerramento do AudioContext.
+
+Manter captura dos toques normais evita eventos de mouse sintetizados que
+acionam Pausa duas vezes. O cancelamento nativo pode ser incancelável; o
+adaptador contorna somente esse caso no handler `touchcancel` do Phaser.
+Após resize, aguardar as dimensões reais do canvas antes da captura: uma imagem
+tirada cedo pode mostrar a rena cortada no layout anterior. Molduras em queda
+precisam mover o container, sem recalcular nove regiões e redesenhar a borda
+quando seu tamanho permanece constante.
+
+## LESSON-110 — Cache limitado precisa cobrir revisitas e views suspensas
+
+Um contador de tentativas não pode consumir o orçamento de falhas depois de
+uma carga bem-sucedida. No álbum de Rudolph, a terceira visita após expulsão
+da textura podia ficar permanentemente na variante menor. Zerar esse contador
+no sucesso e testar três voltas pelo álbum, conferindo a textura efetivamente
+mostrada e o limite de duas fotos grandes.
+
+Uma view suspensa continua dona de sua textura. Usar uma foto grande em um
+destaque e depois expulsá-la durante a navegação do álbum destrói o recurso
+que o destaque usará ao voltar. Rudolph mantém a foto principal grande retida;
+os demais destaques usam a variante menor estável da rodada.
+
+O último evento do shell não representa necessariamente o estado atual do jogo.
+Um resgate logo após retomar substitui `GAME_RESUMED` por
+`GAME_INTERACTION_SETTLED`. Testar a pausa pelo estado persistente do canvas,
+preservando a verificação de que a mesma instância continua montada.

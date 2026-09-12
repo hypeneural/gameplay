@@ -6,6 +6,19 @@ Mobile-first photo games for Christmas sessions. The repository deliberately sta
 2. React opens a session Hub, lazily mounts Phaser, then disposes it on exit;
 3. agent-facing gates provide fast feedback, architectural checks and mobile browser evidence.
 
+## Game catalog
+
+The repository hosts personalized Christmas photo games running Phaser 4.2.1 + React 19:
+
+- **Magic Photo (`magic-photo`)**: Unwrap gift, scratch realistic ice layer, reveal family photo.
+- **Puzzle Swap (`puzzle-swap`)**: Swap puzzle pieces to assemble holiday portrait.
+- **Memory (`memory`)**: Ruby velvet card memory match with album reveal.
+- **Expresso das Fotos (`expresso-das-fotos`)**: Holiday train delivering family photos to matching stations.
+- **Guirlanda das Lembranças (`guirlanda-das-lembrancas`)**: Handcrafted Christmas wreath photo framing.
+- **Mosaico em Queda (`mosaico-em-queda`)**: Falling mosaic blocks forming glowing stained-glass photo windows.
+- **Trinca de Natal (`tic-tac-toe`)**: Christmas tic-tac-toe with minimax AI and personalized photo tokens.
+- **Rudolph (`rena-das-lembrancas`)**: Flying reindeer photo arcade rescue game (in DEV mode).
+
 ## Local start
 
 ```sh
@@ -20,12 +33,11 @@ Open `/s/local-demo-token`, or `/__dev/theme` in development. Use Node 24 in CI 
 ## Required gates
 
 ```sh
-pnpm check:fast
-pnpm check
-pnpm validate
+pnpm check:fast   # Typecheck, lint and unit tests
+pnpm check        # Architecture, dead code, prettier, repo map
+pnpm validate     # Full validation gate including production build and E2E
+pnpm clean:reports # Remove old Playwright test artifacts and reports
 ```
-
-`validate` is the delivery gate. It includes production build and Playwright on four viewports.
 
 ## Factory commands
 
@@ -36,11 +48,6 @@ pnpm asset:doctor
 pnpm asset:validate
 ```
 
-The first creates an isolated game starter without registering it in the app.
-The second is read-only and measures direct photos in session folders while
-excluding nested low-resolution folders. The last two audit the local catalog
-of browser assets; they never fetch assets or inspect customer photos.
-
 ## Documentation
 
-Start at [docs/index.md](docs/index.md). The implementation sequence is [docs/plan/IMPLEMENTATION_PLAN.md](docs/plan/IMPLEMENTATION_PLAN.md); official-source validation is [docs/references/OFFICIAL_VALIDATION.md](docs/references/OFFICIAL_VALIDATION.md).
+Start at [docs/index.md](docs/index.md) and the latest audit report at [docs/quality/RELATORIO_AUDITORIA_E_ESTADO_REPOSITORIO_2026-09-11.md](docs/quality/RELATORIO_AUDITORIA_E_ESTADO_REPOSITORIO_2026-09-11.md).

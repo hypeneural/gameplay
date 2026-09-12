@@ -26,30 +26,88 @@ sustentar uma brincadeira de fotos diferente, pequena, responsiva e privada.
   - [x] Lifecycle de replay escolhido: o shell desmonta a instância concluída
         e o `retry` cria um novo `GameRun`; a Scene não navega nem reutiliza
         um run terminal.
-- [ ] **M1 — Congelar contrato e composição lazy**
+- [x] **M1 — Congelar contrato e composição lazy**
   - [x] Declarar `memoryDefinition` com `photoSelection: 'subset'`, mínimo e
         recomendado de quatro fotos, e registrar o loader lazy no app.
   - [x] Bloquear entrada no catálogo e em rota direta quando a sessão tiver
         menos de quatro fotos.
-  - [ ] Cobrir o contrato com teste de registro e atualizar a matriz de
-        disponibilidade após a rodada visual.
+  - [x] Cobrir o contrato com teste de registro e atualizar a matriz de
+        disponibilidade após a rodada visual de 2026-08-28.
 - [ ] **M2 — Card Lab e protótipo visual isolado**
-  - [ ] Preparar a receita visual/manifesto das cartas natalinas; a primeira
-        partida usa somente as derivadas `card` já autorizadas da sessão.
-- [ ] **M3 — Domínio puro, seleção e arbiter**
+  - [x] Preparar a receita visual das cartas natalinas em
+        [Cartão de Memórias](../experience/christmas/recipes/CARTAO-MEMORIAS.md).
+        O verso, selo e fita desta primeira versão são geometria local, sem
+        novo arquivo browser-deliverable; a partida usa somente as derivadas
+        `card` já autorizadas da sessão.
+  - [x] Fixar e provar a primeira decisão geométrica: EASY usa 3 + 3 + 2 no
+        retrato que comporte carta de 88 CSS px, centraliza a dupla final,
+        recua para duas colunas no estreito e usa quatro somente quando a área
+        útil comporta cartas confortáveis. Revisado no canvas real em
+        390 × 844, 412 × 915, 430 × 932 e 768 × 1024 em 2026-08-28.
+- [x] **M3 — Domínio puro, seleção e arbiter**
   - [x] Criar seleção determinística com âncora obrigatória, deck com duas
         cartas por foto, máquina de turnos e arbiter sem Phaser/DOM/aleatoriedade global.
-  - [ ] Cobrir seleção, deck e bordas de turno com testes unitários.
+  - [x] Cobrir seleção, deck e bordas de turno com testes unitários.
 - [ ] **M4 — Mídia autorizada, manifesto e orçamento**
   - [x] A primeira partida carrega exclusivamente quatro URLs `card` decididas
         antes do preload e as texturas são liberadas no shutdown.
-  - [ ] Criar e aprovar a receita/manifesto de molduras, verso e efeitos.
+  - [x] Registrar cenário de vila nevada e floco de neve no manifesto e na
+        proveniência próprios do Memórias. Ambos são arquivos originais do
+        projeto, sem foto de cliente; a auditoria local passou em 2026-08-28.
+  - [x] Criar e aprovar a receita de moldura e verso; o Card Lab puro calcula
+        passe-partout, sombra, fita e selo para cada tamanho responsivo, sem
+        esticar a foto. Revisado em canvas real em 390 × 844, 412 × 915,
+        430 × 932 e 768 × 1024 em 2026-08-28.
+  - [x] Manifestar o pacote sonoro aprovado: seis papéis em M4A/MP3, origem
+        autorizada, duração, hash, bytes, qualidade e orçamento. A auditoria
+        de assets passou em 2026-08-28; qualquer arquivo futuro continua
+        exigindo a mesma aprovação, origem e orçamento.
 - [ ] **M5 — Runtime Phaser, ponte e lifecycle**
   - [x] Montar tabuleiro responsivo, toque–toque, match, mismatch de 750 ms,
         dica, pausa opaca, conclusão e bridge do lifecycle por `SceneScope`.
-  - [ ] Executar a rodada visual e o stress de entradas/saídas depois que a
-        construção atual estiver revisada com o proprietário.
+  - [x] Executar a rodada visual em 390 × 844, 412 × 915, 430 × 932 e
+        768 × 1024: primeira carta, dica, pausa/retomada e saída passam sem
+        erro no console. O E2E toca o canvas real em toda a matriz e comprova
+        que a saída remove o único canvas.
+  - [x] Reorganizar o HUD em duas linhas estáveis — título/tempo e
+        progresso/comandos — e reflowar objetos existentes quando a área muda,
+        sem recriar deck, cartas, fotos ou canvas. A matriz E2E de toque passou
+        em 2026-08-28.
+  - [x] Cobrir rapid tap, resize e visibilidade durante resolução em 390,
+        412, 430 e 768 px; após o retorno o próximo toque volta a ser aceito.
+        Provar também cinco entradas/saídas específicas de Memory no telefone
+        infantil principal, sempre com zero canvas após a saída, em 2026-08-28.
 - [ ] **M6 — Polimento, acessibilidade e telemetria aprovada**
+  - [x] M6a inicial — aplicar Card Lab: verso de veludo-framboesa, fita,
+        selo, passe-partout marfim, moldura dourada, sombra curta, pressão e
+        marca de acerto. A frente usa `contain` e o layout não recria cartas
+        em resize.
+  - [x] M6c — integrar diretor de áudio local, iniciado somente após
+        gesto: toque/virada, dica, acerto, retorno, vitória e música discreta;
+        mudo, pausa, LOW e saída interrompem as fontes. A matriz E2E em 390,
+        412, 430 e 768 px confirmou seis arquivos autorizados, alternância de
+        Som/Mudo, toque de carta posterior e zero erro de navegador em
+        2026-08-28. O diretor agora alterna pequenas variações determinísticas
+        de velocidade por papel, reduz a música no acerto e em cerca de 5 dB
+        na vitória, antes de recuperá-la com suavidade; a avaliação auditiva
+        em Android continua pendente.
+  - [x] M6b inicial — aplicar quatro grupos de luz quente de L1 ancorados na
+        vila já aprovada: núcleo estático e halo lento, sem filtro, blur,
+        estroboscópio ou invasão da grade. LOW omite os grupos e movimento
+        reduzido preserva a leitura estática. A revisão de canvas em 390 e
+        768 px e a suíte integral em 390/412/430/768 passaram em 2026-08-28.
+  - [x] M6e inicial — comprovar o fallback combinado de economia de dados e
+        movimento reduzido: mantém cartas e comandos, mas não solicita neve
+        nem música contínua. A prova E2E passou em 390, 412, 430 e 768 px em
+        2026-08-28; o screenshot de 390 foi revisado visualmente.
+  - [x] M6d — concluir com “Álbum completo!” no canvas e só então
+        abrir, após 700 ms (imediato em movimento reduzido), a folha de
+        “Brincar de novo”, “Ver outros jogos” e “Compartilhar”. A cena não
+        reinicia a rodada terminal; o shell cria outra identidade no replay.
+        O cenário local de vitória e o E2E provaram álbum → ações → replay →
+        saída em 390, 412, 430 e 768 px em 2026-08-28. Com seis fotos únicas,
+        “Mais cartas” cria uma rodada STANDARD independente, com seis pares e
+        doze cartas; depois dela não oferece dificuldade adicional.
 - [ ] **M7 — Evidências mobile, Android e handoff**
 
 ## Resultado de produto
@@ -79,6 +137,48 @@ seletor de dificuldade.
 Duração alvo inicial: 120 s sem pressão. Ela, a faixa etária, a política de
 replay e o uso de STANDARD são hipóteses de produto para validar com crianças,
 não fatos estabelecidos por volume de sessão.
+
+### Decisão de layout mobile e comandos — 2026-08-28
+
+A revisão privada em 390 × 844 confirmou que a grade atual de duas colunas
+deixa uma faixa lateral grande sem função e empurra a celebração para baixo.
+Para a primeira implementação profissional, a grade deixa de depender do
+modelo do aparelho e passa a ser calculada pela área útil real do canvas:
+
+| Área útil / modo                                  | EASY — 8 cartas                      | STANDARD — 12 cartas                                                                      | Intenção                                                                                |
+| ------------------------------------------------- | ------------------------------------ | ----------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
+| Retrato com carta de ao menos 88 CSS px           | 3 + 3 + 2, última linha centralizada | 3 × 4                                                                                     | Aproveitar a largura de iPhones e Samsungs atuais sem reduzir a foto a um alvo pequeno. |
+| Retrato estreito, abaixo desse mínimo             | 2 × 4                                | 2 × 6 somente em laboratório; não oferecer STANDARD se a leitura ficar menor que o mínimo | Preservar foto, contraste e alvo de toque em vez de forçar três colunas.                |
+| Tablet ou paisagem com quatro cartas confortáveis | 4 × 2                                | 4 × 3                                                                                     | Reduzir altura ociosa e manter grupos de cartas fáceis de percorrer.                    |
+
+O limiar é geométrico, não uma lista de aparelhos ou user agent. A carta pode
+ter 88 CSS px visuais em uma grade compacta, mas seu hit area continua com ao
+menos 52 CSS px; se o cálculo não comportar gap de 8 CSS px e esse alvo, o
+layout recua uma coluna. Para a última linha de EASY, as duas cartas ficam
+centradas em conjunto: nunca alinhadas à esquerda como se faltasse conteúdo.
+O Card Lab decide o aspecto final entre 0,78 e 0,82; o valor atual de 0,74 é
+apenas o protótipo e não é uma decisão visual aprovada.
+
+Os controles deixam de disputar a mesma linha do título. A composição fixa é:
+
+1. shell React: **Sair do jogo** à esquerda e **Compartilhar** à direita,
+   ambos com alvo de 52 CSS px e sem informação de progresso duplicada;
+2. HUD Phaser, primeira linha: título à esquerda e tempo à direita;
+3. HUD Phaser, segunda linha: progresso à esquerda e **Som**, **Dica** e
+   **Pausar** à direita, com texto simples, gap de 6–8 CSS px e área de toque
+   de 52 CSS px;
+4. instrução contextual abaixo do HUD, nunca como rodapé permanente sobre a
+   última linha de cartas;
+5. vitória: folha inferior acima da área segura, depois que o mosaico inteiro
+   permaneceu visível. Ela usa **Álbum completo!**, nunca “Foto montada!”.
+
+Na vitória, **Brincar de novo** ocupa a linha principal. Havendo seis fotos
+elegíveis, **Mais cartas** abre STANDARD/6 pares em uma nova identidade de
+rodada; **Ver outros jogos** retorna ao catálogo; **Compartilhar** chama o
+painel nativo ou a alternativa de cópia. Se STANDARD não estiver elegível, o
+botão não aparece e o layout não deixa espaço vazio. Compartilhar continua
+disponível no topo, mas a ação na vitória é repetida intencionalmente porque é
+o momento em que a família costuma querer enviar a lembrança.
 
 ### Gate de lifecycle para ações pós-vitória — resolvido
 
@@ -212,12 +312,19 @@ O board usa mesa/feltro verde-pinho, profundidade azul-noturno, cartões de
 veludo-framboesa, passe-partout marfim e ouro suave. A foto real é sempre o
 elemento mais detalhado.
 
-- Card aspect começa entre 0,78 e 0,82, com 8–12 CSS px de espaço entre
-  cartas, ajustado somente se todos os alvos principais continuarem em 52 CSS
-  px ou mais.
+- O planejador de grade aplica a decisão de 2026-08-28: três colunas no
+  retrato que comporte carta de 88 CSS px, fallback de duas no estreito e
+  quatro em tablet/paisagem. A última linha incompleta é centrada. O resize
+  reposiciona objetos existentes; não recria deck, textura ou CardView.
+- Card aspect começa entre 0,78 e 0,82, com gap de 8–12 CSS px, ajustado
+  somente se todos os alvos principais continuarem em 52 CSS px ou mais.
 - O alvo é a carta inteira. Ícones podem medir 40–44 px visuais, mas têm hit
   area de 52 px e 6–10 px de separação. Dica exibe estrela mais a palavra
   Dica; som e pausa têm rótulo acessível.
+- O HUD tem duas linhas estáveis: título/tempo e progresso/comandos. Som,
+  Dica e Pausar não invadem o título, não mudam de posição durante uma
+  resolução e ficam desabilitados visualmente — sem desaparecer — quando a
+  ação não pode ser aceita.
 - React mantém rota, sair e semântica não espacial. Phaser possui somente
   progresso, dica, som, pausa, board e apresentação. Nenhuma informação é
   duplicada em DOM e canvas.
@@ -241,15 +348,15 @@ centro fotográfico. Sem emitter novo por acerto, filtro, bloom ou blur.
 SoundCuePolicy local declara papéis, volumes iniciais, cooldown, polyphony,
 variações e limpeza antes de preparar arquivos:
 
-| Papel         | Regra inicial                                                                                                              |
-| ------------- | -------------------------------------------------------------------------------------------------------------------------- |
-| ui.button     | Único som para botões; cooldown de 60 ms, máximo uma instância.                                                            |
-| card.flip     | Único som principal do toque na carta; papel fotográfico/swish de 80–140 ms, máximo duas instâncias por cartas diferentes. |
-| card.return   | Um único papel suave para o fechamento duplo; máximo uma instância.                                                        |
-| pair.match    | Sino quente e celesta de 300–450 ms; máximo uma instância; 2–3 variações escolhidas por sequência determinística do run.   |
-| hint.magic    | Duas notas curtas e brilho; máximo uma instância.                                                                          |
-| christmas.win | Sinos, arpejo de celesta e acorde quente de 1–1,5 s; máximo uma instância.                                                 |
-| music.memory  | Música discreta, 0,10–0,16 inicial. No último match, duck de 4–6 dB antes da vitória e retorno suave depois.               |
+| Papel         | Regra inicial                                                                                                                                                                |
+| ------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| ui.button     | Toque de madeira/guizo curto de 45–70 ms; cooldown de 60 ms, máximo uma instância. Usa-se em Sair, Compartilhar, Som, Dica, Pausar e ações da vitória.                       |
+| card.flip     | Papel fotográfico/feltro de 80–140 ms; é o único som principal da carta. Máximo duas instâncias por cartas diferentes e nenhuma espera pelo áudio.                           |
+| card.return   | Um único retorno macio de 90–130 ms quando o par não combina; máximo uma instância, sem buzzer, tom triste ou haptic.                                                        |
+| pair.match    | Sino quente e celesta de 300–450 ms; máximo uma instância; 2–3 variações escolhidas por sequência determinística do run. A moldura e as faíscas começam no mesmo momento.    |
+| hint.magic    | Duas notas breves acompanhando os halos sequenciais; máximo uma instância. A dica mostra e fecha, nunca joga pela criança.                                                   |
+| christmas.win | Sinos, arpejo de celesta e acorde quente de 1–1,5 s; máximo uma instância, com celebração finita que não cobre o mosaico.                                                    |
+| music.memory  | Música discreta, 0,10–0,16 inicial. Começa 300–500 ms após a primeira carta aceita; pausa faz fade curto, último match reduz 4–6 dB antes da vitória e retorno suave depois. |
 
 Flip e retorno não usam haptic. Match usa impacto leve/médio e vitória um
 impacto curto, sempre opcional. Os volumes propostos são tuning inicial a
@@ -338,9 +445,21 @@ nenhuma navegação quebra o lifecycle do GameRun.
 ### M2 — protótipo e Card Lab
 
 - Criar mockups seguros de capa, board EASY/STANDARD, pausa, match, mismatch e
-  vitória em 390 × 844, 412 × 915, 430 × 932, 768 × 1024 e paisagem inicial.
+  vitória em 360 × 800, 375 × 812, 390 × 844, 393 × 852, 412 × 915,
+  430 × 932, 768 × 1024 e paisagem inicial. As telas 360–430 validam a
+  grade de três colunas; não usar uma lista de aparelhos como regra de layout.
 - Criar Card Lab isolado com press, flip, match, return, hint, LOW e reduzido;
-  ajustar timings, aspecto, gaps, HUD e contraste antes da Scene.
+  ajustar timings, aspecto, gaps, HUD e contraste antes da Scene. O Card Lab
+  compara explicitamente 2 × 4 e 3 + 3 + 2, registra a largura resultante,
+  centraliza a última linha e reprova qualquer alvo menor que 52 CSS px.
+- Definir o cartão como objeto físico: verso de veludo-framboesa com selo
+  natalino, frente com passe-partout marfim, moldura dourada, sombra curta e
+  área de foto `contain`. Faixas vazias de retrato/paisagem recebem papel
+  natalino discreto, nunca stretch, crop automático ou branco sem tratamento.
+- Prototipar o HUD de duas linhas e a folha de vitória. Fixar uma única ordem
+  de comando — Sair/Compartilhar no shell; Som/Dica/Pausar no board; Jogar de
+  novo/Mais cartas/Outros jogos/Compartilhar ao concluir — e validar que cada
+  rótulo cabe em 360 CSS px sem truncar.
 - Revisar pela rubrica GAME_EXPERIENCE_REVIEW: benefício, screenshot,
   viewport/perfil, custo, alternativa e severidade. Corrigir P1/P2 antes de
   novos assets.
@@ -368,8 +487,14 @@ aleatoriedade global ou relógio real.
 - Carregar somente 4/6 fontes selecionadas uma vez. Provar por adapter e rede
   que não são solicitadas 8/12 URLs, duplicadas ou catálogo inteiro.
 - Criar assets manifestados e com proveniência: fundo/board, verso, molduras,
-  ícones, três pools de VFX e política de áudio. Nenhuma foto de sessão entra
-  no manifesto.
+  ícones, três pools de VFX e os sete papéis de áudio desta especificação.
+  Cada áudio declara duração, bytes, cue, volume inicial, cooldown, polyphony
+  e omissão em LOW/reduzido; nenhuma foto de sessão entra no manifesto.
+- Preparar somente materiais com função clara: mesa/álbum, papel do
+  passe-partout, verso, selo, moldura, halo da dica, faísca de match e neve de
+  vitória. Criar três variações visuais do verso apenas se o orçamento medido
+  permitir; não usar shader, Lighting, blur por frame ou asset decorativo sem
+  papel no jogo.
 - Exercitar uma repetição de foto essencial e GAME_ASSET_FAILED seguro por
   fixture HTTP.
 
@@ -381,6 +506,14 @@ o jogo passa asset:validate e não inicia de modo parcial.
 - Criar createMemoryGame, CardView, presenters de board/HUD/pausa/vitória,
   scheduler de resolução e SceneScope. Criar 8/12 cards uma vez; resize apenas
   reflow.
+- Substituir o planejador provisório por `MemoryLayoutPlanner`: ele recebe
+  largura, altura, safe areas, número de cartas e dificuldade; escolhe 2, 3 ou
+  4 colunas pela geometria, centraliza a última linha e devolve posições tanto
+  para a Scene quanto para os helpers E2E. Nenhuma coordenada de teste pode
+  continuar presumindo duas colunas.
+- Implementar a barra de comandos em duas linhas e o controle Som com estado
+  ligado/desligado. Cada botão tem retorno visual no mesmo ou próximo frame,
+  rótulo em português e nunca desloca o tabuleiro quando muda de estado.
 - Implementar entrada curta, arbiter, flip, match, return, hint, pause,
   visibility, mute e saída a partir dos resultados puros do domínio.
 - Instrumentar marcações de input e início de apresentação para revisão de
@@ -393,14 +526,19 @@ deixa meia carta ou deixa trabalho após destroy.
 
 ### M6 — acabamento em fatias verificáveis
 
-- **M6a — Card feel:** aplicar coreografia aprovada e estados persistentes de
-  match.
+- **M6a — Card feel e grade:** aplicar a coreografia aprovada, os estados
+  persistentes de match, a grade 3 + 3 + 2 em retrato e a centralização da
+  linha final. Conferir que a economia de altura abre espaço para a vitória,
+  sem reduzir a fotografia.
 - **M6b — Board lighting:** material, fairy lights simples, depth de neve e
   limites sem Lighting/filter/blur.
 - **M6c — Sound feel:** fontes aprovadas, variações, volumes, duck, polyphony,
-  cooldown, unlock e teardown.
-- **M6d — Vitória e saída:** mosaico primeiro, mensagem/efeito finito depois e
-  ações pós-vitória somente se o gate de lifecycle tiver sido fechado.
+  cooldown, unlock, mudo persistente no run e teardown. O primeiro flip é a
+  única ação que pode iniciar música; tocar Som apenas alterna o estado e não
+  recria áudio ou muda a partida.
+- **M6d — Vitória e saída:** mosaico primeiro, **Álbum completo!** e efeito
+  finito depois; Jogar de novo, Mais cartas quando elegível, Outros jogos e
+  Compartilhar chamam o shell sem reinicializar a Scene terminal.
 - **M6e — LOW/reduzido:** validar cada fallback explicitamente, sem reduzir a
   capacidade de jogar.
 
@@ -423,22 +561,27 @@ continua no plano principal.
 
 ## Matriz obrigatória de browser e stress
 
-| Cenário                     | O que deve ser provado                                                                              |
-| --------------------------- | --------------------------------------------------------------------------------------------------- |
-| EASY em sessão 4            | 8 cartas, âncora, 4 pares e conclusão.                                                              |
-| STANDARD em sessão 12 mista | 12 cartas, 6 pares, orientação mista e contain.                                                     |
-| Sessão 120                  | Apenas o subset/variante decidido é carregado; nenhuma duplicação ou catálogo completo.             |
-| A/B/C/D em 100–150 ms       | Só A+B entra no turno; C/D não viram, não contam e não tocam SFX.                                   |
-| Pause no flip/mismatch      | Carta estabiliza, capa esconde fotos, hold congela e retorna corretamente.                          |
-| Exit no flip/timer          | Tween/timer/som encerrados, canvas zero, nenhum callback posterior.                                 |
-| Resize no flip              | cardId, slot, state e variante permanecem; objetos não são recriados.                               |
-| Aba oculta no mismatch      | Clock ativo e scheduler de apresentação permanecem coerentes.                                       |
-| Hint durante resolving      | Ignorada; hint nunca resolve par.                                                                   |
-| Match/mismatch              | Estado resolvido persistente; retorno gentil de 750 ms; progresso correto.                          |
-| LOW e reduzido              | LOW com flip funcional e sem ambiente caro; reduzido sem flip/cascata/loop, mas concluível.         |
-| Áudio                       | Primeiro flip desbloqueia; mute/unmute não duplica música; cooldown/polyphony e teardown funcionam. |
-| Asset failure               | Retry limitado e erro seguro, sem deck parcial.                                                     |
-| Lifecycle                   | Cinco entradas/saídas: um canvas durante o jogo, zero depois; zero áudio/recurso da Scene.          |
+| Cenário                     | O que deve ser provado                                                                                                                                                                                              |
+| --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| EASY em sessão 4            | 8 cartas, âncora, 4 pares e conclusão.                                                                                                                                                                              |
+| STANDARD em sessão 12 mista | 12 cartas, 6 pares, orientação mista e contain.                                                                                                                                                                     |
+| Grade compacta em 360–430   | EASY escolhe 3 + 3 + 2 quando cada carta tem 88 CSS px ou mais; a última linha fica centralizada, nenhuma carta perde hit area de 52 CSS px e a folha de vitória não cobre o mosaico.                               |
+| Retrato estreito / tablet   | O planner recua para 2 colunas quando a geometria não sustenta a grade compacta e usa 4 colunas quando tablet/paisagem comportar cartas confortáveis; nunca depende do nome do aparelho.                            |
+| HUD e comandos              | Sair/Compartilhar não competem com título; título/tempo e progresso/Som/Dica/Pausar não se sobrepõem em 360, 390, 412, 430 e 768. Todos os controles têm retorno de toque, área de 52 CSS px e rótulo em português. |
+| Sessão 120                  | Apenas o subset/variante decidido é carregado; nenhuma duplicação ou catálogo completo.                                                                                                                             |
+| A/B/C/D em 100–150 ms       | Só A+B entra no turno; C/D não viram, não contam e não tocam SFX.                                                                                                                                                   |
+| Pause no flip/mismatch      | Carta estabiliza, capa esconde fotos, hold congela e retorna corretamente.                                                                                                                                          |
+| Exit no flip/timer          | Tween/timer/som encerrados, canvas zero, nenhum callback posterior.                                                                                                                                                 |
+| Resize no flip              | cardId, slot, state e variante permanecem; objetos não são recriados.                                                                                                                                               |
+| Aba oculta no mismatch      | Clock ativo e scheduler de apresentação permanecem coerentes.                                                                                                                                                       |
+| Hint durante resolving      | Ignorada; hint nunca resolve par.                                                                                                                                                                                   |
+| Match/mismatch              | Estado resolvido persistente; retorno gentil de 750 ms; progresso correto.                                                                                                                                          |
+| LOW e reduzido              | LOW com flip funcional e sem ambiente caro; reduzido sem flip/cascata/loop, mas concluível.                                                                                                                         |
+| Áudio                       | Primeiro flip desbloqueia; mute/unmute não duplica música; cooldown/polyphony e teardown funcionam.                                                                                                                 |
+| Áudio por gesto             | Botões, flip, retorno, acerto, dica e vitória emitem no máximo um cue principal; cancelar o gesto, pausar ou sair não deixa áudio, timer ou callback posterior.                                                     |
+| Vitória e continuidade      | “Álbum completo!” só aparece depois do mosaico; Brincar de novo cria novo GameRun, Mais cartas só aparece com seis fotos elegíveis, Outros jogos preserva a foto-âncora e Compartilhar usa o gesto explícito.       |
+| Asset failure               | Retry limitado e erro seguro, sem deck parcial.                                                                                                                                                                     |
+| Lifecycle                   | Cinco entradas/saídas: um canvas durante o jogo, zero depois; zero áudio/recurso da Scene.                                                                                                                          |
 
 ## Validação e definição de pronto
 

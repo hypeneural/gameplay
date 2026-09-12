@@ -1,4 +1,5 @@
 .reference/
+.local-private-media/
 node_modules/
 dist/
 **/dist/

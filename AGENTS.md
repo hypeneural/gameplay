@@ -38,4 +38,4 @@ Build a safe, local-VPS, mobile-first factory for personalized photo minigames. 
 
 ## Work style
 
-Keep this file a map, not a changelog. Put domain knowledge beside the owner, decisions in docs, and a finished plan in `docs/exec-plans/completed/`. Do not implement Puzzle, Memory or Tic-Tac-Toe from their specs until their phase is explicitly selected.
+Keep this file a map, not a changelog. Put domain knowledge beside the owner, decisions in docs, and a finished plan in `docs/exec-plans/completed/`. Current focus is consolidation, mobile quality hardening and release gates across the active game catalog.

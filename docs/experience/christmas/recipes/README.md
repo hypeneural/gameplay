@@ -48,6 +48,7 @@ Cada receita contém os campos abaixo.
 | [Troca correta](TROCA-CORRETA.md)           | Celebra uma peça que chegou ao lugar certo.  |
 | [Troca sem solução](TROCA-SEM-SOLUCAO.md)   | Resposta gentil a uma troca que não avançou. |
 | [Vitória](VITORIA.md)                       | Foto recomposta e encerramento festivo.      |
+| [Cartão de Memórias](CARTAO-MEMORIAS.md)    | Material físico do baralho de fotos.         |
 
 ## Verificação
 
