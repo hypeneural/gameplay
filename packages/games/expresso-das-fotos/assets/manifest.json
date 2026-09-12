@@ -1,0 +1,693 @@
+{
+  "version": 2,
+  "gameId": "expresso-das-fotos",
+  "budget": { "publicBytesMax": 1750000, "runtimeBytesMax": 1000000, "visualBytesMax": 240000 },
+  "assets": [
+    {
+      "id": "night-station-platform-diorama-v2",
+      "kind": "background",
+      "format": "webp",
+      "source": {
+        "provider": "openai-imagegen",
+        "origin": "project-created",
+        "identifier": "expresso-a1-night-station-platform-v2",
+        "license": "project-owned",
+        "reviewedOn": "2026-08-28",
+        "reviewedBy": "codex-expresso-scenery-review",
+        "record": "ASSET_PROVENANCE.md#night-station-platform-diorama-v2"
+      },
+      "art": {
+        "family": "expresso-diorama-a1",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Cenário L0 e L1 sem pessoas, texto ou foto; a plataforma e a vila dão profundidade ao centro, preservando contraste para fotos, trilhos e HUD."
+      },
+      "processing": {
+        "recipe": "openai-imagegen-gpt-image-2-expresso-a1-night-station-platform-v2-webp-q80",
+        "tools": ["openai-imagegen", "sharp-0.35.3"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/expresso-das-fotos/backgrounds/estacao-noturna-plataforma-v2.webp",
+        "publicPath": "/assets/expresso-das-fotos/backgrounds/estacao-noturna-plataforma-v2.webp",
+        "bytes": 108464,
+        "sha256": "2c30d0f3c6e353d9d4114f7869e89b9e51d7c3708cb284899652423b4f7384fb",
+        "dimensions": { "width": 1024, "height": 1536 },
+        "textureKey": "expresso-background-night-station",
+        "quality": { "low": "keep", "reducedMotion": "keep" }
+      }
+    },
+    {
+      "id": "premium-christmas-locomotive",
+      "kind": "ui",
+      "format": "webp",
+      "source": {
+        "provider": "openai-imagegen",
+        "origin": "project-created",
+        "identifier": "expresso-premium-locomotive-v1",
+        "license": "project-owned",
+        "reviewedOn": "2026-08-29",
+        "reviewedBy": "codex-expresso-v2-review",
+        "record": "ASSET_PROVENANCE.md#premium-christmas-locomotive-v1"
+      },
+      "art": {
+        "family": "expresso-diorama-a1",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Locomotiva sem personagem, texto ou cenário, com silhueta clara em 96 CSS px; celebra a rota sem competir com a foto da sessão."
+      },
+      "processing": {
+        "recipe": "openai-imagegen-expresso-premium-locomotive-v1-resize-768-webp-q86-alpha100",
+        "tools": ["openai-imagegen", "sharp-0.35.3"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/expresso-das-fotos/sprites/locomotiva-natal-premium-v1.webp",
+        "publicPath": "/assets/expresso-das-fotos/sprites/locomotiva-natal-premium-v1.webp",
+        "bytes": 123572,
+        "sha256": "67448dee498e46bff61e772a6e1ee33095192e51d85bf1ae24e91d8daffbe8b3",
+        "dimensions": { "width": 768, "height": 512 },
+        "textureKey": "expresso-premium-christmas-locomotive-v1",
+        "quality": { "low": "keep", "reducedMotion": "keep" }
+      }
+    },
+    {
+      "id": "tap-m4a",
+      "kind": "audio",
+      "format": "m4a",
+      "source": {
+        "provider": "owner-authorized-legacy-bundle",
+        "origin": "owner-authorized-legacy",
+        "identifier": "tap-m4a",
+        "license": "project-owned",
+        "reviewedOn": "2026-08-29",
+        "reviewedBy": "codex-expresso-v2-review",
+        "record": "ASSET_PROVENANCE.md#authorized-legacy-audio"
+      },
+      "art": {
+        "family": "expresso-diorama-a1",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Efeito curto do acervo interno autorizado; reforça uma ação sem competir com a fotografia."
+      },
+      "processing": {
+        "recipe": "owner-authorized-legacy-audio-copy-v1",
+        "tools": ["copy-item", "asset-factory"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/expresso-das-fotos/audio/tap.m4a",
+        "publicPath": "/assets/expresso-das-fotos/audio/tap.m4a",
+        "bytes": 2728,
+        "sha256": "036613c5af4bb6209450f9f4a2d4495a4d779b800d240ce3ff0b37312d7df3b8",
+        "durationSeconds": 0.121,
+        "cue": "tap",
+        "deliveryGroup": "tap",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        }
+      }
+    },
+    {
+      "id": "tap-mp3",
+      "kind": "audio",
+      "format": "mp3",
+      "source": {
+        "provider": "owner-authorized-legacy-bundle",
+        "origin": "owner-authorized-legacy",
+        "identifier": "tap-mp3",
+        "license": "project-owned",
+        "reviewedOn": "2026-08-29",
+        "reviewedBy": "codex-expresso-v2-review",
+        "record": "ASSET_PROVENANCE.md#authorized-legacy-audio"
+      },
+      "art": {
+        "family": "expresso-diorama-a1",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Efeito curto do acervo interno autorizado; reforça uma ação sem competir com a fotografia."
+      },
+      "processing": {
+        "recipe": "owner-authorized-legacy-audio-copy-v1",
+        "tools": ["copy-item", "asset-factory"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/expresso-das-fotos/audio/tap.mp3",
+        "publicPath": "/assets/expresso-das-fotos/audio/tap.mp3",
+        "bytes": 2732,
+        "sha256": "089f3952341041802974efce998528de07648a85dcd250ef51870dc6266638d2",
+        "durationSeconds": 0.115,
+        "cue": "tap",
+        "deliveryGroup": "tap",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        }
+      }
+    },
+    {
+      "id": "correct-m4a",
+      "kind": "audio",
+      "format": "m4a",
+      "source": {
+        "provider": "owner-authorized-legacy-bundle",
+        "origin": "owner-authorized-legacy",
+        "identifier": "correct-m4a",
+        "license": "project-owned",
+        "reviewedOn": "2026-08-29",
+        "reviewedBy": "codex-expresso-v2-review",
+        "record": "ASSET_PROVENANCE.md#authorized-legacy-audio"
+      },
+      "art": {
+        "family": "expresso-diorama-a1",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Efeito curto do acervo interno autorizado; reforça uma ação sem competir com a fotografia."
+      },
+      "processing": {
+        "recipe": "owner-authorized-legacy-audio-copy-v1",
+        "tools": ["copy-item", "asset-factory"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/expresso-das-fotos/audio/correct.m4a",
+        "publicPath": "/assets/expresso-das-fotos/audio/correct.m4a",
+        "bytes": 7839,
+        "sha256": "46f1a780e41ab3a7170994f91b77ea72acb57d8d1138562678546ac9e3fcf73e",
+        "durationSeconds": 0.477,
+        "cue": "correct",
+        "deliveryGroup": "correct",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        }
+      }
+    },
+    {
+      "id": "correct-mp3",
+      "kind": "audio",
+      "format": "mp3",
+      "source": {
+        "provider": "owner-authorized-legacy-bundle",
+        "origin": "owner-authorized-legacy",
+        "identifier": "correct-mp3",
+        "license": "project-owned",
+        "reviewedOn": "2026-08-29",
+        "reviewedBy": "codex-expresso-v2-review",
+        "record": "ASSET_PROVENANCE.md#authorized-legacy-audio"
+      },
+      "art": {
+        "family": "expresso-diorama-a1",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Efeito curto do acervo interno autorizado; reforça uma ação sem competir com a fotografia."
+      },
+      "processing": {
+        "recipe": "owner-authorized-legacy-audio-copy-v1",
+        "tools": ["copy-item", "asset-factory"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/expresso-das-fotos/audio/correct.mp3",
+        "publicPath": "/assets/expresso-das-fotos/audio/correct.mp3",
+        "bytes": 8492,
+        "sha256": "972097d741f546b23335895a6f39d49abe0970a100714cfdec112c3e437a9c42",
+        "durationSeconds": 0.47,
+        "cue": "correct",
+        "deliveryGroup": "correct",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        }
+      }
+    },
+    {
+      "id": "wrong-m4a",
+      "kind": "audio",
+      "format": "m4a",
+      "source": {
+        "provider": "owner-authorized-legacy-bundle",
+        "origin": "owner-authorized-legacy",
+        "identifier": "wrong-m4a",
+        "license": "project-owned",
+        "reviewedOn": "2026-08-29",
+        "reviewedBy": "codex-expresso-v2-review",
+        "record": "ASSET_PROVENANCE.md#authorized-legacy-audio"
+      },
+      "art": {
+        "family": "expresso-diorama-a1",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Efeito curto do acervo interno autorizado; reforça uma ação sem competir com a fotografia."
+      },
+      "processing": {
+        "recipe": "owner-authorized-legacy-audio-copy-v1",
+        "tools": ["copy-item", "asset-factory"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/expresso-das-fotos/audio/wrong.m4a",
+        "publicPath": "/assets/expresso-das-fotos/audio/wrong.m4a",
+        "bytes": 4225,
+        "sha256": "4ad7d128763908fa2a56fc4c796a7e5c079845e98fd423311717b21adf599d82",
+        "durationSeconds": 0.211,
+        "cue": "wrong",
+        "deliveryGroup": "wrong",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        }
+      }
+    },
+    {
+      "id": "wrong-mp3",
+      "kind": "audio",
+      "format": "mp3",
+      "source": {
+        "provider": "owner-authorized-legacy-bundle",
+        "origin": "owner-authorized-legacy",
+        "identifier": "wrong-mp3",
+        "license": "project-owned",
+        "reviewedOn": "2026-08-29",
+        "reviewedBy": "codex-expresso-v2-review",
+        "record": "ASSET_PROVENANCE.md#authorized-legacy-audio"
+      },
+      "art": {
+        "family": "expresso-diorama-a1",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Efeito curto do acervo interno autorizado; reforça uma ação sem competir com a fotografia."
+      },
+      "processing": {
+        "recipe": "owner-authorized-legacy-audio-copy-v1",
+        "tools": ["copy-item", "asset-factory"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/expresso-das-fotos/audio/wrong.mp3",
+        "publicPath": "/assets/expresso-das-fotos/audio/wrong.mp3",
+        "bytes": 4268,
+        "sha256": "f0586bf9df1f1d6dacf362c58520bdfde172a6198f640e2acb90dcf23eeb11cc",
+        "durationSeconds": 0.205,
+        "cue": "wrong",
+        "deliveryGroup": "wrong",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        }
+      }
+    },
+    {
+      "id": "celebrate-m4a",
+      "kind": "audio",
+      "format": "m4a",
+      "source": {
+        "provider": "owner-authorized-legacy-bundle",
+        "origin": "owner-authorized-legacy",
+        "identifier": "celebrate-m4a",
+        "license": "project-owned",
+        "reviewedOn": "2026-08-29",
+        "reviewedBy": "codex-expresso-v2-review",
+        "record": "ASSET_PROVENANCE.md#authorized-legacy-audio"
+      },
+      "art": {
+        "family": "expresso-diorama-a1",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Efeito curto do acervo interno autorizado; reforça uma ação sem competir com a fotografia."
+      },
+      "processing": {
+        "recipe": "owner-authorized-legacy-audio-copy-v1",
+        "tools": ["copy-item", "asset-factory"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/expresso-das-fotos/audio/celebrate.m4a",
+        "publicPath": "/assets/expresso-das-fotos/audio/celebrate.m4a",
+        "bytes": 54781,
+        "sha256": "0ba50705d544dbd4fddbee1f8279240f2eb03425c536658cf156b60d3f382f43",
+        "durationSeconds": 3.776,
+        "cue": "celebrate",
+        "deliveryGroup": "celebrate",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        }
+      }
+    },
+    {
+      "id": "celebrate-mp3",
+      "kind": "audio",
+      "format": "mp3",
+      "source": {
+        "provider": "owner-authorized-legacy-bundle",
+        "origin": "owner-authorized-legacy",
+        "identifier": "celebrate-mp3",
+        "license": "project-owned",
+        "reviewedOn": "2026-08-29",
+        "reviewedBy": "codex-expresso-v2-review",
+        "record": "ASSET_PROVENANCE.md#authorized-legacy-audio"
+      },
+      "art": {
+        "family": "expresso-diorama-a1",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Efeito curto do acervo interno autorizado; reforça uma ação sem competir com a fotografia."
+      },
+      "processing": {
+        "recipe": "owner-authorized-legacy-audio-copy-v1",
+        "tools": ["copy-item", "asset-factory"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/expresso-das-fotos/audio/celebrate.mp3",
+        "publicPath": "/assets/expresso-das-fotos/audio/celebrate.mp3",
+        "bytes": 61484,
+        "sha256": "517c84cfdb393471e71867a2d020fa918767a58858ee12d33a82f50d693df015",
+        "durationSeconds": 3.769,
+        "cue": "celebrate",
+        "deliveryGroup": "celebrate",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        }
+      }
+    },
+    {
+      "id": "mixkit-steam-release-m4a",
+      "kind": "audio",
+      "format": "m4a",
+      "source": {
+        "provider": "mixkit",
+        "origin": "third-party-licensed",
+        "identifier": "mixkit-sfx-1630-steam-train-passing",
+        "referenceUrl": "https://mixkit.co/free-sound-effects/download/1630/?context=item+grid",
+        "license": "mixkit-sound-effects-free-license",
+        "licenseUrl": "https://mixkit.co/license/",
+        "reviewedOn": "2026-08-29",
+        "reviewedBy": "codex-expresso-sensory-review",
+        "record": "ASSET_PROVENANCE.md#mixkit-train-sound-effects-2026-08-29"
+      },
+      "art": {
+        "family": "expresso-diorama-a1",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Vapor curto de locomotiva para iniciar a viagem; não tem voz nem se sobrepõe a fotos ou instruções."
+      },
+      "processing": {
+        "recipe": "mixkit-1630-trim-0.15-0.70-fade-loudnorm-i-24-tp-2-aac-80k",
+        "tools": ["mixkit", "ffmpeg-8.0.1", "asset-factory"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/expresso-das-fotos/audio/steam-release.m4a",
+        "publicPath": "/assets/expresso-das-fotos/audio/steam-release.m4a",
+        "bytes": 6542,
+        "sha256": "76e5cf6927b5a0a123c51355b8ed722b468544d64fccb9d9fa7095343bbda1e1",
+        "durationSeconds": 0.55,
+        "cue": "steam-release",
+        "deliveryGroup": "steam-release",
+        "quality": { "low": "keep", "reducedMotion": "keep" }
+      }
+    },
+    {
+      "id": "mixkit-steam-release-mp3",
+      "kind": "audio",
+      "format": "mp3",
+      "source": {
+        "provider": "mixkit",
+        "origin": "third-party-licensed",
+        "identifier": "mixkit-sfx-1630-steam-train-passing",
+        "referenceUrl": "https://mixkit.co/free-sound-effects/download/1630/?context=item+grid",
+        "license": "mixkit-sound-effects-free-license",
+        "licenseUrl": "https://mixkit.co/license/",
+        "reviewedOn": "2026-08-29",
+        "reviewedBy": "codex-expresso-sensory-review",
+        "record": "ASSET_PROVENANCE.md#mixkit-train-sound-effects-2026-08-29"
+      },
+      "art": {
+        "family": "expresso-diorama-a1",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Alternativa MP3 do vapor curto de locomotiva, com a mesma função visual."
+      },
+      "processing": {
+        "recipe": "mixkit-1630-trim-0.15-0.70-fade-loudnorm-i-24-tp-2-mp3-96k",
+        "tools": ["mixkit", "ffmpeg-8.0.1", "asset-factory"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/expresso-das-fotos/audio/steam-release.mp3",
+        "publicPath": "/assets/expresso-das-fotos/audio/steam-release.mp3",
+        "bytes": 7567,
+        "sha256": "93b7fef3079f97a0ae2b72944c9de45ffde541d72e7e28706aac0b66a5d0c88d",
+        "durationSeconds": 0.55,
+        "cue": "steam-release",
+        "deliveryGroup": "steam-release",
+        "quality": { "low": "keep", "reducedMotion": "keep" }
+      }
+    },
+    {
+      "id": "mixkit-toy-whistle-m4a",
+      "kind": "audio",
+      "format": "m4a",
+      "source": {
+        "provider": "mixkit",
+        "origin": "third-party-licensed",
+        "identifier": "mixkit-sfx-1631-toy-train-whistle",
+        "referenceUrl": "https://mixkit.co/free-sound-effects/download/1631/?context=item+grid",
+        "license": "mixkit-sound-effects-free-license",
+        "licenseUrl": "https://mixkit.co/license/",
+        "reviewedOn": "2026-08-29",
+        "reviewedBy": "codex-expresso-sensory-review",
+        "record": "ASSET_PROVENANCE.md#mixkit-train-sound-effects-2026-08-29"
+      },
+      "art": {
+        "family": "expresso-diorama-a1",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Apito de trem de brinquedo curto, escolhido como partida acolhedora em volume baixo."
+      },
+      "processing": {
+        "recipe": "mixkit-1631-trim-0.15-1.20-fade-loudnorm-i-24-tp-2-aac-80k",
+        "tools": ["mixkit", "ffmpeg-8.0.1", "asset-factory"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/expresso-das-fotos/audio/toy-whistle.m4a",
+        "publicPath": "/assets/expresso-das-fotos/audio/toy-whistle.m4a",
+        "bytes": 11434,
+        "sha256": "7b1e52f55a6c4c953b529e8a0b4a0c6c44cc253975b37172bf5319a5097e742c",
+        "durationSeconds": 1.05,
+        "cue": "toy-whistle",
+        "deliveryGroup": "toy-whistle",
+        "quality": { "low": "keep", "reducedMotion": "keep" }
+      }
+    },
+    {
+      "id": "mixkit-toy-whistle-mp3",
+      "kind": "audio",
+      "format": "mp3",
+      "source": {
+        "provider": "mixkit",
+        "origin": "third-party-licensed",
+        "identifier": "mixkit-sfx-1631-toy-train-whistle",
+        "referenceUrl": "https://mixkit.co/free-sound-effects/download/1631/?context=item+grid",
+        "license": "mixkit-sound-effects-free-license",
+        "licenseUrl": "https://mixkit.co/license/",
+        "reviewedOn": "2026-08-29",
+        "reviewedBy": "codex-expresso-sensory-review",
+        "record": "ASSET_PROVENANCE.md#mixkit-train-sound-effects-2026-08-29"
+      },
+      "art": {
+        "family": "expresso-diorama-a1",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Alternativa MP3 do apito de trem de brinquedo curto."
+      },
+      "processing": {
+        "recipe": "mixkit-1631-trim-0.15-1.20-fade-loudnorm-i-24-tp-2-mp3-96k",
+        "tools": ["mixkit", "ffmpeg-8.0.1", "asset-factory"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/expresso-das-fotos/audio/toy-whistle.mp3",
+        "publicPath": "/assets/expresso-das-fotos/audio/toy-whistle.mp3",
+        "bytes": 13523,
+        "sha256": "10a2f3139bb34553fa669f176a19fae5fbb1ca2267436c90a15553485bf1d8a1",
+        "durationSeconds": 1.05,
+        "cue": "toy-whistle",
+        "deliveryGroup": "toy-whistle",
+        "quality": { "low": "keep", "reducedMotion": "keep" }
+      }
+    },
+    {
+      "id": "mixkit-rail-roll-m4a",
+      "kind": "audio",
+      "format": "m4a",
+      "source": {
+        "provider": "mixkit",
+        "origin": "third-party-licensed",
+        "identifier": "mixkit-sfx-1630-steam-train-passing",
+        "referenceUrl": "https://mixkit.co/free-sound-effects/download/1630/?context=item+grid",
+        "license": "mixkit-sound-effects-free-license",
+        "licenseUrl": "https://mixkit.co/license/",
+        "reviewedOn": "2026-08-29",
+        "reviewedBy": "codex-expresso-sensory-review",
+        "record": "ASSET_PROVENANCE.md#mixkit-train-sound-effects-2026-08-29"
+      },
+      "art": {
+        "family": "expresso-diorama-a1",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Trecho leve de rodas e vapor durante o progresso do trem; o runtime o pausa e destrói fora da viagem."
+      },
+      "processing": {
+        "recipe": "mixkit-1630-trim-1.10-2.40-fade-loopbed-loudnorm-i-24-tp-2-aac-80k",
+        "tools": ["mixkit", "ffmpeg-8.0.1", "asset-factory"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/expresso-das-fotos/audio/rail-roll.m4a",
+        "publicPath": "/assets/expresso-das-fotos/audio/rail-roll.m4a",
+        "bytes": 14149,
+        "sha256": "e3facf5889a7b048e8fd619afad906fb4b644dd3d73ad4a156e9832600044fb2",
+        "durationSeconds": 1.3,
+        "cue": "rail-roll",
+        "deliveryGroup": "rail-roll",
+        "quality": { "low": "keep", "reducedMotion": "keep" }
+      }
+    },
+    {
+      "id": "mixkit-rail-roll-mp3",
+      "kind": "audio",
+      "format": "mp3",
+      "source": {
+        "provider": "mixkit",
+        "origin": "third-party-licensed",
+        "identifier": "mixkit-sfx-1630-steam-train-passing",
+        "referenceUrl": "https://mixkit.co/free-sound-effects/download/1630/?context=item+grid",
+        "license": "mixkit-sound-effects-free-license",
+        "licenseUrl": "https://mixkit.co/license/",
+        "reviewedOn": "2026-08-29",
+        "reviewedBy": "codex-expresso-sensory-review",
+        "record": "ASSET_PROVENANCE.md#mixkit-train-sound-effects-2026-08-29"
+      },
+      "art": {
+        "family": "expresso-diorama-a1",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Alternativa MP3 do trecho de rodas e vapor durante a viagem."
+      },
+      "processing": {
+        "recipe": "mixkit-1630-trim-1.10-2.40-fade-loopbed-loudnorm-i-24-tp-2-mp3-96k",
+        "tools": ["mixkit", "ffmpeg-8.0.1", "asset-factory"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/expresso-das-fotos/audio/rail-roll.mp3",
+        "publicPath": "/assets/expresso-das-fotos/audio/rail-roll.mp3",
+        "bytes": 16344,
+        "sha256": "f7c09e2e73d9d03b30105b7b5d056798f3a3e79a6166be8f1004df1c901a1a0c",
+        "durationSeconds": 1.3,
+        "cue": "rail-roll",
+        "deliveryGroup": "rail-roll",
+        "quality": { "low": "keep", "reducedMotion": "keep" }
+      }
+    },
+    {
+      "id": "mixkit-arrival-brake-m4a",
+      "kind": "audio",
+      "format": "m4a",
+      "source": {
+        "provider": "mixkit",
+        "origin": "third-party-licensed",
+        "identifier": "mixkit-sfx-1629-train-arrival-at-station",
+        "referenceUrl": "https://mixkit.co/free-sound-effects/download/1629/?context=item+grid",
+        "license": "mixkit-sound-effects-free-license",
+        "licenseUrl": "https://mixkit.co/license/",
+        "reviewedOn": "2026-08-29",
+        "reviewedBy": "codex-expresso-sensory-review",
+        "record": "ASSET_PROVENANCE.md#mixkit-train-sound-effects-2026-08-29"
+      },
+      "art": {
+        "family": "expresso-diorama-a1",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Trecho final macio da chegada, mantido separado do sino e do selo para não sobrepor efeitos."
+      },
+      "processing": {
+        "recipe": "mixkit-1629-trim-18.70-19.80-fade-loudnorm-i-24-tp-2-aac-80k",
+        "tools": ["mixkit", "ffmpeg-8.0.1", "asset-factory"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/expresso-das-fotos/audio/arrival-brake.m4a",
+        "publicPath": "/assets/expresso-das-fotos/audio/arrival-brake.m4a",
+        "bytes": 11999,
+        "sha256": "93329b0badba057521346fcd0e85f39d352f91f08567c11b86f19d1016321dc6",
+        "durationSeconds": 1.1,
+        "cue": "arrival-brake",
+        "deliveryGroup": "arrival-brake",
+        "quality": { "low": "keep", "reducedMotion": "keep" }
+      }
+    },
+    {
+      "id": "mixkit-arrival-brake-mp3",
+      "kind": "audio",
+      "format": "mp3",
+      "source": {
+        "provider": "mixkit",
+        "origin": "third-party-licensed",
+        "identifier": "mixkit-sfx-1629-train-arrival-at-station",
+        "referenceUrl": "https://mixkit.co/free-sound-effects/download/1629/?context=item+grid",
+        "license": "mixkit-sound-effects-free-license",
+        "licenseUrl": "https://mixkit.co/license/",
+        "reviewedOn": "2026-08-29",
+        "reviewedBy": "codex-expresso-sensory-review",
+        "record": "ASSET_PROVENANCE.md#mixkit-train-sound-effects-2026-08-29"
+      },
+      "art": {
+        "family": "expresso-diorama-a1",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Alternativa MP3 do trecho final macio da chegada."
+      },
+      "processing": {
+        "recipe": "mixkit-1629-trim-18.70-19.80-fade-loudnorm-i-24-tp-2-mp3-96k",
+        "tools": ["mixkit", "ffmpeg-8.0.1", "asset-factory"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/expresso-das-fotos/audio/arrival-brake.mp3",
+        "publicPath": "/assets/expresso-das-fotos/audio/arrival-brake.mp3",
+        "bytes": 14327,
+        "sha256": "786be935198a16210072e889771847ed6de2ee012ae8dfc5e5252acf20492d88",
+        "durationSeconds": 1.1,
+        "cue": "arrival-brake",
+        "deliveryGroup": "arrival-brake",
+        "quality": { "low": "keep", "reducedMotion": "keep" }
+      }
+    }
+  ]
+}

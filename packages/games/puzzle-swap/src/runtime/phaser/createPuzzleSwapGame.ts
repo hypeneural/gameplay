@@ -302,7 +302,10 @@ export function createPuzzleSwapGame(
             ? 'puzzle-hint-button-surface'
             : 'puzzle-audio-button-surface';
         const button = this.children.getByName(buttonName) as Phaser.GameObjects.Rectangle;
-        if (button) this.feedback?.tap(button);
+        if (button) {
+          this.feedback?.tap(button);
+          button.emit('pointerdown');
+        }
         this.pointerDownIndex = null;
         return;
       }
@@ -486,6 +489,8 @@ export function createPuzzleSwapGame(
       const audio = this.audio;
       if (!audio) return;
       const audioEnabled = audio.toggleAfterGesture();
+      context.run.soundChanged?.(audioEnabled);
+      if (audioEnabled) audio.playFeedbackSound('ui.tap');
       const icon = this.children.getByName('puzzle-audio-button') as Phaser.GameObjects.Image;
       const label = this.children.getByName('puzzle-audio-button-label') as Phaser.GameObjects.Text;
       icon.setTexture(
@@ -804,6 +809,7 @@ export function createPuzzleSwapGame(
       else context.run.resume();
       if (this.paused) this.audio?.pause();
       else this.audio?.resume();
+      this.audio?.playFeedbackSound('ui.tap');
     }
 
     private completePuzzle(): void {

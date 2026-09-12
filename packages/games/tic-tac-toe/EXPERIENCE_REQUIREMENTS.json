@@ -1,0 +1,38 @@
+{
+  "version": 1,
+  "gameId": "tic-tac-toe",
+  "fantasy": "mural-da-oficina-do-noel",
+  "playerVerbs": ["escolher", "tocar", "alinhar", "comemorar"],
+  "interactionStates": [
+    "parado",
+    "escolhendo-modo",
+    "escolhendo-foto",
+    "jogando",
+    "noel-pensando",
+    "encaixando",
+    "rodada-concluida",
+    "concluido"
+  ],
+  "targetSessionSeconds": 180,
+  "victory": {
+    "nextAction": "repetir-brincadeira",
+    "photoPriority": "alta"
+  },
+  "assetRoles": [
+    "foto-protagonista",
+    "cenario",
+    "moldura-da-foto",
+    "acao-principal",
+    "feedback-de-selecao",
+    "feedback-de-dica",
+    "feedback-de-acerto",
+    "feedback-de-vitoria",
+    "som-de-toque",
+    "som-de-acerto",
+    "som-de-vitoria"
+  ],
+  "quality": {
+    "low": "sem-efeitos-decorativos",
+    "reducedMotion": "sem-movimento-continuo"
+  }
+}

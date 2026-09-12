@@ -1,5 +1,5 @@
 import type { QualityTier, Random, SceneScope } from '@christmas-games/platform';
-import { christmasTheme } from '@christmas-games/theme';
+import { attachCrystalControl, christmasTheme } from '@christmas-games/theme';
 import type * as PhaserModule from 'phaser';
 import { puzzleVisualAssets } from '../visualAssets.js';
 
@@ -48,6 +48,58 @@ export function createPuzzleScenePresentation(
   const hud = createHud(scene, input.audioEnabled);
   const pauseOverlay = createPauseOverlay(scene);
   const victory = createVictoryOverlay(scene);
+  for (const name of ['puzzle-hint-button', 'puzzle-pause-button', 'puzzle-audio-button']) {
+    const target = scene.children.getByName(
+      `${name}-surface`,
+    ) as PhaserModule.GameObjects.Rectangle;
+    const label = scene.children.getByName(`${name}-label`) as PhaserModule.GameObjects.Text;
+    const glyph = scene.children.getByName(name) as PhaserModule.GameObjects.Image;
+    glyph.setVisible(false);
+    attachCrystalControl({
+      target,
+      label,
+      graphics: input.scope.resource(scene.add.graphics().setDepth(4.5)),
+      icon: () =>
+        name.includes('hint')
+          ? 'hint'
+          : name.includes('pause')
+            ? label.text === 'Jogar'
+              ? 'play'
+              : 'pause'
+            : label.text === 'Som'
+              ? 'sound'
+              : 'muted',
+      events: scene.events,
+      scope: input.scope,
+      reducedMotion: input.reducedMotion,
+    });
+  }
+  for (const overlay of [pauseOverlay, victory.winOverlay]) {
+    const panel = overlay.first as PhaserModule.GameObjects.Rectangle;
+    const skin = input.scope.resource(scene.add.graphics());
+    overlay.addAt(skin, 1);
+    attachCrystalControl({
+      target: panel,
+      graphics: skin,
+      events: scene.events,
+      scope: input.scope,
+      reducedMotion: input.reducedMotion,
+      panel: true,
+    });
+  }
+  const resume = pauseOverlay.getByName(
+    'puzzle-resume-surface',
+  ) as PhaserModule.GameObjects.Rectangle;
+  const resumeSkin = input.scope.resource(scene.add.graphics());
+  pauseOverlay.addAt(resumeSkin, pauseOverlay.getIndex(resume) + 1);
+  attachCrystalControl({
+    target: resume,
+    graphics: resumeSkin,
+    events: scene.events,
+    scope: input.scope,
+    reducedMotion: input.reducedMotion,
+    ruby: true,
+  });
   const snowSpawnZone = createAmbientSnow(input);
   return {
     boardFrame,
@@ -215,10 +267,10 @@ function createHudButton(
 
 function createPauseOverlay(scene: PhaserModule.Scene): PhaserModule.GameObjects.Container {
   const panel = scene.add
-    .rectangle(0, 0, 286, 156, puzzlePineDark, 0.98)
+    .rectangle(0, 0, 286, 214, puzzlePineDark, 0.98)
     .setStrokeStyle(2, puzzleGold, 0.95);
   const title = scene.add
-    .text(0, -36, 'PAUSA', {
+    .text(0, -62, 'PAUSA DE NATAL', {
       color: christmasTheme.color.gold,
       fontFamily: 'system-ui, sans-serif',
       fontSize: '22px',
@@ -226,15 +278,28 @@ function createPauseOverlay(scene: PhaserModule.Scene): PhaserModule.GameObjects
     })
     .setOrigin(0.5);
   const message = scene.add
-    .text(0, 8, 'O jogo espera por você.\nToque para continuar.', {
+    .text(0, -12, 'Sua lembrança espera por você.', {
       color: christmasTheme.color.snow,
       fontFamily: 'system-ui, sans-serif',
-      fontSize: '15px',
+      fontSize: '14px',
       align: 'center',
     })
     .setOrigin(0.5);
+  const resume = scene.add
+    .rectangle(0, 62, 178, 48)
+    .setName('puzzle-resume-surface')
+    .setInteractive({ useHandCursor: true });
+  const icon = scene.add.image(-55, 62, puzzleVisualAssets.play.key).setDisplaySize(23, 23);
+  const label = scene.add
+    .text(12, 62, 'Continuar', {
+      color: '#fff0c9',
+      fontFamily: 'system-ui',
+      fontSize: '16px',
+      fontStyle: 'bold',
+    })
+    .setOrigin(0.5);
   return scene.add
-    .container(0, 0, [panel, title, message])
+    .container(0, 0, [panel, title, message, resume, icon, label])
     .setDepth(8)
     .setVisible(false)
     .setName('puzzle-pause-overlay');

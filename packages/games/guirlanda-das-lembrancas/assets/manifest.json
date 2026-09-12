@@ -1,0 +1,433 @@
+{
+  "version": 2,
+  "gameId": "guirlanda-das-lembrancas",
+  "budget": { "publicBytesMax": 660000, "runtimeBytesMax": 580000, "visualBytesMax": 500000 },
+  "assets": [
+    {
+      "id": "gancho-latao-ambar-v2",
+      "kind": "ui",
+      "format": "webp",
+      "source": {
+        "provider": "openai-imagegen",
+        "origin": "project-created",
+        "identifier": "built-in-imagegen-2026-09-04-garland-brass-hook-v2",
+        "license": "project-owned",
+        "reviewedOn": "2026-09-04",
+        "reviewedBy": "codex-guirlanda-v2",
+        "record": "ASSET_PROVENANCE.md#gancho-latao-ambar-v2"
+      },
+      "art": {
+        "family": "guirlanda-diorama-a1",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Gancho material de latão patinado com alpha substitui ícone plano; 24x60 CSS px de arte conservam alvo invisível de 72px e não cobrem a foto."
+      },
+      "processing": {
+        "recipe": "imagegen-brass-hook-v2-alpha-trim-height192-webp-q84",
+        "tools": ["openai-imagegen", "sharp-0.35.3"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/guirlanda-das-lembrancas/props/gancho-latao-ambar-v2.webp",
+        "publicPath": "/assets/guirlanda-das-lembrancas/props/gancho-latao-ambar-v2.webp",
+        "bytes": 8262,
+        "sha256": "6cbe7ca6667a3dce5be0f88f79b5294384ff4a212fc445e8c42d5570a9a9034c",
+        "dimensions": { "width": 77, "height": 192 },
+        "textureKey": "guirlanda-gancho-latao-ambar-v2",
+        "quality": { "low": "keep", "reducedMotion": "keep" }
+      }
+    },
+    {
+      "id": "cabana-nevada-noturna-v1",
+      "kind": "background",
+      "format": "webp",
+      "source": {
+        "provider": "openai-imagegen",
+        "origin": "project-created",
+        "identifier": "built-in-imagegen-2026-09-04-guirlanda-background-v1",
+        "license": "project-owned",
+        "reviewedOn": "2026-09-04",
+        "reviewedBy": "codex-guirlanda-creative-slice",
+        "record": "ASSET_PROVENANCE.md#cabana-nevada-noturna-v1"
+      },
+      "art": {
+        "family": "guirlanda-diorama-a1",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Cenário L0/L1 sem pessoas, fotos ou texto; o centro escuro sustenta a guirlanda e a fotografia proporcional sem competir com elas."
+      },
+      "processing": {
+        "recipe": "built-in-imagegen-guirlanda-background-v1-resize-1024x1536-webp-q84",
+        "tools": ["openai-imagegen", "sharp-0.35.3"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/guirlanda-das-lembrancas/backgrounds/cabana-nevada-noturna-v1.webp",
+        "publicPath": "/assets/guirlanda-das-lembrancas/backgrounds/cabana-nevada-noturna-v1.webp",
+        "bytes": 92360,
+        "sha256": "a7da4f7ebf0e040f899be21a1d8510cc8cc22fb9d03bc9aecb26f1b8d01d03bf",
+        "dimensions": { "width": 1024, "height": 1536 },
+        "textureKey": "guirlanda-cabana-nevada-noturna-v1",
+        "quality": { "low": "keep", "reducedMotion": "keep" }
+      }
+    },
+    {
+      "id": "guirlanda-pinho-artesanal-v3",
+      "kind": "ui",
+      "format": "webp",
+      "source": {
+        "provider": "openai-imagegen",
+        "origin": "project-created",
+        "identifier": "built-in-imagegen-2026-09-04-guirlanda-wreath-v3",
+        "license": "project-owned",
+        "reviewedOn": "2026-09-04",
+        "reviewedBy": "codex-guirlanda-creative-slice",
+        "record": "ASSET_PROVENANCE.md#guirlanda-pinho-artesanal-v3"
+      },
+      "art": {
+        "family": "guirlanda-diorama-a1",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Pinho, laço e luzes sem pessoas, texto ou foto; o runtime recorta o aro circular e mantém o poço central livre para a lembrança."
+      },
+      "processing": {
+        "recipe": "built-in-imagegen-guirlanda-wreath-v3-chroma-key-1024-webp-q88",
+        "tools": ["openai-imagegen", "sharp-0.35.3"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/guirlanda-das-lembrancas/sprites/guirlanda-pinho-v3.webp",
+        "publicPath": "/assets/guirlanda-das-lembrancas/sprites/guirlanda-pinho-v3.webp",
+        "bytes": 243036,
+        "sha256": "517cfa8f55bc15820590d873250bb0607e13269d3f930bebe4cc21a89c726d81",
+        "dimensions": { "width": 1024, "height": 1024 },
+        "textureKey": "guirlanda-pinho-artesanal-v3",
+        "quality": { "low": "keep", "reducedMotion": "keep" }
+      }
+    },
+    {
+      "id": "moldura-retrato-madeira-latao-v1",
+      "kind": "ui",
+      "format": "webp",
+      "source": {
+        "provider": "openai-imagegen",
+        "origin": "project-created",
+        "identifier": "built-in-imagegen-2026-09-04-guirlanda-frame-portrait-v1",
+        "license": "project-owned",
+        "reviewedOn": "2026-09-04",
+        "reviewedBy": "codex-guirlanda-photo-frame-review",
+        "record": "ASSET_PROVENANCE.md#molduras-madeira-latao-v1"
+      },
+      "art": {
+        "family": "guirlanda-diorama-a1",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Moldura hero de madeira, latão e veludo com abertura alpha; a foto autorizada continua uma camada proporcional separada e sem efeito sobre pixels."
+      },
+      "processing": {
+        "recipe": "built-in-imagegen-guirlanda-frame-portrait-v1-trim-alpha-343x640-webp-q76",
+        "tools": ["openai-imagegen", "sharp-0.35.3"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/guirlanda-das-lembrancas/frames/moldura-retrato-madeira-latao-v1.webp",
+        "publicPath": "/assets/guirlanda-das-lembrancas/frames/moldura-retrato-madeira-latao-v1.webp",
+        "bytes": 40074,
+        "sha256": "634846ac29c7f6c549d47879b52276c740e0d36d9355197c20f13d83c97c53bd",
+        "dimensions": { "width": 343, "height": 640 },
+        "textureKey": "guirlanda-moldura-retrato-madeira-latao-v1",
+        "quality": { "low": "keep", "reducedMotion": "keep" }
+      }
+    },
+    {
+      "id": "moldura-paisagem-madeira-latao-v1",
+      "kind": "ui",
+      "format": "webp",
+      "source": {
+        "provider": "openai-imagegen",
+        "origin": "project-created",
+        "identifier": "built-in-imagegen-2026-09-04-guirlanda-frame-landscape-v1",
+        "license": "project-owned",
+        "reviewedOn": "2026-09-04",
+        "reviewedBy": "codex-guirlanda-photo-frame-review",
+        "record": "ASSET_PROVENANCE.md#molduras-madeira-latao-v1"
+      },
+      "art": {
+        "family": "guirlanda-diorama-a1",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Moldura hero larga com abertura alpha para preservar paisagens de sessão sem o passe-partout excessivo de uma janela retrato."
+      },
+      "processing": {
+        "recipe": "built-in-imagegen-guirlanda-frame-landscape-v1-trim-alpha-640x449-webp-q76",
+        "tools": ["openai-imagegen", "sharp-0.35.3"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/guirlanda-das-lembrancas/frames/moldura-paisagem-madeira-latao-v1.webp",
+        "publicPath": "/assets/guirlanda-das-lembrancas/frames/moldura-paisagem-madeira-latao-v1.webp",
+        "bytes": 50980,
+        "sha256": "fed010db14689447f836b875d29d51dcf300179d681bdc6e91b7b9ba3b449d8f",
+        "dimensions": { "width": 640, "height": 449 },
+        "textureKey": "guirlanda-moldura-paisagem-madeira-latao-v1",
+        "quality": { "low": "keep", "reducedMotion": "keep" }
+      }
+    },
+    {
+      "id": "caixa-de-lembrancas-nogueira-v1",
+      "kind": "ui",
+      "format": "webp",
+      "source": {
+        "provider": "openai-imagegen",
+        "origin": "project-created",
+        "identifier": "built-in-imagegen-2026-09-04-guirlanda-memory-box-v1",
+        "license": "project-owned",
+        "reviewedOn": "2026-09-04",
+        "reviewedBy": "codex-guirlanda-photo-frame-review",
+        "record": "ASSET_PROVENANCE.md#caixa-de-lembrancas-nogueira-v1"
+      },
+      "art": {
+        "family": "guirlanda-diorama-a1",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Caixa aberta de nogueira, veludo e latão substitui o bloco geométrico e mantém a foto livre: ela não contém pessoa, foto, texto ou dados de sessão."
+      },
+      "processing": {
+        "recipe": "built-in-imagegen-guirlanda-memory-box-v1-trim-alpha-512x352-webp-q74",
+        "tools": ["openai-imagegen", "sharp-0.35.3"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/guirlanda-das-lembrancas/props/caixa-de-lembrancas-nogueira-v1.webp",
+        "publicPath": "/assets/guirlanda-das-lembrancas/props/caixa-de-lembrancas-nogueira-v1.webp",
+        "bytes": 42752,
+        "sha256": "2f5f61dd4958a217817d0bf98175c6dc0f0e89c5ea3a0c8b5212e5edba256f0f",
+        "dimensions": { "width": 512, "height": 352 },
+        "textureKey": "guirlanda-caixa-de-lembrancas-nogueira-v1",
+        "quality": { "low": "keep", "reducedMotion": "keep" }
+      }
+    },
+    {
+      "id": "toque-m4a",
+      "kind": "audio",
+      "format": "m4a",
+      "source": {
+        "provider": "owner-authorized-legacy-bundle",
+        "origin": "owner-authorized-legacy",
+        "identifier": "legacy-tap-m4a",
+        "license": "project-owned",
+        "reviewedOn": "2026-09-04",
+        "reviewedBy": "codex-guirlanda-creative-slice",
+        "record": "ASSET_PROVENANCE.md#audio-autorizado"
+      },
+      "art": {
+        "family": "guirlanda-diorama-a1",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Clique macio de interface para toque e seleção."
+      },
+      "processing": {
+        "recipe": "byte-copy:ASSET_PROVENANCE.md#audio-autorizado",
+        "tools": ["asset-copy"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/guirlanda-das-lembrancas/audio/toque.m4a",
+        "publicPath": "/assets/guirlanda-das-lembrancas/audio/toque.m4a",
+        "bytes": 2728,
+        "sha256": "036613c5af4bb6209450f9f4a2d4495a4d779b800d240ce3ff0b37312d7df3b8",
+        "durationSeconds": 0.121,
+        "cue": "press",
+        "deliveryGroup": "press",
+        "quality": { "low": "keep", "reducedMotion": "keep" }
+      }
+    },
+    {
+      "id": "toque-mp3",
+      "kind": "audio",
+      "format": "mp3",
+      "source": {
+        "provider": "owner-authorized-legacy-bundle",
+        "origin": "owner-authorized-legacy",
+        "identifier": "legacy-tap-mp3",
+        "license": "project-owned",
+        "reviewedOn": "2026-09-04",
+        "reviewedBy": "codex-guirlanda-creative-slice",
+        "record": "ASSET_PROVENANCE.md#audio-autorizado"
+      },
+      "art": {
+        "family": "guirlanda-diorama-a1",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Alternativa MP3 do clique macio."
+      },
+      "processing": {
+        "recipe": "byte-copy:ASSET_PROVENANCE.md#audio-autorizado",
+        "tools": ["asset-copy"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/guirlanda-das-lembrancas/audio/toque.mp3",
+        "publicPath": "/assets/guirlanda-das-lembrancas/audio/toque.mp3",
+        "bytes": 2732,
+        "sha256": "089f3952341041802974efce998528de07648a85dcd250ef51870dc6266638d2",
+        "durationSeconds": 0.115,
+        "cue": "press",
+        "deliveryGroup": "press",
+        "quality": { "low": "keep", "reducedMotion": "keep" }
+      }
+    },
+    {
+      "id": "encaixe-m4a",
+      "kind": "audio",
+      "format": "m4a",
+      "source": {
+        "provider": "owner-authorized-legacy-bundle",
+        "origin": "owner-authorized-legacy",
+        "identifier": "legacy-placement-m4a",
+        "license": "project-owned",
+        "reviewedOn": "2026-09-04",
+        "reviewedBy": "codex-guirlanda-creative-slice",
+        "record": "ASSET_PROVENANCE.md#audio-autorizado"
+      },
+      "art": {
+        "family": "guirlanda-diorama-a1",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Sino quente e curto para o encaixe da moldura."
+      },
+      "processing": {
+        "recipe": "byte-copy:ASSET_PROVENANCE.md#audio-autorizado",
+        "tools": ["asset-copy"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/guirlanda-das-lembrancas/audio/encaixe.m4a",
+        "publicPath": "/assets/guirlanda-das-lembrancas/audio/encaixe.m4a",
+        "bytes": 7839,
+        "sha256": "46f1a780e41ab3a7170994f91b77ea72acb57d8d1138562678546ac9e3fcf73e",
+        "durationSeconds": 0.477,
+        "cue": "place",
+        "deliveryGroup": "place",
+        "quality": { "low": "keep", "reducedMotion": "keep" }
+      }
+    },
+    {
+      "id": "encaixe-mp3",
+      "kind": "audio",
+      "format": "mp3",
+      "source": {
+        "provider": "owner-authorized-legacy-bundle",
+        "origin": "owner-authorized-legacy",
+        "identifier": "legacy-placement-mp3",
+        "license": "project-owned",
+        "reviewedOn": "2026-09-04",
+        "reviewedBy": "codex-guirlanda-creative-slice",
+        "record": "ASSET_PROVENANCE.md#audio-autorizado"
+      },
+      "art": {
+        "family": "guirlanda-diorama-a1",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Alternativa MP3 do encaixe."
+      },
+      "processing": {
+        "recipe": "byte-copy:ASSET_PROVENANCE.md#audio-autorizado",
+        "tools": ["asset-copy"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/guirlanda-das-lembrancas/audio/encaixe.mp3",
+        "publicPath": "/assets/guirlanda-das-lembrancas/audio/encaixe.mp3",
+        "bytes": 8492,
+        "sha256": "972097d741f546b23335895a6f39d49abe0970a100714cfdec112c3e437a9c42",
+        "durationSeconds": 0.47,
+        "cue": "place",
+        "deliveryGroup": "place",
+        "quality": { "low": "keep", "reducedMotion": "keep" }
+      }
+    },
+    {
+      "id": "vitoria-m4a",
+      "kind": "audio",
+      "format": "m4a",
+      "source": {
+        "provider": "owner-authorized-legacy-bundle",
+        "origin": "owner-authorized-legacy",
+        "identifier": "legacy-victory-m4a",
+        "license": "project-owned",
+        "reviewedOn": "2026-09-04",
+        "reviewedBy": "codex-guirlanda-creative-slice",
+        "record": "ASSET_PROVENANCE.md#audio-autorizado"
+      },
+      "art": {
+        "family": "guirlanda-diorama-a1",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Assinatura festiva finita, após a foto âncora voltar ao centro."
+      },
+      "processing": {
+        "recipe": "byte-copy:ASSET_PROVENANCE.md#audio-autorizado",
+        "tools": ["asset-copy"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/guirlanda-das-lembrancas/audio/vitoria.m4a",
+        "publicPath": "/assets/guirlanda-das-lembrancas/audio/vitoria.m4a",
+        "bytes": 54781,
+        "sha256": "0ba50705d544dbd4fddbee1f8279240f2eb03425c536658cf156b60d3f382f43",
+        "durationSeconds": 3.776,
+        "cue": "victory",
+        "deliveryGroup": "victory",
+        "quality": { "low": "keep", "reducedMotion": "keep" }
+      }
+    },
+    {
+      "id": "vitoria-mp3",
+      "kind": "audio",
+      "format": "mp3",
+      "source": {
+        "provider": "owner-authorized-legacy-bundle",
+        "origin": "owner-authorized-legacy",
+        "identifier": "legacy-victory-mp3",
+        "license": "project-owned",
+        "reviewedOn": "2026-09-04",
+        "reviewedBy": "codex-guirlanda-creative-slice",
+        "record": "ASSET_PROVENANCE.md#audio-autorizado"
+      },
+      "art": {
+        "family": "guirlanda-diorama-a1",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Alternativa MP3 da assinatura de vitória."
+      },
+      "processing": {
+        "recipe": "byte-copy:ASSET_PROVENANCE.md#audio-autorizado",
+        "tools": ["asset-copy"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/guirlanda-das-lembrancas/audio/vitoria.mp3",
+        "publicPath": "/assets/guirlanda-das-lembrancas/audio/vitoria.mp3",
+        "bytes": 61484,
+        "sha256": "517c84cfdb393471e71867a2d020fa918767a58858ee12d33a82f50d693df015",
+        "durationSeconds": 3.769,
+        "cue": "victory",
+        "deliveryGroup": "victory",
+        "quality": { "low": "keep", "reducedMotion": "keep" }
+      }
+    }
+  ]
+}

@@ -70,7 +70,10 @@ export class PuzzleAudioDirector {
   toggleAfterGesture(): boolean {
     this.enabled = !this.enabled;
     if (this.enabled) this.startMusicAfterGesture();
-    else this.stopMusic();
+    else {
+      this.stopMusic();
+      Object.values(puzzleSfxKeyByCue).forEach((key) => this.input.scene.sound.stopByKey(key));
+    }
     return this.enabled;
   }
 

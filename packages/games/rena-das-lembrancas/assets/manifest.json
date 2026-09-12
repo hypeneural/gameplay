@@ -1,0 +1,963 @@
+{
+  "assets": [
+    {
+      "id": "toque-m4a",
+      "kind": "audio",
+      "format": "m4a",
+      "source": {
+        "provider": "owner-authorized-legacy-bundle",
+        "origin": "owner-authorized-legacy",
+        "identifier": "legacy-tap-m4a",
+        "license": "project-owned",
+        "reviewedOn": "2026-09-04",
+        "reviewedBy": "codex-guirlanda-creative-slice",
+        "record": "ASSET_PROVENANCE.md#reutilizacao-autorizada"
+      },
+      "art": {
+        "family": "guirlanda-diorama-a1",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Copia de audio proprio autorizado, com owner e descarte exclusivos de Rudolph. Confirma toque, resgate ou album completo; mix em aparelho fisico permanece pendente."
+      },
+      "processing": {
+        "recipe": "byte-copy:ASSET_PROVENANCE.md#audio-autorizado",
+        "tools": ["asset-copy"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/rena-das-lembrancas/audio/toque.m4a",
+        "publicPath": "/assets/rena-das-lembrancas/audio/toque.m4a",
+        "bytes": 2728,
+        "sha256": "036613c5af4bb6209450f9f4a2d4495a4d779b800d240ce3ff0b37312d7df3b8",
+        "durationSeconds": 0.121,
+        "cue": "press",
+        "deliveryGroup": "press",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        }
+      }
+    },
+    {
+      "id": "toque-mp3",
+      "kind": "audio",
+      "format": "mp3",
+      "source": {
+        "provider": "owner-authorized-legacy-bundle",
+        "origin": "owner-authorized-legacy",
+        "identifier": "legacy-tap-mp3",
+        "license": "project-owned",
+        "reviewedOn": "2026-09-04",
+        "reviewedBy": "codex-guirlanda-creative-slice",
+        "record": "ASSET_PROVENANCE.md#reutilizacao-autorizada"
+      },
+      "art": {
+        "family": "guirlanda-diorama-a1",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Copia de audio proprio autorizado, com owner e descarte exclusivos de Rudolph. Confirma toque, resgate ou album completo; mix em aparelho fisico permanece pendente."
+      },
+      "processing": {
+        "recipe": "byte-copy:ASSET_PROVENANCE.md#audio-autorizado",
+        "tools": ["asset-copy"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/rena-das-lembrancas/audio/toque.mp3",
+        "publicPath": "/assets/rena-das-lembrancas/audio/toque.mp3",
+        "bytes": 2732,
+        "sha256": "089f3952341041802974efce998528de07648a85dcd250ef51870dc6266638d2",
+        "durationSeconds": 0.115,
+        "cue": "press",
+        "deliveryGroup": "press",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        }
+      }
+    },
+    {
+      "id": "encaixe-m4a",
+      "kind": "audio",
+      "format": "m4a",
+      "source": {
+        "provider": "owner-authorized-legacy-bundle",
+        "origin": "owner-authorized-legacy",
+        "identifier": "legacy-placement-m4a",
+        "license": "project-owned",
+        "reviewedOn": "2026-09-04",
+        "reviewedBy": "codex-guirlanda-creative-slice",
+        "record": "ASSET_PROVENANCE.md#reutilizacao-autorizada"
+      },
+      "art": {
+        "family": "guirlanda-diorama-a1",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Copia de audio proprio autorizado, com owner e descarte exclusivos de Rudolph. Confirma toque, resgate ou album completo; mix em aparelho fisico permanece pendente."
+      },
+      "processing": {
+        "recipe": "byte-copy:ASSET_PROVENANCE.md#audio-autorizado",
+        "tools": ["asset-copy"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/rena-das-lembrancas/audio/encaixe.m4a",
+        "publicPath": "/assets/rena-das-lembrancas/audio/encaixe.m4a",
+        "bytes": 7839,
+        "sha256": "46f1a780e41ab3a7170994f91b77ea72acb57d8d1138562678546ac9e3fcf73e",
+        "durationSeconds": 0.477,
+        "cue": "place",
+        "deliveryGroup": "place",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        }
+      }
+    },
+    {
+      "id": "encaixe-mp3",
+      "kind": "audio",
+      "format": "mp3",
+      "source": {
+        "provider": "owner-authorized-legacy-bundle",
+        "origin": "owner-authorized-legacy",
+        "identifier": "legacy-placement-mp3",
+        "license": "project-owned",
+        "reviewedOn": "2026-09-04",
+        "reviewedBy": "codex-guirlanda-creative-slice",
+        "record": "ASSET_PROVENANCE.md#reutilizacao-autorizada"
+      },
+      "art": {
+        "family": "guirlanda-diorama-a1",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Copia de audio proprio autorizado, com owner e descarte exclusivos de Rudolph. Confirma toque, resgate ou album completo; mix em aparelho fisico permanece pendente."
+      },
+      "processing": {
+        "recipe": "byte-copy:ASSET_PROVENANCE.md#audio-autorizado",
+        "tools": ["asset-copy"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/rena-das-lembrancas/audio/encaixe.mp3",
+        "publicPath": "/assets/rena-das-lembrancas/audio/encaixe.mp3",
+        "bytes": 8492,
+        "sha256": "972097d741f546b23335895a6f39d49abe0970a100714cfdec112c3e437a9c42",
+        "durationSeconds": 0.47,
+        "cue": "place",
+        "deliveryGroup": "place",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        }
+      }
+    },
+    {
+      "id": "vitoria-m4a",
+      "kind": "audio",
+      "format": "m4a",
+      "source": {
+        "provider": "owner-authorized-legacy-bundle",
+        "origin": "owner-authorized-legacy",
+        "identifier": "legacy-victory-m4a",
+        "license": "project-owned",
+        "reviewedOn": "2026-09-04",
+        "reviewedBy": "codex-guirlanda-creative-slice",
+        "record": "ASSET_PROVENANCE.md#reutilizacao-autorizada"
+      },
+      "art": {
+        "family": "guirlanda-diorama-a1",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Copia de audio proprio autorizado, com owner e descarte exclusivos de Rudolph. Confirma toque, resgate ou album completo; mix em aparelho fisico permanece pendente."
+      },
+      "processing": {
+        "recipe": "byte-copy:ASSET_PROVENANCE.md#audio-autorizado",
+        "tools": ["asset-copy"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/rena-das-lembrancas/audio/vitoria.m4a",
+        "publicPath": "/assets/rena-das-lembrancas/audio/vitoria.m4a",
+        "bytes": 54781,
+        "sha256": "0ba50705d544dbd4fddbee1f8279240f2eb03425c536658cf156b60d3f382f43",
+        "durationSeconds": 3.776,
+        "cue": "victory",
+        "deliveryGroup": "victory",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        }
+      }
+    },
+    {
+      "id": "vitoria-mp3",
+      "kind": "audio",
+      "format": "mp3",
+      "source": {
+        "provider": "owner-authorized-legacy-bundle",
+        "origin": "owner-authorized-legacy",
+        "identifier": "legacy-victory-mp3",
+        "license": "project-owned",
+        "reviewedOn": "2026-09-04",
+        "reviewedBy": "codex-guirlanda-creative-slice",
+        "record": "ASSET_PROVENANCE.md#reutilizacao-autorizada"
+      },
+      "art": {
+        "family": "guirlanda-diorama-a1",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Copia de audio proprio autorizado, com owner e descarte exclusivos de Rudolph. Confirma toque, resgate ou album completo; mix em aparelho fisico permanece pendente."
+      },
+      "processing": {
+        "recipe": "byte-copy:ASSET_PROVENANCE.md#audio-autorizado",
+        "tools": ["asset-copy"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/rena-das-lembrancas/audio/vitoria.mp3",
+        "publicPath": "/assets/rena-das-lembrancas/audio/vitoria.mp3",
+        "bytes": 61484,
+        "sha256": "517c84cfdb393471e71867a2d020fa918767a58858ee12d33a82f50d693df015",
+        "durationSeconds": 3.769,
+        "cue": "victory",
+        "deliveryGroup": "victory",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        }
+      }
+    },
+    {
+      "id": "winter-loop-v1-m4a",
+      "kind": "audio",
+      "format": "m4a",
+      "source": {
+        "provider": "Christmas Games offline score",
+        "origin": "project-created",
+        "identifier": "3163e088775209c3f81c140e57e0d0401501c340be26c546e0b64a5a0b89c762",
+        "license": "project-owned",
+        "reviewedOn": "2026-09-08",
+        "reviewedBy": "Codex-source-headroom-and-duration-review",
+        "record": "ASSET_PROVENANCE.md#original-audio-v1"
+      },
+      "art": {
+        "family": "rudolph-winter-celesta-v1",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Partitura original instrumental esparsa e cues finitos com headroom. Escuta fisica permanece um gate separado."
+      },
+      "processing": {
+        "recipe": "prepare-rudolph-audio:winter-loop-v1:mono44100:64k",
+        "tools": ["v24.20.0", "ffmpeg-8.0.1-essentials_build-www.gyan.dev"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/rena-das-lembrancas/audio/winter-loop-v1.m4a",
+        "publicPath": "/assets/rena-das-lembrancas/audio/winter-loop-v1.m4a",
+        "bytes": 132350,
+        "sha256": "c21eb0bac68427ffd254baa52ce9eddc8187e347558a9b5cffb408213cc6e5df",
+        "durationSeconds": 16,
+        "cue": "rudolph-winter-loop-v1",
+        "deliveryGroup": "rudolph-winter-loop-v1",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        }
+      }
+    },
+    {
+      "id": "winter-loop-v1-mp3",
+      "kind": "audio",
+      "format": "mp3",
+      "source": {
+        "provider": "Christmas Games offline score",
+        "origin": "project-created",
+        "identifier": "3163e088775209c3f81c140e57e0d0401501c340be26c546e0b64a5a0b89c762",
+        "license": "project-owned",
+        "reviewedOn": "2026-09-08",
+        "reviewedBy": "Codex-source-headroom-and-duration-review",
+        "record": "ASSET_PROVENANCE.md#original-audio-v1"
+      },
+      "art": {
+        "family": "rudolph-winter-celesta-v1",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Partitura original instrumental esparsa e cues finitos com headroom. Escuta fisica permanece um gate separado."
+      },
+      "processing": {
+        "recipe": "prepare-rudolph-audio:winter-loop-v1:mono44100:64k",
+        "tools": ["v24.20.0", "ffmpeg-8.0.1-essentials_build-www.gyan.dev"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/rena-das-lembrancas/audio/winter-loop-v1.mp3",
+        "publicPath": "/assets/rena-das-lembrancas/audio/winter-loop-v1.mp3",
+        "bytes": 128565,
+        "sha256": "6fff8b58cd8f8f4d935418eb87f0fa0bf38adaa8dd8413622ae52dc70b20f795",
+        "durationSeconds": 16,
+        "cue": "rudolph-winter-loop-v1",
+        "deliveryGroup": "rudolph-winter-loop-v1",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        }
+      }
+    },
+    {
+      "id": "snow-v1-m4a",
+      "kind": "audio",
+      "format": "m4a",
+      "source": {
+        "provider": "Christmas Games offline score",
+        "origin": "project-created",
+        "identifier": "16f085185d10ef79bac5b40d0875c8a89fc8f3b5a709c0676dcf2fdcd3ed514b",
+        "license": "project-owned",
+        "reviewedOn": "2026-09-08",
+        "reviewedBy": "Codex-source-headroom-and-duration-review",
+        "record": "ASSET_PROVENANCE.md#original-audio-v1"
+      },
+      "art": {
+        "family": "rudolph-winter-celesta-v1",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Partitura original instrumental esparsa e cues finitos com headroom. Escuta fisica permanece um gate separado."
+      },
+      "processing": {
+        "recipe": "prepare-rudolph-audio:snow-v1:mono44100:64k",
+        "tools": ["v24.20.0", "ffmpeg-8.0.1-essentials_build-www.gyan.dev"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/rena-das-lembrancas/audio/snow-v1.m4a",
+        "publicPath": "/assets/rena-das-lembrancas/audio/snow-v1.m4a",
+        "bytes": 3088,
+        "sha256": "f8b92500d1bf36e108bf2b9acb00f0b9656167365c498a4be76fdbb5a4066c50",
+        "durationSeconds": 0.24,
+        "cue": "rudolph-snow-v1",
+        "deliveryGroup": "rudolph-snow-v1",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        }
+      }
+    },
+    {
+      "id": "snow-v1-mp3",
+      "kind": "audio",
+      "format": "mp3",
+      "source": {
+        "provider": "Christmas Games offline score",
+        "origin": "project-created",
+        "identifier": "16f085185d10ef79bac5b40d0875c8a89fc8f3b5a709c0676dcf2fdcd3ed514b",
+        "license": "project-owned",
+        "reviewedOn": "2026-09-08",
+        "reviewedBy": "Codex-source-headroom-and-duration-review",
+        "record": "ASSET_PROVENANCE.md#original-audio-v1"
+      },
+      "art": {
+        "family": "rudolph-winter-celesta-v1",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Partitura original instrumental esparsa e cues finitos com headroom. Escuta fisica permanece um gate separado."
+      },
+      "processing": {
+        "recipe": "prepare-rudolph-audio:snow-v1:mono44100:64k",
+        "tools": ["v24.20.0", "ffmpeg-8.0.1-essentials_build-www.gyan.dev"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/rena-das-lembrancas/audio/snow-v1.mp3",
+        "publicPath": "/assets/rena-das-lembrancas/audio/snow-v1.mp3",
+        "bytes": 2550,
+        "sha256": "d635244a01b47510fbc5e70b11fe5fb1c4ad6b43f4fa8eab604843459622269f",
+        "durationSeconds": 0.24,
+        "cue": "rudolph-snow-v1",
+        "deliveryGroup": "rudolph-snow-v1",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        }
+      }
+    },
+    {
+      "id": "paper-v1-m4a",
+      "kind": "audio",
+      "format": "m4a",
+      "source": {
+        "provider": "Christmas Games offline score",
+        "origin": "project-created",
+        "identifier": "4d45c12f081180288cc36285caa1239b8e50a979ce5f90927211ddef8c5e615f",
+        "license": "project-owned",
+        "reviewedOn": "2026-09-08",
+        "reviewedBy": "Codex-source-headroom-and-duration-review",
+        "record": "ASSET_PROVENANCE.md#original-audio-v1"
+      },
+      "art": {
+        "family": "rudolph-winter-celesta-v1",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Partitura original instrumental esparsa e cues finitos com headroom. Escuta fisica permanece um gate separado."
+      },
+      "processing": {
+        "recipe": "prepare-rudolph-audio:paper-v1:mono44100:64k",
+        "tools": ["v24.20.0", "ffmpeg-8.0.1-essentials_build-www.gyan.dev"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/rena-das-lembrancas/audio/paper-v1.m4a",
+        "publicPath": "/assets/rena-das-lembrancas/audio/paper-v1.m4a",
+        "bytes": 3641,
+        "sha256": "146dfd9bcb272f27e7a892efa0fbec6c60ba3fb672fa3c46132cb8de8ef5a2e9",
+        "durationSeconds": 0.3,
+        "cue": "rudolph-paper-v1",
+        "deliveryGroup": "rudolph-paper-v1",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        }
+      }
+    },
+    {
+      "id": "paper-v1-mp3",
+      "kind": "audio",
+      "format": "mp3",
+      "source": {
+        "provider": "Christmas Games offline score",
+        "origin": "project-created",
+        "identifier": "4d45c12f081180288cc36285caa1239b8e50a979ce5f90927211ddef8c5e615f",
+        "license": "project-owned",
+        "reviewedOn": "2026-09-08",
+        "reviewedBy": "Codex-source-headroom-and-duration-review",
+        "record": "ASSET_PROVENANCE.md#original-audio-v1"
+      },
+      "art": {
+        "family": "rudolph-winter-celesta-v1",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Partitura original instrumental esparsa e cues finitos com headroom. Escuta fisica permanece um gate separado."
+      },
+      "processing": {
+        "recipe": "prepare-rudolph-audio:paper-v1:mono44100:64k",
+        "tools": ["v24.20.0", "ffmpeg-8.0.1-essentials_build-www.gyan.dev"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/rena-das-lembrancas/audio/paper-v1.mp3",
+        "publicPath": "/assets/rena-das-lembrancas/audio/paper-v1.mp3",
+        "bytes": 2968,
+        "sha256": "ecc24547d5f952da2c1b7b94618d1e9d1585725ae848df11afd6c2bc695efcf9",
+        "durationSeconds": 0.3,
+        "cue": "rudolph-paper-v1",
+        "deliveryGroup": "rudolph-paper-v1",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        }
+      }
+    },
+    {
+      "id": "bells-v1-m4a",
+      "kind": "audio",
+      "format": "m4a",
+      "source": {
+        "provider": "Christmas Games offline score",
+        "origin": "project-created",
+        "identifier": "d6fc86cc74057ec4328183d1a6c135a0994ba9f589dadc7373248b57abb36c0f",
+        "license": "project-owned",
+        "reviewedOn": "2026-09-08",
+        "reviewedBy": "Codex-source-headroom-and-duration-review",
+        "record": "ASSET_PROVENANCE.md#original-audio-v1"
+      },
+      "art": {
+        "family": "rudolph-winter-celesta-v1",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Partitura original instrumental esparsa e cues finitos com headroom. Escuta fisica permanece um gate separado."
+      },
+      "processing": {
+        "recipe": "prepare-rudolph-audio:bells-v1:mono44100:64k",
+        "tools": ["v24.20.0", "ffmpeg-8.0.1-essentials_build-www.gyan.dev"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/rena-das-lembrancas/audio/bells-v1.m4a",
+        "publicPath": "/assets/rena-das-lembrancas/audio/bells-v1.m4a",
+        "bytes": 9857,
+        "sha256": "191ec3c3e3ce375fafb520dfa8d9b4e472b69bcc4a7b45bc67fbab3959ba7cff",
+        "durationSeconds": 1.1,
+        "cue": "rudolph-bells-v1",
+        "deliveryGroup": "rudolph-bells-v1",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        }
+      }
+    },
+    {
+      "id": "bells-v1-mp3",
+      "kind": "audio",
+      "format": "mp3",
+      "source": {
+        "provider": "Christmas Games offline score",
+        "origin": "project-created",
+        "identifier": "d6fc86cc74057ec4328183d1a6c135a0994ba9f589dadc7373248b57abb36c0f",
+        "license": "project-owned",
+        "reviewedOn": "2026-09-08",
+        "reviewedBy": "Codex-source-headroom-and-duration-review",
+        "record": "ASSET_PROVENANCE.md#original-audio-v1"
+      },
+      "art": {
+        "family": "rudolph-winter-celesta-v1",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Partitura original instrumental esparsa e cues finitos com headroom. Escuta fisica permanece um gate separado."
+      },
+      "processing": {
+        "recipe": "prepare-rudolph-audio:bells-v1:mono44100:64k",
+        "tools": ["v24.20.0", "ffmpeg-8.0.1-essentials_build-www.gyan.dev"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/rena-das-lembrancas/audio/bells-v1.mp3",
+        "publicPath": "/assets/rena-das-lembrancas/audio/bells-v1.mp3",
+        "bytes": 9447,
+        "sha256": "58c0dc4bbb26206802c314c5d7e28802a797f0ed309dceaaee67d58d5754d350",
+        "durationSeconds": 1.1,
+        "cue": "rudolph-bells-v1",
+        "deliveryGroup": "rudolph-bells-v1",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        }
+      }
+    },
+    {
+      "id": "magic-v1-m4a",
+      "kind": "audio",
+      "format": "m4a",
+      "source": {
+        "provider": "Christmas Games offline score",
+        "origin": "project-created",
+        "identifier": "28e815187062d02b3cb30c6ab99d16113163354c91e886a80face1de5d4db0bc",
+        "license": "project-owned",
+        "reviewedOn": "2026-09-08",
+        "reviewedBy": "Codex-source-headroom-and-duration-review",
+        "record": "ASSET_PROVENANCE.md#original-audio-v1"
+      },
+      "art": {
+        "family": "rudolph-winter-celesta-v1",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Partitura original instrumental esparsa e cues finitos com headroom. Escuta fisica permanece um gate separado."
+      },
+      "processing": {
+        "recipe": "prepare-rudolph-audio:magic-v1:mono44100:64k",
+        "tools": ["v24.20.0", "ffmpeg-8.0.1-essentials_build-www.gyan.dev"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/rena-das-lembrancas/audio/magic-v1.m4a",
+        "publicPath": "/assets/rena-das-lembrancas/audio/magic-v1.m4a",
+        "bytes": 12641,
+        "sha256": "bb98ece1f0ac2d95710902e23b0cc21f27474caf5f30d4a161c7ed45d9b99f60",
+        "durationSeconds": 1.45,
+        "cue": "rudolph-magic-v1",
+        "deliveryGroup": "rudolph-magic-v1",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        }
+      }
+    },
+    {
+      "id": "magic-v1-mp3",
+      "kind": "audio",
+      "format": "mp3",
+      "source": {
+        "provider": "Christmas Games offline score",
+        "origin": "project-created",
+        "identifier": "28e815187062d02b3cb30c6ab99d16113163354c91e886a80face1de5d4db0bc",
+        "license": "project-owned",
+        "reviewedOn": "2026-09-08",
+        "reviewedBy": "Codex-source-headroom-and-duration-review",
+        "record": "ASSET_PROVENANCE.md#original-audio-v1"
+      },
+      "art": {
+        "family": "rudolph-winter-celesta-v1",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Partitura original instrumental esparsa e cues finitos com headroom. Escuta fisica permanece um gate separado."
+      },
+      "processing": {
+        "recipe": "prepare-rudolph-audio:magic-v1:mono44100:64k",
+        "tools": ["v24.20.0", "ffmpeg-8.0.1-essentials_build-www.gyan.dev"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/rena-das-lembrancas/audio/magic-v1.mp3",
+        "publicPath": "/assets/rena-das-lembrancas/audio/magic-v1.mp3",
+        "bytes": 12163,
+        "sha256": "eb7192732f009033a62587204e52e3b2f658d16e9db47d1cf1978af92ac3d274",
+        "durationSeconds": 1.45,
+        "cue": "rudolph-magic-v1",
+        "deliveryGroup": "rudolph-magic-v1",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        }
+      }
+    },
+    {
+      "id": "rudolph-body-v1",
+      "kind": "ui",
+      "format": "webp",
+      "source": {
+        "provider": "OpenAI built-in image_gen",
+        "origin": "project-created",
+        "identifier": "rig-model-v1-06a1f2afa86657e5a1f0dd74dd0fa4f5d5e3232172693a4909abb8aa0b54fae1",
+        "license": "project-owned",
+        "reviewedOn": "2026-09-08",
+        "reviewedBy": "Codex-rudolph-rig-source-and-alpha-review",
+        "record": "ASSET_PROVENANCE.md#rudolph-rig-v1"
+      },
+      "art": {
+        "family": "rudolph-plush-diorama-v1",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Peca do mesmo modelo de rena natalina, silhueta limpa, alpha conferido, sem fotos ou dados de sessao. Articulacao e composicao revisadas no canvas separadamente."
+      },
+      "processing": {
+        "recipe": "prepare-rudolph-art:cell-0-0:trim12:width320:webp86",
+        "tools": ["sharp-0.35.3", "image_gen-built-in-model-not-exposed"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/rena-das-lembrancas/art/rudolph-body-v1.webp",
+        "publicPath": "/assets/rena-das-lembrancas/art/rudolph-body-v1.webp",
+        "bytes": 21242,
+        "sha256": "01b8c7f4d755c9c1a8e97b76583abf91d2dc99265ae4c5a7b780506b1b95dfcc",
+        "dimensions": {
+          "width": 320,
+          "height": 213
+        },
+        "textureKey": "rudolph-body-v1",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        }
+      }
+    },
+    {
+      "id": "rudolph-head-v1",
+      "kind": "ui",
+      "format": "webp",
+      "source": {
+        "provider": "OpenAI built-in image_gen",
+        "origin": "project-created",
+        "identifier": "rig-model-v1-06a1f2afa86657e5a1f0dd74dd0fa4f5d5e3232172693a4909abb8aa0b54fae1",
+        "license": "project-owned",
+        "reviewedOn": "2026-09-08",
+        "reviewedBy": "Codex-rudolph-rig-source-and-alpha-review",
+        "record": "ASSET_PROVENANCE.md#rudolph-rig-v1"
+      },
+      "art": {
+        "family": "rudolph-plush-diorama-v1",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Peca do mesmo modelo de rena natalina, silhueta limpa, alpha conferido, sem fotos ou dados de sessao. Articulacao e composicao revisadas no canvas separadamente."
+      },
+      "processing": {
+        "recipe": "prepare-rudolph-art:cell-1-0:trim12:width320:webp86",
+        "tools": ["sharp-0.35.3", "image_gen-built-in-model-not-exposed"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/rena-das-lembrancas/art/rudolph-head-v1.webp",
+        "publicPath": "/assets/rena-das-lembrancas/art/rudolph-head-v1.webp",
+        "bytes": 34822,
+        "sha256": "9e300fc74df19fd0a0fdc4c045c9c3235dd231c2d2ae7289ebfe329b87f63f5a",
+        "dimensions": {
+          "width": 320,
+          "height": 365
+        },
+        "textureKey": "rudolph-head-v1",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        }
+      }
+    },
+    {
+      "id": "rudolph-front-leg-v1",
+      "kind": "ui",
+      "format": "webp",
+      "source": {
+        "provider": "OpenAI built-in image_gen",
+        "origin": "project-created",
+        "identifier": "rig-model-v1-06a1f2afa86657e5a1f0dd74dd0fa4f5d5e3232172693a4909abb8aa0b54fae1",
+        "license": "project-owned",
+        "reviewedOn": "2026-09-08",
+        "reviewedBy": "Codex-rudolph-rig-source-and-alpha-review",
+        "record": "ASSET_PROVENANCE.md#rudolph-rig-v1"
+      },
+      "art": {
+        "family": "rudolph-plush-diorama-v1",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Peca do mesmo modelo de rena natalina, silhueta limpa, alpha conferido, sem fotos ou dados de sessao. Articulacao e composicao revisadas no canvas separadamente."
+      },
+      "processing": {
+        "recipe": "prepare-rudolph-art:cell-2-0:trim12:width128:webp86",
+        "tools": ["sharp-0.35.3", "image_gen-built-in-model-not-exposed"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/rena-das-lembrancas/art/rudolph-front-leg-v1.webp",
+        "publicPath": "/assets/rena-das-lembrancas/art/rudolph-front-leg-v1.webp",
+        "bytes": 13102,
+        "sha256": "5d5f73b7936f8e867e243631f0ab88aafa5a64b6d033f2b2beced1b60b0c7e12",
+        "dimensions": {
+          "width": 128,
+          "height": 311
+        },
+        "textureKey": "rudolph-front-leg-v1",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        }
+      }
+    },
+    {
+      "id": "rudolph-back-leg-v1",
+      "kind": "ui",
+      "format": "webp",
+      "source": {
+        "provider": "OpenAI built-in image_gen",
+        "origin": "project-created",
+        "identifier": "rig-model-v1-06a1f2afa86657e5a1f0dd74dd0fa4f5d5e3232172693a4909abb8aa0b54fae1",
+        "license": "project-owned",
+        "reviewedOn": "2026-09-08",
+        "reviewedBy": "Codex-rudolph-rig-source-and-alpha-review",
+        "record": "ASSET_PROVENANCE.md#rudolph-rig-v1"
+      },
+      "art": {
+        "family": "rudolph-plush-diorama-v1",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Peca do mesmo modelo de rena natalina, silhueta limpa, alpha conferido, sem fotos ou dados de sessao. Articulacao e composicao revisadas no canvas separadamente."
+      },
+      "processing": {
+        "recipe": "prepare-rudolph-art:cell-0-1:trim12:width128:webp86",
+        "tools": ["sharp-0.35.3", "image_gen-built-in-model-not-exposed"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/rena-das-lembrancas/art/rudolph-back-leg-v1.webp",
+        "publicPath": "/assets/rena-das-lembrancas/art/rudolph-back-leg-v1.webp",
+        "bytes": 13868,
+        "sha256": "05e995ab8d194303f3271b6b0e4bb84ed072112be0bbf428283273c021ca2eec",
+        "dimensions": {
+          "width": 128,
+          "height": 315
+        },
+        "textureKey": "rudolph-back-leg-v1",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        }
+      }
+    },
+    {
+      "id": "winter-world-v1",
+      "kind": "background",
+      "format": "webp",
+      "source": {
+        "provider": "OpenAI built-in image_gen",
+        "origin": "project-created",
+        "identifier": "winter-world-v1-834cee688df02c99fd5a52b658bf49e9749aa9e05afcfd1edcace5c27cb180fb",
+        "license": "project-owned",
+        "reviewedOn": "2026-09-08",
+        "reviewedBy": "Codex-rudolph-environment-review",
+        "record": "ASSET_PROVENANCE.md#winter-world-and-santa-v1"
+      },
+      "art": {
+        "family": "rudolph-plush-diorama-v1",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Vila nos limites inferiores; centro livre para as fotografias."
+      },
+      "processing": {
+        "recipe": "prepare-rudolph-art:winter-world-v1:width800:webp83",
+        "tools": ["sharp-0.35.3", "image_gen-built-in-model-not-exposed"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/rena-das-lembrancas/art/winter-world-v1.webp",
+        "publicPath": "/assets/rena-das-lembrancas/art/winter-world-v1.webp",
+        "bytes": 59408,
+        "sha256": "32c3b36cb92b99d6346ab7b6cb7f65fde0da3a8e8a0b56f52e80be6cf36f11c3",
+        "dimensions": {
+          "width": 800,
+          "height": 1200
+        },
+        "textureKey": "rudolph-winter-world-v1",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        }
+      }
+    },
+    {
+      "id": "winter-landscape-v1",
+      "kind": "background",
+      "format": "webp",
+      "source": {
+        "provider": "OpenAI built-in image_gen",
+        "origin": "project-created",
+        "identifier": "winter-landscape-v1-5e7aa393898effe3fcb75e1f7e11ea1fad539394d08e95f6a1fd4cd4b21c35af",
+        "license": "project-owned",
+        "reviewedOn": "2026-09-08",
+        "reviewedBy": "Codex-rudolph-environment-review",
+        "record": "ASSET_PROVENANCE.md#winter-world-and-santa-v1"
+      },
+      "art": {
+        "family": "rudolph-plush-diorama-v1",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Vila nos limites inferiores; centro livre para as fotografias."
+      },
+      "processing": {
+        "recipe": "prepare-rudolph-art:winter-landscape-v1:width1000:webp83",
+        "tools": ["sharp-0.35.3", "image_gen-built-in-model-not-exposed"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/rena-das-lembrancas/art/winter-landscape-v1.webp",
+        "publicPath": "/assets/rena-das-lembrancas/art/winter-landscape-v1.webp",
+        "bytes": 43456,
+        "sha256": "f5feb211ea5e519499e474e6de53838e713a887394debd8a9e0601d6622a548c",
+        "dimensions": {
+          "width": 1000,
+          "height": 667
+        },
+        "textureKey": "rudolph-winter-landscape-v1",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        }
+      }
+    },
+    {
+      "id": "frame-material-v3",
+      "kind": "ui",
+      "format": "webp",
+      "source": {
+        "provider": "OpenAI built-in image_gen",
+        "origin": "project-created",
+        "identifier": "frame-material-v3-a4032d09e361dcef6a4b2c1b7d8f29798f964fe1fa09a85236ab8ff55c542df7",
+        "license": "project-owned",
+        "reviewedOn": "2026-09-08",
+        "reviewedBy": "Codex-rudolph-environment-review",
+        "record": "ASSET_PROVENANCE.md#frame-material-v3"
+      },
+      "art": {
+        "family": "rudolph-plush-diorama-v1",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Madeira e latao em borda compacta de nove regioes. Fotografia inteira acima do centro opaco; cantos preservados ao redimensionar."
+      },
+      "processing": {
+        "recipe": "prepare-rudolph-art:frame-material-v3:width640:webp83",
+        "tools": ["sharp-0.35.3", "image_gen-built-in-model-not-exposed"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/rena-das-lembrancas/art/frame-material-v3.webp",
+        "publicPath": "/assets/rena-das-lembrancas/art/frame-material-v3.webp",
+        "bytes": 32926,
+        "sha256": "b7e60550427d7c64f521d8f82b8020a5f8f2e360018b2e2e634baa744ae265b2",
+        "dimensions": {
+          "width": 640,
+          "height": 640
+        },
+        "textureKey": "rudolph-frame-material-v3",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        }
+      }
+    },
+    {
+      "id": "santa-sleigh-v1",
+      "kind": "ui",
+      "format": "webp",
+      "source": {
+        "provider": "OpenAI built-in image_gen",
+        "origin": "project-created",
+        "identifier": "santa-sleigh-v1-96f8d3554b3c51fe0be1d09dfc31ab33fda84c0120824de1e857d06cead39781",
+        "license": "project-owned",
+        "reviewedOn": "2026-09-08",
+        "reviewedBy": "Codex-rudolph-environment-review",
+        "record": "ASSET_PROVENANCE.md#winter-world-and-santa-v1"
+      },
+      "art": {
+        "family": "rudolph-plush-diorama-v1",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Treno secundario em uma passagem finita; nunca sobre uma foto em destaque."
+      },
+      "processing": {
+        "recipe": "prepare-rudolph-art:santa-sleigh-v1:width360:webp83",
+        "tools": ["sharp-0.35.3", "image_gen-built-in-model-not-exposed"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/rena-das-lembrancas/art/santa-sleigh-v1.webp",
+        "publicPath": "/assets/rena-das-lembrancas/art/santa-sleigh-v1.webp",
+        "bytes": 36306,
+        "sha256": "17f93ea84b4e35adf620e937a85b3a9d6d0147535788eca62a429deeec3c21d9",
+        "dimensions": {
+          "width": 360,
+          "height": 297
+        },
+        "textureKey": "rudolph-santa-sleigh-v1",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        }
+      }
+    }
+  ],
+  "gameId": "rena-das-lembrancas",
+  "budget": {
+    "publicBytesMax": 1000000,
+    "runtimeBytesMax": 700000,
+    "visualBytesMax": 420000
+  },
+  "version": 2
+}

@@ -1,0 +1,400 @@
+{
+  "version": 2,
+  "gameId": "tic-tac-toe",
+  "budget": { "publicBytesMax": 2000000, "runtimeBytesMax": 1200000, "visualBytesMax": 250000 },
+  "assets": [
+    {
+      "id": "workshop-background",
+      "kind": "background",
+      "format": "webp",
+      "source": {
+        "provider": "openai-image-generation",
+        "origin": "project-created",
+        "identifier": "oficina-fundo-vertical-v1",
+        "license": "project-owned",
+        "reviewedOn": "2026-08-30",
+        "reviewedBy": "Anderson",
+        "record": "ASSET_PROVENANCE.md#r3-c2c-fontes-originais-em-revisao-30-08-2026"
+      },
+      "art": {
+        "family": "christmas-photo-first",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Fonte original sem pessoas, texto ou foto; área central calma e somente cenário atrás do mural."
+      },
+      "processing": {
+        "recipe": "asset-prep:ASSET_PROVENANCE.md#pacote-runtime-aprovado-30-08-2026",
+        "tools": ["sharp-0-35-3"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/tic-tac-toe/backgrounds/oficina-vertical-v1.webp",
+        "publicPath": "/assets/tic-tac-toe/backgrounds/oficina-vertical-v1.webp",
+        "bytes": 73598,
+        "sha256": "acab53c482c57b20168cab575e9a0ab2f5783ed855e018033d288d68181cdd8a",
+        "dimensions": { "width": 768, "height": 1536 },
+        "textureKey": "tic-tac-toe-workshop-background",
+        "quality": { "low": "keep", "reducedMotion": "keep" }
+      }
+    },
+    {
+      "id": "memory-frame",
+      "kind": "ui",
+      "format": "webp",
+      "source": {
+        "provider": "openai-image-generation",
+        "origin": "project-created",
+        "identifier": "moldura-lembranca-v1",
+        "license": "project-owned",
+        "reviewedOn": "2026-08-30",
+        "reviewedBy": "Anderson",
+        "record": "ASSET_PROVENANCE.md#r3-c2c-fontes-originais-em-revisao-30-08-2026"
+      },
+      "art": {
+        "family": "christmas-photo-first",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Moldura frontal com abertura transparente; a foto proporcional permanece sob a arte e não vira cenário."
+      },
+      "processing": {
+        "recipe": "asset-prep:ASSET_PROVENANCE.md#pacote-runtime-aprovado-30-08-2026",
+        "tools": ["sharp-0-35-3"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/tic-tac-toe/ui/moldura-lembranca-v1.webp",
+        "publicPath": "/assets/tic-tac-toe/ui/moldura-lembranca-v1.webp",
+        "bytes": 57602,
+        "sha256": "8f68da291bab9b6d9f6a324267a97ee792ee7b5c4cbdbcf28579f643e8251068",
+        "dimensions": { "width": 512, "height": 646 },
+        "textureKey": "tic-tac-toe-memory-frame",
+        "quality": { "low": "keep", "reducedMotion": "keep" }
+      }
+    },
+    {
+      "id": "workshop-light-garland",
+      "kind": "vfx",
+      "format": "webp",
+      "source": {
+        "provider": "openai-image-generation",
+        "origin": "project-created",
+        "identifier": "cordao-luzes-v1",
+        "license": "project-owned",
+        "reviewedOn": "2026-08-30",
+        "reviewedBy": "Anderson",
+        "record": "ASSET_PROVENANCE.md#r3-c2c-fontes-originais-em-revisao-30-08-2026"
+      },
+      "art": {
+        "family": "christmas-photo-first",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Cordão decorativo transparente, sem área de toque ou conteúdo fotográfico."
+      },
+      "processing": {
+        "recipe": "asset-prep:ASSET_PROVENANCE.md#pacote-runtime-aprovado-30-08-2026",
+        "tools": ["sharp-0-35-3"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/tic-tac-toe/vfx/cordao-luzes-v1.webp",
+        "publicPath": "/assets/tic-tac-toe/vfx/cordao-luzes-v1.webp",
+        "bytes": 97484,
+        "sha256": "2717d251299991e0d3085b7b38d7c5b88eff52fc6ee82b0230b2bd92eab7dcda",
+        "dimensions": { "width": 768, "height": 512 },
+        "textureKey": "tic-tac-toe-light-garland",
+        "quality": { "low": "omit", "reducedMotion": "omit" }
+      }
+    },
+    {
+      "id": "tap-m4a",
+      "kind": "audio",
+      "format": "m4a",
+      "source": {
+        "provider": "owner-authorized-legacy-bundle",
+        "origin": "owner-authorized-legacy",
+        "identifier": "tap-m4a",
+        "license": "project-owned",
+        "reviewedOn": "2026-08-30",
+        "reviewedBy": "Anderson",
+        "record": "ASSET_PROVENANCE.md#pacote-runtime-aprovado-30-08-2026"
+      },
+      "art": {
+        "family": "christmas-photo-first",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Efeito curto autorizado, duplicado para evitar dependência de outro jogo."
+      },
+      "processing": {
+        "recipe": "asset-copy:ASSET_PROVENANCE.md#pacote-runtime-aprovado-30-08-2026",
+        "tools": ["asset-copy"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/tic-tac-toe/audio/toque.m4a",
+        "publicPath": "/assets/tic-tac-toe/audio/toque.m4a",
+        "bytes": 2728,
+        "sha256": "036613c5af4bb6209450f9f4a2d4495a4d779b800d240ce3ff0b37312d7df3b8",
+        "durationSeconds": 0.121,
+        "cue": "tap",
+        "deliveryGroup": "tap",
+        "quality": { "low": "keep", "reducedMotion": "keep" }
+      }
+    },
+    {
+      "id": "tap-mp3",
+      "kind": "audio",
+      "format": "mp3",
+      "source": {
+        "provider": "owner-authorized-legacy-bundle",
+        "origin": "owner-authorized-legacy",
+        "identifier": "tap-mp3",
+        "license": "project-owned",
+        "reviewedOn": "2026-08-30",
+        "reviewedBy": "Anderson",
+        "record": "ASSET_PROVENANCE.md#pacote-runtime-aprovado-30-08-2026"
+      },
+      "art": {
+        "family": "christmas-photo-first",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Efeito curto autorizado, duplicado para evitar dependência de outro jogo."
+      },
+      "processing": {
+        "recipe": "asset-copy:ASSET_PROVENANCE.md#pacote-runtime-aprovado-30-08-2026",
+        "tools": ["asset-copy"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/tic-tac-toe/audio/toque.mp3",
+        "publicPath": "/assets/tic-tac-toe/audio/toque.mp3",
+        "bytes": 2732,
+        "sha256": "089f3952341041802974efce998528de07648a85dcd250ef51870dc6266638d2",
+        "durationSeconds": 0.115,
+        "cue": "tap",
+        "deliveryGroup": "tap",
+        "quality": { "low": "keep", "reducedMotion": "keep" }
+      }
+    },
+    {
+      "id": "placement-m4a",
+      "kind": "audio",
+      "format": "m4a",
+      "source": {
+        "provider": "owner-authorized-legacy-bundle",
+        "origin": "owner-authorized-legacy",
+        "identifier": "correct-m4a",
+        "license": "project-owned",
+        "reviewedOn": "2026-08-30",
+        "reviewedBy": "Anderson",
+        "record": "ASSET_PROVENANCE.md#pacote-runtime-aprovado-30-08-2026"
+      },
+      "art": {
+        "family": "christmas-photo-first",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Confirmação curta e gentil de encaixe."
+      },
+      "processing": {
+        "recipe": "asset-copy:ASSET_PROVENANCE.md#pacote-runtime-aprovado-30-08-2026",
+        "tools": ["asset-copy"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/tic-tac-toe/audio/encaixe.m4a",
+        "publicPath": "/assets/tic-tac-toe/audio/encaixe.m4a",
+        "bytes": 7839,
+        "sha256": "46f1a780e41ab3a7170994f91b77ea72acb57d8d1138562678546ac9e3fcf73e",
+        "durationSeconds": 0.477,
+        "cue": "correct",
+        "deliveryGroup": "placement",
+        "quality": { "low": "keep", "reducedMotion": "keep" }
+      }
+    },
+    {
+      "id": "placement-mp3",
+      "kind": "audio",
+      "format": "mp3",
+      "source": {
+        "provider": "owner-authorized-legacy-bundle",
+        "origin": "owner-authorized-legacy",
+        "identifier": "correct-mp3",
+        "license": "project-owned",
+        "reviewedOn": "2026-08-30",
+        "reviewedBy": "Anderson",
+        "record": "ASSET_PROVENANCE.md#pacote-runtime-aprovado-30-08-2026"
+      },
+      "art": {
+        "family": "christmas-photo-first",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Confirmação curta e gentil de encaixe."
+      },
+      "processing": {
+        "recipe": "asset-copy:ASSET_PROVENANCE.md#pacote-runtime-aprovado-30-08-2026",
+        "tools": ["asset-copy"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/tic-tac-toe/audio/encaixe.mp3",
+        "publicPath": "/assets/tic-tac-toe/audio/encaixe.mp3",
+        "bytes": 8492,
+        "sha256": "972097d741f546b23335895a6f39d49abe0970a100714cfdec112c3e437a9c42",
+        "durationSeconds": 0.47,
+        "cue": "correct",
+        "deliveryGroup": "placement",
+        "quality": { "low": "keep", "reducedMotion": "keep" }
+      }
+    },
+    {
+      "id": "celebrate-m4a",
+      "kind": "audio",
+      "format": "m4a",
+      "source": {
+        "provider": "owner-authorized-legacy-bundle",
+        "origin": "owner-authorized-legacy",
+        "identifier": "celebrate-m4a",
+        "license": "project-owned",
+        "reviewedOn": "2026-08-30",
+        "reviewedBy": "Anderson",
+        "record": "ASSET_PROVENANCE.md#pacote-runtime-aprovado-30-08-2026"
+      },
+      "art": {
+        "family": "christmas-photo-first",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Celebração finita da vitória, sem loop."
+      },
+      "processing": {
+        "recipe": "asset-copy:ASSET_PROVENANCE.md#pacote-runtime-aprovado-30-08-2026",
+        "tools": ["asset-copy"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/tic-tac-toe/audio/vitoria.m4a",
+        "publicPath": "/assets/tic-tac-toe/audio/vitoria.m4a",
+        "bytes": 54781,
+        "sha256": "0ba50705d544dbd4fddbee1f8279240f2eb03425c536658cf156b60d3f382f43",
+        "durationSeconds": 3.776,
+        "cue": "celebrate",
+        "deliveryGroup": "celebrate",
+        "quality": { "low": "keep", "reducedMotion": "keep" }
+      }
+    },
+    {
+      "id": "celebrate-mp3",
+      "kind": "audio",
+      "format": "mp3",
+      "source": {
+        "provider": "owner-authorized-legacy-bundle",
+        "origin": "owner-authorized-legacy",
+        "identifier": "celebrate-mp3",
+        "license": "project-owned",
+        "reviewedOn": "2026-08-30",
+        "reviewedBy": "Anderson",
+        "record": "ASSET_PROVENANCE.md#pacote-runtime-aprovado-30-08-2026"
+      },
+      "art": {
+        "family": "christmas-photo-first",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Celebração finita da vitória, sem loop."
+      },
+      "processing": {
+        "recipe": "asset-copy:ASSET_PROVENANCE.md#pacote-runtime-aprovado-30-08-2026",
+        "tools": ["asset-copy"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/tic-tac-toe/audio/vitoria.mp3",
+        "publicPath": "/assets/tic-tac-toe/audio/vitoria.mp3",
+        "bytes": 61484,
+        "sha256": "517c84cfdb393471e71867a2d020fa918767a58858ee12d33a82f50d693df015",
+        "durationSeconds": 3.769,
+        "cue": "celebrate",
+        "deliveryGroup": "celebrate",
+        "quality": { "low": "keep", "reducedMotion": "keep" }
+      }
+    },
+    {
+      "id": "workshop-music-m4a",
+      "kind": "audio",
+      "format": "m4a",
+      "source": {
+        "provider": "owner-authorized-legacy-bundle",
+        "origin": "owner-authorized-legacy",
+        "identifier": "winter-loop-m4a",
+        "license": "project-owned",
+        "reviewedOn": "2026-08-30",
+        "reviewedBy": "Anderson",
+        "record": "ASSET_PROVENANCE.md#pacote-runtime-aprovado-30-08-2026"
+      },
+      "art": {
+        "family": "christmas-photo-first",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Ambiente opcional desbloqueado exclusivamente pelo primeiro gesto."
+      },
+      "processing": {
+        "recipe": "asset-copy:ASSET_PROVENANCE.md#pacote-runtime-aprovado-30-08-2026",
+        "tools": ["asset-copy"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/tic-tac-toe/audio/oficina-loop.m4a",
+        "publicPath": "/assets/tic-tac-toe/audio/oficina-loop.m4a",
+        "bytes": 636204,
+        "sha256": "76f1c9ffb6854fa308661115992e7a1cdf7e1809c0b582ba43ace1e088c5c55f",
+        "durationSeconds": 44.313,
+        "cue": "music",
+        "deliveryGroup": "workshop-music",
+        "quality": { "low": "omit", "reducedMotion": "keep" }
+      }
+    },
+    {
+      "id": "workshop-music-mp3",
+      "kind": "audio",
+      "format": "mp3",
+      "source": {
+        "provider": "owner-authorized-legacy-bundle",
+        "origin": "owner-authorized-legacy",
+        "identifier": "winter-loop-mp3",
+        "license": "project-owned",
+        "reviewedOn": "2026-08-30",
+        "reviewedBy": "Anderson",
+        "record": "ASSET_PROVENANCE.md#pacote-runtime-aprovado-30-08-2026"
+      },
+      "art": {
+        "family": "christmas-photo-first",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Ambiente opcional desbloqueado exclusivamente pelo primeiro gesto."
+      },
+      "processing": {
+        "recipe": "asset-copy:ASSET_PROVENANCE.md#pacote-runtime-aprovado-30-08-2026",
+        "tools": ["asset-copy"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/tic-tac-toe/audio/oficina-loop.mp3",
+        "publicPath": "/assets/tic-tac-toe/audio/oficina-loop.mp3",
+        "bytes": 710060,
+        "sha256": "8d7ab2c36dd15085e80c4f3872ceaca1e80831537fa36df46e0279be9b734219",
+        "durationSeconds": 44.307,
+        "cue": "music",
+        "deliveryGroup": "workshop-music",
+        "quality": { "low": "omit", "reducedMotion": "keep" }
+      }
+    }
+  ]
+}

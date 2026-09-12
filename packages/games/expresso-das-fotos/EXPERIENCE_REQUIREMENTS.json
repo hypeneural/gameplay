@@ -1,0 +1,39 @@
+{
+  "version": 1,
+  "gameId": "expresso-das-fotos",
+  "fantasy": "expresso-natalino-das-fotos",
+  "playerVerbs": ["tocar", "mover", "reunir"],
+  "interactionStates": [
+    "parado",
+    "pressionado",
+    "aguardando-faixa",
+    "viajando",
+    "coletando",
+    "acertou",
+    "tente-de-novo",
+    "dica",
+    "concluido"
+  ],
+  "targetSessionSeconds": 180,
+  "victory": {
+    "nextAction": "repetir-brincadeira",
+    "photoPriority": "alta"
+  },
+  "assetRoles": [
+    "foto-protagonista",
+    "cenario",
+    "moldura-da-foto",
+    "acao-principal",
+    "feedback-de-selecao",
+    "feedback-de-dica",
+    "feedback-de-acerto",
+    "feedback-de-vitoria",
+    "som-de-toque",
+    "som-de-acerto",
+    "som-de-vitoria"
+  ],
+  "quality": {
+    "low": "sem-efeitos-decorativos",
+    "reducedMotion": "sem-movimento-continuo"
+  }
+}

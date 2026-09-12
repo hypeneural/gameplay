@@ -1,0 +1,16 @@
+{
+  "name": "@christmas-games/expresso-das-fotos",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./definition": "./src/definition.ts"
+  },
+  "peerDependencies": {
+    "phaser": "4.2.1"
+  },
+  "dependencies": {
+    "@christmas-games/platform": "workspace:*"
+  }
+}

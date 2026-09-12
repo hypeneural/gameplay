@@ -1,0 +1,30 @@
+{
+  "version": 1,
+  "gameId": "magic-photo",
+  "fantasy": "despertar-a-magia-da-propria-foto-de-natal",
+  "playerVerbs": ["tocar", "puxar", "descobrir", "descongelar", "celebrar"],
+  "interactionStates": [
+    "parado",
+    "tocando",
+    "arrastando",
+    "descobrindo",
+    "descongelando",
+    "concluido"
+  ],
+  "targetSessionSeconds": 60,
+  "victory": { "nextAction": "repetir-brincadeira", "photoPriority": "alta" },
+  "assetRoles": [
+    "foto-protagonista",
+    "acao-principal",
+    "feedback-de-dica",
+    "feedback-de-acerto",
+    "feedback-de-vitoria",
+    "som-de-toque",
+    "som-de-acerto",
+    "som-de-vitoria",
+    "presente-em-camadas",
+    "gelo-apagavel",
+    "cenario-noturno"
+  ],
+  "quality": { "low": "sem-efeitos-decorativos", "reducedMotion": "sem-movimento-continuo" }
+}

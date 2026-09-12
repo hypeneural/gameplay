@@ -1,0 +1,901 @@
+{
+  "version": 2,
+  "gameId": "mosaico-em-queda",
+  "budget": {
+    "publicBytesMax": 400000,
+    "runtimeBytesMax": 190000,
+    "visualBytesMax": 110000
+  },
+  "assets": [
+    {
+      "id": "workshop-background",
+      "kind": "background",
+      "format": "webp",
+      "source": {
+        "provider": "openai-image-generation",
+        "origin": "project-created",
+        "identifier": "oficina-fundo-vertical-v1-reuse-mosaico",
+        "license": "project-owned",
+        "reviewedOn": "2026-09-07",
+        "reviewedBy": "Codex-local-visual-review",
+        "record": "ASSET_PROVENANCE.md#oficina-material-2026-09-07"
+      },
+      "art": {
+        "family": "christmas-photo-first",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Noite de Oficina sem pessoas, texto ou foto; somente sustenta o mural."
+      },
+      "processing": {
+        "recipe": "byte-copy-project-owned-workshop",
+        "tools": ["PowerShell-Copy-Item"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/mosaico-em-queda/backgrounds/oficina-vertical-v2.webp",
+        "publicPath": "/assets/mosaico-em-queda/backgrounds/oficina-vertical-v2.webp",
+        "bytes": 73598,
+        "sha256": "acab53c482c57b20168cab575e9a0ab2f5783ed855e018033d288d68181cdd8a",
+        "dimensions": {
+          "width": 768,
+          "height": 1536
+        },
+        "textureKey": "mosaico-workshop-background",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        }
+      }
+    },
+    {
+      "id": "workshop-background-vector-legacy",
+      "kind": "background",
+      "format": "svg",
+      "source": {
+        "provider": "internal-project",
+        "origin": "project-created",
+        "identifier": "mosaico-oficina-vector-v1",
+        "license": "project-owned",
+        "reviewedOn": "2026-09-03",
+        "reviewedBy": "Anderson",
+        "record": "ASSET_PROVENANCE.md#pacote-oficina"
+      },
+      "art": {
+        "family": "christmas-photo-first",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Noite de Oficina sem pessoas, texto ou foto; somente sustenta o mural."
+      },
+      "processing": {
+        "recipe": "hand-authored-svg:ASSET_PROVENANCE.md#pacote-oficina",
+        "tools": ["apply-patch"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/mosaico-em-queda/backgrounds/oficina-mural-v1.svg",
+        "publicPath": "/assets/mosaico-em-queda/backgrounds/oficina-mural-v1.svg",
+        "bytes": 1677,
+        "sha256": "7b340376c3e782b83c0726011febfb8a9ddf61c79540782a6d1adf34abef535e",
+        "dimensions": {
+          "width": 768,
+          "height": 1536
+        },
+        "textureKey": "mosaico-workshop-background-vector-legacy",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        }
+      }
+    },
+    {
+      "id": "board-surface",
+      "kind": "ui",
+      "format": "svg",
+      "source": {
+        "provider": "internal-project",
+        "origin": "project-created",
+        "identifier": "mosaico-oficina-vector-v1",
+        "license": "project-owned",
+        "reviewedOn": "2026-09-03",
+        "reviewedBy": "Anderson",
+        "record": "ASSET_PROVENANCE.md#pacote-oficina"
+      },
+      "art": {
+        "family": "christmas-photo-first",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Mural com sulcos discretos para orientar sem competir com as fotos."
+      },
+      "processing": {
+        "recipe": "hand-authored-svg:ASSET_PROVENANCE.md#pacote-oficina",
+        "tools": ["apply-patch"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/mosaico-em-queda/ui/board-surface-v1.svg",
+        "publicPath": "/assets/mosaico-em-queda/ui/board-surface-v1.svg",
+        "bytes": 1695,
+        "sha256": "241371af1ec85e8a31e2033ee8f439c1646ce52655eab2dc1ae0bcaef60155eb",
+        "dimensions": {
+          "width": 640,
+          "height": 1120
+        },
+        "textureKey": "mosaico-board-surface",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        }
+      }
+    },
+    {
+      "id": "photo-cell-frame",
+      "kind": "ui",
+      "format": "svg",
+      "source": {
+        "provider": "internal-project",
+        "origin": "project-created",
+        "identifier": "mosaico-oficina-vector-v1",
+        "license": "project-owned",
+        "reviewedOn": "2026-09-03",
+        "reviewedBy": "Anderson",
+        "record": "ASSET_PROVENANCE.md#pacote-oficina"
+      },
+      "art": {
+        "family": "christmas-photo-first",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Moldura de presente independente preserva a foto proporcional."
+      },
+      "processing": {
+        "recipe": "hand-authored-svg:ASSET_PROVENANCE.md#pacote-oficina",
+        "tools": ["apply-patch"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/mosaico-em-queda/ui/presente-foto-frame-v1.svg",
+        "publicPath": "/assets/mosaico-em-queda/ui/presente-foto-frame-v1.svg",
+        "bytes": 516,
+        "sha256": "98ff7723853338349df353372aff8fd3ffbc117d2b35e33209c4ecf7ff1a492e",
+        "dimensions": {
+          "width": 128,
+          "height": 128
+        },
+        "textureKey": "mosaico-photo-cell-frame",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        }
+      }
+    },
+    {
+      "id": "memory-frame",
+      "kind": "ui",
+      "format": "svg",
+      "source": {
+        "provider": "internal-project",
+        "origin": "project-created",
+        "identifier": "mosaico-oficina-vector-v1",
+        "license": "project-owned",
+        "reviewedOn": "2026-09-03",
+        "reviewedBy": "Anderson",
+        "record": "ASSET_PROVENANCE.md#pacote-oficina"
+      },
+      "art": {
+        "family": "christmas-photo-first",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Porta-retrato da Oficina tem abertura limpa para a card proporcional."
+      },
+      "processing": {
+        "recipe": "hand-authored-svg:ASSET_PROVENANCE.md#pacote-oficina",
+        "tools": ["apply-patch"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/mosaico-em-queda/ui/moldura-memoria-oficina-v1.svg",
+        "publicPath": "/assets/mosaico-em-queda/ui/moldura-memoria-oficina-v1.svg",
+        "bytes": 688,
+        "sha256": "04473e23f5636f26683f68313c59afa7419526712e8066afdd952d5c1a2ac0b2",
+        "dimensions": {
+          "width": 256,
+          "height": 256
+        },
+        "textureKey": "mosaico-memory-frame",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        }
+      }
+    },
+    {
+      "id": "dock-panel",
+      "kind": "ui",
+      "format": "svg",
+      "source": {
+        "provider": "internal-project",
+        "origin": "project-created",
+        "identifier": "mosaico-oficina-vector-v1",
+        "license": "project-owned",
+        "reviewedOn": "2026-09-03",
+        "reviewedBy": "Anderson",
+        "record": "ASSET_PROVENANCE.md#pacote-oficina"
+      },
+      "art": {
+        "family": "christmas-photo-first",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Base de madeira separa ações do mural sem ocupar a foto."
+      },
+      "processing": {
+        "recipe": "hand-authored-svg:ASSET_PROVENANCE.md#pacote-oficina",
+        "tools": ["apply-patch"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/mosaico-em-queda/ui/dock-panel-v1.svg",
+        "publicPath": "/assets/mosaico-em-queda/ui/dock-panel-v1.svg",
+        "bytes": 662,
+        "sha256": "5dd00303597d3b33bdeac6aae47cc7456f3d5fb9fe94ff16dc4ccee88589d0b8",
+        "dimensions": {
+          "width": 720,
+          "height": 164
+        },
+        "textureKey": "mosaico-dock-panel",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        }
+      }
+    },
+    {
+      "id": "button-left",
+      "kind": "ui",
+      "format": "svg",
+      "source": {
+        "provider": "internal-project",
+        "origin": "project-created",
+        "identifier": "mosaico-oficina-vector-v1",
+        "license": "project-owned",
+        "reviewedOn": "2026-09-03",
+        "reviewedBy": "Anderson",
+        "record": "ASSET_PROVENANCE.md#pacote-oficina"
+      },
+      "art": {
+        "family": "christmas-photo-first",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Face física com ícone direcional de alto contraste."
+      },
+      "processing": {
+        "recipe": "hand-authored-svg:ASSET_PROVENANCE.md#pacote-oficina",
+        "tools": ["apply-patch"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/mosaico-em-queda/ui/button-left-v1.svg",
+        "publicPath": "/assets/mosaico-em-queda/ui/button-left-v1.svg",
+        "bytes": 470,
+        "sha256": "421a18315b5576f61c6c50b7f79dc46068d845af93128448554f70272d88548c",
+        "dimensions": {
+          "width": 160,
+          "height": 160
+        },
+        "textureKey": "mosaico-button-left",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        }
+      }
+    },
+    {
+      "id": "button-rotate",
+      "kind": "ui",
+      "format": "svg",
+      "source": {
+        "provider": "internal-project",
+        "origin": "project-created",
+        "identifier": "mosaico-oficina-vector-v1",
+        "license": "project-owned",
+        "reviewedOn": "2026-09-03",
+        "reviewedBy": "Anderson",
+        "record": "ASSET_PROVENANCE.md#pacote-oficina"
+      },
+      "art": {
+        "family": "christmas-photo-first",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Face física comunica giro sem rótulo técnico."
+      },
+      "processing": {
+        "recipe": "hand-authored-svg:ASSET_PROVENANCE.md#pacote-oficina",
+        "tools": ["apply-patch"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/mosaico-em-queda/ui/button-rotate-v1.svg",
+        "publicPath": "/assets/mosaico-em-queda/ui/button-rotate-v1.svg",
+        "bytes": 485,
+        "sha256": "8effce8d34ccecb1a51f16aaebe1e9144afe2d008f5a11f85e23a7208381d251",
+        "dimensions": {
+          "width": 160,
+          "height": 160
+        },
+        "textureKey": "mosaico-button-rotate",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        }
+      }
+    },
+    {
+      "id": "button-right",
+      "kind": "ui",
+      "format": "svg",
+      "source": {
+        "provider": "internal-project",
+        "origin": "project-created",
+        "identifier": "mosaico-oficina-vector-v1",
+        "license": "project-owned",
+        "reviewedOn": "2026-09-03",
+        "reviewedBy": "Anderson",
+        "record": "ASSET_PROVENANCE.md#pacote-oficina"
+      },
+      "art": {
+        "family": "christmas-photo-first",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Face física com ícone direcional de alto contraste."
+      },
+      "processing": {
+        "recipe": "hand-authored-svg:ASSET_PROVENANCE.md#pacote-oficina",
+        "tools": ["apply-patch"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/mosaico-em-queda/ui/button-right-v1.svg",
+        "publicPath": "/assets/mosaico-em-queda/ui/button-right-v1.svg",
+        "bytes": 471,
+        "sha256": "8cc9dc0d10e2bf35084a567bc7ffd6ae247a91f913fb9f338fd36a72bad8f63d",
+        "dimensions": {
+          "width": 160,
+          "height": 160
+        },
+        "textureKey": "mosaico-button-right",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        }
+      }
+    },
+    {
+      "id": "button-down",
+      "kind": "ui",
+      "format": "svg",
+      "source": {
+        "provider": "internal-project",
+        "origin": "project-created",
+        "identifier": "mosaico-oficina-vector-v1",
+        "license": "project-owned",
+        "reviewedOn": "2026-09-03",
+        "reviewedBy": "Anderson",
+        "record": "ASSET_PROVENANCE.md#pacote-oficina"
+      },
+      "art": {
+        "family": "christmas-photo-first",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Face física torna a descida opcional claramente encontrável."
+      },
+      "processing": {
+        "recipe": "hand-authored-svg:ASSET_PROVENANCE.md#pacote-oficina",
+        "tools": ["apply-patch"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/mosaico-em-queda/ui/button-down-v1.svg",
+        "publicPath": "/assets/mosaico-em-queda/ui/button-down-v1.svg",
+        "bytes": 470,
+        "sha256": "25a53e231309f0e163c4d57e02867ab2e68e074b5bf20cd3916741d42e7cd00a",
+        "dimensions": {
+          "width": 160,
+          "height": 160
+        },
+        "textureKey": "mosaico-button-down",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        }
+      }
+    },
+    {
+      "id": "next-pedestal",
+      "kind": "ui",
+      "format": "svg",
+      "source": {
+        "provider": "internal-project",
+        "origin": "project-created",
+        "identifier": "mosaico-oficina-vector-v1",
+        "license": "project-owned",
+        "reviewedOn": "2026-09-03",
+        "reviewedBy": "Anderson",
+        "record": "ASSET_PROVENANCE.md#pacote-oficina"
+      },
+      "art": {
+        "family": "christmas-photo-first",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Pedestal integra a próxima forma ao universo material do dock."
+      },
+      "processing": {
+        "recipe": "hand-authored-svg:ASSET_PROVENANCE.md#pacote-oficina",
+        "tools": ["apply-patch"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/mosaico-em-queda/ui/next-pedestal-v1.svg",
+        "publicPath": "/assets/mosaico-em-queda/ui/next-pedestal-v1.svg",
+        "bytes": 358,
+        "sha256": "1d39349ec7d4d02a7e494571a4869e30d992ebf89c7caee74fe9cd29c2e51863",
+        "dimensions": {
+          "width": 176,
+          "height": 176
+        },
+        "textureKey": "mosaico-next-pedestal",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        }
+      }
+    },
+    {
+      "id": "progress-garland",
+      "kind": "ui",
+      "format": "svg",
+      "source": {
+        "provider": "internal-project",
+        "origin": "project-created",
+        "identifier": "mosaico-oficina-vector-v1",
+        "license": "project-owned",
+        "reviewedOn": "2026-09-03",
+        "reviewedBy": "Anderson",
+        "record": "ASSET_PROVENANCE.md#pacote-oficina"
+      },
+      "art": {
+        "family": "christmas-photo-first",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Guirlanda de progresso fica no chrome e nunca sobre a foto hero."
+      },
+      "processing": {
+        "recipe": "hand-authored-svg:ASSET_PROVENANCE.md#pacote-oficina",
+        "tools": ["apply-patch"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/mosaico-em-queda/vfx/guirlanda-progresso-v1.svg",
+        "publicPath": "/assets/mosaico-em-queda/vfx/guirlanda-progresso-v1.svg",
+        "bytes": 754,
+        "sha256": "077aec9b79a826659fda3192f2819625bb4ca153638d6a1c66bf964206e31c63",
+        "dimensions": {
+          "width": 768,
+          "height": 128
+        },
+        "textureKey": "mosaico-progress-garland",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        }
+      }
+    },
+    {
+      "id": "sparkle",
+      "kind": "vfx",
+      "format": "svg",
+      "source": {
+        "provider": "internal-project",
+        "origin": "project-created",
+        "identifier": "mosaico-oficina-vector-v1",
+        "license": "project-owned",
+        "reviewedOn": "2026-09-03",
+        "reviewedBy": "Anderson",
+        "record": "ASSET_PROVENANCE.md#pacote-oficina"
+      },
+      "art": {
+        "family": "christmas-photo-first",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Faísca pequena para efeitos finitos fora da foto protagonista."
+      },
+      "processing": {
+        "recipe": "hand-authored-svg:ASSET_PROVENANCE.md#pacote-oficina",
+        "tools": ["apply-patch"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/mosaico-em-queda/vfx/brilho-v1.svg",
+        "publicPath": "/assets/mosaico-em-queda/vfx/brilho-v1.svg",
+        "bytes": 263,
+        "sha256": "9ad852fc4a66a9921e50f7240dd6ffc1dfddcf1372af25044a4ae9c7ebd9bd8d",
+        "dimensions": {
+          "width": 64,
+          "height": 64
+        },
+        "textureKey": "mosaico-sparkle",
+        "quality": {
+          "low": "omit",
+          "reducedMotion": "omit"
+        }
+      }
+    },
+    {
+      "id": "snow-sweep",
+      "kind": "vfx",
+      "format": "svg",
+      "source": {
+        "provider": "internal-project",
+        "origin": "project-created",
+        "identifier": "mosaico-oficina-vector-v1",
+        "license": "project-owned",
+        "reviewedOn": "2026-09-03",
+        "reviewedBy": "Anderson",
+        "record": "ASSET_PROVENANCE.md#pacote-oficina"
+      },
+      "art": {
+        "family": "christmas-photo-first",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Sweep funcional comunica Recovery nas linhas escolhidas."
+      },
+      "processing": {
+        "recipe": "hand-authored-svg:ASSET_PROVENANCE.md#pacote-oficina",
+        "tools": ["apply-patch"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/mosaico-em-queda/vfx/sweep-neve-v1.svg",
+        "publicPath": "/assets/mosaico-em-queda/vfx/sweep-neve-v1.svg",
+        "bytes": 372,
+        "sha256": "8e484ba8d383a1d1ae4638d879eb570c187b67de8e7db8917c0f655ebd02b0c6",
+        "dimensions": {
+          "width": 768,
+          "height": 112
+        },
+        "textureKey": "mosaico-snow-sweep",
+        "quality": {
+          "low": "omit",
+          "reducedMotion": "omit"
+        }
+      }
+    },
+    {
+      "id": "warm-light",
+      "kind": "vfx",
+      "format": "svg",
+      "source": {
+        "provider": "internal-project",
+        "origin": "project-created",
+        "identifier": "mosaico-oficina-vector-v1",
+        "license": "project-owned",
+        "reviewedOn": "2026-09-03",
+        "reviewedBy": "Anderson",
+        "record": "ASSET_PROVENANCE.md#pacote-oficina"
+      },
+      "art": {
+        "family": "christmas-photo-first",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Luz breve reforça Frame e dica sem bloom pesado."
+      },
+      "processing": {
+        "recipe": "hand-authored-svg:ASSET_PROVENANCE.md#pacote-oficina",
+        "tools": ["apply-patch"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/mosaico-em-queda/vfx/luz-quente-v1.svg",
+        "publicPath": "/assets/mosaico-em-queda/vfx/luz-quente-v1.svg",
+        "bytes": 275,
+        "sha256": "b4f07ad5ca8dc26deb6676119d8624cc1d056656e378ef62a7e585aa40bbb899",
+        "dimensions": {
+          "width": 128,
+          "height": 128
+        },
+        "textureKey": "mosaico-warm-light",
+        "quality": {
+          "low": "omit",
+          "reducedMotion": "omit"
+        }
+      }
+    },
+    {
+      "id": "victory-ribbon",
+      "kind": "ui",
+      "format": "svg",
+      "source": {
+        "provider": "internal-project",
+        "origin": "project-created",
+        "identifier": "mosaico-oficina-vector-v1",
+        "license": "project-owned",
+        "reviewedOn": "2026-09-03",
+        "reviewedBy": "Anderson",
+        "record": "ASSET_PROVENANCE.md#pacote-oficina"
+      },
+      "art": {
+        "family": "christmas-photo-first",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Faixa finita enquadra a mensagem sem competir com hero."
+      },
+      "processing": {
+        "recipe": "hand-authored-svg:ASSET_PROVENANCE.md#pacote-oficina",
+        "tools": ["apply-patch"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/mosaico-em-queda/vfx/faixa-vitoria-v1.svg",
+        "publicPath": "/assets/mosaico-em-queda/vfx/faixa-vitoria-v1.svg",
+        "bytes": 287,
+        "sha256": "594ff13db11bc7c68030496f3b93a86dfbbffb19f9e77094f267ab64913075d5",
+        "dimensions": {
+          "width": 640,
+          "height": 144
+        },
+        "textureKey": "mosaico-victory-ribbon",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        }
+      }
+    },
+    {
+      "id": "ui-press-m4a",
+      "kind": "audio",
+      "format": "m4a",
+      "source": {
+        "provider": "owner-authorized-legacy-bundle",
+        "origin": "owner-authorized-legacy",
+        "identifier": "legacy-tap-m4a",
+        "license": "project-owned",
+        "reviewedOn": "2026-09-03",
+        "reviewedBy": "Anderson",
+        "record": "ASSET_PROVENANCE.md#audio-autorizado"
+      },
+      "art": {
+        "family": "christmas-photo-first",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Confirma toque, giro ou bloqueio sem agressividade."
+      },
+      "processing": {
+        "recipe": "byte-copy:ASSET_PROVENANCE.md#audio-autorizado",
+        "tools": ["asset-copy"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/mosaico-em-queda/audio/toque.m4a",
+        "publicPath": "/assets/mosaico-em-queda/audio/toque.m4a",
+        "bytes": 2728,
+        "sha256": "036613c5af4bb6209450f9f4a2d4495a4d779b800d240ce3ff0b37312d7df3b8",
+        "durationSeconds": 0.121,
+        "cue": "ui-press",
+        "deliveryGroup": "ui-press",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        }
+      }
+    },
+    {
+      "id": "ui-press-mp3",
+      "kind": "audio",
+      "format": "mp3",
+      "source": {
+        "provider": "owner-authorized-legacy-bundle",
+        "origin": "owner-authorized-legacy",
+        "identifier": "legacy-tap-mp3",
+        "license": "project-owned",
+        "reviewedOn": "2026-09-03",
+        "reviewedBy": "Anderson",
+        "record": "ASSET_PROVENANCE.md#audio-autorizado"
+      },
+      "art": {
+        "family": "christmas-photo-first",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Alternativa de codec para confirmação curta."
+      },
+      "processing": {
+        "recipe": "byte-copy:ASSET_PROVENANCE.md#audio-autorizado",
+        "tools": ["asset-copy"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/mosaico-em-queda/audio/toque.mp3",
+        "publicPath": "/assets/mosaico-em-queda/audio/toque.mp3",
+        "bytes": 2732,
+        "sha256": "089f3952341041802974efce998528de07648a85dcd250ef51870dc6266638d2",
+        "durationSeconds": 0.115,
+        "cue": "ui-press",
+        "deliveryGroup": "ui-press",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        }
+      }
+    },
+    {
+      "id": "placement-m4a",
+      "kind": "audio",
+      "format": "m4a",
+      "source": {
+        "provider": "owner-authorized-legacy-bundle",
+        "origin": "owner-authorized-legacy",
+        "identifier": "legacy-placement-m4a",
+        "license": "project-owned",
+        "reviewedOn": "2026-09-03",
+        "reviewedBy": "Anderson",
+        "record": "ASSET_PROVENANCE.md#audio-autorizado"
+      },
+      "art": {
+        "family": "christmas-photo-first",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Confirma encaixe, clear, Frame ou Recovery sob política de prioridade."
+      },
+      "processing": {
+        "recipe": "byte-copy:ASSET_PROVENANCE.md#audio-autorizado",
+        "tools": ["asset-copy"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/mosaico-em-queda/audio/encaixe.m4a",
+        "publicPath": "/assets/mosaico-em-queda/audio/encaixe.m4a",
+        "bytes": 7839,
+        "sha256": "46f1a780e41ab3a7170994f91b77ea72acb57d8d1138562678546ac9e3fcf73e",
+        "durationSeconds": 0.477,
+        "cue": "placement",
+        "deliveryGroup": "placement",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        }
+      }
+    },
+    {
+      "id": "placement-mp3",
+      "kind": "audio",
+      "format": "mp3",
+      "source": {
+        "provider": "owner-authorized-legacy-bundle",
+        "origin": "owner-authorized-legacy",
+        "identifier": "legacy-placement-mp3",
+        "license": "project-owned",
+        "reviewedOn": "2026-09-03",
+        "reviewedBy": "Anderson",
+        "record": "ASSET_PROVENANCE.md#audio-autorizado"
+      },
+      "art": {
+        "family": "christmas-photo-first",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Alternativa de codec do encaixe curto."
+      },
+      "processing": {
+        "recipe": "byte-copy:ASSET_PROVENANCE.md#audio-autorizado",
+        "tools": ["asset-copy"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/mosaico-em-queda/audio/encaixe.mp3",
+        "publicPath": "/assets/mosaico-em-queda/audio/encaixe.mp3",
+        "bytes": 8492,
+        "sha256": "972097d741f546b23335895a6f39d49abe0970a100714cfdec112c3e437a9c42",
+        "durationSeconds": 0.47,
+        "cue": "placement",
+        "deliveryGroup": "placement",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        }
+      }
+    },
+    {
+      "id": "victory-m4a",
+      "kind": "audio",
+      "format": "m4a",
+      "source": {
+        "provider": "owner-authorized-legacy-bundle",
+        "origin": "owner-authorized-legacy",
+        "identifier": "legacy-victory-m4a",
+        "license": "project-owned",
+        "reviewedOn": "2026-09-03",
+        "reviewedBy": "Anderson",
+        "record": "ASSET_PROVENANCE.md#audio-autorizado"
+      },
+      "art": {
+        "family": "christmas-photo-first",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Assinatura finita toca somente quando a foto hero já surgiu."
+      },
+      "processing": {
+        "recipe": "byte-copy:ASSET_PROVENANCE.md#audio-autorizado",
+        "tools": ["asset-copy"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/mosaico-em-queda/audio/vitoria.m4a",
+        "publicPath": "/assets/mosaico-em-queda/audio/vitoria.m4a",
+        "bytes": 54781,
+        "sha256": "0ba50705d544dbd4fddbee1f8279240f2eb03425c536658cf156b60d3f382f43",
+        "durationSeconds": 3.776,
+        "cue": "victory",
+        "deliveryGroup": "victory",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        }
+      }
+    },
+    {
+      "id": "victory-mp3",
+      "kind": "audio",
+      "format": "mp3",
+      "source": {
+        "provider": "owner-authorized-legacy-bundle",
+        "origin": "owner-authorized-legacy",
+        "identifier": "legacy-victory-mp3",
+        "license": "project-owned",
+        "reviewedOn": "2026-09-03",
+        "reviewedBy": "Anderson",
+        "record": "ASSET_PROVENANCE.md#audio-autorizado"
+      },
+      "art": {
+        "family": "christmas-photo-first",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Alternativa de codec da celebração finita."
+      },
+      "processing": {
+        "recipe": "byte-copy:ASSET_PROVENANCE.md#audio-autorizado",
+        "tools": ["asset-copy"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/mosaico-em-queda/audio/vitoria.mp3",
+        "publicPath": "/assets/mosaico-em-queda/audio/vitoria.mp3",
+        "bytes": 61484,
+        "sha256": "517c84cfdb393471e71867a2d020fa918767a58858ee12d33a82f50d693df015",
+        "durationSeconds": 3.769,
+        "cue": "victory",
+        "deliveryGroup": "victory",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        }
+      }
+    }
+  ]
+}

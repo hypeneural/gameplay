@@ -1,5 +1,7 @@
 import type { GameDefinition } from '@christmas-games/platform';
 
+export { memoryStandardPairCount } from './domain/MemoryDifficulty.js';
+
 /** Static metadata is safe for the Hub and never mounts Phaser. */
 export const memoryDefinition: GameDefinition = {
   id: 'memory',

@@ -1,0 +1,42 @@
+{
+  "version": 1,
+  "gameId": "rena-das-lembrancas",
+  "fantasy": "Rudolph salva fotografias que caem na neve e completa o Album de Natal",
+  "playerVerbs": ["guiar", "salvar", "ativar-magia", "rever-fotos"],
+  "interactionStates": [
+    "parado",
+    "pressionado",
+    "selecionado",
+    "em-movimento",
+    "acertou",
+    "tente-de-novo",
+    "dica",
+    "concluido"
+  ],
+  "targetSessionSeconds": 80,
+  "victory": {
+    "nextAction": "repetir-brincadeira",
+    "photoPriority": "alta"
+  },
+  "assetRoles": [
+    "foto-protagonista",
+    "cenario",
+    "moldura-da-foto",
+    "acao-principal",
+    "feedback-de-selecao",
+    "feedback-de-dica",
+    "feedback-de-acerto",
+    "feedback-de-vitoria",
+    "som-de-toque",
+    "som-de-acerto",
+    "som-de-vitoria",
+    "rena-articulada",
+    "nariz-magico",
+    "album-de-natal",
+    "musica-natalina"
+  ],
+  "quality": {
+    "low": "sem-efeitos-decorativos",
+    "reducedMotion": "sem-movimento-continuo"
+  }
+}

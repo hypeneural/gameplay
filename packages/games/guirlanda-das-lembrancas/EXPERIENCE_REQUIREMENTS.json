@@ -1,0 +1,36 @@
+{
+  "version": 1,
+  "gameId": "guirlanda-das-lembrancas",
+  "fantasy": "guirlanda-de-memorias-iluminada",
+  "playerVerbs": ["tocar", "escolher", "arrastar", "pendurar", "acender", "celebrar"],
+  "interactionStates": [
+    "aguardando-foto",
+    "aguardando-estrela",
+    "arrastando",
+    "encaixando",
+    "retornando",
+    "recebendo-dica",
+    "concluido"
+  ],
+  "targetSessionSeconds": 120,
+  "victory": { "nextAction": "repetir-ou-escolher-outro-jogo", "photoPriority": "alta" },
+  "assetRoles": [
+    "foto-protagonista",
+    "cenario-cabana",
+    "guirlanda-material",
+    "moldura-da-foto",
+    "estrela-de-encaixe",
+    "caixa-de-lembrancas",
+    "feedback-de-selecao",
+    "feedback-de-dica",
+    "feedback-de-encaixe",
+    "feedback-de-vitoria",
+    "som-de-toque",
+    "som-de-encaixe",
+    "som-de-vitoria"
+  ],
+  "quality": {
+    "low": "sem-fio-de-luz-ou-particulas-decorativas",
+    "reducedMotion": "estado-final-sem-trilha-ou-particulas"
+  }
+}

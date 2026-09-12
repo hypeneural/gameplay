@@ -1,0 +1,561 @@
+{
+  "version": 2,
+  "gameId": "memory",
+  "budget": {
+    "publicBytesMax": 1650000,
+    "runtimeBytesMax": 900000,
+    "visualBytesMax": 110000
+  },
+  "assets": [
+    {
+      "id": "winter-village-background",
+      "kind": "background",
+      "format": "webp",
+      "source": {
+        "provider": "internal-project",
+        "origin": "project-created",
+        "identifier": "winter-village-background-v1",
+        "license": "project-owned",
+        "reviewedOn": "2026-08-28",
+        "reviewedBy": "memory-card-lab",
+        "record": "ASSET_PROVENANCE.md#pacote-visual-compartilhado-v1"
+      },
+      "art": {
+        "family": "christmas-photo-first",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Cenário de vila nevada atrás da grade, com véu escuro para preservar a leitura das cartas e das fotos."
+      },
+      "processing": {
+        "recipe": "memory-card-lab:background-v1",
+        "tools": ["asset-factory-v1-migration"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/memory/backgrounds/vila-nevada-noite-v1.webp",
+        "publicPath": "/assets/memory/backgrounds/vila-nevada-noite-v1.webp",
+        "bytes": 106970,
+        "sha256": "c3a45e561d83718f6a5d2ea18897224adb4fef0344dc659ccfa197ae82d41205",
+        "dimensions": {
+          "width": 1024,
+          "height": 1536
+        },
+        "textureKey": "memory-background-winter-village",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        }
+      }
+    },
+    {
+      "id": "snow-particle",
+      "kind": "vfx",
+      "format": "svg",
+      "source": {
+        "provider": "internal-project",
+        "origin": "project-created",
+        "identifier": "snow-particle-v1",
+        "license": "project-owned",
+        "reviewedOn": "2026-08-28",
+        "reviewedBy": "memory-card-lab",
+        "record": "ASSET_PROVENANCE.md#pacote-visual-compartilhado-v1"
+      },
+      "art": {
+        "family": "christmas-photo-first",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Neve esparsa de fundo; fica atrás da grade e desaparece em LOW e com movimento reduzido."
+      },
+      "processing": {
+        "recipe": "memory-card-lab:ambient-snow-v1",
+        "tools": ["asset-factory-v1-migration"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/memory/ui/floco-neve.svg",
+        "publicPath": "/assets/memory/ui/floco-neve.svg",
+        "bytes": 426,
+        "sha256": "6cf3103762065ed33bbefaeeddb6fa3174f897c46cfae7b1e387df023813b13b",
+        "dimensions": {
+          "width": 64,
+          "height": 64
+        },
+        "textureKey": "memory-snowflake",
+        "quality": {
+          "low": "omit",
+          "reducedMotion": "omit"
+        }
+      }
+    },
+    {
+      "id": "tap-m4a",
+      "kind": "audio",
+      "format": "m4a",
+      "source": {
+        "provider": "owner-authorized-legacy-bundle",
+        "origin": "owner-authorized-legacy",
+        "identifier": "tap-m4a",
+        "license": "project-owned",
+        "reviewedOn": "2026-08-28",
+        "reviewedBy": "memory-audio-pass-1",
+        "record": "ASSET_PROVENANCE.md#audio-legacy-autorizado-para-memory"
+      },
+      "art": {
+        "family": "christmas-photo-first",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Áudio natalino já autorizado para o produto; limita cada resposta sonora sem carregar fotos ou dados de sessão."
+      },
+      "processing": {
+        "recipe": "memory-audio-pass-1:ASSET_PROVENANCE.md#audio-legacy-autorizado-para-memory",
+        "tools": ["asset-factory-v1-migration"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/memory/audio/tap.m4a",
+        "publicPath": "/assets/memory/audio/tap.m4a",
+        "bytes": 2728,
+        "sha256": "036613c5af4bb6209450f9f4a2d4495a4d779b800d240ce3ff0b37312d7df3b8",
+        "durationSeconds": 0.121,
+        "cue": "tap",
+        "deliveryGroup": "tap",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        }
+      }
+    },
+    {
+      "id": "tap-mp3",
+      "kind": "audio",
+      "format": "mp3",
+      "source": {
+        "provider": "owner-authorized-legacy-bundle",
+        "origin": "owner-authorized-legacy",
+        "identifier": "tap-mp3",
+        "license": "project-owned",
+        "reviewedOn": "2026-08-28",
+        "reviewedBy": "memory-audio-pass-1",
+        "record": "ASSET_PROVENANCE.md#audio-legacy-autorizado-para-memory"
+      },
+      "art": {
+        "family": "christmas-photo-first",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Áudio natalino já autorizado para o produto; limita cada resposta sonora sem carregar fotos ou dados de sessão."
+      },
+      "processing": {
+        "recipe": "memory-audio-pass-1:ASSET_PROVENANCE.md#audio-legacy-autorizado-para-memory",
+        "tools": ["asset-factory-v1-migration"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/memory/audio/tap.mp3",
+        "publicPath": "/assets/memory/audio/tap.mp3",
+        "bytes": 2732,
+        "sha256": "089f3952341041802974efce998528de07648a85dcd250ef51870dc6266638d2",
+        "durationSeconds": 0.115,
+        "cue": "tap",
+        "deliveryGroup": "tap",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        }
+      }
+    },
+    {
+      "id": "hint-m4a",
+      "kind": "audio",
+      "format": "m4a",
+      "source": {
+        "provider": "owner-authorized-legacy-bundle",
+        "origin": "owner-authorized-legacy",
+        "identifier": "hint-m4a",
+        "license": "project-owned",
+        "reviewedOn": "2026-08-28",
+        "reviewedBy": "memory-audio-pass-1",
+        "record": "ASSET_PROVENANCE.md#audio-legacy-autorizado-para-memory"
+      },
+      "art": {
+        "family": "christmas-photo-first",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Áudio natalino já autorizado para o produto; limita cada resposta sonora sem carregar fotos ou dados de sessão."
+      },
+      "processing": {
+        "recipe": "memory-audio-pass-1:ASSET_PROVENANCE.md#audio-legacy-autorizado-para-memory",
+        "tools": ["asset-factory-v1-migration"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/memory/audio/hint.m4a",
+        "publicPath": "/assets/memory/audio/hint.m4a",
+        "bytes": 1853,
+        "sha256": "2c292cc68a719fd447f12288fee0950eb0ba031e2db663a0cc3f58b07cfdfd14",
+        "durationSeconds": 0.054,
+        "cue": "hint",
+        "deliveryGroup": "hint",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        }
+      }
+    },
+    {
+      "id": "hint-mp3",
+      "kind": "audio",
+      "format": "mp3",
+      "source": {
+        "provider": "owner-authorized-legacy-bundle",
+        "origin": "owner-authorized-legacy",
+        "identifier": "hint-mp3",
+        "license": "project-owned",
+        "reviewedOn": "2026-08-28",
+        "reviewedBy": "memory-audio-pass-1",
+        "record": "ASSET_PROVENANCE.md#audio-legacy-autorizado-para-memory"
+      },
+      "art": {
+        "family": "christmas-photo-first",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Áudio natalino já autorizado para o produto; limita cada resposta sonora sem carregar fotos ou dados de sessão."
+      },
+      "processing": {
+        "recipe": "memory-audio-pass-1:ASSET_PROVENANCE.md#audio-legacy-autorizado-para-memory",
+        "tools": ["asset-factory-v1-migration"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/memory/audio/hint.mp3",
+        "publicPath": "/assets/memory/audio/hint.mp3",
+        "bytes": 1580,
+        "sha256": "2ce637257652a900d32fc70290b3c9c85165da15cdabaa4f78413b1c42cacc28",
+        "durationSeconds": 0.047,
+        "cue": "hint",
+        "deliveryGroup": "hint",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        }
+      }
+    },
+    {
+      "id": "correct-m4a",
+      "kind": "audio",
+      "format": "m4a",
+      "source": {
+        "provider": "owner-authorized-legacy-bundle",
+        "origin": "owner-authorized-legacy",
+        "identifier": "correct-m4a",
+        "license": "project-owned",
+        "reviewedOn": "2026-08-28",
+        "reviewedBy": "memory-audio-pass-1",
+        "record": "ASSET_PROVENANCE.md#audio-legacy-autorizado-para-memory"
+      },
+      "art": {
+        "family": "christmas-photo-first",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Áudio natalino já autorizado para o produto; limita cada resposta sonora sem carregar fotos ou dados de sessão."
+      },
+      "processing": {
+        "recipe": "memory-audio-pass-1:ASSET_PROVENANCE.md#audio-legacy-autorizado-para-memory",
+        "tools": ["asset-factory-v1-migration"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/memory/audio/correct.m4a",
+        "publicPath": "/assets/memory/audio/correct.m4a",
+        "bytes": 7839,
+        "sha256": "46f1a780e41ab3a7170994f91b77ea72acb57d8d1138562678546ac9e3fcf73e",
+        "durationSeconds": 0.477,
+        "cue": "correct",
+        "deliveryGroup": "correct",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        }
+      }
+    },
+    {
+      "id": "correct-mp3",
+      "kind": "audio",
+      "format": "mp3",
+      "source": {
+        "provider": "owner-authorized-legacy-bundle",
+        "origin": "owner-authorized-legacy",
+        "identifier": "correct-mp3",
+        "license": "project-owned",
+        "reviewedOn": "2026-08-28",
+        "reviewedBy": "memory-audio-pass-1",
+        "record": "ASSET_PROVENANCE.md#audio-legacy-autorizado-para-memory"
+      },
+      "art": {
+        "family": "christmas-photo-first",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Áudio natalino já autorizado para o produto; limita cada resposta sonora sem carregar fotos ou dados de sessão."
+      },
+      "processing": {
+        "recipe": "memory-audio-pass-1:ASSET_PROVENANCE.md#audio-legacy-autorizado-para-memory",
+        "tools": ["asset-factory-v1-migration"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/memory/audio/correct.mp3",
+        "publicPath": "/assets/memory/audio/correct.mp3",
+        "bytes": 8492,
+        "sha256": "972097d741f546b23335895a6f39d49abe0970a100714cfdec112c3e437a9c42",
+        "durationSeconds": 0.47,
+        "cue": "correct",
+        "deliveryGroup": "correct",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        }
+      }
+    },
+    {
+      "id": "wrong-m4a",
+      "kind": "audio",
+      "format": "m4a",
+      "source": {
+        "provider": "owner-authorized-legacy-bundle",
+        "origin": "owner-authorized-legacy",
+        "identifier": "wrong-m4a",
+        "license": "project-owned",
+        "reviewedOn": "2026-08-28",
+        "reviewedBy": "memory-audio-pass-1",
+        "record": "ASSET_PROVENANCE.md#audio-legacy-autorizado-para-memory"
+      },
+      "art": {
+        "family": "christmas-photo-first",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Áudio natalino já autorizado para o produto; limita cada resposta sonora sem carregar fotos ou dados de sessão."
+      },
+      "processing": {
+        "recipe": "memory-audio-pass-1:ASSET_PROVENANCE.md#audio-legacy-autorizado-para-memory",
+        "tools": ["asset-factory-v1-migration"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/memory/audio/wrong.m4a",
+        "publicPath": "/assets/memory/audio/wrong.m4a",
+        "bytes": 4225,
+        "sha256": "4ad7d128763908fa2a56fc4c796a7e5c079845e98fd423311717b21adf599d82",
+        "durationSeconds": 0.211,
+        "cue": "wrong",
+        "deliveryGroup": "wrong",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        }
+      }
+    },
+    {
+      "id": "wrong-mp3",
+      "kind": "audio",
+      "format": "mp3",
+      "source": {
+        "provider": "owner-authorized-legacy-bundle",
+        "origin": "owner-authorized-legacy",
+        "identifier": "wrong-mp3",
+        "license": "project-owned",
+        "reviewedOn": "2026-08-28",
+        "reviewedBy": "memory-audio-pass-1",
+        "record": "ASSET_PROVENANCE.md#audio-legacy-autorizado-para-memory"
+      },
+      "art": {
+        "family": "christmas-photo-first",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Áudio natalino já autorizado para o produto; limita cada resposta sonora sem carregar fotos ou dados de sessão."
+      },
+      "processing": {
+        "recipe": "memory-audio-pass-1:ASSET_PROVENANCE.md#audio-legacy-autorizado-para-memory",
+        "tools": ["asset-factory-v1-migration"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/memory/audio/wrong.mp3",
+        "publicPath": "/assets/memory/audio/wrong.mp3",
+        "bytes": 4268,
+        "sha256": "f0586bf9df1f1d6dacf362c58520bdfde172a6198f640e2acb90dcf23eeb11cc",
+        "durationSeconds": 0.205,
+        "cue": "wrong",
+        "deliveryGroup": "wrong",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        }
+      }
+    },
+    {
+      "id": "celebrate-m4a",
+      "kind": "audio",
+      "format": "m4a",
+      "source": {
+        "provider": "owner-authorized-legacy-bundle",
+        "origin": "owner-authorized-legacy",
+        "identifier": "celebrate-m4a",
+        "license": "project-owned",
+        "reviewedOn": "2026-08-28",
+        "reviewedBy": "memory-audio-pass-1",
+        "record": "ASSET_PROVENANCE.md#audio-legacy-autorizado-para-memory"
+      },
+      "art": {
+        "family": "christmas-photo-first",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Áudio natalino já autorizado para o produto; limita cada resposta sonora sem carregar fotos ou dados de sessão."
+      },
+      "processing": {
+        "recipe": "memory-audio-pass-1:ASSET_PROVENANCE.md#audio-legacy-autorizado-para-memory",
+        "tools": ["asset-factory-v1-migration"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/memory/audio/celebrate.m4a",
+        "publicPath": "/assets/memory/audio/celebrate.m4a",
+        "bytes": 54781,
+        "sha256": "0ba50705d544dbd4fddbee1f8279240f2eb03425c536658cf156b60d3f382f43",
+        "durationSeconds": 3.776,
+        "cue": "celebrate",
+        "deliveryGroup": "celebrate",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        }
+      }
+    },
+    {
+      "id": "celebrate-mp3",
+      "kind": "audio",
+      "format": "mp3",
+      "source": {
+        "provider": "owner-authorized-legacy-bundle",
+        "origin": "owner-authorized-legacy",
+        "identifier": "celebrate-mp3",
+        "license": "project-owned",
+        "reviewedOn": "2026-08-28",
+        "reviewedBy": "memory-audio-pass-1",
+        "record": "ASSET_PROVENANCE.md#audio-legacy-autorizado-para-memory"
+      },
+      "art": {
+        "family": "christmas-photo-first",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Áudio natalino já autorizado para o produto; limita cada resposta sonora sem carregar fotos ou dados de sessão."
+      },
+      "processing": {
+        "recipe": "memory-audio-pass-1:ASSET_PROVENANCE.md#audio-legacy-autorizado-para-memory",
+        "tools": ["asset-factory-v1-migration"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/memory/audio/celebrate.mp3",
+        "publicPath": "/assets/memory/audio/celebrate.mp3",
+        "bytes": 61484,
+        "sha256": "517c84cfdb393471e71867a2d020fa918767a58858ee12d33a82f50d693df015",
+        "durationSeconds": 3.769,
+        "cue": "celebrate",
+        "deliveryGroup": "celebrate",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        }
+      }
+    },
+    {
+      "id": "winter-loop-m4a",
+      "kind": "audio",
+      "format": "m4a",
+      "source": {
+        "provider": "owner-authorized-legacy-bundle",
+        "origin": "owner-authorized-legacy",
+        "identifier": "winter-loop-m4a",
+        "license": "project-owned",
+        "reviewedOn": "2026-08-28",
+        "reviewedBy": "memory-audio-pass-1",
+        "record": "ASSET_PROVENANCE.md#audio-legacy-autorizado-para-memory"
+      },
+      "art": {
+        "family": "christmas-photo-first",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Áudio natalino já autorizado para o produto; limita cada resposta sonora sem carregar fotos ou dados de sessão."
+      },
+      "processing": {
+        "recipe": "memory-audio-pass-1:ASSET_PROVENANCE.md#audio-legacy-autorizado-para-memory",
+        "tools": ["asset-factory-v1-migration"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/memory/audio/winter-loop.m4a",
+        "publicPath": "/assets/memory/audio/winter-loop.m4a",
+        "bytes": 636204,
+        "sha256": "76f1c9ffb6854fa308661115992e7a1cdf7e1809c0b582ba43ace1e088c5c55f",
+        "durationSeconds": 44.313,
+        "cue": "music",
+        "deliveryGroup": "winter-loop",
+        "quality": {
+          "low": "omit",
+          "reducedMotion": "keep"
+        }
+      }
+    },
+    {
+      "id": "winter-loop-mp3",
+      "kind": "audio",
+      "format": "mp3",
+      "source": {
+        "provider": "owner-authorized-legacy-bundle",
+        "origin": "owner-authorized-legacy",
+        "identifier": "winter-loop-mp3",
+        "license": "project-owned",
+        "reviewedOn": "2026-08-28",
+        "reviewedBy": "memory-audio-pass-1",
+        "record": "ASSET_PROVENANCE.md#audio-legacy-autorizado-para-memory"
+      },
+      "art": {
+        "family": "christmas-photo-first",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Áudio natalino já autorizado para o produto; limita cada resposta sonora sem carregar fotos ou dados de sessão."
+      },
+      "processing": {
+        "recipe": "memory-audio-pass-1:ASSET_PROVENANCE.md#audio-legacy-autorizado-para-memory",
+        "tools": ["asset-factory-v1-migration"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/memory/audio/winter-loop.mp3",
+        "publicPath": "/assets/memory/audio/winter-loop.mp3",
+        "bytes": 710060,
+        "sha256": "8d7ab2c36dd15085e80c4f3872ceaca1e80831537fa36df46e0279be9b734219",
+        "durationSeconds": 44.307,
+        "cue": "music",
+        "deliveryGroup": "winter-loop",
+        "quality": {
+          "low": "omit",
+          "reducedMotion": "keep"
+        }
+      }
+    }
+  ]
+}

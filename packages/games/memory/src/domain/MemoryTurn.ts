@@ -26,6 +26,7 @@ export interface MemorySelectionResult {
 }
 
 export function createMemoryTurn(deck: readonly MemoryCard[]): MemoryTurn {
+  assertValidMemoryDeck(deck);
   return {
     cards: deck.map((card) => ({ ...card, status: 'down' })),
     openCardIds: [],
@@ -33,6 +34,27 @@ export function createMemoryTurn(deck: readonly MemoryCard[]): MemoryTurn {
     phase: 'ready',
     turns: 0,
   };
+}
+
+function assertValidMemoryDeck(deck: readonly MemoryCard[]): void {
+  if (deck.length < 2 || deck.length % 2 !== 0) {
+    throw new Error('Memory turn needs an even deck of at least two cards.');
+  }
+  const cardIds = new Set<string>();
+  const pairCounts = new Map<string, number>();
+  for (const card of deck) {
+    if (card.id.trim().length === 0 || card.pairId.trim().length === 0) {
+      throw new Error('Memory cards need non-empty ids.');
+    }
+    if (cardIds.has(card.id)) {
+      throw new Error('Memory turn needs unique card ids.');
+    }
+    cardIds.add(card.id);
+    pairCounts.set(card.pairId, (pairCounts.get(card.pairId) ?? 0) + 1);
+  }
+  if ([...pairCounts.values()].some((count) => count !== 2)) {
+    throw new Error('Memory turn needs exactly two cards for every pair.');
+  }
 }
 
 /** Accepts only a face-down card while the player can make a first or second choice. */

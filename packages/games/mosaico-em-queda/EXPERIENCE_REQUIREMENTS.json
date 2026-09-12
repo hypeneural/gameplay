@@ -1,0 +1,43 @@
+{
+  "version": 1,
+  "gameId": "mosaico-em-queda",
+  "fantasy": "oficina-mural-de-lembrancas",
+  "playerVerbs": ["tocar", "arrastar", "mover", "girar", "baixar", "completar", "celebrar"],
+  "interactionStates": [
+    "pronto",
+    "pressionado",
+    "arrastando",
+    "movendo",
+    "girando",
+    "bloqueado",
+    "assentando",
+    "limpando",
+    "revelando-lembranca",
+    "recebendo-ajuda",
+    "concluido"
+  ],
+  "targetSessionSeconds": 120,
+  "victory": { "nextAction": "repetir-com-outra-foto", "photoPriority": "alta" },
+  "assetRoles": [
+    "foto-protagonista",
+    "mural-da-oficina",
+    "superficie-do-board",
+    "moldura-de-celula",
+    "dock",
+    "proxima-peca",
+    "memory-frame",
+    "progresso-guirlanda",
+    "feedback-de-lock",
+    "feedback-de-clear",
+    "feedback-de-dica",
+    "recovery",
+    "vitoria",
+    "som-de-ui",
+    "som-de-acao",
+    "som-de-vitoria"
+  ],
+  "quality": {
+    "low": "sem-vfx-decorativo-ou-loop-musical",
+    "reducedMotion": "confirmacao-estatica-sem-tween-ou-particulas"
+  }
+}

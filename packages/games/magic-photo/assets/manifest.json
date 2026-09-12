@@ -1,0 +1,827 @@
+{
+  "version": 2,
+  "gameId": "magic-photo",
+  "budget": {
+    "publicBytesMax": 2200000,
+    "runtimeBytesMax": 1300000,
+    "visualBytesMax": 530000
+  },
+  "assets": [
+    {
+      "id": "tap-mp3",
+      "kind": "audio",
+      "format": "mp3",
+      "source": {
+        "provider": "Kenney",
+        "origin": "third-party-licensed",
+        "identifier": "Audio/click_001.ogg",
+        "referenceUrl": "https://kenney.nl/assets/interface-sounds",
+        "license": "CC0-1.0",
+        "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+        "reviewedOn": "2026-09-07",
+        "reviewedBy": "Codex-owner-request-2026-09-07",
+        "record": "ASSET_PROVENANCE.md#tap"
+      },
+      "art": {
+        "family": "christmas-photo-first",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Resposta curta ao gesto; normalizacao a -6 dBFS, volume reduzido e retorno visual equivalente. Avaliacao auditiva em aparelho permanece no gate de release."
+      },
+      "processing": {
+        "recipe": "prepare-magic-photo-audio:lossless-copy-of-approved-derivative",
+        "tools": ["node-24"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/magic-photo/audio/tap.mp3",
+        "publicPath": "/assets/magic-photo/audio/tap.mp3",
+        "bytes": 2395,
+        "sha256": "c809c6c54eff4a22875a715f92ae674d7321f3e52be90e4d46dc26385f295745",
+        "durationSeconds": 0.18,
+        "cue": "tap",
+        "deliveryGroup": "tap",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        }
+      }
+    },
+    {
+      "id": "tap-m4a",
+      "kind": "audio",
+      "format": "m4a",
+      "source": {
+        "provider": "Kenney",
+        "origin": "third-party-licensed",
+        "identifier": "Audio/click_001.ogg",
+        "referenceUrl": "https://kenney.nl/assets/interface-sounds",
+        "license": "CC0-1.0",
+        "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+        "reviewedOn": "2026-09-07",
+        "reviewedBy": "Codex-owner-request-2026-09-07",
+        "record": "ASSET_PROVENANCE.md#tap"
+      },
+      "art": {
+        "family": "christmas-photo-first",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Resposta curta ao gesto; normalizacao a -6 dBFS, volume reduzido e retorno visual equivalente. Avaliacao auditiva em aparelho permanece no gate de release."
+      },
+      "processing": {
+        "recipe": "prepare-magic-photo-audio:lossless-copy-of-approved-derivative",
+        "tools": ["node-24"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/magic-photo/audio/tap.m4a",
+        "publicPath": "/assets/magic-photo/audio/tap.m4a",
+        "bytes": 2257,
+        "sha256": "671d200bccaa271793f4d2e9963c62f9833f87ef2e5cde8272e279f08c8c492a",
+        "durationSeconds": 0.18,
+        "cue": "tap",
+        "deliveryGroup": "tap",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        }
+      }
+    },
+    {
+      "id": "paper-mp3",
+      "kind": "audio",
+      "format": "mp3",
+      "source": {
+        "provider": "Kenney",
+        "origin": "third-party-licensed",
+        "identifier": "Audio2/card-slide-1.ogg",
+        "referenceUrl": "https://kenney.nl/assets/casino-audio",
+        "license": "CC0-1.0",
+        "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+        "reviewedOn": "2026-09-07",
+        "reviewedBy": "Codex-owner-request-2026-09-07",
+        "record": "ASSET_PROVENANCE.md#paper"
+      },
+      "art": {
+        "family": "christmas-photo-first",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Resposta curta ao gesto; normalizacao a -6 dBFS, volume reduzido e retorno visual equivalente. Avaliacao auditiva em aparelho permanece no gate de release."
+      },
+      "processing": {
+        "recipe": "prepare-magic-photo-audio:lossless-copy-of-approved-derivative",
+        "tools": ["node-24"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/magic-photo/audio/paper.mp3",
+        "publicPath": "/assets/magic-photo/audio/paper.mp3",
+        "bytes": 5530,
+        "sha256": "4019b0e6352efbfa90fde4e9839472264f773e121d6cc8f39099700e9a68c1e7",
+        "durationSeconds": 0.48,
+        "cue": "paper",
+        "deliveryGroup": "paper",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        }
+      }
+    },
+    {
+      "id": "paper-m4a",
+      "kind": "audio",
+      "format": "m4a",
+      "source": {
+        "provider": "Kenney",
+        "origin": "third-party-licensed",
+        "identifier": "Audio2/card-slide-1.ogg",
+        "referenceUrl": "https://kenney.nl/assets/casino-audio",
+        "license": "CC0-1.0",
+        "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+        "reviewedOn": "2026-09-07",
+        "reviewedBy": "Codex-owner-request-2026-09-07",
+        "record": "ASSET_PROVENANCE.md#paper"
+      },
+      "art": {
+        "family": "christmas-photo-first",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Resposta curta ao gesto; normalizacao a -6 dBFS, volume reduzido e retorno visual equivalente. Avaliacao auditiva em aparelho permanece no gate de release."
+      },
+      "processing": {
+        "recipe": "prepare-magic-photo-audio:lossless-copy-of-approved-derivative",
+        "tools": ["node-24"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/magic-photo/audio/paper.m4a",
+        "publicPath": "/assets/magic-photo/audio/paper.m4a",
+        "bytes": 6201,
+        "sha256": "605fb18a28af58568e4b5e241f4e01218e86dca6ca729dc005a584349b0e3b60",
+        "durationSeconds": 0.48,
+        "cue": "paper",
+        "deliveryGroup": "paper",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        }
+      }
+    },
+    {
+      "id": "open-mp3",
+      "kind": "audio",
+      "format": "mp3",
+      "source": {
+        "provider": "Kenney",
+        "origin": "third-party-licensed",
+        "identifier": "Audio2/cards-pack-take-out-2.ogg",
+        "referenceUrl": "https://kenney.nl/assets/casino-audio",
+        "license": "CC0-1.0",
+        "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+        "reviewedOn": "2026-09-07",
+        "reviewedBy": "Codex-owner-request-2026-09-07",
+        "record": "ASSET_PROVENANCE.md#open"
+      },
+      "art": {
+        "family": "christmas-photo-first",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Resposta curta ao gesto; normalizacao a -6 dBFS, volume reduzido e retorno visual equivalente. Avaliacao auditiva em aparelho permanece no gate de release."
+      },
+      "processing": {
+        "recipe": "prepare-magic-photo-audio:lossless-copy-of-approved-derivative",
+        "tools": ["node-24"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/magic-photo/audio/open.mp3",
+        "publicPath": "/assets/magic-photo/audio/open.mp3",
+        "bytes": 7097,
+        "sha256": "b1d41b22c06fd5451c9d2c4ae83c913f840c531de774d67c3ce7320bd594bdfd",
+        "durationSeconds": 0.64,
+        "cue": "open",
+        "deliveryGroup": "open",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        }
+      }
+    },
+    {
+      "id": "open-m4a",
+      "kind": "audio",
+      "format": "m4a",
+      "source": {
+        "provider": "Kenney",
+        "origin": "third-party-licensed",
+        "identifier": "Audio2/cards-pack-take-out-2.ogg",
+        "referenceUrl": "https://kenney.nl/assets/casino-audio",
+        "license": "CC0-1.0",
+        "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+        "reviewedOn": "2026-09-07",
+        "reviewedBy": "Codex-owner-request-2026-09-07",
+        "record": "ASSET_PROVENANCE.md#open"
+      },
+      "art": {
+        "family": "christmas-photo-first",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Resposta curta ao gesto; normalizacao a -6 dBFS, volume reduzido e retorno visual equivalente. Avaliacao auditiva em aparelho permanece no gate de release."
+      },
+      "processing": {
+        "recipe": "prepare-magic-photo-audio:lossless-copy-of-approved-derivative",
+        "tools": ["node-24"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/magic-photo/audio/open.m4a",
+        "publicPath": "/assets/magic-photo/audio/open.m4a",
+        "bytes": 7730,
+        "sha256": "0fe73261a3438cd315a27b778f4b8f07079aafca947446653ced34a04d110cb2",
+        "durationSeconds": 0.64,
+        "cue": "open",
+        "deliveryGroup": "open",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        }
+      }
+    },
+    {
+      "id": "magic-mp3",
+      "kind": "audio",
+      "format": "mp3",
+      "source": {
+        "provider": "Kenney",
+        "origin": "third-party-licensed",
+        "identifier": "Audio/glass_002.ogg",
+        "referenceUrl": "https://kenney.nl/assets/interface-sounds",
+        "license": "CC0-1.0",
+        "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+        "reviewedOn": "2026-09-07",
+        "reviewedBy": "Codex-owner-request-2026-09-07",
+        "record": "ASSET_PROVENANCE.md#magic"
+      },
+      "art": {
+        "family": "christmas-photo-first",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Resposta curta ao gesto; normalizacao a -6 dBFS, volume reduzido e retorno visual equivalente. Avaliacao auditiva em aparelho permanece no gate de release."
+      },
+      "processing": {
+        "recipe": "prepare-magic-photo-audio:lossless-copy-of-approved-derivative",
+        "tools": ["node-24"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/magic-photo/audio/magic.mp3",
+        "publicPath": "/assets/magic-photo/audio/magic.mp3",
+        "bytes": 7097,
+        "sha256": "cfec2a0abd50f3210fbba9a8f162c6125803d517b89f9073005048ba38a0389a",
+        "durationSeconds": 0.65,
+        "cue": "magic",
+        "deliveryGroup": "magic",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        }
+      }
+    },
+    {
+      "id": "magic-m4a",
+      "kind": "audio",
+      "format": "m4a",
+      "source": {
+        "provider": "Kenney",
+        "origin": "third-party-licensed",
+        "identifier": "Audio/glass_002.ogg",
+        "referenceUrl": "https://kenney.nl/assets/interface-sounds",
+        "license": "CC0-1.0",
+        "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+        "reviewedOn": "2026-09-07",
+        "reviewedBy": "Codex-owner-request-2026-09-07",
+        "record": "ASSET_PROVENANCE.md#magic"
+      },
+      "art": {
+        "family": "christmas-photo-first",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Resposta curta ao gesto; normalizacao a -6 dBFS, volume reduzido e retorno visual equivalente. Avaliacao auditiva em aparelho permanece no gate de release."
+      },
+      "processing": {
+        "recipe": "prepare-magic-photo-audio:lossless-copy-of-approved-derivative",
+        "tools": ["node-24"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/magic-photo/audio/magic.m4a",
+        "publicPath": "/assets/magic-photo/audio/magic.m4a",
+        "bytes": 4526,
+        "sha256": "0b7c0d80b9f00f4d0677cdd3f985a6750579c6b840b4edb86657682beb9107d1",
+        "durationSeconds": 0.65,
+        "cue": "magic",
+        "deliveryGroup": "magic",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        }
+      }
+    },
+    {
+      "id": "bells-mp3",
+      "kind": "audio",
+      "format": "mp3",
+      "source": {
+        "provider": "Kenney",
+        "origin": "third-party-licensed",
+        "identifier": "Audio/glass_001.ogg",
+        "referenceUrl": "https://kenney.nl/assets/interface-sounds",
+        "license": "CC0-1.0",
+        "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+        "reviewedOn": "2026-09-07",
+        "reviewedBy": "Codex-owner-request-2026-09-07",
+        "record": "ASSET_PROVENANCE.md#bells"
+      },
+      "art": {
+        "family": "christmas-photo-first",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Resposta curta ao gesto; normalizacao a -6 dBFS, volume reduzido e retorno visual equivalente. Avaliacao auditiva em aparelho permanece no gate de release."
+      },
+      "processing": {
+        "recipe": "prepare-magic-photo-audio:lossless-copy-of-approved-derivative",
+        "tools": ["node-24"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/magic-photo/audio/bells.mp3",
+        "publicPath": "/assets/magic-photo/audio/bells.mp3",
+        "bytes": 11799,
+        "sha256": "9069dfcd2f0972725d3214938c9e8b74abf844810555b1767c63d426f3cdd16b",
+        "durationSeconds": 1.1,
+        "cue": "bells",
+        "deliveryGroup": "bells",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        }
+      }
+    },
+    {
+      "id": "bells-m4a",
+      "kind": "audio",
+      "format": "m4a",
+      "source": {
+        "provider": "Kenney",
+        "origin": "third-party-licensed",
+        "identifier": "Audio/glass_001.ogg",
+        "referenceUrl": "https://kenney.nl/assets/interface-sounds",
+        "license": "CC0-1.0",
+        "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+        "reviewedOn": "2026-09-07",
+        "reviewedBy": "Codex-owner-request-2026-09-07",
+        "record": "ASSET_PROVENANCE.md#bells"
+      },
+      "art": {
+        "family": "christmas-photo-first",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Resposta curta ao gesto; normalizacao a -6 dBFS, volume reduzido e retorno visual equivalente. Avaliacao auditiva em aparelho permanece no gate de release."
+      },
+      "processing": {
+        "recipe": "prepare-magic-photo-audio:lossless-copy-of-approved-derivative",
+        "tools": ["node-24"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/magic-photo/audio/bells.m4a",
+        "publicPath": "/assets/magic-photo/audio/bells.m4a",
+        "bytes": 12036,
+        "sha256": "3d353357de2158c9de8b46e63c12a80b06f1d36e9ef695a4f1fc5f937247494c",
+        "durationSeconds": 1.1,
+        "cue": "bells",
+        "deliveryGroup": "bells",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        }
+      }
+    },
+    {
+      "id": "snow-mp3",
+      "kind": "audio",
+      "format": "mp3",
+      "source": {
+        "provider": "Kenney",
+        "origin": "third-party-licensed",
+        "identifier": "Audio/glass_001.ogg",
+        "referenceUrl": "https://kenney.nl/assets/interface-sounds",
+        "license": "CC0-1.0",
+        "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+        "reviewedOn": "2026-09-07",
+        "reviewedBy": "Codex-owner-request-2026-09-07",
+        "record": "ASSET_PROVENANCE.md#snow"
+      },
+      "art": {
+        "family": "christmas-photo-first",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Resposta curta ao gesto; normalizacao a -6 dBFS, volume reduzido e retorno visual equivalente. Avaliacao auditiva em aparelho permanece no gate de release."
+      },
+      "processing": {
+        "recipe": "prepare-magic-photo-audio:lossless-copy-of-approved-derivative",
+        "tools": ["node-24"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/magic-photo/audio/snow.mp3",
+        "publicPath": "/assets/magic-photo/audio/snow.mp3",
+        "bytes": 12583,
+        "sha256": "4c524f3f4706ece6be6dbf72e555b4d3f3d48bc04f1e54ea305575a38082ce41",
+        "durationSeconds": 1.2,
+        "cue": "snow",
+        "deliveryGroup": "snow",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        }
+      }
+    },
+    {
+      "id": "snow-m4a",
+      "kind": "audio",
+      "format": "m4a",
+      "source": {
+        "provider": "Kenney",
+        "origin": "third-party-licensed",
+        "identifier": "Audio/glass_001.ogg",
+        "referenceUrl": "https://kenney.nl/assets/interface-sounds",
+        "license": "CC0-1.0",
+        "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+        "reviewedOn": "2026-09-07",
+        "reviewedBy": "Codex-owner-request-2026-09-07",
+        "record": "ASSET_PROVENANCE.md#snow"
+      },
+      "art": {
+        "family": "christmas-photo-first",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Resposta curta ao gesto; normalizacao a -6 dBFS, volume reduzido e retorno visual equivalente. Avaliacao auditiva em aparelho permanece no gate de release."
+      },
+      "processing": {
+        "recipe": "prepare-magic-photo-audio:lossless-copy-of-approved-derivative",
+        "tools": ["node-24"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/magic-photo/audio/snow.m4a",
+        "publicPath": "/assets/magic-photo/audio/snow.m4a",
+        "bytes": 9591,
+        "sha256": "0266f76dd7b067cf218db632fccf933789351e27fa81e949d797ff6f6994ada2",
+        "durationSeconds": 1.2,
+        "cue": "snow",
+        "deliveryGroup": "snow",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        }
+      }
+    },
+    {
+      "id": "reveal-mp3",
+      "kind": "audio",
+      "format": "mp3",
+      "source": {
+        "provider": "Kenney",
+        "origin": "third-party-licensed",
+        "identifier": "Audio/glass_001.ogg",
+        "referenceUrl": "https://kenney.nl/assets/interface-sounds",
+        "license": "CC0-1.0",
+        "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+        "reviewedOn": "2026-09-07",
+        "reviewedBy": "Codex-owner-request-2026-09-07",
+        "record": "ASSET_PROVENANCE.md#reveal"
+      },
+      "art": {
+        "family": "christmas-photo-first",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Resposta curta ao gesto; normalizacao a -6 dBFS, volume reduzido e retorno visual equivalente. Avaliacao auditiva em aparelho permanece no gate de release."
+      },
+      "processing": {
+        "recipe": "prepare-magic-photo-audio:lossless-copy-of-approved-derivative",
+        "tools": ["node-24"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/magic-photo/audio/reveal.mp3",
+        "publicPath": "/assets/magic-photo/audio/reveal.mp3",
+        "bytes": 10232,
+        "sha256": "6b1794c3b27c8ef6c9f31f59b29bba1373a2cc92b7b36d2f71a0ae7f6b2dd8b4",
+        "durationSeconds": 0.95,
+        "cue": "reveal",
+        "deliveryGroup": "reveal",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        }
+      }
+    },
+    {
+      "id": "reveal-m4a",
+      "kind": "audio",
+      "format": "m4a",
+      "source": {
+        "provider": "Kenney",
+        "origin": "third-party-licensed",
+        "identifier": "Audio/glass_001.ogg",
+        "referenceUrl": "https://kenney.nl/assets/interface-sounds",
+        "license": "CC0-1.0",
+        "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+        "reviewedOn": "2026-09-07",
+        "reviewedBy": "Codex-owner-request-2026-09-07",
+        "record": "ASSET_PROVENANCE.md#reveal"
+      },
+      "art": {
+        "family": "christmas-photo-first",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Resposta curta ao gesto; normalizacao a -6 dBFS, volume reduzido e retorno visual equivalente. Avaliacao auditiva em aparelho permanece no gate de release."
+      },
+      "processing": {
+        "recipe": "prepare-magic-photo-audio:lossless-copy-of-approved-derivative",
+        "tools": ["node-24"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/magic-photo/audio/reveal.m4a",
+        "publicPath": "/assets/magic-photo/audio/reveal.m4a",
+        "bytes": 6933,
+        "sha256": "eeb459f1669ebab07068f92eaa17f93c2221269bced1a15ac1687bceecd3e2cb",
+        "durationSeconds": 0.95,
+        "cue": "reveal",
+        "deliveryGroup": "reveal",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        }
+      }
+    },
+    {
+      "id": "music-m4a",
+      "kind": "audio",
+      "format": "m4a",
+      "source": {
+        "provider": "owner-authorized-legacy-bundle",
+        "origin": "owner-authorized-legacy",
+        "identifier": "winter-loop-m4a",
+        "license": "project-owned",
+        "reviewedOn": "2026-08-28",
+        "reviewedBy": "memory-audio-pass-1",
+        "record": "ASSET_PROVENANCE.md#music"
+      },
+      "art": {
+        "family": "christmas-photo-first",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Áudio natalino já autorizado para o produto; limita cada resposta sonora sem carregar fotos ou dados de sessão."
+      },
+      "processing": {
+        "recipe": "prepare-magic-photo-audio:lossless-copy-of-approved-derivative",
+        "tools": ["node-24"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/magic-photo/audio/music.m4a",
+        "publicPath": "/assets/magic-photo/audio/music.m4a",
+        "bytes": 636204,
+        "sha256": "76f1c9ffb6854fa308661115992e7a1cdf7e1809c0b582ba43ace1e088c5c55f",
+        "durationSeconds": 44.313,
+        "cue": "music",
+        "deliveryGroup": "music",
+        "quality": {
+          "low": "omit",
+          "reducedMotion": "keep"
+        }
+      }
+    },
+    {
+      "id": "music-mp3",
+      "kind": "audio",
+      "format": "mp3",
+      "source": {
+        "provider": "owner-authorized-legacy-bundle",
+        "origin": "owner-authorized-legacy",
+        "identifier": "winter-loop-mp3",
+        "license": "project-owned",
+        "reviewedOn": "2026-08-28",
+        "reviewedBy": "memory-audio-pass-1",
+        "record": "ASSET_PROVENANCE.md#music"
+      },
+      "art": {
+        "family": "christmas-photo-first",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Áudio natalino já autorizado para o produto; limita cada resposta sonora sem carregar fotos ou dados de sessão."
+      },
+      "processing": {
+        "recipe": "prepare-magic-photo-audio:lossless-copy-of-approved-derivative",
+        "tools": ["node-24"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/magic-photo/audio/music.mp3",
+        "publicPath": "/assets/magic-photo/audio/music.mp3",
+        "bytes": 710060,
+        "sha256": "8d7ab2c36dd15085e80c4f3872ceaca1e80831537fa36df46e0279be9b734219",
+        "durationSeconds": 44.307,
+        "cue": "music",
+        "deliveryGroup": "music",
+        "quality": {
+          "low": "omit",
+          "reducedMotion": "keep"
+        }
+      }
+    },
+    {
+      "id": "gift-real-v2",
+      "kind": "ui",
+      "format": "webp",
+      "source": {
+        "provider": "OpenAI built-in image_gen",
+        "origin": "project-created",
+        "identifier": "generated-6e4eb73c83d66a225d9e840436bb384439dfc65195c549602753afc86b8aeb6e",
+        "license": "project-owned",
+        "reviewedOn": "2026-09-07",
+        "reviewedBy": "Codex-owner-visual-revision-request",
+        "record": "ASSET_PROVENANCE.md#inverno-realista-v2"
+      },
+      "art": {
+        "family": "christmas-photo-first",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Materiais realistas solicitados pelo proprietário; foto intacta sob gelo apagável; neve periférica. Revisão visual mobile registrada no relatório v2."
+      },
+      "processing": {
+        "recipe": "prepare-magic-photo-art:width-640:webp-q83:alpha100",
+        "tools": ["sharp-0.35.3", "image_gen-built-in-model-not-exposed"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/magic-photo/art/gift-real-v2.webp",
+        "publicPath": "/assets/magic-photo/art/gift-real-v2.webp",
+        "bytes": 125830,
+        "sha256": "2d42f6a9446bc8feb51c896965bd0ae48d8f6e344a491405eb213ca4041e1d99",
+        "dimensions": {
+          "width": 640,
+          "height": 640
+        },
+        "textureKey": "magic-photo-gift-real-v2",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        }
+      }
+    },
+    {
+      "id": "frost-real-v2",
+      "kind": "vfx",
+      "format": "webp",
+      "source": {
+        "provider": "OpenAI built-in image_gen",
+        "origin": "project-created",
+        "identifier": "generated-8ecbbc2d351ca7b386577363fc8431e418947e98be4bd7f64267715dbd7a3ae1",
+        "license": "project-owned",
+        "reviewedOn": "2026-09-07",
+        "reviewedBy": "Codex-owner-visual-revision-request",
+        "record": "ASSET_PROVENANCE.md#inverno-realista-v2"
+      },
+      "art": {
+        "family": "christmas-photo-first",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Materiais realistas solicitados pelo proprietário; foto intacta sob gelo apagável; neve periférica. Revisão visual mobile registrada no relatório v2."
+      },
+      "processing": {
+        "recipe": "prepare-magic-photo-art:width-640:webp-q74:alpha100",
+        "tools": ["sharp-0.35.3", "image_gen-built-in-model-not-exposed"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/magic-photo/art/frost-real-v2.webp",
+        "publicPath": "/assets/magic-photo/art/frost-real-v2.webp",
+        "bytes": 113262,
+        "sha256": "15caf93fe1a3b178592fd283cf0e7a0e97914dfd001606a43d5de3f943370e02",
+        "dimensions": {
+          "width": 640,
+          "height": 640
+        },
+        "textureKey": "magic-photo-frost-real-v2",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        }
+      }
+    },
+    {
+      "id": "snow-edge-v2",
+      "kind": "vfx",
+      "format": "webp",
+      "source": {
+        "provider": "OpenAI built-in image_gen",
+        "origin": "project-created",
+        "identifier": "generated-e7ea76f537f273208036e7d878a8f4984e8f8501bbf6a3f88ffe8a82fd5955e4",
+        "license": "project-owned",
+        "reviewedOn": "2026-09-07",
+        "reviewedBy": "Codex-owner-visual-revision-request",
+        "record": "ASSET_PROVENANCE.md#inverno-realista-v2"
+      },
+      "art": {
+        "family": "christmas-photo-first",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Materiais realistas solicitados pelo proprietário; foto intacta sob gelo apagável; neve periférica. Revisão visual mobile registrada no relatório v2."
+      },
+      "processing": {
+        "recipe": "prepare-magic-photo-art:width-1000:webp-q78:alpha100",
+        "tools": ["sharp-0.35.3", "image_gen-built-in-model-not-exposed"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/magic-photo/art/snow-edge-v2.webp",
+        "publicPath": "/assets/magic-photo/art/snow-edge-v2.webp",
+        "bytes": 92508,
+        "sha256": "b5911c4fb806d0991bbd7ad6af3b294dcd8462125e66f641f08b4695f10d3d96",
+        "dimensions": {
+          "width": 1000,
+          "height": 333
+        },
+        "textureKey": "magic-photo-snow-edge-v2",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        }
+      }
+    },
+    {
+      "id": "winter-night-v2",
+      "kind": "background",
+      "format": "webp",
+      "source": {
+        "provider": "OpenAI built-in image_gen",
+        "origin": "project-created",
+        "identifier": "generated-f479fce4b0e57c12700b4843363da964e394788d4919957a6babbb454d432d33",
+        "license": "project-owned",
+        "reviewedOn": "2026-09-07",
+        "reviewedBy": "Codex-owner-visual-revision-request",
+        "record": "ASSET_PROVENANCE.md#inverno-realista-v2"
+      },
+      "art": {
+        "family": "christmas-photo-first",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Materiais realistas solicitados pelo proprietário; foto intacta sob gelo apagável; neve periférica. Revisão visual mobile registrada no relatório v2."
+      },
+      "processing": {
+        "recipe": "prepare-magic-photo-art:width-768:webp-q82:alpha100",
+        "tools": ["sharp-0.35.3", "image_gen-built-in-model-not-exposed"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/magic-photo/art/winter-night-v2.webp",
+        "publicPath": "/assets/magic-photo/art/winter-night-v2.webp",
+        "bytes": 73348,
+        "sha256": "b89d9eecef32e847522cdaea4237fe653bd1d321621381270ccc81ed2c63c84f",
+        "dimensions": {
+          "width": 768,
+          "height": 1152
+        },
+        "textureKey": "magic-photo-winter-night-v2",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        }
+      }
+    }
+  ]
+}
