@@ -8,6 +8,13 @@ type AssetKind = (typeof assetKinds)[number];
 export const assetFormats = ['webp', 'svg', 'm4a', 'mp3'] as const;
 type AssetFormat = (typeof assetFormats)[number];
 
+export const assetOrigins = [
+  'project-created',
+  'owner-authorized-legacy',
+  'third-party-licensed',
+] as const;
+type AssetOrigin = (typeof assetOrigins)[number];
+
 export const qualityBehaviors = ['keep', 'omit'] as const;
 type QualityBehavior = (typeof qualityBehaviors)[number];
 
@@ -74,10 +81,10 @@ export interface AssetManifestV1 {
 /** Origin and human-review facts. Project-owned inputs may deliberately omit URLs. */
 interface AssetSource {
   provider: string;
-  origin: 'project-created' | 'owner-authorized-legacy';
+  origin: AssetOrigin;
   identifier: string;
   referenceUrl?: string;
-  license: 'project-owned';
+  license: string;
   licenseUrl?: string;
   reviewedOn: string;
   reviewedBy: string;

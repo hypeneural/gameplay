@@ -4,6 +4,11 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "prepare:rudolph-art": "node scripts/prepare-rudolph-art.mjs",
+    "prepare:rudolph-audio": "node scripts/prepare-rudolph-audio.mjs",
+    "prepare:magic-photo-art": "node scripts/prepare-magic-photo-art.mjs",
+    "prepare:magic-photo-audio": "node scripts/prepare-magic-photo-audio.mjs",
+    "prepare:shell-audio": "node scripts/prepare-shell-audio.mjs",
     "doctor": "tsx src/index.ts doctor",
     "validate": "tsx src/index.ts validate",
     "audit": "tsx src/index.ts audit",
@@ -11,5 +16,8 @@
     "budget": "tsx src/index.ts budget",
     "manifest": "tsx src/index.ts manifest",
     "migrate": "tsx src/index.ts migrate"
+  },
+  "dependencies": {
+    "sharp": "0.35.3"
   }
 }

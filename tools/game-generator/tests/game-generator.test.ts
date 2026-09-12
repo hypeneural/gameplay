@@ -89,4 +89,20 @@ describe('game:new command', () => {
       },
     });
   });
+
+  it('accepts the Trinca de Natal experience contract before assets are selected', async () => {
+    const source = await readFile(
+      new URL('../../../packages/games/tic-tac-toe/EXPERIENCE_REQUIREMENTS.json', import.meta.url),
+      'utf8',
+    );
+
+    expect(parseExperienceRequirements(JSON.parse(source), 'tic-tac-toe')).toMatchObject({
+      gameId: 'tic-tac-toe',
+      victory: { nextAction: 'repetir-brincadeira', photoPriority: 'alta' },
+      quality: {
+        low: 'sem-efeitos-decorativos',
+        reducedMotion: 'sem-movimento-continuo',
+      },
+    });
+  });
 });

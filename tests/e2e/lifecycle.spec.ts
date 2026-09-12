@@ -138,6 +138,124 @@ async function dragPuzzleCells(
   await page.mouse.up();
 }
 
+function memoryCardCenter(
+  canvasWidth: number,
+  canvasHeight: number,
+  cardIndex: number,
+  cardCount = 8,
+): { x: number; y: number } {
+  const safeTop = Math.max(16, Math.round(canvasHeight * 0.025));
+  const safeBottom = Math.max(20, Math.round(canvasHeight * 0.035));
+  const horizontalInset = Math.max(16, canvasWidth * 0.06);
+  const gap = Math.max(8, Math.min(12, canvasWidth * 0.03));
+  const contentHeight = canvasHeight - safeTop - safeBottom;
+  const headerHeight = Math.max(152, Math.min(168, contentHeight * 0.23));
+  const boardTop = safeTop + headerHeight;
+  const boardBottom = canvasHeight - safeBottom - 14;
+  const candidateCardWidth = (columns: number): number => {
+    const rows = Math.ceil(cardCount / columns);
+    const maxWidth = (canvasWidth - horizontalInset * 2 - gap * (columns - 1)) / columns;
+    const maxHeight = (boardBottom - boardTop - gap * (rows - 1)) / rows;
+    return Math.min(maxWidth, maxHeight * 0.8);
+  };
+  const fourColumnWidth = candidateCardWidth(4);
+  const threeColumnWidth = candidateCardWidth(3);
+  const columns =
+    fourColumnWidth >= 104
+      ? 4
+      : threeColumnWidth >= 88
+        ? 3
+        : [4, 3, 2].reduce((best, candidate) =>
+            candidateCardWidth(candidate) > candidateCardWidth(best) ? candidate : best,
+          );
+  const rows = Math.ceil(cardCount / columns);
+  const cardWidth = Math.max(52, candidateCardWidth(columns));
+  const cardHeight = cardWidth / 0.8;
+  const boardHeight = cardHeight * rows + gap * (rows - 1);
+  const startY =
+    boardTop + Math.max(0, (boardBottom - boardTop - boardHeight) / 2) + cardHeight / 2;
+  const row = Math.floor(cardIndex / columns);
+  const indexInRow = cardIndex % columns;
+  const cardsInRow = Math.min(columns, cardCount - row * columns);
+  const rowWidth = cardWidth * cardsInRow + gap * (cardsInRow - 1);
+  const rowStartX = (canvasWidth - rowWidth) / 2 + cardWidth / 2;
+
+  return {
+    x: rowStartX + indexInRow * (cardWidth + gap),
+    y: startY + row * (cardHeight + gap),
+  };
+}
+
+async function tapMemoryCard(
+  page: Page,
+  canvas: Locator,
+  cardIndex: number,
+  cardCount = 8,
+): Promise<void> {
+  const canvasBox = await canvas.boundingBox();
+  if (!canvasBox) throw new Error('Memory canvas has no bounding box.');
+  const point = memoryCardCenter(canvasBox.width, canvasBox.height, cardIndex, cardCount);
+  await page.touchscreen.tap(canvasBox.x + point.x, canvasBox.y + point.y);
+}
+
+async function tapMemoryPause(page: Page, canvas: Locator): Promise<void> {
+  const canvasBox = await canvas.boundingBox();
+  if (!canvasBox) throw new Error('Memory canvas has no bounding box.');
+  const headerY = Math.max(16, Math.round(canvasBox.height * 0.025)) + 22;
+  await page.touchscreen.tap(canvasBox.x + canvasBox.width - 32, canvasBox.y + headerY + 54);
+}
+
+async function tapMemorySound(page: Page, canvas: Locator): Promise<void> {
+  const canvasBox = await canvas.boundingBox();
+  if (!canvasBox) throw new Error('Memory canvas has no bounding box.');
+  const headerY = Math.max(16, Math.round(canvasBox.height * 0.025)) + 22;
+  await page.touchscreen.tap(canvasBox.x + canvasBox.width - 156, canvasBox.y + headerY + 54);
+}
+
+/** Matches the pure ExpressLayout geometry; canvas coordinates stay separate from shell chrome. */
+function expressoStationCenter(
+  canvasWidth: number,
+  canvasHeight: number,
+  stationIndex: number,
+): { x: number; y: number } {
+  const portrait = canvasHeight >= canvasWidth;
+  const safeTop = Math.max(16, Math.round(canvasHeight * 0.025));
+  const horizontalPadding = Math.max(18, Math.round(canvasWidth * 0.045));
+  const usableWidth = canvasWidth - horizontalPadding * 2;
+  const headerHeight = portrait ? 58 : 46;
+  const missionHeight = portrait
+    ? Math.min(168, Math.max(126, canvasHeight * 0.2))
+    : Math.min(164, Math.max(112, canvasHeight * 0.46));
+  const missionY = safeTop + headerHeight + (portrait ? 18 : 8);
+  const stationY = portrait
+    ? Math.min(canvasHeight * 0.52, missionY + missionHeight + 118)
+    : missionY + Math.min(missionHeight + 64, canvasHeight * 0.56);
+  const stationWidth = Math.max(72, Math.min(portrait ? 104 : 116, usableWidth * 0.26));
+  const stationGap = Math.max(10, (usableWidth - stationWidth * 3) / 2);
+  return {
+    x: horizontalPadding + stationIndex * (stationWidth + stationGap) + stationWidth / 2,
+    y: stationY,
+  };
+}
+
+async function tapExpressoStation(
+  page: Page,
+  canvas: Locator,
+  stationIndex: number,
+): Promise<void> {
+  const canvasBox = await canvas.boundingBox();
+  if (!canvasBox) throw new Error('Expresso canvas has no bounding box.');
+  const point = expressoStationCenter(canvasBox.width, canvasBox.height, stationIndex);
+  await page.touchscreen.tap(canvasBox.x + point.x, canvasBox.y + point.y);
+}
+
+async function tapExpressoPause(page: Page, canvas: Locator): Promise<void> {
+  const canvasBox = await canvas.boundingBox();
+  if (!canvasBox) throw new Error('Expresso canvas has no bounding box.');
+  const safeTop = Math.max(16, Math.round(canvasBox.height * 0.025));
+  await page.touchscreen.tap(canvasBox.x + canvasBox.width - 50, canvasBox.y + safeTop + 29);
+}
+
 test('Hub loads only thumbnails and Phaser mounts and disposes cleanly', async ({
   page,
 }, testInfo) => {
@@ -158,8 +276,9 @@ test('Hub loads only thumbnails and Phaser mounts and disposes cleanly', async (
 
   await page.goto('/s/local-demo-token');
   await expect(page.locator('canvas')).toHaveCount(0);
-  await expect(page.getByRole('heading', { name: 'Sessão de Natal' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Escolha seus jogos' })).toBeVisible();
 
+  await page.getByText('Ferramentas de desenvolvimento', { exact: true }).click();
   const openGame = page.getByTestId('open-game-dev-smoke');
   await openGame.dispatchEvent('pointerdown');
   await expect(page.locator('canvas')).toHaveCount(0);
@@ -182,7 +301,7 @@ test('Hub loads only thumbnails and Phaser mounts and disposes cleanly', async (
   await canvas.click({ position: { x: canvasBox.width * 0.3, y: canvasBox.height * 0.4 } });
   await expect(page.getByTestId('game-event')).toHaveText('Brincadeira concluída!');
   await page.getByRole('button', { name: 'Sair do jogo' }).click();
-  await expect(page.getByRole('heading', { name: 'Sessão de Natal' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Escolha seus jogos' })).toBeVisible();
   await expect(page.locator('canvas')).toHaveCount(0);
   expect(consoleErrors).toEqual([]);
   expect(failedRequests).toEqual([]);
@@ -190,20 +309,405 @@ test('Hub loads only thumbnails and Phaser mounts and disposes cleanly', async (
 });
 
 test('five mount-unmount cycles do not leave a duplicate canvas', async ({ page }) => {
+  test.setTimeout(120_000);
   await page.goto('/s/local-demo-token');
+  await page.getByText('Ferramentas de desenvolvimento', { exact: true }).click();
   await page.getByTestId('open-game-dev-smoke').click();
   await page.getByTestId('play-selected-game').click();
-  await expect(page.getByTestId('game-status')).toHaveText('Pronto');
+  await expect(page.getByTestId('game-status')).toHaveText('Pronto', { timeout: 20_000 });
   await page.goBack();
-  await expect(page.getByRole('heading', { name: 'Sessão de Natal' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Escolha seus jogos' })).toBeVisible();
   await expect(page.locator('canvas')).toHaveCount(0);
 
   for (let index = 0; index < 5; index += 1) {
+    await page.getByText('Ferramentas de desenvolvimento', { exact: true }).click();
     await page.getByTestId('open-game-dev-smoke').click();
     await page.getByTestId('play-selected-game').click();
-    await expect(page.getByTestId('game-status')).toHaveText('Pronto');
+    await expect(page.getByTestId('game-status')).toHaveText('Pronto', { timeout: 20_000 });
     await expect(page.locator('canvas')).toHaveCount(1);
     await page.getByRole('button', { name: 'Sair do jogo' }).click();
+    await expect(page.locator('canvas')).toHaveCount(0);
+  }
+});
+
+test('Expresso accepts a mobile station touch, pauses through reflow, and releases its canvas', async ({
+  page,
+}, testInfo) => {
+  test.setTimeout(45_000);
+  const browserErrors: string[] = [];
+  page.on('pageerror', (error) => browserErrors.push(error.message));
+  page.on('console', (message) => {
+    if (message.type() === 'error') browserErrors.push(message.text());
+  });
+
+  // PhaserHost normally gets entropy from Web Crypto for every public run.
+  // Keep this E2E journey reproducible without adding test-only scene state or
+  // a production route parameter. Seed zero plans the first fixture station on
+  // the left station; all other Web Crypto calls retain their browser behavior.
+  await page.addInitScript(() => {
+    const systemGetRandomValues = crypto.getRandomValues.bind(crypto);
+    Object.defineProperty(crypto, 'getRandomValues', {
+      configurable: true,
+      value: (values: Uint32Array): Uint32Array => {
+        if (values instanceof Uint32Array && values.length === 1) {
+          values[0] = 0;
+          return values;
+        }
+        return systemGetRandomValues(values as Uint32Array<ArrayBuffer>) as Uint32Array;
+      },
+    });
+  });
+
+  await page.goto('/s/local-demo-token');
+  await page.getByTestId('open-game-expresso-das-fotos').click();
+  await expect(page.getByRole('heading', { name: 'Expresso das Fotos' })).toBeVisible();
+  await page.getByTestId('play-selected-game').click();
+  const initialSequence = await expectPuzzleStarted(page);
+  const canvas = page.locator('canvas');
+  await expect(canvas).toBeVisible();
+
+  // The local deterministic fixture starts at the left station. This exercises a
+  // real touch path; the bridge sequence changes only after its travel and
+  // collection have settled.
+  await tapExpressoStation(page, canvas, 0);
+  await expectNextPuzzleInteraction(page, initialSequence);
+
+  await tapExpressoPause(page, canvas);
+  await expect(page.getByTestId('game-event')).toHaveText('Jogo em pausa');
+  await page.screenshot({
+    path: testInfo.outputPath(`${testInfo.project.name}-expresso-paused.png`),
+    fullPage: true,
+  });
+
+  await page.setViewportSize(responsiveResizeTarget(testInfo.project.name));
+  const resizedCanvas = page.locator('canvas');
+  const resizedBox = await resizedCanvas.boundingBox();
+  if (!resizedBox) throw new Error('Expresso canvas disappeared during responsive reflow.');
+  await page.touchscreen.tap(
+    resizedBox.x + resizedBox.width / 2,
+    resizedBox.y + resizedBox.height / 2,
+  );
+  await expect(page.getByTestId('game-event')).toHaveText('Brincadeira retomada');
+
+  await page.getByRole('button', { name: 'Sair do jogo' }).click();
+  await expect(page.getByRole('heading', { name: 'Escolha seus jogos' })).toBeVisible();
+  await expect(canvas).toHaveCount(0);
+  expect(browserErrors).toEqual([]);
+});
+
+test('Memory is playable by touch, pauses safely, and releases its canvas on exit', async ({
+  page,
+}, testInfo) => {
+  // Memory loads four photo textures and starts a Phaser scene per device. A
+  // local timeout keeps a cold WebGL allocation from hiding a real lifecycle failure.
+  test.setTimeout(45_000);
+  const browserErrors: string[] = [];
+  page.on('pageerror', (error) => browserErrors.push(error.message));
+  page.on('console', (message) => {
+    if (message.type() === 'error') browserErrors.push(message.text());
+  });
+
+  await page.goto('/s/local-demo-token');
+  await page.getByTestId('open-game-memory').click();
+  await expect(page.getByRole('heading', { name: 'Memórias de Natal' })).toBeVisible();
+  await page.getByTestId('play-selected-game').click();
+  await expect(page.getByTestId('game-status')).toHaveText('Pronto', { timeout: 30_000 });
+  await expect(page.getByTestId('game-event')).toHaveText('Brincadeira iniciada');
+
+  const canvas = page.locator('canvas');
+  await expect(canvas).toBeVisible();
+  const sequenceBeforeFirstTouch = await puzzleEventSequence(page);
+  await tapMemoryCard(page, canvas, 0);
+  await expect
+    .poll(() => puzzleEventSequence(page), { timeout: 5_000 })
+    .toBeGreaterThan(sequenceBeforeFirstTouch);
+  await page.screenshot({
+    path: testInfo.outputPath(`${testInfo.project.name}-memory-first-touch.png`),
+    fullPage: true,
+  });
+
+  await tapMemoryPause(page, canvas);
+  await expect(page.getByTestId('game-event')).toHaveText('Jogo em pausa');
+  await page.screenshot({
+    path: testInfo.outputPath(`${testInfo.project.name}-memory-paused.png`),
+    fullPage: true,
+  });
+
+  const canvasBox = await canvas.boundingBox();
+  if (!canvasBox) throw new Error('Memory canvas has no bounding box.');
+  await page.touchscreen.tap(canvasBox.x + canvasBox.width / 2, canvasBox.y + canvasBox.height / 2);
+  await expect(page.getByTestId('game-event')).toHaveText('Brincadeira retomada');
+  await page.getByRole('button', { name: 'Sair do jogo' }).click();
+  await expect(page.getByRole('heading', { name: 'Escolha seus jogos' })).toBeVisible();
+  await expect(canvas).toHaveCount(0);
+  expect(browserErrors).toEqual([]);
+});
+
+test('Memory loads its approved sound pack and mute never blocks a card touch', async ({
+  page,
+}) => {
+  test.setTimeout(45_000);
+  const browserErrors: string[] = [];
+  const audioRequests: string[] = [];
+  page.on('pageerror', (error) => browserErrors.push(error.message));
+  page.on('console', (message) => {
+    if (message.type() === 'error') browserErrors.push(message.text());
+  });
+  page.on('request', (request) => {
+    if (request.url().includes('/assets/memory/audio/')) audioRequests.push(request.url());
+  });
+
+  await page.goto('/s/local-demo-token');
+  await page.getByTestId('open-game-memory').click();
+  await page.getByTestId('play-selected-game').click();
+  let eventSequence = await expectPuzzleStarted(page);
+  const canvas = page.locator('canvas');
+  await expect(canvas).toBeVisible();
+  await expect.poll(() => new Set(audioRequests).size, { timeout: 15_000 }).toBe(6);
+
+  await tapMemorySound(page, canvas);
+  await tapMemoryCard(page, canvas, 0);
+  eventSequence = await expectNextPuzzleInteraction(page, eventSequence);
+  await tapMemorySound(page, canvas);
+  await tapMemoryCard(page, canvas, 1);
+  await expectNextPuzzleInteraction(page, eventSequence);
+
+  await page.getByRole('button', { name: 'Sair do jogo' }).click();
+  await expect(canvas).toHaveCount(0);
+  expect(browserErrors).toEqual([]);
+});
+
+test('Memory honors data saving and reduced motion without disabling play', async ({
+  page,
+}, testInfo) => {
+  test.setTimeout(45_000);
+  const memoryRequests: string[] = [];
+  const browserErrors: string[] = [];
+  page.on('pageerror', (error) => browserErrors.push(error.message));
+  page.on('console', (message) => {
+    if (message.type() === 'error') browserErrors.push(message.text());
+  });
+  page.on('request', (request) => {
+    if (request.url().includes('/assets/memory/')) memoryRequests.push(request.url());
+  });
+  await page.addInitScript(() => {
+    Object.defineProperty(navigator, 'connection', {
+      configurable: true,
+      value: { saveData: true },
+    });
+  });
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+
+  await page.goto('/s/local-demo-token');
+  await page.getByTestId('open-game-memory').click();
+  await page.getByTestId('play-selected-game').click();
+  const eventSequence = await expectPuzzleStarted(page);
+  await expect(page.getByTestId('phaser-host')).toHaveAttribute('data-quality', 'LOW');
+  await expect(page.getByTestId('phaser-host')).toHaveAttribute('data-reduced-motion', 'true');
+  await expect.poll(() => new Set(memoryRequests).size, { timeout: 15_000 }).toBeGreaterThan(5);
+  expect(memoryRequests.some((url) => url.includes('/audio/winter-loop.'))).toBe(false);
+  expect(memoryRequests.some((url) => url.includes('/ui/floco-neve.svg'))).toBe(false);
+
+  await page.screenshot({
+    path: testInfo.outputPath(`${testInfo.project.name}-memory-low-reduced.png`),
+    fullPage: true,
+  });
+  const canvas = page.locator('canvas');
+  await tapMemoryCard(page, canvas, 0);
+  await expectNextPuzzleInteraction(page, eventSequence);
+  await page.getByRole('button', { name: 'Sair do jogo' }).click();
+  await expect(canvas).toHaveCount(0);
+  expect(browserErrors).toEqual([]);
+});
+
+test('Memory shows its completed album before the replay actions, then replays and exits safely', async ({
+  page,
+}, testInfo) => {
+  test.setTimeout(45_000);
+  const browserErrors: string[] = [];
+  page.on('pageerror', (error) => browserErrors.push(error.message));
+  page.on('console', (message) => {
+    if (message.type() === 'error') browserErrors.push(message.text());
+  });
+
+  await page.goto('/s/local-demo-token/game/memory?scenario=victory');
+  await page.getByTestId('play-selected-game').click();
+  await expect(page.getByTestId('game-event')).toHaveText('Brincadeira concluída!', {
+    timeout: 20_000,
+  });
+  await expect(page.getByRole('heading', { name: 'Quer brincar mais um pouco?' })).toHaveCount(0);
+  await page.screenshot({
+    path: testInfo.outputPath(`${testInfo.project.name}-memory-album-before-actions.png`),
+    fullPage: true,
+  });
+  await expect(page.getByRole('heading', { name: 'Quer brincar mais um pouco?' })).toBeVisible({
+    timeout: 5_000,
+  });
+  await page.screenshot({
+    path: testInfo.outputPath(`${testInfo.project.name}-memory-album-actions.png`),
+    fullPage: true,
+  });
+
+  await page.getByRole('button', { name: 'Brincar de novo' }).click();
+  await expect(page.getByTestId('game-event')).toHaveText('Brincadeira iniciada', {
+    timeout: 20_000,
+  });
+  await page.getByRole('button', { name: 'Sair do jogo' }).click();
+  await expect(page.getByRole('heading', { name: 'Escolha seus jogos' })).toBeVisible();
+  await expect(page.locator('canvas')).toHaveCount(0);
+  expect(browserErrors).toEqual([]);
+});
+
+test('Memory offers more cards after victory only as a fresh six-pair game', async ({
+  page,
+}, testInfo) => {
+  test.setTimeout(45_000);
+  const browserErrors: string[] = [];
+  page.on('pageerror', (error) => browserErrors.push(error.message));
+  page.on('console', (message) => {
+    if (message.type() === 'error') browserErrors.push(message.text());
+  });
+
+  await page.goto('/s/local-demo-token/game/memory?scenario=victory');
+  await page.getByTestId('play-selected-game').click();
+  await expect(page.getByRole('heading', { name: 'Quer brincar mais um pouco?' })).toBeVisible({
+    timeout: 20_000,
+  });
+  await expect(page.getByRole('button', { name: 'Mais cartas' })).toBeVisible();
+  await page.getByRole('button', { name: 'Mais cartas' }).click();
+  await expect(page.getByTestId('phaser-host')).toHaveAttribute('data-difficulty', 'desafio');
+  await expect(page.getByTestId('game-event')).toHaveText('Brincadeira iniciada', {
+    timeout: 20_000,
+  });
+  const canvas = page.locator('canvas');
+  await expect(canvas).toBeVisible();
+  await page.screenshot({
+    path: testInfo.outputPath(`${testInfo.project.name}-memory-more-cards.png`),
+    fullPage: true,
+  });
+  const sequence = await puzzleEventSequence(page);
+  await tapMemoryCard(page, canvas, 0, 12);
+  await expectNextPuzzleInteraction(page, sequence);
+  await page.getByRole('button', { name: 'Sair do jogo' }).click();
+  await expect(page.getByRole('heading', { name: 'Escolha seus jogos' })).toBeVisible();
+  await expect(canvas).toHaveCount(0);
+  expect(browserErrors).toEqual([]);
+});
+
+test('Memory ignores a rapid third touch and remains playable after its responsive reflow', async ({
+  page,
+}, testInfo) => {
+  // This is deliberately a real touch burst: selecting A and B starts a
+  // resolving turn, so C must not become a hidden third face while Phaser is
+  // also handling RESIZE. The next touch proves the board left that state.
+  test.setTimeout(45_000);
+  const browserErrors: string[] = [];
+  page.on('pageerror', (error) => browserErrors.push(error.message));
+  page.on('console', (message) => {
+    if (message.type() === 'error') browserErrors.push(message.text());
+  });
+
+  await page.goto('/s/local-demo-token');
+  await page.getByTestId('open-game-memory').click();
+  await page.getByTestId('play-selected-game').click();
+  let eventSequence = await expectPuzzleStarted(page);
+  const canvas = page.locator('canvas');
+  await expect(canvas).toBeVisible();
+  const initialBox = await canvas.boundingBox();
+  if (!initialBox) throw new Error('Memory canvas has no initial box.');
+  const initialViewport = await page.evaluate(() => ({
+    height: window.innerHeight,
+    width: window.innerWidth,
+  }));
+
+  await tapMemoryCard(page, canvas, 0);
+  await tapMemoryCard(page, canvas, 1);
+  await tapMemoryCard(page, canvas, 2);
+  eventSequence = await expectNextPuzzleInteraction(page, eventSequence);
+
+  await page.setViewportSize(responsiveResizeTarget(testInfo.project.name));
+  await expect
+    .poll(() => page.evaluate(() => ({ height: window.innerHeight, width: window.innerWidth })))
+    .not.toEqual(initialViewport);
+  await expect(canvas).toBeVisible();
+  await expect
+    .poll(async () => {
+      const box = await canvas.boundingBox();
+      return box
+        ? { height: Math.round(box.height), width: Math.round(box.width) }
+        : { height: 0, width: 0 };
+    })
+    .not.toEqual({ height: Math.round(initialBox.height), width: Math.round(initialBox.width) });
+
+  await tapMemoryCard(page, canvas, 3);
+  await expectNextPuzzleInteraction(page, eventSequence);
+  await page.getByRole('button', { name: 'Sair do jogo' }).click();
+  await expect(canvas).toHaveCount(0);
+  expect(browserErrors).toEqual([]);
+});
+
+test('Memory settles a pending pair correctly after the browser becomes visible again', async ({
+  page,
+}) => {
+  // Phaser 4 observes document.hidden through visibilitychange. Shadow that
+  // browser-owned property only for this test so the real core visibility
+  // handler pauses a turn already waiting for its match or gentle return.
+  test.setTimeout(45_000);
+  const browserErrors: string[] = [];
+  page.on('pageerror', (error) => browserErrors.push(error.message));
+  page.on('console', (message) => {
+    if (message.type() === 'error') browserErrors.push(message.text());
+  });
+
+  await page.goto('/s/local-demo-token');
+  await page.getByTestId('open-game-memory').click();
+  await page.getByTestId('play-selected-game').click();
+  let eventSequence = await expectPuzzleStarted(page);
+  const canvas = page.locator('canvas');
+  await expect(canvas).toBeVisible();
+
+  await tapMemoryCard(page, canvas, 0);
+  await tapMemoryCard(page, canvas, 1);
+  await page.evaluate(() => {
+    Object.defineProperty(document, 'hidden', { configurable: true, get: () => true });
+    document.dispatchEvent(new Event('visibilitychange'));
+  });
+  await expect(page.getByTestId('game-event')).toHaveText('Jogo em pausa');
+
+  await page.evaluate(() => {
+    delete (document as { hidden?: boolean }).hidden;
+    document.dispatchEvent(new Event('visibilitychange'));
+  });
+  await expect(page.getByTestId('game-event')).toHaveText('Brincadeira retomada');
+  eventSequence = await expectNextPuzzleInteraction(page, eventSequence);
+
+  await tapMemoryCard(page, canvas, 3);
+  await expectNextPuzzleInteraction(page, eventSequence);
+  await page.getByRole('button', { name: 'Sair do jogo' }).click();
+  await expect(canvas).toHaveCount(0);
+  expect(browserErrors).toEqual([]);
+});
+
+test('Memory leaves no canvas after five focused mobile entries and exits', async ({
+  page,
+}, testInfo) => {
+  // The four-viewport journey already covers reflow. Five clean repetitions on
+  // the primary child phone prove the Memory-owned textures and SceneScope do
+  // not survive a normal return to the catalogue.
+  test.skip(
+    testInfo.project.name !== 'iphone-390',
+    'The repeat gate uses the primary mobile view.',
+  );
+  test.setTimeout(60_000);
+  await page.goto('/s/local-demo-token');
+
+  for (let index = 0; index < 5; index += 1) {
+    await page.getByTestId('open-game-memory').click();
+    await page.getByTestId('play-selected-game').click();
+    await expect(page.getByTestId('game-status')).toHaveText('Pronto', { timeout: 30_000 });
+    await expect(page.locator('canvas')).toHaveCount(1);
+    await page.getByRole('button', { name: 'Sair do jogo' }).click();
+    await expect(page.getByRole('heading', { name: 'Escolha seus jogos' })).toBeVisible();
     await expect(page.locator('canvas')).toHaveCount(0);
   }
 });
@@ -248,6 +752,7 @@ test('mobile photo selection keeps a bounded gallery and opens the selected puzz
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/s/local-demo-token');
 
+  await page.getByTestId('open-photo-picker').click();
   const firstPhoto = page.getByTestId('photo-ph_001');
   await expect(firstPhoto).toBeVisible();
   await expect(firstPhoto).toHaveCSS('aspect-ratio', '4 / 5');
@@ -255,14 +760,15 @@ test('mobile photo selection keeps a bounded gallery and opens the selected puzz
   expect(firstPhotoBox?.height).toBeLessThan(300);
 
   await page.getByTestId('photo-ph_002').click();
-  await expect(page.getByTestId('photo-ph_002')).toHaveAttribute('aria-pressed', 'true');
-  await expect(page.getByTestId('photo-selection')).toContainText('Sua foto está pronta!');
+  await expect(page.getByRole('dialog')).toHaveCount(0);
+  await expect(page.getByTestId('album-position')).toHaveText('2 de 12');
+  await expect(page.getByTestId('photo-selection')).toContainText('Suas fotos.');
   await expect(page.getByTestId('photo-selection')).not.toContainText(/horizontal|vertical/i);
-  await expect(page.getByTestId('start-selected-photo')).toBeVisible();
-  await page.getByTestId('start-selected-photo').click();
+  await expect(page.getByTestId('open-game-puzzle-swap')).toBeVisible();
+  await page.getByTestId('open-game-puzzle-swap').click();
   await expect(page).toHaveURL('/s/local-demo-token/game/puzzle-swap');
-  await expect(page.locator('.cover-photo-frame')).toBeVisible();
-  await expect(page.locator('.cover-photo-meta')).toHaveText(
+  await expect(page.locator('.game-object-photo')).toBeVisible();
+  await expect(page.locator('.intro-demo-hint')).toHaveText(
     'Sua foto é a estrela desta brincadeira de Natal.',
   );
   await expect(page.locator('.game-cover-preview img')).toHaveAttribute(
@@ -300,11 +806,13 @@ test('Puzzle cover preserves its photo-first action when movement is reduced', a
   const preview = page.locator('.game-cover-preview');
   await expect(preview).toBeVisible();
   await expect(page.getByTestId('play-selected-game')).toBeVisible();
-  await expect(page.getByTestId('play-selected-game')).toHaveCSS('animation-duration', '0.001s');
-  await expect(page.locator('.cover-snowfall span').first()).toHaveCSS(
-    'animation-duration',
-    '0.001s',
-  );
+  await expect(page.locator('.christmas-snow')).toHaveCSS('display', 'none');
+  expect(
+    await page.evaluate(
+      () =>
+        document.getAnimations().filter((animation) => animation.playState === 'running').length,
+    ),
+  ).toBe(0);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(
     true,
   );
@@ -362,7 +870,7 @@ test('Puzzle victory keeps every next action reachable on the mobile matrix', as
   await expect(page.getByTestId('phaser-host')).toHaveAttribute('data-difficulty', 'desafio');
   await expect(page.getByTestId('game-event')).toHaveText('Brincadeira iniciada');
   await page.getByRole('button', { name: 'Sair do jogo' }).click();
-  await expect(page.getByRole('heading', { name: 'Sessão de Natal' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Escolha seus jogos' })).toBeVisible();
   await expect(page.locator('canvas')).toHaveCount(0);
 });
 
@@ -388,11 +896,12 @@ test('Puzzle Swap mounts selected portrait and landscape textures and exits clea
     fullPage: true,
   });
   await page.getByRole('button', { name: 'Sair do jogo' }).click();
-  await expect(page.getByRole('heading', { name: 'Sessão de Natal' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Escolha seus jogos' })).toBeVisible();
   await expect(page.locator('canvas')).toHaveCount(0);
 
+  await page.getByTestId('open-photo-picker').click();
   await page.getByTestId('photo-ph_002').click();
-  await expect(page.getByTestId('photo-ph_002')).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.getByTestId('album-position')).toHaveText('2 de 12');
   await page.getByTestId('open-game-puzzle-swap').click();
   await page.getByTestId('play-selected-game').click();
   await expect(page.getByTestId('game-status')).toHaveText('Pronto');
@@ -403,7 +912,7 @@ test('Puzzle Swap mounts selected portrait and landscape textures and exits clea
     fullPage: true,
   });
   await page.getByRole('button', { name: 'Sair do jogo' }).click();
-  await expect(page.getByRole('heading', { name: 'Sessão de Natal' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Escolha seus jogos' })).toBeVisible();
   await expect(page.locator('canvas')).toHaveCount(0);
   expect(failedRequests).toEqual([]);
 });
@@ -577,7 +1086,7 @@ test('Puzzle Swap animates a deterministic mobile solve and loads its authorized
   expect(audioResponses.every((response) => response.status === 200)).toBe(true);
   await page.getByRole('button', { name: 'Sair do jogo' }).click();
   await page.waitForTimeout(500);
-  await expect(page.getByRole('heading', { name: 'Sessão de Natal' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Escolha seus jogos' })).toBeVisible();
   await expect(page.locator('canvas')).toHaveCount(0);
   expect(browserErrors).toEqual([]);
 });
@@ -758,7 +1267,7 @@ test('five Puzzle Swap enter and exit cycles leave no duplicate canvas', async (
     await expect(page.getByTestId('game-status')).toHaveText('Pronto');
     await expect(page.locator('canvas')).toHaveCount(1);
     await page.getByRole('button', { name: 'Sair do jogo' }).click();
-    await expect(page.getByRole('heading', { name: 'Sessão de Natal' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Escolha seus jogos' })).toBeVisible();
     await expect(page.locator('canvas')).toHaveCount(0);
   }
 });
@@ -770,9 +1279,13 @@ test('a 172-photo session keeps selection and has a deterministic no-observer fa
     Object.defineProperty(window, 'IntersectionObserver', { configurable: true, value: undefined });
   });
   await page.goto('/s/local-demo-token');
+  await page.getByText('Ferramentas de desenvolvimento', { exact: true }).click();
   await page.getByLabel('Amostra da sessão').selectOption('172');
+  await page.getByTestId('open-photo-picker').click();
   await expect(page.getByTestId('photo-ph_001')).toHaveAttribute('aria-pressed', 'true');
   await page.getByTestId('photo-ph_002').click();
+  await expect(page.getByTestId('album-position')).toHaveText('2 de 172');
+  await page.getByTestId('open-photo-picker').click();
   await expect(page.getByTestId('photo-ph_002')).toHaveAttribute('aria-pressed', 'true');
   await expect(page.getByTestId('photo-sentinel')).toContainText('172');
   expect(await page.locator('.photo-card').count()).toBeLessThan(172);
@@ -858,4 +1371,106 @@ test('Asset Lab reviews only cataloged public assets without opening a session',
   );
   const currentOrigin = new URL(page.url()).origin;
   expect(requests.every((url) => new URL(url).origin === currentOrigin)).toBe(true);
+});
+
+/** Mirrors the pure protected-area layout used by the Trinca menu. */
+function ticTacToeActionCenter(
+  canvasWidth: number,
+  canvasHeight: number,
+  buttonIndex: number,
+  buttonCount: number,
+  detailed: boolean = false,
+  modeCards: boolean = false,
+): { x: number; y: number } {
+  const safeTop = Math.max(16, Math.round(canvasHeight * 0.025));
+  const safeBottom = Math.max(20, Math.round(canvasHeight * 0.035));
+  const headerBottom = safeTop + 44;
+  const scoreBottom = headerBottom + 4 + 22;
+  const statusBottom = scoreBottom + 4 + 48;
+  const coachBottom = statusBottom + 8 + 42;
+  const dockTop = canvasHeight - safeBottom - 56;
+  const actionTop = coachBottom + 54;
+  const actionBottom = Math.min(dockTop - 24, canvasHeight - safeBottom - 24);
+  const actionHeight = Math.max(52, actionBottom - Math.min(actionTop, actionBottom));
+  const columns = (modeCards && buttonCount === 2) || buttonCount > 3 ? 2 : 1;
+  const rows = Math.ceil(buttonCount / columns);
+  const buttonHeight = modeCards ? 164 : detailed ? 60 : 52;
+  const rowStep = buttonHeight + 12;
+  const selectionPhotoWidth = Math.min(
+    200,
+    Math.max(
+      128,
+      Math.round((canvasWidth - Math.max(16, Math.round(canvasWidth * 0.05)) * 2) * 0.44),
+    ),
+  );
+  const selectionPhotoHeight = Math.max(
+    0,
+    Math.min(
+      160,
+      Math.round(selectionPhotoWidth * 0.94),
+      Math.max(0, Math.round(actionHeight * 0.42)),
+    ),
+  );
+  const preferredBaseY = detailed
+    ? Math.max(
+        actionTop + 8 + selectionPhotoHeight + 54,
+        actionTop + actionHeight * (modeCards ? 0.67 : 0.52),
+      )
+    : actionTop + actionHeight * 0.62;
+  const maxBaseY = actionTop + actionHeight - (rows - 1) * rowStep - buttonHeight / 2 - 2;
+  const baseY = Math.min(preferredBaseY, maxBaseY);
+  const width =
+    columns === 1 ? Math.min(292, canvasWidth - 48) : Math.min(154, canvasWidth / 2 - 26);
+  const gap = 12;
+  const startX = canvasWidth / 2 - ((columns - 1) * (width + gap)) / 2;
+  const column = buttonIndex % columns;
+  const row = Math.floor(buttonIndex / columns);
+  return { x: startX + column * (width + gap), y: baseY + row * rowStep };
+}
+
+test('Trinca keeps its board protected through pause and confirmed return', async ({ page }) => {
+  test.setTimeout(45_000);
+  const browserErrors: string[] = [];
+  page.on('pageerror', (error) => browserErrors.push(error.message));
+  page.on('console', (message) => {
+    if (message.type() === 'error') browserErrors.push(message.text());
+  });
+
+  await page.goto('/s/local-demo-token');
+  await page.getByTestId('open-game-tic-tac-toe').click();
+  await expect(page.getByRole('heading', { name: 'Trinca de Natal' })).toBeVisible();
+  await page.getByTestId('play-selected-game').click();
+  await expect(page.getByTestId('game-status')).toHaveText('Pronto', { timeout: 30_000 });
+  const canvas = page.locator('canvas');
+  await expect(canvas).toBeVisible();
+  const canvasBox = await canvas.boundingBox();
+  if (!canvasBox) throw new Error('Trinca canvas has no bounding box.');
+
+  const mode = ticTacToeActionCenter(canvasBox.width, canvasBox.height, 0, 2, true, true);
+  await page.touchscreen.tap(canvasBox.x + mode.x, canvasBox.y + mode.y);
+  const smart = ticTacToeActionCenter(canvasBox.width, canvasBox.height, 1, 3, true);
+  await page.touchscreen.tap(canvasBox.x + smart.x, canvasBox.y + smart.y);
+  await expect(page.getByTestId('game-event')).toHaveText('Brincadeira iniciada');
+
+  const inset = Math.max(16, Math.round(canvasBox.width * 0.05));
+  const pause = {
+    x: inset + (canvasBox.width - inset * 2 - 76) + 38,
+    y: Math.max(16, Math.round(canvasBox.height * 0.025)) + 22,
+  };
+  await page.touchscreen.tap(canvasBox.x + pause.x, canvasBox.y + pause.y);
+  await expect(page.getByTestId('game-event')).toHaveText('Jogo em pausa');
+
+  const panelCenter = { x: canvasBox.width / 2, y: canvasBox.height / 2 };
+  await page.touchscreen.tap(canvasBox.x + panelCenter.x, canvasBox.y + panelCenter.y + 13);
+  await expect(page.getByTestId('game-event')).toHaveText('Brincadeira retomada');
+
+  await page.touchscreen.tap(canvasBox.x + pause.x, canvasBox.y + pause.y);
+  await expect(page.getByTestId('game-event')).toHaveText('Jogo em pausa');
+  await page.touchscreen.tap(canvasBox.x + panelCenter.x, canvasBox.y + panelCenter.y + 71);
+  await page.touchscreen.tap(canvasBox.x + panelCenter.x, canvasBox.y + panelCenter.y + 13);
+  await expect(canvas).toBeVisible();
+  expect(browserErrors).toEqual([]);
+
+  await page.getByRole('button', { name: 'Sair do jogo' }).click();
+  await expect(page.locator('canvas')).toHaveCount(0);
 });

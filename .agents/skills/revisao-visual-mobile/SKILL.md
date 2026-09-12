@@ -35,6 +35,20 @@ protagonista, espaço útil de jogo e resposta perceptível ao toque.
 
 ## Severidade
 
+Ao revisar controles deste projeto, conferir também o
+[padrão cristalino](../../../docs/experience/christmas/CRYSTAL_CONTROL_STANDARD.md)
+no HUD, pausa, retorno e conclusão: espessura/reflexo legíveis, ícone coerente,
+pressão sem deslocar o alvo e som único respeitando mudo. A prova inclui o
+interior de cada jogo; revisar só o Hub não demonstra consistência.
+
+Conferir também toque em objetos de cenário que parecem acionáveis, foto
+clara/escura, fonte e reflexão da luz, sons repetidos e mudo entre jogos.
+Testar pausa manual seguida de ocultar/mostrar a página: a pausa da criança
+deve permanecer. Distinguir contagem de requests/inícios de reprodução de
+escuta real em alto-falante; não declarar timbre ou mixagem homologados só
+com automação. Registrar pendências por jogo e estado, sem nota estética
+genérica nem promessa de produção baseada apenas em Chromium emulado.
+
 - P1 impede a ação principal, encobre a foto/tabuleiro ou expõe estado técnico.
 - P2 reduz compreensão, conforto, área útil ou sensação de acabamento.
 - P3 é polimento sem impacto no uso principal.

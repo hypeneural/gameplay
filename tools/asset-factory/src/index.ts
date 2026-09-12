@@ -31,9 +31,14 @@ export function parseAssetCommand(arguments_: readonly string[]): AssetCommandOp
   let gameId = 'puzzle-swap';
   for (let index = 0; index < flags.length; index += 1) {
     const flag = flags[index];
-    if (flag !== '--game' || !flags[index + 1]) {
-      throw new Error('Usage: asset-factory <command> [--game <game-id>].');
+    if (flag === '--') continue;
+    if ((flag !== '--game' && flag !== '--owner') || !flags[index + 1]) {
+      throw new Error(
+        'Usage: asset-factory <command> [--game <game-id> | --owner christmas-shell].',
+      );
     }
+    if (flag === '--owner' && flags[index + 1] !== 'christmas-shell')
+      throw new Error('The supported application owner is christmas-shell.');
     gameId = flags[index + 1]!;
     index += 1;
   }

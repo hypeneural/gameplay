@@ -36,7 +36,8 @@
     "asset:budget": "pnpm --filter @christmas-games/asset-factory run budget",
     "asset:manifest": "pnpm --filter @christmas-games/asset-factory run manifest",
     "asset:migrate": "pnpm --filter @christmas-games/asset-factory run migrate",
-    "puzzle:source-reader": "node tools/export-puzzle-source-reader.mjs"
+    "puzzle:source-reader": "node tools/export-puzzle-source-reader.mjs",
+    "clean:reports": "node tools/clean.mjs"
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",

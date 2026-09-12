@@ -4,6 +4,7 @@ import { join } from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
 import { parseAssetCommand, runAssetCommand } from '../src/index.js';
 import {
+  assetManifestRelativePath,
   auditAssetManifest,
   loadAssetManifest,
   migrateAssetManifest,
@@ -19,6 +20,19 @@ afterEach(async () => {
 });
 
 describe('asset factory', () => {
+  it('resolves the application shell without pretending it is an installed game', () => {
+    expect(parseAssetCommand(['audit', '--owner', 'christmas-shell'])).toEqual({
+      command: 'audit',
+      gameId: 'christmas-shell',
+    });
+    expect(assetManifestRelativePath('christmas-shell')).toBe(
+      'apps/play/assets/christmas-shell/manifest.json',
+    );
+    expect(() => parseAssetCommand(['audit', '--owner', '../private'])).toThrow(
+      'supported application owner',
+    );
+    expect(() => assetManifestRelativePath('../private')).toThrow('kebab-case');
+  });
   it('accepts only the documented offline commands', () => {
     expect(parseAssetCommand(['audit'])).toEqual({ command: 'audit', gameId: 'puzzle-swap' });
     expect(parseAssetCommand(['catalog', '--game', 'memory-match'])).toEqual({
@@ -113,6 +127,38 @@ describe('asset factory', () => {
     expect((await auditAssetManifest(root, 'test-game')).errors).toContain(
       'winter-background: art review state must be PRONTO_PARA_RUNTIME for public delivery.',
     );
+  });
+
+  it('requires source and license links for third-party public assets', async () => {
+    const root = await fixtureRoot();
+    const assetPath = join(root, 'apps/play/public/assets/test-game/backgrounds/snow.webp');
+    await writeFile(assetPath, '1234', 'utf8');
+    const v2 = await migrateAssetManifest(root, await loadAssetManifest(root, 'test-game'));
+    const thirdParty = {
+      ...v2,
+      assets: v2.assets.map((asset) => ({
+        ...asset,
+        source: {
+          ...asset.source,
+          provider: 'mixkit',
+          origin: 'third-party-licensed' as const,
+          identifier: 'mixkit-sfx-1631',
+          license: 'mixkit-sound-effects-free-license',
+          referenceUrl: 'https://mixkit.co/free-sound-effects/train/',
+          licenseUrl: 'https://mixkit.co/license/',
+        },
+      })),
+    };
+    expect(parseAssetManifest(thirdParty)).toEqual(thirdParty);
+
+    const missingLicenseLink = {
+      ...thirdParty,
+      assets: thirdParty.assets.map((asset) => ({
+        ...asset,
+        source: { ...asset.source, licenseUrl: undefined },
+      })),
+    };
+    expect(() => parseAssetManifest(missingLicenseLink)).toThrow('referenceUrl and licenseUrl');
   });
 
   it('reports a concise validation result for automation', async () => {

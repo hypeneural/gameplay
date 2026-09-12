@@ -32,6 +32,23 @@ para orientar, confirmar ou celebrar.
 
 ## Encaminhamento
 
+Para controles, HUD, pausa e ações finais deste projeto, aplicar o
+[padrão cristalino solicitado pelo proprietário](../../../docs/experience/christmas/CRYSTAL_CONTROL_STANDARD.md):
+vidro espelhado com espessura, reflexo, ícones materiais, pressão/retorno finitos
+e uma confirmação sonora por ação aceita. O padrão vale também dentro dos
+jogos, não somente na capa. Reutilizar primitivas de theme e preservar áreas
+de toque, foto, mudo, LOW e movimento reduzido. Não adicionar uma segunda voz
+sonora no componente visual se a política do jogo já confirma a ação.
+
+Para revisão do mundo completo, consultar também a
+[direção de fotografia e interatividade](../../../docs/product/MUNDO_NATALINO_INTERATIVO_2026-09-07.md).
+Inventariar os objetos que convidam ao toque: controles, peças, fotografias,
+presentes, trem e luzes. Definir resposta visual, cue, limite, estado de pausa
+e alternativa reduzida para cada um. Não usar “tudo interativo” como motivo
+para cobrir o rosto, atrasar a ação ou avançar regras ao tocar no cenário.
+Revisar cada jogo por dentro; usar a Guirlanda como referência material, sem
+apagar a fantasia particular dos outros jogos.
+
 - Para regra determinística, mantenha o trabalho em domain e escreva teste
   unitário antes do runtime.
 - Para Phaser, siga a ordem de fontes em AGENTS.md e leia somente a Skill

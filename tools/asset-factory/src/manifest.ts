@@ -2,6 +2,7 @@ import { createHash } from 'node:crypto';
 import { lstat, readdir, readFile } from 'node:fs/promises';
 import { isAbsolute, relative, resolve, sep } from 'node:path';
 import {
+  assetOrigins,
   assetFormats,
   assetKinds,
   assetManifestVersion,
@@ -33,6 +34,7 @@ const legacyMigrationReview = {
 
 export function assetManifestRelativePath(gameId: string): string {
   assertGameId(gameId);
+  if (gameId === 'christmas-shell') return 'apps/play/assets/christmas-shell/manifest.json';
   return `packages/games/${gameId}/assets/manifest.json`;
 }
 
@@ -159,7 +161,10 @@ function parseManifestHeader(
       budgetValue.runtimeBytesMax,
       'manifest.budget.runtimeBytesMax',
     ),
-    visualBytesMax: positiveInteger(budgetValue.visualBytesMax, 'manifest.budget.visualBytesMax'),
+    visualBytesMax: nonNegativeInteger(
+      budgetValue.visualBytesMax,
+      'manifest.budget.visualBytesMax',
+    ),
   };
   if (!Array.isArray(value.assets) || value.assets.length === 0) {
     throw new Error('manifest.assets must be a non-empty array.');
@@ -211,16 +216,12 @@ function parseAssetRecordV2(input: unknown, gameId: string, index: number): Asse
   const sourceValue = object(value.source, `${label}.source`);
   const source = {
     provider: reference(sourceValue.provider, `${label}.source.provider`),
-    origin: oneOf(
-      sourceValue.origin,
-      ['project-created', 'owner-authorized-legacy'] as const,
-      `${label}.source.origin`,
-    ),
+    origin: oneOf(sourceValue.origin, assetOrigins, `${label}.source.origin`),
     identifier: reference(sourceValue.identifier, `${label}.source.identifier`),
     ...(sourceValue.referenceUrl === undefined
       ? {}
       : { referenceUrl: webReference(sourceValue.referenceUrl, `${label}.source.referenceUrl`) }),
-    license: oneOf(sourceValue.license, ['project-owned'] as const, `${label}.source.license`),
+    license: reference(sourceValue.license, `${label}.source.license`),
     ...(sourceValue.licenseUrl === undefined
       ? {}
       : { licenseUrl: webReference(sourceValue.licenseUrl, `${label}.source.licenseUrl`) }),
@@ -228,6 +229,16 @@ function parseAssetRecordV2(input: unknown, gameId: string, index: number): Asse
     reviewedBy: reference(sourceValue.reviewedBy, `${label}.source.reviewedBy`),
     record: provenanceRecord(sourceValue.record, `${label}.source.record`),
   };
+  if (source.origin === 'third-party-licensed') {
+    if (!source.referenceUrl || !source.licenseUrl) {
+      throw new Error(
+        `${label}.source must record referenceUrl and licenseUrl for third-party assets.`,
+      );
+    }
+    if (source.license === 'project-owned') {
+      throw new Error(`${label}.source.license cannot be project-owned for third-party assets.`);
+    }
+  }
   const artValue = object(value.art, `${label}.art`);
   const art = {
     family: reference(artValue.family, `${label}.art.family`),
@@ -584,6 +595,12 @@ function integer(value: unknown, label: string): number {
 function positiveInteger(value: unknown, label: string): number {
   const result = integer(value, label);
   if (result < 1) throw new Error(`${label} must be positive.`);
+  return result;
+}
+
+function nonNegativeInteger(value: unknown, label: string): number {
+  const result = integer(value, label);
+  if (result < 0) throw new Error(`${label} must not be negative.`);
   return result;
 }
 

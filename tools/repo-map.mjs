@@ -6,13 +6,14 @@ const root = process.cwd();
 const ignored = new Set([
   '.git',
   '.reference',
+  '.local-private-media',
   'node_modules',
   'dist',
   'coverage',
   'playwright-report',
   'test-results',
 ]);
-const ignoredPaths = new Set(['tools/fixture-generator/tests/fixtures']);
+const ignoredPaths = new Set(['tools/fixture-generator/tests/fixtures', 'docs/generated/evidence']);
 
 async function tree(directory, prefix = '') {
   const entries = await readdir(directory, { withFileTypes: true });
@@ -20,6 +21,7 @@ async function tree(directory, prefix = '') {
     .filter(
       (entry) =>
         !ignored.has(entry.name) &&
+        !/^(?:playwright-report|test-results)(?:-|$)/.test(entry.name) &&
         !ignoredPaths.has(relative(root, join(directory, entry.name)).replaceAll('\\', '/')),
     )
     .sort((left, right) => left.name.localeCompare(right.name));

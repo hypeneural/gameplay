@@ -57,15 +57,36 @@ importers:
       '@christmas-games/dev-smoke':
         specifier: workspace:*
         version: link:../../packages/games/dev-smoke
+      '@christmas-games/expresso-das-fotos':
+        specifier: workspace:*
+        version: link:../../packages/games/expresso-das-fotos
+      '@christmas-games/guirlanda-das-lembrancas':
+        specifier: workspace:*
+        version: link:../../packages/games/guirlanda-das-lembrancas
+      '@christmas-games/magic-photo':
+        specifier: workspace:*
+        version: link:../../packages/games/magic-photo
+      '@christmas-games/memory':
+        specifier: workspace:*
+        version: link:../../packages/games/memory
+      '@christmas-games/mosaico-em-queda':
+        specifier: workspace:*
+        version: link:../../packages/games/mosaico-em-queda
       '@christmas-games/platform':
         specifier: workspace:*
         version: link:../../packages/platform
       '@christmas-games/puzzle-swap':
         specifier: workspace:*
         version: link:../../packages/games/puzzle-swap
+      '@christmas-games/rena-das-lembrancas':
+        specifier: workspace:*
+        version: link:../../packages/games/rena-das-lembrancas
       '@christmas-games/theme':
         specifier: workspace:*
         version: link:../../packages/theme
+      '@christmas-games/tic-tac-toe':
+        specifier: workspace:*
+        version: link:../../packages/games/tic-tac-toe
       phaser:
         specifier: 4.2.1
         version: 4.2.1
@@ -91,7 +112,49 @@ importers:
         specifier: 4.2.1
         version: 4.2.1
 
+  packages/games/expresso-das-fotos:
+    dependencies:
+      '@christmas-games/platform':
+        specifier: workspace:*
+        version: link:../../platform
+      phaser:
+        specifier: 4.2.1
+        version: 4.2.1
+
+  packages/games/guirlanda-das-lembrancas:
+    dependencies:
+      '@christmas-games/platform':
+        specifier: workspace:*
+        version: link:../../platform
+      phaser:
+        specifier: 4.2.1
+        version: 4.2.1
+
+  packages/games/magic-photo:
+    dependencies:
+      '@christmas-games/platform':
+        specifier: workspace:*
+        version: link:../../platform
+      '@christmas-games/theme':
+        specifier: workspace:*
+        version: link:../../theme
+      phaser:
+        specifier: 4.2.1
+        version: 4.2.1
+
   packages/games/memory:
+    dependencies:
+      '@christmas-games/platform':
+        specifier: workspace:*
+        version: link:../../platform
+      '@christmas-games/theme':
+        specifier: workspace:*
+        version: link:../../theme
+      phaser:
+        specifier: 4.2.1
+        version: 4.2.1
+
+  packages/games/mosaico-em-queda:
     dependencies:
       '@christmas-games/platform':
         specifier: workspace:*
@@ -115,13 +178,39 @@ importers:
         specifier: 4.2.1
         version: 4.2.1
 
-  packages/games/tic-tac-toe: {}
+  packages/games/rena-das-lembrancas:
+    dependencies:
+      '@christmas-games/platform':
+        specifier: workspace:*
+        version: link:../../platform
+      '@christmas-games/theme':
+        specifier: workspace:*
+        version: link:../../theme
+      phaser:
+        specifier: 4.2.1
+        version: 4.2.1
+
+  packages/games/tic-tac-toe:
+    dependencies:
+      '@christmas-games/platform':
+        specifier: workspace:*
+        version: link:../../platform
+      '@christmas-games/theme':
+        specifier: workspace:*
+        version: link:../../theme
+      phaser:
+        specifier: 4.2.1
+        version: 4.2.1
 
   packages/platform: {}
 
   packages/theme: {}
 
-  tools/asset-factory: {}
+  tools/asset-factory:
+    dependencies:
+      sharp:
+        specifier: 0.35.3
+        version: 0.35.3(@types/node@24.13.3)
 
   tools/fixture-generator:
     dependencies:
