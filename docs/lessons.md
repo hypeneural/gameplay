@@ -1023,3 +1023,20 @@ Ao implementar mecânicas de projeção óptica, iluminação volumétrica (_God
 
 3. **Paisagem Sonora Natalina e Timbre Real**:
    Sintetizadores WebAudio de onda pura (senoidal/triangular) não transmitem o calor emocional do Natal. Utilizar faixas orquestradas e masterizadas em caixinha de música de Natal (`musicbox-loop.mp3`), celesta, sinos de trenó (_sleigh bells_) e fanfarra de celebração (`musicbox-celebrate.mp3`), combinadas com ducking dinâmico suave durante a revelação da foto, entrega imediatamente a atmosfera aconchegante e mágica descrita na bíblia artística do estúdio.
+
+## LESSON-115 — Publicação da auditoria e recorte do primeiro piloto
+
+Uma bancada fotográfica privada não pode ser copiada integralmente para um
+repositório público. Publicar documentos anonimizados, medições agregadas e
+recibos dos arquivos-fonte; manter fora nomes, telefones, caminhos locais,
+fotografias, screenshots, hashes individuais de mídia e snapshots de código
+privado. Gerar novamente o PDF a partir da edição pública, em vez de apenas
+renomear o relatório interno.
+
+O primeiro piloto de galeria e jogos pode avaliar entrega manual do link e UUID
+CRM explicitamente conferido, preservando sessão persistente, autorização por
+mídia, revisão completa e replay. A cadeia de outbox, inbox e reconciliação é
+requisito antes de habilitar envio automático. Distinguir esse recorte proposto
+do plano completo e da integração realmente implementada. Os 6,62 MB medidos
+para 90 derivados são o peso de toda a coleção; não comprovam carga inicial,
+memória decodificada nem performance em Android/iOS.

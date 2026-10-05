@@ -12,6 +12,7 @@
 │       └── revisao-visual-mobile
 │           └── SKILL.md
 ├── .dependency-cruiser.cjs
+├── .gitattributes
 ├── .github
 │   ├── ISSUE_TEMPLATE
 │   │   ├── bug_report.md
@@ -515,6 +516,21 @@
 │   ├── generated
 │   │   └── repo-map.md
 │   ├── index.md
+│   ├── integrations
+│   │   └── photo-sessions
+│   │       ├── AUDITORIA_WORKFLOW_SESSOES_E_JOGOS.md
+│   │       ├── MVP_RAPIDO.md
+│   │       ├── PLANO_IMPLEMENTACAO_GALERIA_JOGOS_EVYDFLOW.md
+│   │       ├── PROMPT_VALIDACAO_CHATGPT.md
+│   │       ├── README.md
+│   │       ├── evidence
+│   │       │   ├── benchmark-summary.json
+│   │       │   ├── gallery-smoke-summary.json
+│   │       │   ├── publication-manifest.json
+│   │       │   └── source-index.json
+│   │       └── output
+│   │           └── pdf
+│   │               └── AUDITORIA_E_PLANO_SESSOES_FOTOS_PUBLICO.pdf
 │   ├── lessons.md
 │   ├── media
 │   │   ├── LOCAL_MEDIA_ARCHITECTURE.md

@@ -1,0 +1,218 @@
+{
+  "inventorySummary": {
+    "rootFiles": 30,
+    "sourceBytes": 314662440,
+    "excludedBAIXA": {
+      "files": 30,
+      "bytes": 20638181
+    },
+    "orientation": {
+      "portrait": 5,
+      "landscape": 25,
+      "square": 0
+    },
+    "megapixels": {
+      "min": 7.891176,
+      "max": 22.4
+    },
+    "exifCount": 30,
+    "iccCount": 30,
+    "xmpCount": 30,
+    "duplicateExactGroups": [],
+    "sharpVersion": "0.35.3",
+    "vipsVersion": "8.18.3",
+    "sameCaptureCandidateCount": 2
+  },
+  "baseline": {
+    "ready": 30,
+    "failed": 0,
+    "elapsedSeconds": 21.748312300000002,
+    "derivedBytes": 6616226,
+    "reductionPercent": 97.89735756196386,
+    "totals": {
+      "thumb": {
+        "files": 30,
+        "bytes": 768956
+      },
+      "card": {
+        "files": 30,
+        "bytes": 1590648
+      },
+      "game": {
+        "files": 30,
+        "bytes": 4256622
+      }
+    }
+  },
+  "compressionAggregate": [
+    {
+      "format": "webp",
+      "quality": 78,
+      "sampleCount": 3,
+      "totalBytes": 377234,
+      "meanBytes": 125744.66666666667,
+      "meanEncodeMs": 980.2039999999992,
+      "meanPsnrDb": 37.024621218662595
+    },
+    {
+      "format": "webp",
+      "quality": 82,
+      "sampleCount": 3,
+      "totalBytes": 443820,
+      "meanBytes": 147940,
+      "meanEncodeMs": 1065.574866666666,
+      "meanPsnrDb": 37.79329670871193
+    },
+    {
+      "format": "webp",
+      "quality": 86,
+      "sampleCount": 3,
+      "totalBytes": 547908,
+      "meanBytes": 182636,
+      "meanEncodeMs": 934.9026666666674,
+      "meanPsnrDb": 38.58943358480872
+    },
+    {
+      "format": "avif",
+      "quality": 45,
+      "sampleCount": 3,
+      "totalBytes": 196617,
+      "meanBytes": 65539,
+      "meanEncodeMs": 10587.202333333336,
+      "meanPsnrDb": 36.28286770787733
+    }
+  ],
+  "games": [
+    {
+      "id": "estilingue-das-lembrancas",
+      "name": "Estilingue das Lembranças",
+      "minPhotos": 1,
+      "recommendedPhotos": 1,
+      "selection": "single"
+    },
+    {
+      "id": "expresso-das-fotos",
+      "name": "Expresso das Fotos",
+      "minPhotos": 1,
+      "recommendedPhotos": 6,
+      "selection": "subset"
+    },
+    {
+      "id": "globo-das-lembrancas",
+      "name": "Globo das Lembranças",
+      "minPhotos": 1,
+      "recommendedPhotos": 1,
+      "selection": "single"
+    },
+    {
+      "id": "guirlanda-das-lembrancas",
+      "name": "Guirlanda das Lembranças",
+      "minPhotos": 1,
+      "recommendedPhotos": 6,
+      "selection": "subset"
+    },
+    {
+      "id": "lanterna-magica",
+      "name": "Lanterna Mágica",
+      "minPhotos": 1,
+      "recommendedPhotos": 1,
+      "selection": "single"
+    },
+    {
+      "id": "magic-photo",
+      "name": "A Magia da Minha Foto de Natal",
+      "minPhotos": 1,
+      "recommendedPhotos": 1,
+      "selection": "single"
+    },
+    {
+      "id": "memory",
+      "name": "Memórias de Natal",
+      "minPhotos": 4,
+      "recommendedPhotos": 4,
+      "selection": "subset"
+    },
+    {
+      "id": "mosaico-em-queda",
+      "name": "Mosaico em Queda",
+      "minPhotos": 1,
+      "recommendedPhotos": 4,
+      "selection": "subset"
+    },
+    {
+      "id": "puzzle-swap",
+      "name": "Quebra-cabeça da sua foto",
+      "minPhotos": 1,
+      "recommendedPhotos": 1,
+      "selection": "single"
+    },
+    {
+      "id": "rena-das-lembrancas",
+      "name": "Rudolph — Chuva de Lembranças",
+      "minPhotos": 3,
+      "recommendedPhotos": 8,
+      "selection": "subset"
+    },
+    {
+      "id": "tic-tac-toe",
+      "name": "Trinca de Natal",
+      "minPhotos": 1,
+      "recommendedPhotos": 2,
+      "selection": "subset"
+    }
+  ],
+  "qa": {
+    "outputs": 90,
+    "noExifOrXmp": true,
+    "colourSpaces": ["srgb"],
+    "allSourcesUnchanged": true,
+    "allHashesPresent": true,
+    "gameLongEdgeMax": 1600
+  },
+  "capacityFor30Photos": {
+    "sessions600": {
+      "derivativesBytes": 3969735600,
+      "originalsBytes": 188797464000
+    },
+    "sessions800": {
+      "derivativesBytes": 5292980800,
+      "originalsBytes": 251729952000
+    }
+  },
+  "benchmarkId": "BENCH-30-PHOTOS-2026-10-05",
+  "referenceDate": "2026-10-05",
+  "scope": "Private root originals only; BAIXA excluded; no photos or per-photo hashes published",
+  "replay": {
+    "ready": 30,
+    "failed": 0,
+    "cacheReplayMs": 1717.4101999999998,
+    "decodedOutputs": 90,
+    "failures": [],
+    "allOutputsUnchanged": true
+  },
+  "recipe": {
+    "variants": {
+      "thumb": 480,
+      "card": 800,
+      "game": 1600
+    },
+    "dimensionMeaning": "maximum long edge, actual width depends on orientation",
+    "format": "webp",
+    "quality": 82,
+    "fit": "inside",
+    "withoutEnlargement": true,
+    "autoOrient": true,
+    "outputColourSpace": "srgb",
+    "exif": false,
+    "xmp": false,
+    "batchConcurrency": 2,
+    "sharpConcurrency": 1
+  },
+  "limitations": [
+    "Single local media batch, not a production load test",
+    "Codec comparison: three samples, one timing per candidate; PSNR is not visual approval",
+    "No real CRM lookup, photo-session publishing or customer notification",
+    "Local Playwright viewports are not physical Android/iOS performance measurements",
+    "Capacity estimates are linear projections and omit operational overhead"
+  ]
+}

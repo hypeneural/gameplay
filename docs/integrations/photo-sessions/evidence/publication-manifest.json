@@ -1,0 +1,66 @@
+{
+  "referenceDate": "2026-10-05",
+  "package": "photo-sessions-public-documentation",
+  "status": "Audit completed; production integration proposed, not implemented",
+  "benchmarkId": "BENCH-30-PHOTOS-2026-10-05",
+  "contentPolicy": "Aggregate measurements and source file receipts only; no photos, customer identity, local paths, individual media hashes or private code snapshots",
+  "fileHashScope": "Git repository blobs: UTF-8 text normalized to LF; PDFs byte-for-byte. Windows working copies may use CRLF.",
+  "verification": {
+    "privateMarkersAbsent": true,
+    "relativeLinksChecked": 10,
+    "benchmarkTotalsConsistent": true,
+    "pdfPages": 46,
+    "pdfAllPagesRendered": true,
+    "pdfOverflowCharacters": 0,
+    "pdfSymbolCharacters": 0,
+    "pdfRasterImages": 0
+  },
+  "files": [
+    {
+      "path": "AUDITORIA_WORKFLOW_SESSOES_E_JOGOS.md",
+      "bytes": 84671,
+      "sha256": "e980994324abb50baaa021665be5e3a733394dcb23694a1ce1aa4aaea7b0990b"
+    },
+    {
+      "path": "evidence/benchmark-summary.json",
+      "bytes": 5260,
+      "sha256": "6f852e0585c9dbd22fae004df7ef2349ca0c100586a2b14242791c54c1b9c822"
+    },
+    {
+      "path": "evidence/gallery-smoke-summary.json",
+      "bytes": 1312,
+      "sha256": "c8633aa51ab199ef178986c4578c02e1809f3eb08098d55665ba6c440573757d"
+    },
+    {
+      "path": "evidence/source-index.json",
+      "bytes": 18864,
+      "sha256": "768e28d75fe7496b12cab0a89932f5f85d75f0a6b901e536c4bf3ff9863d0dd8"
+    },
+    {
+      "path": "MVP_RAPIDO.md",
+      "bytes": 9803,
+      "sha256": "eae6e7cd0da83e43838515de2f47a815d7a77a114264cba1ca7428a986ff311e"
+    },
+    {
+      "path": "output/pdf/AUDITORIA_E_PLANO_SESSOES_FOTOS_PUBLICO.pdf",
+      "bytes": 239962,
+      "sha256": "6d94957e59c5d8f3a6542cfaeb28cafe2f78ea261357cda69cdfbc812e1d9ce1"
+    },
+    {
+      "path": "PLANO_IMPLEMENTACAO_GALERIA_JOGOS_EVYDFLOW.md",
+      "bytes": 43014,
+      "sha256": "513d85b17fcff5b82bac4da48b2eda2a228ceec56f705c48b638c63eb3b2600b"
+    },
+    {
+      "path": "PROMPT_VALIDACAO_CHATGPT.md",
+      "bytes": 17566,
+      "sha256": "f6400af37fce1ba50da22d2715e19692fbe325c34e1c23336e88c9b11a9179f4"
+    },
+    {
+      "path": "README.md",
+      "bytes": 4926,
+      "sha256": "b7475c2c35581c56ab31e0a11491db5d07a9aa284bca4d8e674f525a5b25c1a4"
+    }
+  ],
+  "manifestSelfHashExcluded": true
+}

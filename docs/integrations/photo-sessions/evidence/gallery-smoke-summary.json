@@ -1,0 +1,58 @@
+{
+  "scope": "Local UI smoke only; no production gallery backend validated",
+  "offlineGallery": [
+    {
+      "width": 390,
+      "cards": 30,
+      "modalAndNavigation": true,
+      "overflow": false,
+      "errors": []
+    },
+    {
+      "width": 768,
+      "cards": 30,
+      "modalAndNavigation": true,
+      "overflow": false,
+      "errors": []
+    },
+    {
+      "width": 1280,
+      "cards": 30,
+      "modalAndNavigation": true,
+      "overflow": false,
+      "errors": []
+    }
+  ],
+  "referenceGalleryWithMockedAPIs": [
+    {
+      "width": 390,
+      "initialRenderedCount": 28,
+      "lightboxOpened": true,
+      "overflow": false,
+      "errors": [],
+      "blockedExternalRequests": 0,
+      "uniqueFixtureMediaRequested": 28,
+      "allRemoteResponsesMocked": true
+    },
+    {
+      "width": 768,
+      "initialRenderedCount": 30,
+      "lightboxOpened": true,
+      "overflow": false,
+      "errors": [],
+      "blockedExternalRequests": 0,
+      "uniqueFixtureMediaRequested": 30,
+      "allRemoteResponsesMocked": true
+    },
+    {
+      "width": 1280,
+      "initialRenderedCount": 30,
+      "lightboxOpened": true,
+      "overflow": false,
+      "errors": [],
+      "blockedExternalRequests": 0,
+      "uniqueFixtureMediaRequested": 30,
+      "allRemoteResponsesMocked": true
+    }
+  ]
+}

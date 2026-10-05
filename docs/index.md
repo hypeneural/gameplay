@@ -1,5 +1,7 @@
 # Documentation index
 
+- [Fotos, galeria mobile, jogos e EvydFlow — auditoria, plano, MVP e prompt de validação](integrations/photo-sessions/README.md)
+
 - [Relatório de Auditoria e Estado Geral do Repositório (2026-09-11)](quality/RELATORIO_AUDITORIA_E_ESTADO_REPOSITORIO_2026-09-11.md)
 - [Análise Forense e Guia de Produção em VPS (600 a 800 Galerias de Clientes)](architecture/PRODUCAO_VPS_MULTI_CLIENTES_600_800_GALERIAS.md)
 - [Análise Forense de Engenharia — Lógicas, Assets, Física e Áudio dos Jogos Mais Elaborados](architecture/JOGOS_ELABORADOS_ENGENHARIA_LOGICAS_ASSETS_E_FISICA.md)

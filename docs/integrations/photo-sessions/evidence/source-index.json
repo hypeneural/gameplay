@@ -1,0 +1,540 @@
+{
+  "referenceDate": "2026-10-05",
+  "repoStates": {
+    "gallery": {
+      "head": "0f903fba53d0e33c62cd3aa32f1cb25e8489390b",
+      "status": ""
+    },
+    "games": {
+      "head": "e38573b46d841f9cea1ab5f7306b0fd254b511ca",
+      "status": ""
+    },
+    "evydflow": {
+      "head": "42f0bcfd562d3165362cba39f1adb7bc5856d3af",
+      "status": "M evydflow/soclick/models.py\n M evydflow/soclick/storage.py"
+    }
+  },
+  "receipts": [
+    {
+      "repo": "evydflow",
+      "relativePath": "evydflow/tasks/fs.py",
+      "sha256": "899c50842072e902f43f13e649b6dea9283e880d7e60be5a303e69b2805da3c9",
+      "bytes": 3485,
+      "capturedAt": "2026-10-05T06:21:21.525Z"
+    },
+    {
+      "repo": "evydflow",
+      "relativePath": "evydflow/tasks/images.py",
+      "sha256": "be493a2c3679fcda5ae7faf671da1d5f7e8312d09190ab85434a84daa4d93e21",
+      "bytes": 5801,
+      "capturedAt": "2026-10-05T06:21:21.528Z"
+    },
+    {
+      "repo": "evydflow",
+      "relativePath": "evydflow/tasks/drive.py",
+      "sha256": "ffb2f78f313e3bc7c2f07b2b2593e55c14d60c94b9f8759f55c1b40d0d7ad98d",
+      "bytes": 7546,
+      "capturedAt": "2026-10-05T06:21:21.530Z"
+    },
+    {
+      "repo": "evydflow",
+      "relativePath": "evydflow/tasks/ftp.py",
+      "sha256": "9339930a83a5517ad864a34527bece830c060cc858876e82b951888cd3735d79",
+      "bytes": 3961,
+      "capturedAt": "2026-10-05T06:21:21.531Z"
+    },
+    {
+      "repo": "evydflow",
+      "relativePath": "evydflow/tasks/orders.py",
+      "sha256": "a3412f898561a0cf2fbff4994877f945e59504540a2413c586e68283799f907a",
+      "bytes": 1157,
+      "capturedAt": "2026-10-05T06:21:21.533Z"
+    },
+    {
+      "repo": "evydflow",
+      "relativePath": "evydflow/tasks/whatsapp.py",
+      "sha256": "fefd537bd430049d7e8ff2a941c1bb05e8ef6c345ea7e4b631f3f03b78461637",
+      "bytes": 11753,
+      "capturedAt": "2026-10-05T06:21:21.536Z"
+    },
+    {
+      "repo": "evydflow",
+      "relativePath": "evydflow/tasks/__init__.py",
+      "sha256": "8cd4965ec12f957f9ef622673406eca1a62cce549466cbdc915937e27e9c0f1e",
+      "bytes": 99,
+      "capturedAt": "2026-10-05T06:21:21.541Z"
+    },
+    {
+      "repo": "evydflow",
+      "relativePath": "evydflow/settings.py",
+      "sha256": "098975b6ea570edd76286a7c1d7fc0f029f51046813025dd0352027e5cd4bf3a",
+      "bytes": 5448,
+      "capturedAt": "2026-10-05T06:21:21.545Z"
+    },
+    {
+      "repo": "evydflow",
+      "relativePath": "evydflow/flow/executor.py",
+      "sha256": "0f7a4b0912161d15ce06664afe03d254eaae824b53a123764e11bda669ea0d5e",
+      "bytes": 9503,
+      "capturedAt": "2026-10-05T06:21:21.550Z"
+    },
+    {
+      "repo": "evydflow",
+      "relativePath": "evydflow/flow/state.py",
+      "sha256": "bf351fa0da1430bd55f01bbdc800425d4c7972072e58b831b7466f7c67ae2305",
+      "bytes": 2356,
+      "capturedAt": "2026-10-05T06:21:21.554Z"
+    },
+    {
+      "repo": "evydflow",
+      "relativePath": "evydflow/flow/model.py",
+      "sha256": "cbaef1abd484a7a86562f63bc66fc066bddd9cad8ab68bb3177773425587410a",
+      "bytes": 1345,
+      "capturedAt": "2026-10-05T06:21:21.557Z"
+    },
+    {
+      "repo": "evydflow",
+      "relativePath": "evydflow/flow/registry.py",
+      "sha256": "31922dc60f5abb1a85cf5b73193fe51797e3f48823722d816774bdeebc49ae46",
+      "bytes": 890,
+      "capturedAt": "2026-10-05T06:21:21.560Z"
+    },
+    {
+      "repo": "evydflow",
+      "relativePath": "evydflow/flow/loader.py",
+      "sha256": "bd1ee9bf17dfb5237f99bcce2d2f3c2ecb2f39e3c6cedbd1dce4efa26f09c719",
+      "bytes": 475,
+      "capturedAt": "2026-10-05T06:21:21.563Z"
+    },
+    {
+      "repo": "evydflow",
+      "relativePath": "evydflow/queue/backend.py",
+      "sha256": "342af33abd5acdc1a06e2e26363ff7e0f945857120862111533795b84f78eb2f",
+      "bytes": 367,
+      "capturedAt": "2026-10-05T06:21:21.567Z"
+    },
+    {
+      "repo": "evydflow",
+      "relativePath": "evydflow/queue/worker.py",
+      "sha256": "9c421ecdcd5e69f17019cd4e358454abafffc776c59d8f6dff6c890bbde3e04d",
+      "bytes": 2963,
+      "capturedAt": "2026-10-05T06:21:21.572Z"
+    },
+    {
+      "repo": "evydflow",
+      "relativePath": "evydflow/api/server.py",
+      "sha256": "0e59537ce75ac86528a35207ffeea1190339b17b2b2e74b2bc69b9f825728844",
+      "bytes": 6414,
+      "capturedAt": "2026-10-05T06:21:21.576Z"
+    },
+    {
+      "repo": "evydflow",
+      "relativePath": "evydflow/cli.py",
+      "sha256": "c88f71bce5ecfddd1007a9b487ad59d47c96a16500fb8422ac3e1af0ae91d7d0",
+      "bytes": 907,
+      "capturedAt": "2026-10-05T06:21:21.582Z"
+    },
+    {
+      "repo": "evydflow",
+      "relativePath": "evydflow/providers/evydencia.py",
+      "sha256": "e3f69a0a18da0d83cd873b9eb15562dc4f07ae5d4ee3344d43e264a124326902",
+      "bytes": 5098,
+      "capturedAt": "2026-10-05T06:21:21.593Z"
+    },
+    {
+      "repo": "evydflow",
+      "relativePath": "evydflow/providers/base.py",
+      "sha256": "c149e40fb7f7264d47a7498d740015b4162392519bcf598c1b8da44ec5e56d0c",
+      "bytes": 4756,
+      "capturedAt": "2026-10-05T06:21:21.598Z"
+    },
+    {
+      "repo": "evydflow",
+      "relativePath": "evydflow/drive/sharing.py",
+      "sha256": "6469ad404066d6912a98ebf2fd0c840f9b1e4158d9d1afce954860bae94e9b3a",
+      "bytes": 4355,
+      "capturedAt": "2026-10-05T06:21:21.603Z"
+    },
+    {
+      "repo": "evydflow",
+      "relativePath": "evydflow/soclick/manifest.py",
+      "sha256": "2e267cb65c919340c444d796d432a3fc759932e93e6a74d45c6f715e867a9c5f",
+      "bytes": 10188,
+      "capturedAt": "2026-10-05T06:21:21.609Z"
+    },
+    {
+      "repo": "evydflow",
+      "relativePath": "evydflow/soclick/storage.py",
+      "sha256": "45caa7186ac9463cfffe5840f73b7a4b8a4111d8d49a21ce7547c3b2dc4978ac",
+      "bytes": 66023,
+      "capturedAt": "2026-10-05T06:21:21.614Z"
+    },
+    {
+      "repo": "evydflow",
+      "relativePath": "evydflow/soclick/worker.py",
+      "sha256": "9a4421e8a14f3947b101c5547276ec39b02882fbd04a4e5b55f20e3663400736",
+      "bytes": 17746,
+      "capturedAt": "2026-10-05T06:21:21.618Z"
+    },
+    {
+      "repo": "evydflow",
+      "relativePath": "evydflow/soclick/recovery.py",
+      "sha256": "074a58ff2f5e739342b8eb4bb8a068e52dce9f40a86be8373de84df34c3f21de",
+      "bytes": 12596,
+      "capturedAt": "2026-10-05T06:21:21.622Z"
+    },
+    {
+      "repo": "evydflow",
+      "relativePath": "flows/natal_default.yaml",
+      "sha256": "ae1e7fba0f3e747a9cf18a427cab2962d35084ea96d10ad2cf9dce26de27a986",
+      "bytes": 3782,
+      "capturedAt": "2026-10-05T06:21:21.632Z"
+    },
+    {
+      "repo": "evydflow",
+      "relativePath": "flows/natal_massivo.yaml",
+      "sha256": "3c067caa2212670146cb82efdcf92ea43571f860c6204c151077dfddf436d518",
+      "bytes": 2038,
+      "capturedAt": "2026-10-05T06:21:21.639Z"
+    },
+    {
+      "repo": "evydflow",
+      "relativePath": "flows/natal_laboratorio.yaml",
+      "sha256": "b35dbcd86bba73bceb7f301f3c5d5055dcf8afeb16b0ba859bb9455e12c7993b",
+      "bytes": 3968,
+      "capturedAt": "2026-10-05T06:21:21.643Z"
+    },
+    {
+      "repo": "evydflow",
+      "relativePath": "docs/FLOW_ENGINE.md",
+      "sha256": "2c6b2238e6e6ab64014cbc24c0d26008c089d7aee21c26b3cf9778f218e0db4f",
+      "bytes": 2700,
+      "capturedAt": "2026-10-05T06:21:21.653Z"
+    },
+    {
+      "repo": "evydflow",
+      "relativePath": "docs/INTEGRATIONS.md",
+      "sha256": "8fbaa1aae06c004ea72dc9069f31dc6897d55cd69a1327483ba456a87b7f79a3",
+      "bytes": 2080,
+      "capturedAt": "2026-10-05T06:21:21.657Z"
+    },
+    {
+      "repo": "evydflow",
+      "relativePath": "docs/DOMAIN.md",
+      "sha256": "333cbf7e5a67c43ddb1011475b571521b53772a1aeff710626592a631efc3edd",
+      "bytes": 2361,
+      "capturedAt": "2026-10-05T06:21:21.661Z"
+    },
+    {
+      "repo": "evydflow",
+      "relativePath": "tests/unit/test_fs.py",
+      "sha256": "98ee964ba8f92e2db314f9a4330ca7197b53f8ecb3d5b1c97f055b6cf3642ec9",
+      "bytes": 2325,
+      "capturedAt": "2026-10-05T06:21:21.666Z"
+    },
+    {
+      "repo": "evydflow",
+      "relativePath": "tests/unit/test_soclick_queue_v2.py",
+      "sha256": "78336b75a5121dc93dd04ae82deadad10db43cc1f552af9cae22ceb4337880b8",
+      "bytes": 17851,
+      "capturedAt": "2026-10-05T06:21:21.671Z"
+    },
+    {
+      "repo": "evydflow",
+      "relativePath": "tests/unit/test_soclick_manifest_authority.py",
+      "sha256": "807939c3b17eccc853913a2226e1c50f0197a266acc816625d5e7ab69e47cbfd",
+      "bytes": 8021,
+      "capturedAt": "2026-10-05T06:21:21.677Z"
+    },
+    {
+      "repo": "games",
+      "relativePath": "tools/media-pipeline/src/index.ts",
+      "sha256": "5a76eeeee8f8bf1da979ccf79ba8e984f1e4a7f5c56ac16dfab868b58b8d1ee2",
+      "bytes": 11927,
+      "capturedAt": "2026-10-05T06:21:21.685Z"
+    },
+    {
+      "repo": "games",
+      "relativePath": "tools/media-pipeline/src/prepareLocal.ts",
+      "sha256": "dbf4ecf1eadb7d82528f98bb731b10f81b2a7b68d101d523eb5df627e2d5ca93",
+      "bytes": 5494,
+      "capturedAt": "2026-10-05T06:21:21.690Z"
+    },
+    {
+      "repo": "games",
+      "relativePath": "tools/media-pipeline/src/inspect.ts",
+      "sha256": "1959bf0f43d4dad3965e81f22e56b73c9f832a1f82bfeaea509d96611e72366c",
+      "bytes": 11439,
+      "capturedAt": "2026-10-05T06:21:21.694Z"
+    },
+    {
+      "repo": "games",
+      "relativePath": "tools/media-pipeline/package.json",
+      "sha256": "cda61c79f58293f399fbe2b0c5dad30edbe273a95894cf89cdee85a4b9c53ce9",
+      "bytes": 315,
+      "capturedAt": "2026-10-05T06:21:21.698Z"
+    },
+    {
+      "repo": "games",
+      "relativePath": "packages/platform/src/contracts/index.ts",
+      "sha256": "e2f321d4ac8299a5e4573440604c9d701d6ca7954cb5a97e2cd76a335c6b7a5e",
+      "bytes": 5593,
+      "capturedAt": "2026-10-05T06:21:21.707Z"
+    },
+    {
+      "repo": "games",
+      "relativePath": "packages/platform/src/session/InMemorySessionRepository.ts",
+      "sha256": "e6503f203c3b4b04be3e10d3d531a54c2741cd33965044c9716d1af131134670",
+      "bytes": 438,
+      "capturedAt": "2026-10-05T06:21:21.711Z"
+    },
+    {
+      "repo": "games",
+      "relativePath": "apps/play/src/app/AppRouter.tsx",
+      "sha256": "818b5eb31a72183d228cf667c727bfc018101a548b8a33e42755f3c7f665b90f",
+      "bytes": 15251,
+      "capturedAt": "2026-10-05T06:21:21.721Z"
+    },
+    {
+      "repo": "games",
+      "relativePath": "apps/play/src/app/LocalTestSession.ts",
+      "sha256": "3a8926ffc983086f58e4f1132d9bf18210f39ef0e9487336bc39734aeedede0d",
+      "bytes": 2163,
+      "capturedAt": "2026-10-05T06:21:21.727Z"
+    },
+    {
+      "repo": "games",
+      "relativePath": "apps/play/src/phaser/gameRegistry.ts",
+      "sha256": "c5aa7f09dc70d57293932ee7173b60e2fb5287612ba7a77d1cd51be1a9953199",
+      "bytes": 4377,
+      "capturedAt": "2026-10-05T06:21:21.733Z"
+    },
+    {
+      "repo": "games",
+      "relativePath": "apps/play/src/phaser/PhaserHost.tsx",
+      "sha256": "a55d6c264b805fedd4997360e848aee850151f1462c51fe2c25b2ca50c362e4c",
+      "bytes": 8097,
+      "capturedAt": "2026-10-05T06:21:21.739Z"
+    },
+    {
+      "repo": "games",
+      "relativePath": "apps/catalog-server/src/CatalogServer.ts",
+      "sha256": "fe4092ca2605aec18e7bc281145fe8ff65cb9b2cb2c887b0d05d56daa2b4adfb",
+      "bytes": 4191,
+      "capturedAt": "2026-10-05T06:21:21.746Z"
+    },
+    {
+      "repo": "games",
+      "relativePath": "apps/catalog-server/src/main.ts",
+      "sha256": "37b8b54142fb943884f262f2241d932e15697272e1162e583639d7f7040b5656",
+      "bytes": 1947,
+      "capturedAt": "2026-10-05T06:21:21.751Z"
+    },
+    {
+      "repo": "games",
+      "relativePath": "apps/play/vite.config.ts",
+      "sha256": "fad2a30df7638b463e5c3920e7912064b9e88b791e38ccd02a54581ccbf4966b",
+      "bytes": 5567,
+      "capturedAt": "2026-10-05T06:21:21.755Z"
+    },
+    {
+      "repo": "games",
+      "relativePath": "docs/media/LOCAL_MEDIA_ARCHITECTURE.md",
+      "sha256": "f0ab699ceb5940103c6bfb633268fd04e6407cc12dffbacb510dd5af5052bae8",
+      "bytes": 3781,
+      "capturedAt": "2026-10-05T06:21:21.764Z"
+    },
+    {
+      "repo": "games",
+      "relativePath": "docs/privacy/DATA_HANDLING.md",
+      "sha256": "185855d5de41bb885fbc3c0d4b1403c564ad3841146e5b9fd7c2a2f4fe864b09",
+      "bytes": 426,
+      "capturedAt": "2026-10-05T06:21:21.768Z"
+    },
+    {
+      "repo": "gallery",
+      "relativePath": "package.json",
+      "sha256": "738698ccfc08ecaca6f08836ba739691f01c1a5ad10601d24e2eb3af9a226fab",
+      "bytes": 2881,
+      "capturedAt": "2026-10-05T07:04:23.881Z"
+    },
+    {
+      "repo": "gallery",
+      "relativePath": "package-lock.json",
+      "sha256": "4d0bf6dbe9678a21ebdffafc9f29b055ea33ad779020a2c456a809a2112952d4",
+      "bytes": 249393,
+      "capturedAt": "2026-10-05T07:04:23.893Z"
+    },
+    {
+      "repo": "gallery",
+      "relativePath": "src/App.tsx",
+      "sha256": "bd73bdbe796e718d5ba68b36463b6500d1f26736398fa7458244236b948d5d01",
+      "bytes": 898,
+      "capturedAt": "2026-10-05T07:04:23.897Z"
+    },
+    {
+      "repo": "gallery",
+      "relativePath": "src/pages/Index.tsx",
+      "sha256": "d533bf237d8c973b40643cbaf8abb34a7aa28b62a22ae355a03009195924dbdd",
+      "bytes": 2956,
+      "capturedAt": "2026-10-05T07:04:23.901Z"
+    },
+    {
+      "repo": "gallery",
+      "relativePath": "src/components/PhotoGallery.tsx",
+      "sha256": "d2597fa064e7be7524704cd562b7f692191b753ba541e66c515fbb5020b573d9",
+      "bytes": 11802,
+      "capturedAt": "2026-10-05T07:04:23.906Z"
+    },
+    {
+      "repo": "gallery",
+      "relativePath": "src/components/GalleryHeader.tsx",
+      "sha256": "cb26df285f5617b9499359c6be62a1c998bb7e8b05602b5abcc4745d630080de",
+      "bytes": 2664,
+      "capturedAt": "2026-10-05T07:04:23.908Z"
+    },
+    {
+      "repo": "gallery",
+      "relativePath": "src/components/Snowfall.tsx",
+      "sha256": "7c0ed482e0931fa357c9e279340c173c2a50f9a06d48bada1edf2754d0f4ed43",
+      "bytes": 1182,
+      "capturedAt": "2026-10-05T07:04:23.911Z"
+    },
+    {
+      "repo": "gallery",
+      "relativePath": "src/index.css",
+      "sha256": "38f90a5d069c433bed7e167365946a03a880e4773147ac6835c7a7bd48f01867",
+      "bytes": 3963,
+      "capturedAt": "2026-10-05T07:04:23.914Z"
+    },
+    {
+      "repo": "games",
+      "relativePath": "apps/play/src/components/SessionPhotoAlbum.tsx",
+      "sha256": "f22041bb305a91b2387fd370b20f93f73b7518439116d777d20d1c6e31dcecea",
+      "bytes": 7788,
+      "capturedAt": "2026-10-05T07:04:23.918Z"
+    },
+    {
+      "repo": "games",
+      "relativePath": "apps/play/src/components/PhotoPrint.tsx",
+      "sha256": "2b7c18f1dd546a48e68ca2b221c19745ea5a4cd150070e7f9fcd6b63a45e497a",
+      "bytes": 1344,
+      "capturedAt": "2026-10-05T07:04:23.922Z"
+    },
+    {
+      "repo": "games",
+      "relativePath": "apps/play/src/app/AppNavigation.ts",
+      "sha256": "d5b0741d3adca8af907e5c7401852a26e9ea60746d6bb15f09d16259c49e8b2b",
+      "bytes": 2451,
+      "capturedAt": "2026-10-05T07:04:23.926Z"
+    },
+    {
+      "repo": "games",
+      "relativePath": "apps/play/src/styles.css",
+      "sha256": "6f626c94c8a96644a979dba659de5ca55e5a210e666ed68b82a9b0409d7b7f59",
+      "bytes": 37831,
+      "capturedAt": "2026-10-05T07:04:23.931Z"
+    },
+    {
+      "repo": "games",
+      "relativePath": "apps/play/src/shell.css",
+      "sha256": "8ad421955c3d974ba1493b2a3d4a78623aed859003d069af374ff828bf9a0dd2",
+      "bytes": 24038,
+      "capturedAt": "2026-10-05T07:04:23.936Z"
+    },
+    {
+      "repo": "games",
+      "relativePath": "packages/platform/src/game-runtime/PhotoSurface.ts",
+      "sha256": "cf2e5ed6c9a3a69adc695deb3f18ad15c62a05797af16b65f31bb0f403e15460",
+      "bytes": 1310,
+      "capturedAt": "2026-10-05T07:04:23.940Z"
+    },
+    {
+      "repo": "games",
+      "relativePath": "packages/games/rena-das-lembrancas/src/domain/PhotoSelection.ts",
+      "sha256": "64f098ceadcd311c9d538efc07714dfb121bf731163398da610c2e0ac67c40cb",
+      "bytes": 599,
+      "capturedAt": "2026-10-05T07:04:23.950Z"
+    },
+    {
+      "repo": "games",
+      "relativePath": "packages/games/expresso-das-fotos/src/domain/ExpressPhotoLoadPlan.ts",
+      "sha256": "b8771cacdd44ca441a71b95e23eea046dfc5e28fb478a4ee1c6d32c86ebd01af",
+      "bytes": 1008,
+      "capturedAt": "2026-10-05T07:04:23.959Z"
+    },
+    {
+      "repo": "games",
+      "relativePath": "packages/games/mosaico-em-queda/src/domain/MosaicPhotoLoadPlan.ts",
+      "sha256": "f77721adcbc9468442dfb1c6905d4615e06a1f8072e8820f7e0f79503e454bf2",
+      "bytes": 1220,
+      "capturedAt": "2026-10-05T07:04:23.972Z"
+    },
+    {
+      "repo": "games",
+      "relativePath": "packages/games/guirlanda-das-lembrancas/src/runtime/phaser/createGuirlandaDasLembrancasGame.ts",
+      "sha256": "2844179292963115b0805bfe77161a431aa570c2a5798aa7773604555dc3495d",
+      "bytes": 51466,
+      "capturedAt": "2026-10-05T07:04:23.983Z"
+    },
+    {
+      "repo": "games",
+      "relativePath": "docs/media/NATAL_2024_CORPUS_BASELINE.md",
+      "sha256": "75fd49085dcd2b898fc6288a9926e8f9b04314161961e31b5ba3c2c69b37c658",
+      "bytes": 3786,
+      "capturedAt": "2026-10-05T07:04:23.987Z"
+    },
+    {
+      "repo": "evydflow",
+      "relativePath": "natal_uploader.py",
+      "sha256": "ff443bc228455b543417a7b296b5fc5b14f39748623f9ab590819bcc1e46c325",
+      "bytes": 3337,
+      "capturedAt": "2026-10-05T07:04:23.990Z"
+    },
+    {
+      "repo": "evydflow",
+      "relativePath": "scripts/run_flow.ps1",
+      "sha256": "9eaf8cabbd1518e1b6ff5e6a9b8ef0e038e509b8b4a9a345b9c5033b6c3ae6a7",
+      "bytes": 3944,
+      "capturedAt": "2026-10-05T07:04:23.996Z"
+    },
+    {
+      "repo": "evydflow",
+      "relativePath": "evydflow/providers/interfaces.py",
+      "sha256": "896574f13d38a8eb9577a1a91dfe3314e3d318e977de95254f4fd627ada3a090",
+      "bytes": 2403,
+      "capturedAt": "2026-10-05T07:04:23.999Z"
+    },
+    {
+      "repo": "evydflow",
+      "relativePath": "evydflow/providers/fakes.py",
+      "sha256": "7ee696c5972d718caec65f6e3aafa5a4ac766ca399c4c9ef70eedda290c6fde7",
+      "bytes": 6263,
+      "capturedAt": "2026-10-05T07:04:24.004Z"
+    },
+    {
+      "repo": "evydflow",
+      "relativePath": "evydflow/soclick/controller.py",
+      "sha256": "a51e0960a005033838f4fc5734e78337823eff53e5a1a12eaa53db786774ed23",
+      "bytes": 3278,
+      "capturedAt": "2026-10-05T07:04:24.010Z"
+    }
+  ],
+  "initialRepoStates": {
+    "evydflow": {
+      "head": "42f0bcfd562d3165362cba39f1adb7bc5856d3af",
+      "status": ""
+    },
+    "games": {
+      "head": "e38573b46d841f9cea1ab5f7306b0fd254b511ca",
+      "status": ""
+    }
+  },
+  "refreshNote": "EvydFlow changes observed during first audit were committed by another work; main legacy source findings were rechecked against 42f0bcf.",
+  "publicationScope": "Source file receipts only; private code snapshots and photo metadata not included",
+  "repositories": {
+    "games": "https://github.com/hypeneural/gameplay",
+    "evydflow": "https://github.com/hypeneural/evydflow",
+    "gallery": "https://github.com/hypeneural/festive-gallery-show"
+  }
+}
