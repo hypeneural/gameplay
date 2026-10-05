@@ -7,7 +7,7 @@
   "fileHashScope": "Git repository blobs: UTF-8 text normalized to LF; PDFs byte-for-byte. Windows working copies may use CRLF.",
   "verification": {
     "privateMarkersAbsent": true,
-    "relativeLinksChecked": 10,
+    "relativeLinksChecked": 11,
     "benchmarkTotalsConsistent": true,
     "pdfPages": 46,
     "pdfAllPagesRendered": true,
@@ -32,6 +32,11 @@
       "sha256": "c8633aa51ab199ef178986c4578c02e1809f3eb08098d55665ba6c440573757d"
     },
     {
+      "path": "evidence/publication-validation.json",
+      "bytes": 2652,
+      "sha256": "f198242eba1547f834d6c8a94fccf9843d07dfdd9a8672fc2017972cdc56c6f6"
+    },
+    {
       "path": "evidence/source-index.json",
       "bytes": 18864,
       "sha256": "768e28d75fe7496b12cab0a89932f5f85d75f0a6b901e536c4bf3ff9863d0dd8"
@@ -53,13 +58,13 @@
     },
     {
       "path": "PROMPT_VALIDACAO_CHATGPT.md",
-      "bytes": 17566,
-      "sha256": "f6400af37fce1ba50da22d2715e19692fbe325c34e1c23336e88c9b11a9179f4"
+      "bytes": 18445,
+      "sha256": "a24b8fed6134725fa6dab09de4c411825d1a44e192ed7fa1f8a07661e6519165"
     },
     {
       "path": "README.md",
-      "bytes": 4926,
-      "sha256": "b7475c2c35581c56ab31e0a11491db5d07a9aa284bca4d8e674f525a5b25c1a4"
+      "bytes": 5618,
+      "sha256": "260b3b6ef738d43dd4c4ecbbbc56874cc2eaa087be5c79ee6f7ed9f9d02663c6"
     }
   ],
   "manifestSelfHashExcluded": true

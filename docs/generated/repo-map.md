@@ -527,6 +527,7 @@
 │   │       │   ├── benchmark-summary.json
 │   │       │   ├── gallery-smoke-summary.json
 │   │       │   ├── publication-manifest.json
+│   │       │   ├── publication-validation.json
 │   │       │   └── source-index.json
 │   │       └── output
 │   │           └── pdf

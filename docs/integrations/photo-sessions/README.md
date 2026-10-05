@@ -40,7 +40,10 @@ Havia alterações concorrentes no EvydFlow. O índice registra hashes dos arqui
 - [Medições agregadas, receita e limitações](evidence/benchmark-summary.json).
 - [72 recibos de arquivos-fonte, sem caminhos locais](evidence/source-index.json).
 - [Smoke local das galerias, com APIs simuladas](evidence/gallery-smoke-summary.json).
+- [Verificações da publicação e pendência no Performance Lab](evidence/publication-validation.json).
 - [Integridade dos arquivos desta publicação](evidence/publication-manifest.json).
+
+Na verificação posterior à auditoria, CI, 430 testes unitários, checks e build passaram. A matriz local de navegador foi interrompida após duas falhas em 34 cenários concluídos; 198 ficaram sem conclusão. Na repetição isolada, o cenário de carregamento do Puzzle passou e o Performance Lab continuou sem confirmar `GAME_COMPLETED` no prazo. A causa ainda não foi estabelecida. **A matriz completa de navegador não está aprovada**, e essa evidência não substitui testes em aparelhos físicos. Os arquivos de aplicação e jogos permaneceram iguais ao baseline auditado.
 
 ## Conteúdo público e evidência privada
 

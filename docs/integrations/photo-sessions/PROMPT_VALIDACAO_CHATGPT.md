@@ -17,6 +17,7 @@ Comece pelo pacote público:
 - Medições: https://github.com/hypeneural/gameplay/blob/codex/puzzle-native-like-v1/docs/integrations/photo-sessions/evidence/benchmark-summary.json
 - Índice de fontes: https://github.com/hypeneural/gameplay/blob/codex/puzzle-native-like-v1/docs/integrations/photo-sessions/evidence/source-index.json
 - Smoke de galeria: https://github.com/hypeneural/gameplay/blob/codex/puzzle-native-like-v1/docs/integrations/photo-sessions/evidence/gallery-smoke-summary.json
+- Verificações posteriores da publicação e pendência de runtime: https://github.com/hypeneural/gameplay/blob/codex/puzzle-native-like-v1/docs/integrations/photo-sessions/evidence/publication-validation.json
 
 Inspecione também o código relevante dos repositórios, **quando houver acesso autorizado**:
 
@@ -59,6 +60,7 @@ Proposta: EvydFlow permanece Python/YAML; Sharp existente processa no estúdio n
 - Comparação em três amostras: AVIF 45 cerca de 55,7% menor e 9,94 vezes mais lento que WebP 82 na média observada. Um timing por caso e PSNR não permitem concluir a melhor qualidade percebida ou throughput de produção.
 - Smoke em viewports de 390/768/1280 com APIs simuladas não comprova performance em Android físico, Safari/iOS ou segurança do PHP remoto.
 - Histórico de outras coleções tem sessões maiores que 30 fotos. As projeções de 600/800 sessões baseadas neste caso são lineares, não testes de carga.
+- Na verificação posterior da publicação, CI/checks/build e 430 testes unitários passaram. A matriz local de 232 cenários foi interrompida após 34 concluídos: 32 passaram e dois falharam. Nos dois rechecks isolados, o carregamento do Puzzle passou e o Performance Lab voltou a falhar ao esperar `GAME_COMPLETED`. A causa não foi estabelecida e os 198 cenários restantes não foram concluídos. Não tratar CI verde ou recheck parcial como aprovação do catálogo inteiro. Avalie essa pendência pelo teste/código e indique se bloqueia o primeiro consumidor do MVP; não atribua automaticamente a falha a hardware ou a um bug específico sem diagnóstico.
 
 ## 4. Pesquise documentação oficial atual e compatível com as versões
 

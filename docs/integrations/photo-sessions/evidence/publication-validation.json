@@ -1,0 +1,71 @@
+{
+  "referenceDate": "2026-10-05",
+  "commitUnderTest": "00b4f393cbab3074bea6a3af4e199ce77d4ac8ff",
+  "applicationSourceBaseline": "e38573b46d841f9cea1ab5f7306b0fd254b511ca",
+  "scope": "Documentation publication; application and game source files unchanged from baseline",
+  "githubCI": {
+    "url": "https://github.com/hypeneural/gameplay/actions/runs/37329682187",
+    "conclusion": "success",
+    "coverage": [
+      "typecheck",
+      "lint",
+      "430 unit tests",
+      "architecture",
+      "deadcode",
+      "format",
+      "repo map",
+      "assets and provenance",
+      "production build"
+    ],
+    "browserSuiteIncluded": false
+  },
+  "localChecks": {
+    "fastCheck": "passed",
+    "unitTestsPassed": 430,
+    "fullCheck": "passed",
+    "productionBuild": "passed",
+    "pdfPages": 46,
+    "pdfAllPagesRendered": true,
+    "pdfLayoutDefectsDetected": 0,
+    "packagePrivacyAndIntegrityChecks": "passed"
+  },
+  "localBrowserMatrix": {
+    "command": "pnpm validate",
+    "plannedTests": 232,
+    "completedTests": 34,
+    "passedTests": 32,
+    "failedTests": 2,
+    "uncompletedTests": 198,
+    "status": "interrupted after two failures; full browser matrix not approved",
+    "completedProject": "Partial iphone-390 project, Chromium emulation",
+    "physicalDeviceEvidence": false
+  },
+  "isolatedRecheck": {
+    "project": "iphone-390",
+    "tests": 2,
+    "passed": 1,
+    "failed": 1,
+    "cases": [
+      {
+        "test": "Performance Lab replays local Puzzle scenarios and proves teardown",
+        "source": "tests/e2e/lifecycle.spec.ts",
+        "testLine": 715,
+        "assertionLine": 724,
+        "initialResult": "failed",
+        "isolatedResult": "failed",
+        "observation": "performance-metrics did not contain GAME_COMPLETED within the assertion timeout",
+        "cause": "not established; no application fix attempted in this documentation task"
+      },
+      {
+        "test": "Puzzle Swap mounts selected portrait and landscape textures and exits cleanly",
+        "source": "tests/e2e/lifecycle.spec.ts",
+        "testLine": 877,
+        "initialResult": "failed",
+        "isolatedResult": "passed",
+        "observation": "initial assertion expected Pronto, received Carregando within its timeout",
+        "cause": "not established; isolated pass does not approve the uncompleted full matrix"
+      }
+    ]
+  },
+  "interpretation": "Successful CI and documentation checks do not mean the complete game catalog, mobile performance or future production integration are approved. Investigate the reproducible Performance Lab failure and finish the required browser/device gates before releasing a game."
+}
