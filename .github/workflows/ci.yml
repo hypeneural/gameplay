@@ -45,14 +45,17 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Check Fast (TypeCheck, Lint, Vitest)
-        run: pnpm check:fast
-
-      - name: Check Architecture, DeadCode, Format, RepoMap
+      - name: Check TypeScript, Lint, Tests, Architecture, Format and RepoMap
         run: pnpm check
 
       - name: Validate Assets & Provenance
-        run: pnpm asset:validate
+        shell: bash
+        run: |
+          for manifest in packages/games/*/assets/manifest.json; do
+            game=$(basename "$(dirname "$(dirname "$manifest")")")
+            pnpm asset:validate --game "$game"
+          done
+          pnpm asset:validate --owner christmas-shell
 
       - name: Production Build
         run: pnpm build

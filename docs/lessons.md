@@ -978,3 +978,48 @@ O último evento do shell não representa necessariamente o estado atual do jogo
 Um resgate logo após retomar substitui `GAME_RESUMED` por
 `GAME_INTERACTION_SETTLED`. Testar a pausa pelo estado persistente do canvas,
 preservando a verificação de que a mesma instância continua montada.
+
+## LESSON-111 — Simulação hidrodinâmica em domo e raspagem com zero GPU readback
+
+Em minijogos móveis no navegador (como o Globo de Neve das Lembranças), ler pixels de volta da GPU (`gl.readPixels`) para detectar área desembaçada trava o pipeline do WebGL e derruba o framerate abaixo de 30 FPS em celulares médios. Separar estritamente a representação lógica da visual resolve o problema com 60 FPS estável:
+
+1. **Domínio Matemático Puro (`SteamGrid`)**: Uma grade lógica discretizada 16×16 calcula a raspagem através de interseção de segmentos de reta, atribuindo peso dobrado à `faceSafeZone` da fotografia.
+2. **Visual em Camada (`GlobeGlassController`)**: Um `Phaser.GameObjects.RenderTexture` aplica `surface.erase(brush, x, y)` somente nas coordenadas interpoladas do toque do jogador, usando uma flag `dirty` para evitar redesenhos desnecessários quando não há toque ativo.
+3. **Física de Neve Confinada em Círculo**: Partículas de neve em suspensão hidrodinâmica usam um pool estático limitado (60 em NORMAL, 24 em LOW), rebote esférico suave e repulsão radial centrada nos rostos, garantindo que as pessoas fotografadas nunca fiquem encobertas durante as interações com o brinquedo.
+
+## LESSON-112 — Acoplamento físico unificado em 2.5D, montagem de domo e catraca mecânica
+
+Em brinquedos e autômatos virtuais 2.5D com fotografia familiar, elementos visuais isolados (como domo de vidro, base de madeira, botões e chave) quebram a ilusão física se suas coordenadas forem calculadas independentemente.
+
+1. **Montagem Física Unificada (`SnowGlobeAssembly`)**:
+   Uma única estrutura de montagem governa as proporções e profundidades relativas: a gola torneada de latão da base de madeira acolhe a curvatura inferior do domo esférico (~26% de embutimento no topo da base); os soquetes dos botões musicais e a bucha do eixo da chavinha são calculados parametricamente a partir da malha da base (`baseWidth > dome.diameter`); o nicho interno posiciona a fotografia do cliente em profundidade `z` intermediária, emoldurada por reflexos de Fresnel (ouro quente à esquerda da lareira, azul frio do inverno à direita).
+2. **Diorama Fotográfico em Relevo (`GloboPhotoDiorama`)**:
+   Evita que a foto do cliente pareça uma imagem solta colada no fundo. O porta-retrato interno possui pedestal torneado de mogno com pés de apoio em latão, passe-partout de veludo escuro (`#180c06`), moldura dourada trabalhada com florões nos cantos e estrela de topo, respeitando enquadramento `contain` e repulsão radial para que a neve em suspensão nunca encubra os rostos.
+3. **Catraca Mecânica e Acumuladores Paralelos Livres**:
+   Para um brinquedo de Natal intuitivo, a criança deve poder alternar livremente entre dar corda e apertar botões coloridos sem ser travada por sequências rígidas. A chave mecânica utiliza rastreamento angular contínuo, cliques de catraca a cada 18° (`Math.PI / 10`), resistência progressiva de mola e micro-folga elástica (~4.5°), enquanto os botões contam com afundamento de êmbolo de 4px, resposta sonora imediata a 0ms e permissão de repetição musical a qualquer momento.
+
+## LESSON-113 — Isolamento de camadas 2.5D, desacoplamento de cenário e física balística de estilingue
+
+Em jogos natalinos infantis baseados em estilingue e física 2.5D (como o Estilingue Mágico das Lembranças):
+
+1. **Cenário Limpo Desacoplado de Objetos Interativos**:
+   Um arquivo de background fotográfico nunca deve conter elementos interativos (estilingue, alvos, botões de prateleira ou moldura com foto falsa) pré-renderizados em seus pixels. O fundo deve ser uma imagem arquitetural limpa da sala aconchegante (`depth: 0`), enquanto o garfo entalhado de madeira (`depth: 20`), os elásticos de borracha e bolsa de couro (`depth: 21..22`), a bola de neve sombreada (`depth: 24`, ou `30` em voo), a moldura dourada vazada (`depth: 15`), os alvos pendulares (`depth: 8`) e os medalhões táteis (`depth: 40`) existem como GameObjects independentes do Phaser. Isso elimina duplicação de controles e garante que o movimento físico seja visível sem artefatos estáticos ao fundo.
+
+2. **Física Balística Integrada e Elásticos em Verlet**:
+   Para o elástico do estilingue responder com naturalidade ao toque, cada banda é simulada via nós discretizados em Verlet com relaxamento de restrições e propagação de ondas transversais, permitindo oscilação e chicotada rápida no disparo. A linha guia de pontilhados com ponta de flecha calcula a trajetória por integração balística direta das equações de gravidade e arrasto do motor Matter.js, assegurando que o ponto de impacto previsto coincida exatamente com o local atingido pelo projétil.
+
+3. **Fotografia Herói e Enquadramento Seguro**:
+   A foto da criança/família é o elemento central e herói da cena, posicionada no centro do nicho da moldura barroca com modo de escala `contain` estrito, assegurando proteção total à `faceSafeZone` sem cortes ou distorções. Os 4 talismãs recolhidos ao acertar os alvos voam em arcos suaves de Bézier até os soquetes da moldura, culminando em celebração dourada com zoom de câmera suave sobre a foto da lembrança.
+
+## LESSON-114 — Projeção volumétrica contínua, enquadramento relativo de fotografia e trilha natalina autêntica
+
+Ao implementar mecânicas de projeção óptica, iluminação volumétrica (_God Rays_) e celebração de fotografia em jogos natalinos para celular (como na Lanterna Mágica):
+
+1. **Geometria de Projeção e Eliminação de Cortes Horizontais**:
+   Ao simular feixes volumétricos emanando de um projetor na base em direção a uma moldura fotográfica no topo, os vértices dos polígonos de luz devem estender-se até o topo da moldura (`topY = sb.y - 14`) e abranger toda a largura com sobreposição lateral suave (`leftX = sb.x - 24`, `rightX = sb.x + sb.width + 24`). Definir o alvo como a borda inferior (`sb.y + sb.height`) interrompe os raios exatamente onde a fotografia começa, criando um corte reto não-físico. Adicionalmente, raios crepusculares ganham vida através de varredura harmônica contínua ($\theta_i(t) = \theta_i^0 + A \cdot \sin(\omega_i t + \phi_i)$) e ondas de fótons viajando ao longo de cada raio.
+
+2. **Perigo de Escala Absoluta em Tweens vs. `setDisplaySize`**:
+   Quando uma foto com textura em alta resolução (ex.: 1143×1600 px) é posicionada com `setDisplaySize(width, height)`, o Phaser ajusta internamente `scaleX = width / texture.width` (~0.10). Um tween posterior que define `scaleX: 1.05` absoluto multiplica o tamanho da imagem por mais de 10x, fazendo a fotografia transbordar da moldura e invadir todo o cenário. Tweens de celebração devem sempre usar multiplicação relativa à escala base (`scaleX: baseScaleX * 1.05`), associados a uma máscara geométrica (`GeometryMask`) contida nos limites da moldura barroca.
+
+3. **Paisagem Sonora Natalina e Timbre Real**:
+   Sintetizadores WebAudio de onda pura (senoidal/triangular) não transmitem o calor emocional do Natal. Utilizar faixas orquestradas e masterizadas em caixinha de música de Natal (`musicbox-loop.mp3`), celesta, sinos de trenó (_sleigh bells_) e fanfarra de celebração (`musicbox-celebrate.mp3`), combinadas com ducking dinâmico suave durante a revelação da foto, entrega imediatamente a atmosfera aconchegante e mágica descrita na bíblia artística do estúdio.

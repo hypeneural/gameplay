@@ -1,0 +1,1451 @@
+{
+  "version": 2,
+  "gameId": "estilingue-das-lembrancas",
+  "budget": {
+    "publicBytesMax": 1500000,
+    "runtimeBytesMax": 950000,
+    "visualBytesMax": 550000
+  },
+  "assets": [
+    {
+      "id": "winter-loop-v1-m4a",
+      "kind": "audio",
+      "format": "m4a",
+      "source": {
+        "provider": "Christmas Games offline score",
+        "origin": "project-created",
+        "identifier": "f56730b5647961f3b532c3ea0682c3e1950fc889a1d894b196d023ad73b542b3",
+        "license": "project-owned",
+        "reviewedOn": "2026-09-13",
+        "reviewedBy": "estilingue-das-lembrancas-audio-synthesis",
+        "record": "ASSET_PROVENANCE.md#original-audio-v1"
+      },
+      "art": {
+        "family": "estilingue-winter-physics-v1",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Physical snowball and slingshot audio palette with crystalline Christmas bells."
+      },
+      "processing": {
+        "recipe": "prepare-estilingue-audio:winter-loop-v1:mono44100:64k",
+        "tools": ["v24.20.0", "ffmpeg-8.0.1-essentials_build-www.gyan.dev"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/estilingue-das-lembrancas/audio/winter-loop-v1.m4a",
+        "publicPath": "/assets/estilingue-das-lembrancas/audio/winter-loop-v1.m4a",
+        "bytes": 99455,
+        "sha256": "1ecde2279a3e6f190ec4f711633f19390f349768ca3be3e59de75920fc6ceea7",
+        "durationSeconds": 12,
+        "cue": "estilingue-winter-loop-v1",
+        "deliveryGroup": "estilingue-winter-loop-v1",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        }
+      }
+    },
+    {
+      "id": "winter-loop-v1-mp3",
+      "kind": "audio",
+      "format": "mp3",
+      "source": {
+        "provider": "Christmas Games offline score",
+        "origin": "project-created",
+        "identifier": "f56730b5647961f3b532c3ea0682c3e1950fc889a1d894b196d023ad73b542b3",
+        "license": "project-owned",
+        "reviewedOn": "2026-09-13",
+        "reviewedBy": "estilingue-das-lembrancas-audio-synthesis",
+        "record": "ASSET_PROVENANCE.md#original-audio-v1"
+      },
+      "art": {
+        "family": "estilingue-winter-physics-v1",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Physical snowball and slingshot audio palette with crystalline Christmas bells."
+      },
+      "processing": {
+        "recipe": "prepare-estilingue-audio:winter-loop-v1:mono44100:64k",
+        "tools": ["v24.20.0", "ffmpeg-8.0.1-essentials_build-www.gyan.dev"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/estilingue-das-lembrancas/audio/winter-loop-v1.mp3",
+        "publicPath": "/assets/estilingue-das-lembrancas/audio/winter-loop-v1.mp3",
+        "bytes": 96591,
+        "sha256": "f770bb5e621560f1bd2e63de7e83e2c5027932a729ff75ef636c0bc6cdb492ce",
+        "durationSeconds": 12,
+        "cue": "estilingue-winter-loop-v1",
+        "deliveryGroup": "estilingue-winter-loop-v1",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        }
+      }
+    },
+    {
+      "id": "elastic-pull-v1-m4a",
+      "kind": "audio",
+      "format": "m4a",
+      "source": {
+        "provider": "Christmas Games offline score",
+        "origin": "project-created",
+        "identifier": "e345227f8ef942561adb10ecfdadb9c5a911f8bda036bb15a61f8096dc3d510b",
+        "license": "project-owned",
+        "reviewedOn": "2026-09-13",
+        "reviewedBy": "estilingue-das-lembrancas-audio-synthesis",
+        "record": "ASSET_PROVENANCE.md#original-audio-v1"
+      },
+      "art": {
+        "family": "estilingue-winter-physics-v1",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Physical snowball and slingshot audio palette with crystalline Christmas bells."
+      },
+      "processing": {
+        "recipe": "prepare-estilingue-audio:elastic-pull-v1:mono44100:64k",
+        "tools": ["v24.20.0", "ffmpeg-8.0.1-essentials_build-www.gyan.dev"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/estilingue-das-lembrancas/audio/elastic-pull-v1.m4a",
+        "publicPath": "/assets/estilingue-das-lembrancas/audio/elastic-pull-v1.m4a",
+        "bytes": 3765,
+        "sha256": "d3cc3a25b074db31344a64574a7cb22e22f5270b5264744a924f50a9f26df2af",
+        "durationSeconds": 0.32,
+        "cue": "estilingue-elastic-pull-v1",
+        "deliveryGroup": "estilingue-elastic-pull-v1",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        }
+      }
+    },
+    {
+      "id": "elastic-pull-v1-mp3",
+      "kind": "audio",
+      "format": "mp3",
+      "source": {
+        "provider": "Christmas Games offline score",
+        "origin": "project-created",
+        "identifier": "e345227f8ef942561adb10ecfdadb9c5a911f8bda036bb15a61f8096dc3d510b",
+        "license": "project-owned",
+        "reviewedOn": "2026-09-13",
+        "reviewedBy": "estilingue-das-lembrancas-audio-synthesis",
+        "record": "ASSET_PROVENANCE.md#original-audio-v1"
+      },
+      "art": {
+        "family": "estilingue-winter-physics-v1",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Physical snowball and slingshot audio palette with crystalline Christmas bells."
+      },
+      "processing": {
+        "recipe": "prepare-estilingue-audio:elastic-pull-v1:mono44100:64k",
+        "tools": ["v24.20.0", "ffmpeg-8.0.1-essentials_build-www.gyan.dev"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/estilingue-das-lembrancas/audio/elastic-pull-v1.mp3",
+        "publicPath": "/assets/estilingue-das-lembrancas/audio/elastic-pull-v1.mp3",
+        "bytes": 3177,
+        "sha256": "8c11b23d22afb7e8707bf0194bfafbb5209739abf652d712e681d6b8d61468e4",
+        "durationSeconds": 0.32,
+        "cue": "estilingue-elastic-pull-v1",
+        "deliveryGroup": "estilingue-elastic-pull-v1",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        }
+      }
+    },
+    {
+      "id": "elastic-snap-v1-m4a",
+      "kind": "audio",
+      "format": "m4a",
+      "source": {
+        "provider": "Christmas Games offline score",
+        "origin": "project-created",
+        "identifier": "2be19f8eea583bd24c4dfb95c313bbb4446c30b42b051141b03774d417fe0c0e",
+        "license": "project-owned",
+        "reviewedOn": "2026-09-13",
+        "reviewedBy": "estilingue-das-lembrancas-audio-synthesis",
+        "record": "ASSET_PROVENANCE.md#original-audio-v1"
+      },
+      "art": {
+        "family": "estilingue-winter-physics-v1",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Physical snowball and slingshot audio palette with crystalline Christmas bells."
+      },
+      "processing": {
+        "recipe": "prepare-estilingue-audio:elastic-snap-v1:mono44100:64k",
+        "tools": ["v24.20.0", "ffmpeg-8.0.1-essentials_build-www.gyan.dev"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/estilingue-das-lembrancas/audio/elastic-snap-v1.m4a",
+        "publicPath": "/assets/estilingue-das-lembrancas/audio/elastic-snap-v1.m4a",
+        "bytes": 2610,
+        "sha256": "a777fec5938d7b08253e761ac344821d3574a89c908325f224065e698fbd7c68",
+        "durationSeconds": 0.22,
+        "cue": "estilingue-elastic-snap-v1",
+        "deliveryGroup": "estilingue-elastic-snap-v1",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        }
+      }
+    },
+    {
+      "id": "elastic-snap-v1-mp3",
+      "kind": "audio",
+      "format": "mp3",
+      "source": {
+        "provider": "Christmas Games offline score",
+        "origin": "project-created",
+        "identifier": "2be19f8eea583bd24c4dfb95c313bbb4446c30b42b051141b03774d417fe0c0e",
+        "license": "project-owned",
+        "reviewedOn": "2026-09-13",
+        "reviewedBy": "estilingue-das-lembrancas-audio-synthesis",
+        "record": "ASSET_PROVENANCE.md#original-audio-v1"
+      },
+      "art": {
+        "family": "estilingue-winter-physics-v1",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Physical snowball and slingshot audio palette with crystalline Christmas bells."
+      },
+      "processing": {
+        "recipe": "prepare-estilingue-audio:elastic-snap-v1:mono44100:64k",
+        "tools": ["v24.20.0", "ffmpeg-8.0.1-essentials_build-www.gyan.dev"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/estilingue-das-lembrancas/audio/elastic-snap-v1.mp3",
+        "publicPath": "/assets/estilingue-das-lembrancas/audio/elastic-snap-v1.mp3",
+        "bytes": 2341,
+        "sha256": "c36539e03faec117b901907579a5d7829601a5f93d6150975340a1b2ea0859e6",
+        "durationSeconds": 0.22,
+        "cue": "estilingue-elastic-snap-v1",
+        "deliveryGroup": "estilingue-elastic-snap-v1",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        }
+      }
+    },
+    {
+      "id": "snow-whoosh-v1-m4a",
+      "kind": "audio",
+      "format": "m4a",
+      "source": {
+        "provider": "Christmas Games offline score",
+        "origin": "project-created",
+        "identifier": "3e637b5b5ae280d034fc171cd34eaea856b1bc65193fbec1c66eb1ac5f5788c8",
+        "license": "project-owned",
+        "reviewedOn": "2026-09-13",
+        "reviewedBy": "estilingue-das-lembrancas-audio-synthesis",
+        "record": "ASSET_PROVENANCE.md#original-audio-v1"
+      },
+      "art": {
+        "family": "estilingue-winter-physics-v1",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Physical snowball and slingshot audio palette with crystalline Christmas bells."
+      },
+      "processing": {
+        "recipe": "prepare-estilingue-audio:snow-whoosh-v1:mono44100:64k",
+        "tools": ["v24.20.0", "ffmpeg-8.0.1-essentials_build-www.gyan.dev"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/estilingue-das-lembrancas/audio/snow-whoosh-v1.m4a",
+        "publicPath": "/assets/estilingue-das-lembrancas/audio/snow-whoosh-v1.m4a",
+        "bytes": 4027,
+        "sha256": "0c0c736a89ab0daf58a4afe339a7d461555a5ca318f18401112601d52fae7c4f",
+        "durationSeconds": 0.35,
+        "cue": "estilingue-snow-whoosh-v1",
+        "deliveryGroup": "estilingue-snow-whoosh-v1",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        }
+      }
+    },
+    {
+      "id": "snow-whoosh-v1-mp3",
+      "kind": "audio",
+      "format": "mp3",
+      "source": {
+        "provider": "Christmas Games offline score",
+        "origin": "project-created",
+        "identifier": "3e637b5b5ae280d034fc171cd34eaea856b1bc65193fbec1c66eb1ac5f5788c8",
+        "license": "project-owned",
+        "reviewedOn": "2026-09-13",
+        "reviewedBy": "estilingue-das-lembrancas-audio-synthesis",
+        "record": "ASSET_PROVENANCE.md#original-audio-v1"
+      },
+      "art": {
+        "family": "estilingue-winter-physics-v1",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Physical snowball and slingshot audio palette with crystalline Christmas bells."
+      },
+      "processing": {
+        "recipe": "prepare-estilingue-audio:snow-whoosh-v1:mono44100:64k",
+        "tools": ["v24.20.0", "ffmpeg-8.0.1-essentials_build-www.gyan.dev"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/estilingue-das-lembrancas/audio/snow-whoosh-v1.mp3",
+        "publicPath": "/assets/estilingue-das-lembrancas/audio/snow-whoosh-v1.mp3",
+        "bytes": 3386,
+        "sha256": "19f1881e15ac80805f99798d360618aedfbdc7a69a88320da8aa9995d404481a",
+        "durationSeconds": 0.35,
+        "cue": "estilingue-snow-whoosh-v1",
+        "deliveryGroup": "estilingue-snow-whoosh-v1",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        }
+      }
+    },
+    {
+      "id": "impact-wood-v1-m4a",
+      "kind": "audio",
+      "format": "m4a",
+      "source": {
+        "provider": "Christmas Games offline score",
+        "origin": "project-created",
+        "identifier": "cb211528fc89759b5c92642f4447fed397e1f6b171f9322c5679a3cc8db95393",
+        "license": "project-owned",
+        "reviewedOn": "2026-09-13",
+        "reviewedBy": "estilingue-das-lembrancas-audio-synthesis",
+        "record": "ASSET_PROVENANCE.md#original-audio-v1"
+      },
+      "art": {
+        "family": "estilingue-winter-physics-v1",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Physical snowball and slingshot audio palette with crystalline Christmas bells."
+      },
+      "processing": {
+        "recipe": "prepare-estilingue-audio:impact-wood-v1:mono44100:64k",
+        "tools": ["v24.20.0", "ffmpeg-8.0.1-essentials_build-www.gyan.dev"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/estilingue-das-lembrancas/audio/impact-wood-v1.m4a",
+        "publicPath": "/assets/estilingue-das-lembrancas/audio/impact-wood-v1.m4a",
+        "bytes": 3040,
+        "sha256": "146a5e10a0218dd9b7d0670c104c083b70e692bf321cbbde69541308624691b1",
+        "durationSeconds": 0.28,
+        "cue": "estilingue-impact-wood-v1",
+        "deliveryGroup": "estilingue-impact-wood-v1",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        }
+      }
+    },
+    {
+      "id": "impact-wood-v1-mp3",
+      "kind": "audio",
+      "format": "mp3",
+      "source": {
+        "provider": "Christmas Games offline score",
+        "origin": "project-created",
+        "identifier": "cb211528fc89759b5c92642f4447fed397e1f6b171f9322c5679a3cc8db95393",
+        "license": "project-owned",
+        "reviewedOn": "2026-09-13",
+        "reviewedBy": "estilingue-das-lembrancas-audio-synthesis",
+        "record": "ASSET_PROVENANCE.md#original-audio-v1"
+      },
+      "art": {
+        "family": "estilingue-winter-physics-v1",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Physical snowball and slingshot audio palette with crystalline Christmas bells."
+      },
+      "processing": {
+        "recipe": "prepare-estilingue-audio:impact-wood-v1:mono44100:64k",
+        "tools": ["v24.20.0", "ffmpeg-8.0.1-essentials_build-www.gyan.dev"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/estilingue-das-lembrancas/audio/impact-wood-v1.mp3",
+        "publicPath": "/assets/estilingue-das-lembrancas/audio/impact-wood-v1.mp3",
+        "bytes": 2759,
+        "sha256": "b63a8b9b873e4ebb6952ede1f874b401052207fb91867af668fb920f6cace2c0",
+        "durationSeconds": 0.28,
+        "cue": "estilingue-impact-wood-v1",
+        "deliveryGroup": "estilingue-impact-wood-v1",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        }
+      }
+    },
+    {
+      "id": "impact-gingerbread-v1-m4a",
+      "kind": "audio",
+      "format": "m4a",
+      "source": {
+        "provider": "Christmas Games offline score",
+        "origin": "project-created",
+        "identifier": "40177628a42fe0a64164534f9d407378a20850d45839e87ac9b06c793bfd7d38",
+        "license": "project-owned",
+        "reviewedOn": "2026-09-13",
+        "reviewedBy": "estilingue-das-lembrancas-audio-synthesis",
+        "record": "ASSET_PROVENANCE.md#original-audio-v1"
+      },
+      "art": {
+        "family": "estilingue-winter-physics-v1",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Physical snowball and slingshot audio palette with crystalline Christmas bells."
+      },
+      "processing": {
+        "recipe": "prepare-estilingue-audio:impact-gingerbread-v1:mono44100:64k",
+        "tools": ["v24.20.0", "ffmpeg-8.0.1-essentials_build-www.gyan.dev"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/estilingue-das-lembrancas/audio/impact-gingerbread-v1.m4a",
+        "publicPath": "/assets/estilingue-das-lembrancas/audio/impact-gingerbread-v1.m4a",
+        "bytes": 2662,
+        "sha256": "b04268692739a781238e7d1e316f322a07694ec7394d54d8c0a6a833fd704466",
+        "durationSeconds": 0.26,
+        "cue": "estilingue-impact-gingerbread-v1",
+        "deliveryGroup": "estilingue-impact-gingerbread-v1",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        }
+      }
+    },
+    {
+      "id": "impact-gingerbread-v1-mp3",
+      "kind": "audio",
+      "format": "mp3",
+      "source": {
+        "provider": "Christmas Games offline score",
+        "origin": "project-created",
+        "identifier": "40177628a42fe0a64164534f9d407378a20850d45839e87ac9b06c793bfd7d38",
+        "license": "project-owned",
+        "reviewedOn": "2026-09-13",
+        "reviewedBy": "estilingue-das-lembrancas-audio-synthesis",
+        "record": "ASSET_PROVENANCE.md#original-audio-v1"
+      },
+      "art": {
+        "family": "estilingue-winter-physics-v1",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Physical snowball and slingshot audio palette with crystalline Christmas bells."
+      },
+      "processing": {
+        "recipe": "prepare-estilingue-audio:impact-gingerbread-v1:mono44100:64k",
+        "tools": ["v24.20.0", "ffmpeg-8.0.1-essentials_build-www.gyan.dev"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/estilingue-das-lembrancas/audio/impact-gingerbread-v1.mp3",
+        "publicPath": "/assets/estilingue-das-lembrancas/audio/impact-gingerbread-v1.mp3",
+        "bytes": 2550,
+        "sha256": "0649150920d212d0f554627867a0ae684e305e620bfcdc3dd6c382045c36247f",
+        "durationSeconds": 0.26,
+        "cue": "estilingue-impact-gingerbread-v1",
+        "deliveryGroup": "estilingue-impact-gingerbread-v1",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        }
+      }
+    },
+    {
+      "id": "impact-bell-v1-m4a",
+      "kind": "audio",
+      "format": "m4a",
+      "source": {
+        "provider": "Christmas Games offline score",
+        "origin": "project-created",
+        "identifier": "92a3c2b9c6bedcef1debd0650216b1e07a2f21c9aceacdc664a174dcc0703e91",
+        "license": "project-owned",
+        "reviewedOn": "2026-09-13",
+        "reviewedBy": "estilingue-das-lembrancas-audio-synthesis",
+        "record": "ASSET_PROVENANCE.md#original-audio-v1"
+      },
+      "art": {
+        "family": "estilingue-winter-physics-v1",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Physical snowball and slingshot audio palette with crystalline Christmas bells."
+      },
+      "processing": {
+        "recipe": "prepare-estilingue-audio:impact-bell-v1:mono44100:64k",
+        "tools": ["v24.20.0", "ffmpeg-8.0.1-essentials_build-www.gyan.dev"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/estilingue-das-lembrancas/audio/impact-bell-v1.m4a",
+        "publicPath": "/assets/estilingue-das-lembrancas/audio/impact-bell-v1.m4a",
+        "bytes": 7235,
+        "sha256": "a1b59efb972d7186d7f957bbf16da89c9bf5986fa73a2eb84173f717632ca828",
+        "durationSeconds": 0.75,
+        "cue": "estilingue-impact-bell-v1",
+        "deliveryGroup": "estilingue-impact-bell-v1",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        }
+      }
+    },
+    {
+      "id": "impact-bell-v1-mp3",
+      "kind": "audio",
+      "format": "mp3",
+      "source": {
+        "provider": "Christmas Games offline score",
+        "origin": "project-created",
+        "identifier": "92a3c2b9c6bedcef1debd0650216b1e07a2f21c9aceacdc664a174dcc0703e91",
+        "license": "project-owned",
+        "reviewedOn": "2026-09-13",
+        "reviewedBy": "estilingue-das-lembrancas-audio-synthesis",
+        "record": "ASSET_PROVENANCE.md#original-audio-v1"
+      },
+      "art": {
+        "family": "estilingue-winter-physics-v1",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Physical snowball and slingshot audio palette with crystalline Christmas bells."
+      },
+      "processing": {
+        "recipe": "prepare-estilingue-audio:impact-bell-v1:mono44100:64k",
+        "tools": ["v24.20.0", "ffmpeg-8.0.1-essentials_build-www.gyan.dev"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/estilingue-das-lembrancas/audio/impact-bell-v1.mp3",
+        "publicPath": "/assets/estilingue-das-lembrancas/audio/impact-bell-v1.mp3",
+        "bytes": 6521,
+        "sha256": "0dc849df761ac4cec2f2240c81e1361bb21d9eb82e77f60f5caa4d5b7094ebd0",
+        "durationSeconds": 0.75,
+        "cue": "estilingue-impact-bell-v1",
+        "deliveryGroup": "estilingue-impact-bell-v1",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        }
+      }
+    },
+    {
+      "id": "impact-bauble-v1-m4a",
+      "kind": "audio",
+      "format": "m4a",
+      "source": {
+        "provider": "Christmas Games offline score",
+        "origin": "project-created",
+        "identifier": "75c6c6418864b9200248a7f204ddf1cb01776f23f2aa4718000673d6564e0552",
+        "license": "project-owned",
+        "reviewedOn": "2026-09-13",
+        "reviewedBy": "estilingue-das-lembrancas-audio-synthesis",
+        "record": "ASSET_PROVENANCE.md#original-audio-v1"
+      },
+      "art": {
+        "family": "estilingue-winter-physics-v1",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Physical snowball and slingshot audio palette with crystalline Christmas bells."
+      },
+      "processing": {
+        "recipe": "prepare-estilingue-audio:impact-bauble-v1:mono44100:64k",
+        "tools": ["v24.20.0", "ffmpeg-8.0.1-essentials_build-www.gyan.dev"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/estilingue-das-lembrancas/audio/impact-bauble-v1.m4a",
+        "publicPath": "/assets/estilingue-das-lembrancas/audio/impact-bauble-v1.m4a",
+        "bytes": 5779,
+        "sha256": "ee0e5adeb0514415feb968f0f71b54c613ca709647029ca27b6c306d363ce994",
+        "durationSeconds": 0.55,
+        "cue": "estilingue-impact-bauble-v1",
+        "deliveryGroup": "estilingue-impact-bauble-v1",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        }
+      }
+    },
+    {
+      "id": "impact-bauble-v1-mp3",
+      "kind": "audio",
+      "format": "mp3",
+      "source": {
+        "provider": "Christmas Games offline score",
+        "origin": "project-created",
+        "identifier": "75c6c6418864b9200248a7f204ddf1cb01776f23f2aa4718000673d6564e0552",
+        "license": "project-owned",
+        "reviewedOn": "2026-09-13",
+        "reviewedBy": "estilingue-das-lembrancas-audio-synthesis",
+        "record": "ASSET_PROVENANCE.md#original-audio-v1"
+      },
+      "art": {
+        "family": "estilingue-winter-physics-v1",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Physical snowball and slingshot audio palette with crystalline Christmas bells."
+      },
+      "processing": {
+        "recipe": "prepare-estilingue-audio:impact-bauble-v1:mono44100:64k",
+        "tools": ["v24.20.0", "ffmpeg-8.0.1-essentials_build-www.gyan.dev"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/estilingue-das-lembrancas/audio/impact-bauble-v1.mp3",
+        "publicPath": "/assets/estilingue-das-lembrancas/audio/impact-bauble-v1.mp3",
+        "bytes": 5058,
+        "sha256": "80a7809061cd2a68eb36fb872e31f6b6f2fe7bd9d7f0f064143463544d4bc44d",
+        "durationSeconds": 0.55,
+        "cue": "estilingue-impact-bauble-v1",
+        "deliveryGroup": "estilingue-impact-bauble-v1",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        }
+      }
+    },
+    {
+      "id": "fragment-fly-v1-m4a",
+      "kind": "audio",
+      "format": "m4a",
+      "source": {
+        "provider": "Christmas Games offline score",
+        "origin": "project-created",
+        "identifier": "98b54b801b6ccde03d8e601d2513afc25859e8df16d8107699470eb0dd8c5123",
+        "license": "project-owned",
+        "reviewedOn": "2026-09-13",
+        "reviewedBy": "estilingue-das-lembrancas-audio-synthesis",
+        "record": "ASSET_PROVENANCE.md#original-audio-v1"
+      },
+      "art": {
+        "family": "estilingue-winter-physics-v1",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Physical snowball and slingshot audio palette with crystalline Christmas bells."
+      },
+      "processing": {
+        "recipe": "prepare-estilingue-audio:fragment-fly-v1:mono44100:64k",
+        "tools": ["v24.20.0", "ffmpeg-8.0.1-essentials_build-www.gyan.dev"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/estilingue-das-lembrancas/audio/fragment-fly-v1.m4a",
+        "publicPath": "/assets/estilingue-das-lembrancas/audio/fragment-fly-v1.m4a",
+        "bytes": 8085,
+        "sha256": "3f98865432493dad57f53d2e3078f21d0bf75e809067cbaf417d033f7eb07f52",
+        "durationSeconds": 0.85,
+        "cue": "estilingue-fragment-fly-v1",
+        "deliveryGroup": "estilingue-fragment-fly-v1",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        }
+      }
+    },
+    {
+      "id": "fragment-fly-v1-mp3",
+      "kind": "audio",
+      "format": "mp3",
+      "source": {
+        "provider": "Christmas Games offline score",
+        "origin": "project-created",
+        "identifier": "98b54b801b6ccde03d8e601d2513afc25859e8df16d8107699470eb0dd8c5123",
+        "license": "project-owned",
+        "reviewedOn": "2026-09-13",
+        "reviewedBy": "estilingue-das-lembrancas-audio-synthesis",
+        "record": "ASSET_PROVENANCE.md#original-audio-v1"
+      },
+      "art": {
+        "family": "estilingue-winter-physics-v1",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Physical snowball and slingshot audio palette with crystalline Christmas bells."
+      },
+      "processing": {
+        "recipe": "prepare-estilingue-audio:fragment-fly-v1:mono44100:64k",
+        "tools": ["v24.20.0", "ffmpeg-8.0.1-essentials_build-www.gyan.dev"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/estilingue-das-lembrancas/audio/fragment-fly-v1.mp3",
+        "publicPath": "/assets/estilingue-das-lembrancas/audio/fragment-fly-v1.mp3",
+        "bytes": 7357,
+        "sha256": "f42513f51fc25cb5ad5bee74b064c3110dd06ca431b5ec5ccbca52abd51fa1a6",
+        "durationSeconds": 0.85,
+        "cue": "estilingue-fragment-fly-v1",
+        "deliveryGroup": "estilingue-fragment-fly-v1",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        }
+      }
+    },
+    {
+      "id": "frame-slot-v1-m4a",
+      "kind": "audio",
+      "format": "m4a",
+      "source": {
+        "provider": "Christmas Games offline score",
+        "origin": "project-created",
+        "identifier": "04d5da5f796a5e986ca553cda2c37d0208e455b27b08b8884eb1572877cf4b87",
+        "license": "project-owned",
+        "reviewedOn": "2026-09-13",
+        "reviewedBy": "estilingue-das-lembrancas-audio-synthesis",
+        "record": "ASSET_PROVENANCE.md#original-audio-v1"
+      },
+      "art": {
+        "family": "estilingue-winter-physics-v1",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Physical snowball and slingshot audio palette with crystalline Christmas bells."
+      },
+      "processing": {
+        "recipe": "prepare-estilingue-audio:frame-slot-v1:mono44100:64k",
+        "tools": ["v24.20.0", "ffmpeg-8.0.1-essentials_build-www.gyan.dev"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/estilingue-das-lembrancas/audio/frame-slot-v1.m4a",
+        "publicPath": "/assets/estilingue-das-lembrancas/audio/frame-slot-v1.m4a",
+        "bytes": 9815,
+        "sha256": "e7131c421412351087bfd9af8e31f981248fa686d824457e9fc2fd0449c9794c",
+        "durationSeconds": 1.1,
+        "cue": "estilingue-frame-slot-v1",
+        "deliveryGroup": "estilingue-frame-slot-v1",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        }
+      }
+    },
+    {
+      "id": "frame-slot-v1-mp3",
+      "kind": "audio",
+      "format": "mp3",
+      "source": {
+        "provider": "Christmas Games offline score",
+        "origin": "project-created",
+        "identifier": "04d5da5f796a5e986ca553cda2c37d0208e455b27b08b8884eb1572877cf4b87",
+        "license": "project-owned",
+        "reviewedOn": "2026-09-13",
+        "reviewedBy": "estilingue-das-lembrancas-audio-synthesis",
+        "record": "ASSET_PROVENANCE.md#original-audio-v1"
+      },
+      "art": {
+        "family": "estilingue-winter-physics-v1",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Physical snowball and slingshot audio palette with crystalline Christmas bells."
+      },
+      "processing": {
+        "recipe": "prepare-estilingue-audio:frame-slot-v1:mono44100:64k",
+        "tools": ["v24.20.0", "ffmpeg-8.0.1-essentials_build-www.gyan.dev"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/estilingue-das-lembrancas/audio/frame-slot-v1.mp3",
+        "publicPath": "/assets/estilingue-das-lembrancas/audio/frame-slot-v1.mp3",
+        "bytes": 9447,
+        "sha256": "eddb66678f11f1fd6eab1be832374716f84099c2a332b26151ed0c45830fe408",
+        "durationSeconds": 1.1,
+        "cue": "estilingue-frame-slot-v1",
+        "deliveryGroup": "estilingue-frame-slot-v1",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        }
+      }
+    },
+    {
+      "id": "celebration-fanfare-v1-m4a",
+      "kind": "audio",
+      "format": "m4a",
+      "source": {
+        "provider": "Christmas Games offline score",
+        "origin": "project-created",
+        "identifier": "2d24f9aa498a6e35450c39cad073c36b68e5944c4b099dd19b00d61cdc78b57e",
+        "license": "project-owned",
+        "reviewedOn": "2026-09-13",
+        "reviewedBy": "estilingue-das-lembrancas-audio-synthesis",
+        "record": "ASSET_PROVENANCE.md#original-audio-v1"
+      },
+      "art": {
+        "family": "estilingue-winter-physics-v1",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Physical snowball and slingshot audio palette with crystalline Christmas bells."
+      },
+      "processing": {
+        "recipe": "prepare-estilingue-audio:celebration-fanfare-v1:mono44100:64k",
+        "tools": ["v24.20.0", "ffmpeg-8.0.1-essentials_build-www.gyan.dev"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/estilingue-das-lembrancas/audio/celebration-fanfare-v1.m4a",
+        "publicPath": "/assets/estilingue-das-lembrancas/audio/celebration-fanfare-v1.m4a",
+        "bytes": 20750,
+        "sha256": "a285d90fef5c40611fc6a06dd03bbba92e14e3d50641690aab5e315a3fa7f7c8",
+        "durationSeconds": 2.4,
+        "cue": "estilingue-celebration-fanfare-v1",
+        "deliveryGroup": "estilingue-celebration-fanfare-v1",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        }
+      }
+    },
+    {
+      "id": "celebration-fanfare-v1-mp3",
+      "kind": "audio",
+      "format": "mp3",
+      "source": {
+        "provider": "Christmas Games offline score",
+        "origin": "project-created",
+        "identifier": "2d24f9aa498a6e35450c39cad073c36b68e5944c4b099dd19b00d61cdc78b57e",
+        "license": "project-owned",
+        "reviewedOn": "2026-09-13",
+        "reviewedBy": "estilingue-das-lembrancas-audio-synthesis",
+        "record": "ASSET_PROVENANCE.md#original-audio-v1"
+      },
+      "art": {
+        "family": "estilingue-winter-physics-v1",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Physical snowball and slingshot audio palette with crystalline Christmas bells."
+      },
+      "processing": {
+        "recipe": "prepare-estilingue-audio:celebration-fanfare-v1:mono44100:64k",
+        "tools": ["v24.20.0", "ffmpeg-8.0.1-essentials_build-www.gyan.dev"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/estilingue-das-lembrancas/audio/celebration-fanfare-v1.mp3",
+        "publicPath": "/assets/estilingue-das-lembrancas/audio/celebration-fanfare-v1.mp3",
+        "bytes": 19687,
+        "sha256": "c298125201c469e17030bf5b8fb2192a52ec26e210099385b33e1f6a48664464",
+        "durationSeconds": 2.4,
+        "cue": "estilingue-celebration-fanfare-v1",
+        "deliveryGroup": "estilingue-celebration-fanfare-v1",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        }
+      }
+    },
+    {
+      "id": "button-press-v1-m4a",
+      "kind": "audio",
+      "format": "m4a",
+      "source": {
+        "provider": "Christmas Games offline score",
+        "origin": "project-created",
+        "identifier": "ed8b36c1d8012a3fa0ae7941e1e4bf22917e9c7820d25ba94f74714562120619",
+        "license": "project-owned",
+        "reviewedOn": "2026-09-13",
+        "reviewedBy": "estilingue-das-lembrancas-audio-synthesis",
+        "record": "ASSET_PROVENANCE.md#original-audio-v1"
+      },
+      "art": {
+        "family": "estilingue-winter-physics-v1",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Physical snowball and slingshot audio palette with crystalline Christmas bells."
+      },
+      "processing": {
+        "recipe": "prepare-estilingue-audio:button-press-v1:mono44100:64k",
+        "tools": ["v24.20.0", "ffmpeg-8.0.1-essentials_build-www.gyan.dev"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/estilingue-das-lembrancas/audio/button-press-v1.m4a",
+        "publicPath": "/assets/estilingue-das-lembrancas/audio/button-press-v1.m4a",
+        "bytes": 1911,
+        "sha256": "6f9dc3f443c03bc76340e53ba1d35242bbe2b3324d9a5513d3f64d3fba28df87",
+        "durationSeconds": 0.12,
+        "cue": "estilingue-button-press-v1",
+        "deliveryGroup": "estilingue-button-press-v1",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        }
+      }
+    },
+    {
+      "id": "button-press-v1-mp3",
+      "kind": "audio",
+      "format": "mp3",
+      "source": {
+        "provider": "Christmas Games offline score",
+        "origin": "project-created",
+        "identifier": "ed8b36c1d8012a3fa0ae7941e1e4bf22917e9c7820d25ba94f74714562120619",
+        "license": "project-owned",
+        "reviewedOn": "2026-09-13",
+        "reviewedBy": "estilingue-das-lembrancas-audio-synthesis",
+        "record": "ASSET_PROVENANCE.md#original-audio-v1"
+      },
+      "art": {
+        "family": "estilingue-winter-physics-v1",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Physical snowball and slingshot audio palette with crystalline Christmas bells."
+      },
+      "processing": {
+        "recipe": "prepare-estilingue-audio:button-press-v1:mono44100:64k",
+        "tools": ["v24.20.0", "ffmpeg-8.0.1-essentials_build-www.gyan.dev"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/estilingue-das-lembrancas/audio/button-press-v1.mp3",
+        "publicPath": "/assets/estilingue-das-lembrancas/audio/button-press-v1.mp3",
+        "bytes": 1505,
+        "sha256": "06ef4b3dd50d3b973a7c952d86857e669b4bc12e2fae5f217e89140d4c20049f",
+        "durationSeconds": 0.12,
+        "cue": "estilingue-button-press-v1",
+        "deliveryGroup": "estilingue-button-press-v1",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        }
+      }
+    },
+    {
+      "id": "art-bg-sala-natal-estilingue-v1",
+      "kind": "background",
+      "format": "webp",
+      "source": {
+        "provider": "generated-christmas-asset",
+        "origin": "project-created",
+        "identifier": "c23e3accf4b01e2bef3b63604349c628c5172ce5b66a6f236932218cfc4f85f9",
+        "license": "project-owned",
+        "reviewedOn": "2026-09-13",
+        "reviewedBy": "estilingue-das-lembrancas-pipeline",
+        "record": "ASSET_PROVENANCE.md#estilingue-art-v2"
+      },
+      "art": {
+        "family": "estilingue-winter-room-v2",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Sala natalina acolhedora limpa com árvore de natal, lareira e mesa vazia."
+      },
+      "processing": {
+        "recipe": "sharp:alpha-key:webp90",
+        "tools": ["sharp"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/estilingue-das-lembrancas/backgrounds/sala-natal-estilingue-v1.webp",
+        "publicPath": "/assets/estilingue-das-lembrancas/backgrounds/sala-natal-estilingue-v1.webp",
+        "bytes": 177114,
+        "sha256": "c23e3accf4b01e2bef3b63604349c628c5172ce5b66a6f236932218cfc4f85f9",
+        "deliveryGroup": "background-art-bg-sala-natal-estilingue-v1",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        },
+        "dimensions": {
+          "width": 720,
+          "height": 1280
+        },
+        "textureKey": "estilingue-bg"
+      }
+    },
+    {
+      "id": "art-moldura-ouro-v1",
+      "kind": "ui",
+      "format": "webp",
+      "source": {
+        "provider": "generated-christmas-asset",
+        "origin": "project-created",
+        "identifier": "75116c4c4a947538ecda9b0e433e2b163bb90bc588df1ff9fecc56a61066f7b3",
+        "license": "project-owned",
+        "reviewedOn": "2026-09-13",
+        "reviewedBy": "estilingue-das-lembrancas-pipeline",
+        "record": "ASSET_PROVENANCE.md#estilingue-art-v2"
+      },
+      "art": {
+        "family": "estilingue-frame-v2",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Moldura vitoriana dourada com guirlanda, laço vermelho, sinos e centro vazado para foto."
+      },
+      "processing": {
+        "recipe": "sharp:alpha-key:webp90",
+        "tools": ["sharp"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/estilingue-das-lembrancas/art/moldura-ouro-v1.webp",
+        "publicPath": "/assets/estilingue-das-lembrancas/art/moldura-ouro-v1.webp",
+        "bytes": 122100,
+        "sha256": "75116c4c4a947538ecda9b0e433e2b163bb90bc588df1ff9fecc56a61066f7b3",
+        "deliveryGroup": "frame-art-moldura-ouro-v1",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        },
+        "dimensions": {
+          "width": 600,
+          "height": 600
+        },
+        "textureKey": "moldura-ouro"
+      }
+    },
+    {
+      "id": "art-garfo-estilingue-v1",
+      "kind": "ui",
+      "format": "webp",
+      "source": {
+        "provider": "generated-christmas-asset",
+        "origin": "project-created",
+        "identifier": "fbaaafb0aefdf4463622b3d9648d5ff3b1366410febeb8de4a5980789d8cdf22",
+        "license": "project-owned",
+        "reviewedOn": "2026-09-13",
+        "reviewedBy": "estilingue-das-lembrancas-pipeline",
+        "record": "ASSET_PROVENANCE.md#estilingue-art-v2"
+      },
+      "art": {
+        "family": "estilingue-wood-fork-v2",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Garfo de madeira maciça entalhada com ponteiras em latão dourado e fundo transparente."
+      },
+      "processing": {
+        "recipe": "sharp:alpha-key:webp90",
+        "tools": ["sharp"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/estilingue-das-lembrancas/art/garfo-estilingue-v1.webp",
+        "publicPath": "/assets/estilingue-das-lembrancas/art/garfo-estilingue-v1.webp",
+        "bytes": 19708,
+        "sha256": "fbaaafb0aefdf4463622b3d9648d5ff3b1366410febeb8de4a5980789d8cdf22",
+        "deliveryGroup": "slingshot-art-garfo-estilingue-v1",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        },
+        "dimensions": {
+          "width": 360,
+          "height": 360
+        },
+        "textureKey": "garfo-estilingue"
+      }
+    },
+    {
+      "id": "art-bolsa-couro-v1",
+      "kind": "ui",
+      "format": "webp",
+      "source": {
+        "provider": "generated-christmas-asset",
+        "origin": "project-created",
+        "identifier": "faf48f722c13d11eb9b8f8613213cc2297c08139c25d5f91a64494efd93a676c",
+        "license": "project-owned",
+        "reviewedOn": "2026-09-13",
+        "reviewedBy": "estilingue-das-lembrancas-pipeline",
+        "record": "ASSET_PROVENANCE.md#estilingue-art-v2"
+      },
+      "art": {
+        "family": "estilingue-pouch-v2",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Bolsa de couro caramelo costurada com símbolo de floco de neve e ilhoses para elásticos."
+      },
+      "processing": {
+        "recipe": "sharp:alpha-key:webp90",
+        "tools": ["sharp"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/estilingue-das-lembrancas/art/bolsa-couro-v1.webp",
+        "publicPath": "/assets/estilingue-das-lembrancas/art/bolsa-couro-v1.webp",
+        "bytes": 14384,
+        "sha256": "faf48f722c13d11eb9b8f8613213cc2297c08139c25d5f91a64494efd93a676c",
+        "deliveryGroup": "slingshot-art-bolsa-couro-v1",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        },
+        "dimensions": {
+          "width": 180,
+          "height": 180
+        },
+        "textureKey": "bolsa-couro"
+      }
+    },
+    {
+      "id": "art-alvo-madeira-quadrado-v1",
+      "kind": "ui",
+      "format": "webp",
+      "source": {
+        "provider": "generated-christmas-asset",
+        "origin": "project-created",
+        "identifier": "f6b776c444326379b23ba75c4ff109cae5d74322e863316d5b1fb314e83ea880",
+        "license": "project-owned",
+        "reviewedOn": "2026-09-13",
+        "reviewedBy": "estilingue-das-lembrancas-pipeline",
+        "record": "ASSET_PROVENANCE.md#estilingue-art-v2"
+      },
+      "art": {
+        "family": "estilingue-targets-v2",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Alvo de madeira tábua com estrela"
+      },
+      "processing": {
+        "recipe": "sharp:alpha-key:webp90",
+        "tools": ["sharp"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/estilingue-das-lembrancas/art/alvo-madeira-quadrado-v1.webp",
+        "publicPath": "/assets/estilingue-das-lembrancas/art/alvo-madeira-quadrado-v1.webp",
+        "bytes": 19844,
+        "sha256": "f6b776c444326379b23ba75c4ff109cae5d74322e863316d5b1fb314e83ea880",
+        "deliveryGroup": "targets-art-alvo-madeira-quadrado-v1",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        },
+        "dimensions": {
+          "width": 178,
+          "height": 256
+        },
+        "textureKey": "alvo-wood-square"
+      }
+    },
+    {
+      "id": "art-alvo-gingerbread-v1",
+      "kind": "ui",
+      "format": "webp",
+      "source": {
+        "provider": "generated-christmas-asset",
+        "origin": "project-created",
+        "identifier": "381d5da1daf8d88b10140760f7b9a15c32305c6a57b3e652a68214be9597d3cf",
+        "license": "project-owned",
+        "reviewedOn": "2026-09-13",
+        "reviewedBy": "estilingue-das-lembrancas-pipeline",
+        "record": "ASSET_PROVENANCE.md#estilingue-art-v2"
+      },
+      "art": {
+        "family": "estilingue-targets-v2",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Alvo biscoito gingerbread natalino"
+      },
+      "processing": {
+        "recipe": "sharp:alpha-key:webp90",
+        "tools": ["sharp"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/estilingue-das-lembrancas/art/alvo-gingerbread-v1.webp",
+        "publicPath": "/assets/estilingue-das-lembrancas/art/alvo-gingerbread-v1.webp",
+        "bytes": 21212,
+        "sha256": "381d5da1daf8d88b10140760f7b9a15c32305c6a57b3e652a68214be9597d3cf",
+        "deliveryGroup": "targets-art-alvo-gingerbread-v1",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        },
+        "dimensions": {
+          "width": 210,
+          "height": 256
+        },
+        "textureKey": "alvo-gingerbread"
+      }
+    },
+    {
+      "id": "art-alvo-estrela-ouro-v1",
+      "kind": "ui",
+      "format": "webp",
+      "source": {
+        "provider": "generated-christmas-asset",
+        "origin": "project-created",
+        "identifier": "d163b85c13ba4d17ddb361c33e78ce982fd7e0baefaccd5281006e33bc0d1858",
+        "license": "project-owned",
+        "reviewedOn": "2026-09-13",
+        "reviewedBy": "estilingue-das-lembrancas-pipeline",
+        "record": "ASSET_PROVENANCE.md#estilingue-art-v2"
+      },
+      "art": {
+        "family": "estilingue-targets-v2",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Alvo estrela dourada entalhada"
+      },
+      "processing": {
+        "recipe": "sharp:alpha-key:webp90",
+        "tools": ["sharp"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/estilingue-das-lembrancas/art/alvo-estrela-ouro-v1.webp",
+        "publicPath": "/assets/estilingue-das-lembrancas/art/alvo-estrela-ouro-v1.webp",
+        "bytes": 18710,
+        "sha256": "d163b85c13ba4d17ddb361c33e78ce982fd7e0baefaccd5281006e33bc0d1858",
+        "deliveryGroup": "targets-art-alvo-estrela-ouro-v1",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        },
+        "dimensions": {
+          "width": 256,
+          "height": 246
+        },
+        "textureKey": "alvo-gold-star"
+      }
+    },
+    {
+      "id": "art-alvo-bola-natal-v1",
+      "kind": "ui",
+      "format": "webp",
+      "source": {
+        "provider": "generated-christmas-asset",
+        "origin": "project-created",
+        "identifier": "e5e93e1f487a68be5973f9d07fe60401ff19ec4a6d2eb738e992c1d55845c49e",
+        "license": "project-owned",
+        "reviewedOn": "2026-09-13",
+        "reviewedBy": "estilingue-das-lembrancas-pipeline",
+        "record": "ASSET_PROVENANCE.md#estilingue-art-v2"
+      },
+      "art": {
+        "family": "estilingue-targets-v2",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Alvo bola de natal vermelha de vidro"
+      },
+      "processing": {
+        "recipe": "sharp:alpha-key:webp90",
+        "tools": ["sharp"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/estilingue-das-lembrancas/art/alvo-bola-natal-v1.webp",
+        "publicPath": "/assets/estilingue-das-lembrancas/art/alvo-bola-natal-v1.webp",
+        "bytes": 16126,
+        "sha256": "e5e93e1f487a68be5973f9d07fe60401ff19ec4a6d2eb738e992c1d55845c49e",
+        "deliveryGroup": "targets-art-alvo-bola-natal-v1",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        },
+        "dimensions": {
+          "width": 179,
+          "height": 256
+        },
+        "textureKey": "alvo-round-bauble"
+      }
+    },
+    {
+      "id": "art-botao-medalhao-musica-v1",
+      "kind": "ui",
+      "format": "webp",
+      "source": {
+        "provider": "generated-christmas-asset",
+        "origin": "project-created",
+        "identifier": "9deda61549f68551814fe6456598d50b2c15f874de6eeed13a889ba7f77908e5",
+        "license": "project-owned",
+        "reviewedOn": "2026-09-13",
+        "reviewedBy": "estilingue-das-lembrancas-pipeline",
+        "record": "ASSET_PROVENANCE.md#estilingue-art-v2"
+      },
+      "art": {
+        "family": "estilingue-medallions-v2",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Botão medalhão vermelho nota musical dourada"
+      },
+      "processing": {
+        "recipe": "sharp:alpha-key:webp90",
+        "tools": ["sharp"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/estilingue-das-lembrancas/art/botao-medalhao-musica-v1.webp",
+        "publicPath": "/assets/estilingue-das-lembrancas/art/botao-medalhao-musica-v1.webp",
+        "bytes": 14560,
+        "sha256": "9deda61549f68551814fe6456598d50b2c15f874de6eeed13a889ba7f77908e5",
+        "deliveryGroup": "shelf-art-botao-medalhao-musica-v1",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        },
+        "dimensions": {
+          "width": 189,
+          "height": 192
+        },
+        "textureKey": "botao-medallion-music"
+      }
+    },
+    {
+      "id": "art-botao-medalhao-arvore-v1",
+      "kind": "ui",
+      "format": "webp",
+      "source": {
+        "provider": "generated-christmas-asset",
+        "origin": "project-created",
+        "identifier": "bd0e95a21844138822a30758f5098851ace961573bd4c26c44c6524322ff532d",
+        "license": "project-owned",
+        "reviewedOn": "2026-09-13",
+        "reviewedBy": "estilingue-das-lembrancas-pipeline",
+        "record": "ASSET_PROVENANCE.md#estilingue-art-v2"
+      },
+      "art": {
+        "family": "estilingue-medallions-v2",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Botão medalhão verde árvore de natal dourada"
+      },
+      "processing": {
+        "recipe": "sharp:alpha-key:webp90",
+        "tools": ["sharp"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/estilingue-das-lembrancas/art/botao-medalhao-arvore-v1.webp",
+        "publicPath": "/assets/estilingue-das-lembrancas/art/botao-medalhao-arvore-v1.webp",
+        "bytes": 18810,
+        "sha256": "bd0e95a21844138822a30758f5098851ace961573bd4c26c44c6524322ff532d",
+        "deliveryGroup": "shelf-art-botao-medalhao-arvore-v1",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        },
+        "dimensions": {
+          "width": 189,
+          "height": 192
+        },
+        "textureKey": "botao-medallion-tree"
+      }
+    },
+    {
+      "id": "art-botao-medalhao-neve-v1",
+      "kind": "ui",
+      "format": "webp",
+      "source": {
+        "provider": "generated-christmas-asset",
+        "origin": "project-created",
+        "identifier": "422375e27b41809c4131d79b15229590db4583a79679f7d034b421ce24e07d29",
+        "license": "project-owned",
+        "reviewedOn": "2026-09-13",
+        "reviewedBy": "estilingue-das-lembrancas-pipeline",
+        "record": "ASSET_PROVENANCE.md#estilingue-art-v2"
+      },
+      "art": {
+        "family": "estilingue-medallions-v2",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Botão medalhão vermelho floco de neve dourado"
+      },
+      "processing": {
+        "recipe": "sharp:alpha-key:webp90",
+        "tools": ["sharp"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/estilingue-das-lembrancas/art/botao-medalhao-neve-v1.webp",
+        "publicPath": "/assets/estilingue-das-lembrancas/art/botao-medalhao-neve-v1.webp",
+        "bytes": 16870,
+        "sha256": "422375e27b41809c4131d79b15229590db4583a79679f7d034b421ce24e07d29",
+        "deliveryGroup": "shelf-art-botao-medalhao-neve-v1",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        },
+        "dimensions": {
+          "width": 187,
+          "height": 192
+        },
+        "textureKey": "botao-medallion-snow"
+      }
+    },
+    {
+      "id": "art-botao-medalhao-sino-v1",
+      "kind": "ui",
+      "format": "webp",
+      "source": {
+        "provider": "generated-christmas-asset",
+        "origin": "project-created",
+        "identifier": "f9e3effacfd15950bf0f23b983f58dae47044ed49618923e2df7a9714bcc344c",
+        "license": "project-owned",
+        "reviewedOn": "2026-09-13",
+        "reviewedBy": "estilingue-das-lembrancas-pipeline",
+        "record": "ASSET_PROVENANCE.md#estilingue-art-v2"
+      },
+      "art": {
+        "family": "estilingue-medallions-v2",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Botão medalhão verde sino de natal dourado"
+      },
+      "processing": {
+        "recipe": "sharp:alpha-key:webp90",
+        "tools": ["sharp"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/estilingue-das-lembrancas/art/botao-medalhao-sino-v1.webp",
+        "publicPath": "/assets/estilingue-das-lembrancas/art/botao-medalhao-sino-v1.webp",
+        "bytes": 18970,
+        "sha256": "f9e3effacfd15950bf0f23b983f58dae47044ed49618923e2df7a9714bcc344c",
+        "deliveryGroup": "shelf-art-botao-medalhao-sino-v1",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        },
+        "dimensions": {
+          "width": 187,
+          "height": 192
+        },
+        "textureKey": "botao-medallion-bell"
+      }
+    }
+  ]
+}

@@ -8,7 +8,10 @@
     "build": "tsc --noEmit --project ../../tsconfig.json && vite build"
   },
   "dependencies": {
+    "@christmas-games/lanterna-magica": "workspace:*",
     "@christmas-games/rena-das-lembrancas": "workspace:*",
+    "@christmas-games/estilingue-das-lembrancas": "workspace:*",
+    "@christmas-games/globo-das-lembrancas": "workspace:*",
     "@christmas-games/magic-photo": "workspace:*",
     "@christmas-games/dev-smoke": "workspace:*",
     "@christmas-games/expresso-das-fotos": "workspace:*",

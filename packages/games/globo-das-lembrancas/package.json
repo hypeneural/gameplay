@@ -1,0 +1,17 @@
+{
+  "name": "@christmas-games/globo-das-lembrancas",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./definition": "./src/definition.ts"
+  },
+  "peerDependencies": {
+    "phaser": "4.2.1"
+  },
+  "dependencies": {
+    "@christmas-games/platform": "workspace:*",
+    "@christmas-games/theme": "workspace:*"
+  }
+}

@@ -2,6 +2,7 @@ import type { GameDefinition, GameModule } from '@christmas-games/platform';
 import type * as PhaserModule from 'phaser';
 import { devSmokeDefinition } from '@christmas-games/dev-smoke/definition';
 import { expressoDasFotosDefinition } from '@christmas-games/expresso-das-fotos/definition';
+import { globoDasLembrancasDefinition } from '@christmas-games/globo-das-lembrancas/definition';
 import { guirlandaDasLembrancasDefinition } from '@christmas-games/guirlanda-das-lembrancas/definition';
 import { memoryDefinition } from '@christmas-games/memory/definition';
 import { magicPhotoDefinition } from '@christmas-games/magic-photo/definition';
@@ -9,6 +10,8 @@ import { renaDasLembrancasDefinition } from '@christmas-games/rena-das-lembranca
 import { mosaicoEmQuedaDefinition } from '@christmas-games/mosaico-em-queda/definition';
 import { puzzleSwapDefinition } from '@christmas-games/puzzle-swap/definition';
 import { ticTacToeDefinition } from '@christmas-games/tic-tac-toe/definition';
+import { estilingueDasLembrancasDefinition } from '@christmas-games/estilingue-das-lembrancas/definition';
+import { lanternaMagicaDefinition } from '@christmas-games/lanterna-magica/definition';
 
 export type PhaserGameModule = GameModule<typeof PhaserModule, HTMLElement>;
 export interface InstalledGame {
@@ -38,6 +41,11 @@ const installedGames = {
     load: async () =>
       (await import('@christmas-games/expresso-das-fotos')).expressoDasFotosGameModule,
   },
+  'globo-das-lembrancas': {
+    definition: globoDasLembrancasDefinition,
+    load: async () =>
+      (await import('@christmas-games/globo-das-lembrancas')).globoDasLembrancasGameModule,
+  },
   'guirlanda-das-lembrancas': {
     definition: guirlandaDasLembrancasDefinition,
     load: async () =>
@@ -59,6 +67,16 @@ const installedGames = {
     definition: renaDasLembrancasDefinition,
     load: async () =>
       (await import('@christmas-games/rena-das-lembrancas')).renaDasLembrancasGameModule,
+  },
+  'estilingue-das-lembrancas': {
+    definition: estilingueDasLembrancasDefinition,
+    load: async () =>
+      (await import('@christmas-games/estilingue-das-lembrancas'))
+        .estilingueDasLembrancasGameModule,
+  },
+  'lanterna-magica': {
+    definition: lanternaMagicaDefinition,
+    load: async () => (await import('@christmas-games/lanterna-magica')).lanternaMagicaGameModule,
   },
 } satisfies Record<string, InstalledGame>;
 

@@ -13,16 +13,23 @@
 │           └── SKILL.md
 ├── .dependency-cruiser.cjs
 ├── .github
+│   ├── ISSUE_TEMPLATE
+│   │   ├── bug_report.md
+│   │   └── feature_request.md
+│   ├── pull_request_template.md
 │   └── workflows
 │       └── ci.yml
 ├── .gitignore
 ├── .node-version
 ├── .prettierignore
-├── 789games.zip
 ├── AGENTS.md
+├── ARCHITECTURE.md
+├── CONTRIBUTING.md
+├── README.md
 ├── apps
 │   ├── catalog-server
 │   │   ├── ASSET_PROVENANCE.md
+│   │   ├── README.md
 │   │   ├── config
 │   │   │   └── social-preview.example.json
 │   │   ├── nginx
@@ -31,7 +38,6 @@
 │   │   ├── public
 │   │   │   └── social
 │   │   │       └── evydencia-christmas-v1.webp
-│   │   ├── README.md
 │   │   └── src
 │   │       ├── CatalogServer.test.ts
 │   │       ├── CatalogServer.ts
@@ -75,6 +81,46 @@
 │       │   │   │       ├── tap-v1.mp3
 │       │   │   │       ├── toggle-v1.m4a
 │       │   │   │       └── toggle-v1.mp3
+│       │   │   ├── estilingue-das-lembrancas
+│       │   │   │   ├── art
+│       │   │   │   │   ├── alvo-bola-natal-v1.webp
+│       │   │   │   │   ├── alvo-estrela-ouro-v1.webp
+│       │   │   │   │   ├── alvo-gingerbread-v1.webp
+│       │   │   │   │   ├── alvo-madeira-quadrado-v1.webp
+│       │   │   │   │   ├── bolsa-couro-v1.webp
+│       │   │   │   │   ├── botao-medalhao-arvore-v1.webp
+│       │   │   │   │   ├── botao-medalhao-musica-v1.webp
+│       │   │   │   │   ├── botao-medalhao-neve-v1.webp
+│       │   │   │   │   ├── botao-medalhao-sino-v1.webp
+│       │   │   │   │   ├── garfo-estilingue-v1.webp
+│       │   │   │   │   └── moldura-ouro-v1.webp
+│       │   │   │   ├── audio
+│       │   │   │   │   ├── button-press-v1.m4a
+│       │   │   │   │   ├── button-press-v1.mp3
+│       │   │   │   │   ├── celebration-fanfare-v1.m4a
+│       │   │   │   │   ├── celebration-fanfare-v1.mp3
+│       │   │   │   │   ├── elastic-pull-v1.m4a
+│       │   │   │   │   ├── elastic-pull-v1.mp3
+│       │   │   │   │   ├── elastic-snap-v1.m4a
+│       │   │   │   │   ├── elastic-snap-v1.mp3
+│       │   │   │   │   ├── fragment-fly-v1.m4a
+│       │   │   │   │   ├── fragment-fly-v1.mp3
+│       │   │   │   │   ├── frame-slot-v1.m4a
+│       │   │   │   │   ├── frame-slot-v1.mp3
+│       │   │   │   │   ├── impact-bauble-v1.m4a
+│       │   │   │   │   ├── impact-bauble-v1.mp3
+│       │   │   │   │   ├── impact-bell-v1.m4a
+│       │   │   │   │   ├── impact-bell-v1.mp3
+│       │   │   │   │   ├── impact-gingerbread-v1.m4a
+│       │   │   │   │   ├── impact-gingerbread-v1.mp3
+│       │   │   │   │   ├── impact-wood-v1.m4a
+│       │   │   │   │   ├── impact-wood-v1.mp3
+│       │   │   │   │   ├── snow-whoosh-v1.m4a
+│       │   │   │   │   ├── snow-whoosh-v1.mp3
+│       │   │   │   │   ├── winter-loop-v1.m4a
+│       │   │   │   │   └── winter-loop-v1.mp3
+│       │   │   │   └── backgrounds
+│       │   │   │       └── sala-natal-estilingue-v1.webp
 │       │   │   ├── expresso-das-fotos
 │       │   │   │   ├── audio
 │       │   │   │   │   ├── arrival-brake.m4a
@@ -97,6 +143,31 @@
 │       │   │   │   │   └── estacao-noturna-plataforma-v2.webp
 │       │   │   │   └── sprites
 │       │   │   │       └── locomotiva-natal-premium-v1.webp
+│       │   │   ├── globo-das-lembrancas
+│       │   │   │   ├── art
+│       │   │   │   │   ├── botao-natal-1-rubi.webp
+│       │   │   │   │   ├── botao-natal-2-esmeralda.webp
+│       │   │   │   │   ├── botao-natal-3-safira.webp
+│       │   │   │   │   ├── botao-natal-4-topazio.webp
+│       │   │   │   │   ├── carved-wood-base-v1.webp
+│       │   │   │   │   ├── chave-corda-latao-v1.webp
+│       │   │   │   │   ├── glass-dome-specular-v1.webp
+│       │   │   │   │   └── winter-diorama-v1.webp
+│       │   │   │   ├── audio
+│       │   │   │   │   ├── chime-note.m4a
+│       │   │   │   │   ├── chime-note.mp3
+│       │   │   │   │   ├── glass-clink.m4a
+│       │   │   │   │   ├── glass-clink.mp3
+│       │   │   │   │   ├── key-ratchet.m4a
+│       │   │   │   │   ├── key-ratchet.mp3
+│       │   │   │   │   ├── musicbox-celebrate.m4a
+│       │   │   │   │   ├── musicbox-celebrate.mp3
+│       │   │   │   │   ├── musicbox-loop.m4a
+│       │   │   │   │   ├── musicbox-loop.mp3
+│       │   │   │   │   ├── steam-wipe.m4a
+│       │   │   │   │   └── steam-wipe.mp3
+│       │   │   │   └── backgrounds
+│       │   │   │       └── sala-natal-aconchegante-v1.webp
 │       │   │   ├── guirlanda-das-lembrancas
 │       │   │   │   ├── audio
 │       │   │   │   │   ├── encaixe.m4a
@@ -216,24 +287,23 @@
 │       │   │   │   │   ├── santa-sleigh-v1.webp
 │       │   │   │   │   ├── winter-landscape-v1.webp
 │       │   │   │   │   └── winter-world-v1.webp
-│       │   │   │   ├── audio
-│       │   │   │   │   ├── bells-v1.m4a
-│       │   │   │   │   ├── bells-v1.mp3
-│       │   │   │   │   ├── encaixe.m4a
-│       │   │   │   │   ├── encaixe.mp3
-│       │   │   │   │   ├── magic-v1.m4a
-│       │   │   │   │   ├── magic-v1.mp3
-│       │   │   │   │   ├── paper-v1.m4a
-│       │   │   │   │   ├── paper-v1.mp3
-│       │   │   │   │   ├── snow-v1.m4a
-│       │   │   │   │   ├── snow-v1.mp3
-│       │   │   │   │   ├── toque.m4a
-│       │   │   │   │   ├── toque.mp3
-│       │   │   │   │   ├── vitoria.m4a
-│       │   │   │   │   ├── vitoria.mp3
-│       │   │   │   │   ├── winter-loop-v1.m4a
-│       │   │   │   │   └── winter-loop-v1.mp3
-│       │   │   │   └── frames
+│       │   │   │   └── audio
+│       │   │   │       ├── bells-v1.m4a
+│       │   │   │       ├── bells-v1.mp3
+│       │   │   │       ├── encaixe.m4a
+│       │   │   │       ├── encaixe.mp3
+│       │   │   │       ├── magic-v1.m4a
+│       │   │   │       ├── magic-v1.mp3
+│       │   │   │       ├── paper-v1.m4a
+│       │   │   │       ├── paper-v1.mp3
+│       │   │   │       ├── snow-v1.m4a
+│       │   │   │       ├── snow-v1.mp3
+│       │   │   │       ├── toque.m4a
+│       │   │   │       ├── toque.mp3
+│       │   │   │       ├── vitoria.m4a
+│       │   │   │       ├── vitoria.mp3
+│       │   │   │       ├── winter-loop-v1.m4a
+│       │   │   │       └── winter-loop-v1.mp3
 │       │   │   └── tic-tac-toe
 │       │   │       ├── audio
 │       │   │       │   ├── encaixe.m4a
@@ -285,7 +355,6 @@
 │       │   │   ├── SnowGlobeButton.tsx
 │       │   │   └── StudioSignature.tsx
 │       │   ├── crystal-controls.css
-│       │   ├── dev
 │       │   ├── experience
 │       │   │   ├── ChristmasCordSimulation.test.ts
 │       │   │   ├── ChristmasCordSimulation.ts
@@ -297,13 +366,13 @@
 │       │   ├── magic-photo.css
 │       │   ├── main.tsx
 │       │   ├── phaser
+│       │   │   ├── PhaserHost.tsx
+│       │   │   ├── PhaserMountCoordinator.ts
 │       │   │   ├── createGame.ts
 │       │   │   ├── createRunIdentity.test.ts
 │       │   │   ├── createRunIdentity.ts
 │       │   │   ├── gameRegistry.test.ts
-│       │   │   ├── gameRegistry.ts
-│       │   │   ├── PhaserHost.tsx
-│       │   │   └── PhaserMountCoordinator.ts
+│       │   │   └── gameRegistry.ts
 │       │   ├── screens
 │       │   │   ├── AssetLab.tsx
 │       │   │   ├── ExperienceLab.tsx
@@ -322,13 +391,25 @@
 │       │   ├── shell.css
 │       │   ├── styles.css
 │       │   └── vite-env.d.ts
-│       ├── tests
 │       ├── vite.config.ts
 │       └── vite.localTestMedia.ts
-├── ARCHITECTURE.md
 ├── assets-src
 │   ├── catalog-social
 │   │   └── evydencia-christmas-v1.png
+│   ├── estilingue-das-lembrancas
+│   │   └── audio
+│   │       ├── button-press-v1.wav
+│   │       ├── celebration-fanfare-v1.wav
+│   │       ├── elastic-pull-v1.wav
+│   │       ├── elastic-snap-v1.wav
+│   │       ├── fragment-fly-v1.wav
+│   │       ├── frame-slot-v1.wav
+│   │       ├── impact-bauble-v1.wav
+│   │       ├── impact-bell-v1.wav
+│   │       ├── impact-gingerbread-v1.wav
+│   │       ├── impact-wood-v1.wav
+│   │       ├── snow-whoosh-v1.wav
+│   │       └── winter-loop-v1.wav
 │   ├── puzzle-swap
 │   │   └── backgrounds
 │   │       └── vila-nevada-noite-v1.png
@@ -357,10 +438,10 @@
 │   │   ├── winter-world-v1.png
 │   │   └── winter-world-v1.prompt.txt
 │   └── tic-tac-toe
+│       ├── README.md
 │       ├── cordao-luzes-v1.png
 │       ├── moldura-lembranca-v1.png
-│       ├── oficina-fundo-vertical-v1.png
-│       └── README.md
+│       └── oficina-fundo-vertical-v1.png
 ├── docs
 │   ├── ai
 │   │   ├── CODEX_CAPABILITY_STACK.md
@@ -371,6 +452,8 @@
 │   │   ├── FOUNDATION.md
 │   │   ├── GAME_FACTORY.md
 │   │   ├── GUIRLANDA_DAS_LEMBRANCAS_TECNICO_E_MATURIDADE.md
+│   │   ├── JOGOS_ELABORADOS_ENGENHARIA_LOGICAS_ASSETS_E_FISICA.md
+│   │   ├── PRODUCAO_VPS_MULTI_CLIENTES_600_800_GALERIAS.md
 │   │   └── SHARING_AND_SOCIAL_PREVIEW.md
 │   ├── assets
 │   │   └── ASSET_MANIFEST_CONTRACT.md
@@ -378,8 +461,6 @@
 │   │   ├── PUZZLE_SWAP_EXPERIENCE_REVIEW.md
 │   │   └── THEME_DIRECTION.md
 │   ├── exec-plans
-│   │   ├── active
-│   │   │   └── .gitkeep
 │   │   ├── CG-CHRISTMAS-NATIVE-LIKE-MATURITY.md
 │   │   ├── CG-EXPERIENCE-FACTORY-ROADMAP.md
 │   │   ├── CG-EXPERIENCE-INTELLIGENCE-AND-MOBILE-MATURITY.md
@@ -387,6 +468,8 @@
 │   │   ├── CG-GUIRLANDA-DAS-LEMBRANCAS-PROPOSTA.md
 │   │   ├── CG-MOBILE-FIRST-CREATIVE-VELOCITY.md
 │   │   ├── CG-PUZZLE-NATIVE-LIKE-ITERATION.md
+│   │   ├── active
+│   │   │   └── .gitkeep
 │   │   └── completed
 │   │       ├── CG-BOOTSTRAP.md
 │   │       ├── CG-CONTROLES-CRISTALINOS-DOS-JOGOS.md
@@ -401,34 +484,34 @@
 │   │       ├── CG-RUDOLPH-CHUVA-DE-LEMBRANCAS.md
 │   │       └── CG-TRINCA-DE-NATAL-IMPLEMENTATION.md
 │   ├── experience
-│   │   ├── christmas
-│   │   │   ├── ART_BIBLE.md
-│   │   │   ├── AUDIO_BIBLE.md
-│   │   │   ├── CHARACTER_BIBLE.md
-│   │   │   ├── COMPONENT_DICTIONARY.md
-│   │   │   ├── CRYSTAL_CONTROL_STANDARD.md
-│   │   │   ├── LIGHTING_BIBLE.md
-│   │   │   ├── MOBILE_FIRST_CREATIVE_PLAYBOOK.md
-│   │   │   ├── MOTION_BIBLE.md
-│   │   │   ├── MUSIC_BIBLE.md
-│   │   │   ├── PROMPT_RECIPES.md
-│   │   │   ├── recipes
-│   │   │   │   ├── BOTAO-PRESSIONADO.md
-│   │   │   │   ├── CARTAO-MEMORIAS.md
-│   │   │   │   ├── DICA-DE-DUAS-PECAS.md
-│   │   │   │   ├── LUZES-QUENTES.md
-│   │   │   │   ├── NEVE-DE-VITORIA.md
-│   │   │   │   ├── NEVE-SUAVE.md
-│   │   │   │   ├── PECA-ESCOLHIDA.md
-│   │   │   │   ├── README.md
-│   │   │   │   ├── TROCA-CORRETA.md
-│   │   │   │   ├── TROCA-SEM-SOLUCAO.md
-│   │   │   │   └── VITORIA.md
-│   │   │   ├── SCENE_GRAMMAR.md
-│   │   │   └── style-anchors
-│   │   │       ├── master-style-frame-v1.png
-│   │   │       └── README.md
-│   │   └── EXPERIENCE_REQUIREMENTS_CONTRACT.md
+│   │   ├── EXPERIENCE_REQUIREMENTS_CONTRACT.md
+│   │   └── christmas
+│   │       ├── ART_BIBLE.md
+│   │       ├── AUDIO_BIBLE.md
+│   │       ├── CHARACTER_BIBLE.md
+│   │       ├── COMPONENT_DICTIONARY.md
+│   │       ├── CRYSTAL_CONTROL_STANDARD.md
+│   │       ├── LIGHTING_BIBLE.md
+│   │       ├── MOBILE_FIRST_CREATIVE_PLAYBOOK.md
+│   │       ├── MOTION_BIBLE.md
+│   │       ├── MUSIC_BIBLE.md
+│   │       ├── PROMPT_RECIPES.md
+│   │       ├── SCENE_GRAMMAR.md
+│   │       ├── recipes
+│   │       │   ├── BOTAO-PRESSIONADO.md
+│   │       │   ├── CARTAO-MEMORIAS.md
+│   │       │   ├── DICA-DE-DUAS-PECAS.md
+│   │       │   ├── LUZES-QUENTES.md
+│   │       │   ├── NEVE-DE-VITORIA.md
+│   │       │   ├── NEVE-SUAVE.md
+│   │       │   ├── PECA-ESCOLHIDA.md
+│   │       │   ├── README.md
+│   │       │   ├── TROCA-CORRETA.md
+│   │       │   ├── TROCA-SEM-SOLUCAO.md
+│   │       │   └── VITORIA.md
+│   │       └── style-anchors
+│   │           ├── README.md
+│   │           └── master-style-frame-v1.png
 │   ├── generated
 │   │   └── repo-map.md
 │   ├── index.md
@@ -443,15 +526,16 @@
 │   │   └── DATA_HANDLING.md
 │   ├── product
 │   │   ├── EXPRESSO_DAS_FOTOS.md
-│   │   ├── games
-│   │   │   ├── present-match.md
-│   │   │   └── puzzle-slide.md
 │   │   ├── HUB_E_ABERTURAS_DECISOES_2026-09-05.md
 │   │   ├── HUB_SOM_E_MAGIA_2026-09-07.md
+│   │   ├── LANTERNA_MAGICA_DAS_LEMBRANCAS.md
 │   │   ├── MOSAICO_EM_QUEDA.md
 │   │   ├── MUNDO_NATALINO_INTERATIVO_2026-09-07.md
 │   │   ├── PRODUCT_DECISIONS_2026-08-25.md
-│   │   └── RUDOLPH_CHUVA_DE_LEMBRANCAS.md
+│   │   ├── RUDOLPH_CHUVA_DE_LEMBRANCAS.md
+│   │   └── games
+│   │       ├── present-match.md
+│   │       └── puzzle-slide.md
 │   ├── quality
 │   │   ├── ANDROID_REFERENCE_PROTOCOL.md
 │   │   ├── ASSET_LAB_CONTRACT.md
@@ -486,7 +570,6 @@
 │       ├── TIC_TAC_TOE_OFFICIAL_VALIDATION.md
 │       └── TIC_TAC_TOE_R3_REPORT_RECONCILIATION.md
 ├── eslint.config.js
-├── games.zip
 ├── knip.json
 ├── package.json
 ├── packages
@@ -504,17 +587,62 @@
 │   │   │   │           └── createDevSmokeGame.ts
 │   │   │   └── tests
 │   │   │       └── SmokeState.test.ts
+│   │   ├── estilingue-das-lembrancas
+│   │   │   ├── ARCHITECTURE_AUDIT.md
+│   │   │   ├── ASSET_PROVENANCE.md
+│   │   │   ├── EXPERIENCE.md
+│   │   │   ├── SPEC.md
+│   │   │   ├── assets
+│   │   │   │   └── manifest.json
+│   │   │   ├── package.json
+│   │   │   ├── src
+│   │   │   │   ├── definition.ts
+│   │   │   │   ├── domain
+│   │   │   │   │   ├── FrameProgress.ts
+│   │   │   │   │   ├── GameProgress.ts
+│   │   │   │   │   ├── ShotModel.ts
+│   │   │   │   │   ├── SlingshotStateMachine.ts
+│   │   │   │   │   └── TargetProgress.ts
+│   │   │   │   ├── index.ts
+│   │   │   │   ├── runtime
+│   │   │   │   │   ├── SlingshotLayoutManager.ts
+│   │   │   │   │   └── phaser
+│   │   │   │   │       ├── CollisionCategories.ts
+│   │   │   │   │       ├── EstilingueAudioDirector.ts
+│   │   │   │   │       ├── EstilingueControls.ts
+│   │   │   │   │       ├── EstilingueProceduralArt.ts
+│   │   │   │   │       ├── EstilingueScene.ts
+│   │   │   │   │       ├── HangingTargetObject.ts
+│   │   │   │   │       ├── MagicButtonPanel.ts
+│   │   │   │   │       ├── MagicalFrameObject.ts
+│   │   │   │   │       ├── PouchPhysics.ts
+│   │   │   │   │       ├── SlingshotBand.ts
+│   │   │   │   │       ├── SlingshotObject.ts
+│   │   │   │   │       ├── SnowballObject.ts
+│   │   │   │   │       ├── TrajectoryPredictor.ts
+│   │   │   │   │       ├── TrajectoryRenderer.ts
+│   │   │   │   │       └── createEstilingueDasLembrancasGame.ts
+│   │   │   │   └── tuning.ts
+│   │   │   └── tests
+│   │   │       ├── EstilingueAudioDirector.test.ts
+│   │   │       ├── FrameProgress.test.ts
+│   │   │       ├── GameProgress.test.ts
+│   │   │       ├── ShotModel.test.ts
+│   │   │       ├── SlingshotLayoutManager.test.ts
+│   │   │       ├── SlingshotStateMachine.test.ts
+│   │   │       ├── TargetProgress.test.ts
+│   │   │       └── TrajectoryPredictor.test.ts
 │   │   ├── expresso-das-fotos
 │   │   │   ├── ART_DIRECTION.md
 │   │   │   ├── ASSET_PROVENANCE.md
-│   │   │   ├── assets
-│   │   │   │   ├── manifest.json
-│   │   │   │   └── README.md
-│   │   │   ├── EXPERIENCE_REQUIREMENTS.json
 │   │   │   ├── EXPERIENCE.md
+│   │   │   ├── EXPERIENCE_REQUIREMENTS.json
 │   │   │   ├── MOTION_SCORE.md
-│   │   │   ├── package.json
 │   │   │   ├── SPEC.md
+│   │   │   ├── assets
+│   │   │   │   ├── README.md
+│   │   │   │   └── manifest.json
+│   │   │   ├── package.json
 │   │   │   ├── src
 │   │   │   │   ├── definition.ts
 │   │   │   │   ├── domain
@@ -532,26 +660,66 @@
 │   │   │   │   │   └── ExpressTypes.ts
 │   │   │   │   ├── index.ts
 │   │   │   │   ├── runtime
-│   │   │   │   │   ├── phaser
-│   │   │   │   │   │   ├── audioAssets.ts
-│   │   │   │   │   │   ├── createExpressoDasFotosGame.ts
-│   │   │   │   │   │   ├── ExpressAudioDirector.ts
-│   │   │   │   │   │   ├── RailPathFactory.ts
-│   │   │   │   │   │   └── visualAssets.ts
-│   │   │   │   │   └── RequiredAssetLedger.ts
+│   │   │   │   │   ├── RequiredAssetLedger.ts
+│   │   │   │   │   └── phaser
+│   │   │   │   │       ├── ExpressAudioDirector.ts
+│   │   │   │   │       ├── RailPathFactory.ts
+│   │   │   │   │       ├── audioAssets.ts
+│   │   │   │   │       ├── createExpressoDasFotosGame.ts
+│   │   │   │   │       └── visualAssets.ts
 │   │   │   │   └── tuning.ts
 │   │   │   └── tests
 │   │   │       ├── ExpressAudioDirector.test.ts
 │   │   │       ├── ExpressDomain.test.ts
 │   │   │       └── RequiredAssetLedger.test.ts
-│   │   ├── guirlanda-das-lembrancas
+│   │   ├── globo-das-lembrancas
 │   │   │   ├── ASSET_PROVENANCE.md
+│   │   │   ├── EXPERIENCE.md
+│   │   │   ├── EXPERIENCE_REQUIREMENTS.json
+│   │   │   ├── SPEC.md
 │   │   │   ├── assets
 │   │   │   │   └── manifest.json
-│   │   │   ├── EXPERIENCE_REQUIREMENTS.json
-│   │   │   ├── EXPERIENCE.md
 │   │   │   ├── package.json
+│   │   │   ├── src
+│   │   │   │   ├── definition.ts
+│   │   │   │   ├── domain
+│   │   │   │   │   ├── GloboGeometry.ts
+│   │   │   │   │   ├── MusicalGems.ts
+│   │   │   │   │   ├── SnowGlobeStateMachine.ts
+│   │   │   │   │   ├── SnowTurbulenceModel.ts
+│   │   │   │   │   ├── SteamGrid.ts
+│   │   │   │   │   └── WindingTracker.ts
+│   │   │   │   ├── index.ts
+│   │   │   │   ├── runtime
+│   │   │   │   │   ├── GloboLayoutManager.ts
+│   │   │   │   │   └── phaser
+│   │   │   │   │       ├── GlobeGlassController.ts
+│   │   │   │   │       ├── GloboAudioDirector.ts
+│   │   │   │   │       ├── GloboControls.ts
+│   │   │   │   │       ├── GloboPhotoDiorama.ts
+│   │   │   │   │       ├── GloboProceduralArt.ts
+│   │   │   │   │       ├── GloboScene.ts
+│   │   │   │   │       ├── MusicalGemsObject.ts
+│   │   │   │   │       ├── SnowParticleSystem.ts
+│   │   │   │   │       ├── WindingKeyObject.ts
+│   │   │   │   │       └── createGloboDasLembrancasGame.ts
+│   │   │   │   └── tuning.ts
+│   │   │   └── tests
+│   │   │       ├── GloboAudioDirector.test.ts
+│   │   │       ├── GloboLayoutManager.test.ts
+│   │   │       ├── MusicalGems.test.ts
+│   │   │       ├── SnowGlobeStateMachine.test.ts
+│   │   │       ├── SnowTurbulenceModel.test.ts
+│   │   │       ├── SteamGrid.test.ts
+│   │   │       └── WindingTracker.test.ts
+│   │   ├── guirlanda-das-lembrancas
+│   │   │   ├── ASSET_PROVENANCE.md
+│   │   │   ├── EXPERIENCE.md
+│   │   │   ├── EXPERIENCE_REQUIREMENTS.json
 │   │   │   ├── SPEC.md
+│   │   │   ├── assets
+│   │   │   │   └── manifest.json
+│   │   │   ├── package.json
 │   │   │   ├── src
 │   │   │   │   ├── definition.ts
 │   │   │   │   ├── domain
@@ -559,29 +727,57 @@
 │   │   │   │   ├── index.ts
 │   │   │   │   ├── runtime
 │   │   │   │   │   └── phaser
-│   │   │   │   │       ├── audioAssets.ts
-│   │   │   │   │       ├── createGuirlandaDasLembrancasGame.ts
 │   │   │   │   │       ├── GarlandAmbientDirector.ts
 │   │   │   │   │       ├── GarlandLayout.ts
 │   │   │   │   │       ├── GarlandMotionDirector.ts
 │   │   │   │   │       ├── GarlandPhotoFrame.ts
+│   │   │   │   │       ├── audioAssets.ts
+│   │   │   │   │       ├── createGuirlandaDasLembrancasGame.ts
 │   │   │   │   │       └── visualAssets.ts
 │   │   │   │   └── tuning.ts
 │   │   │   └── tests
 │   │   │       ├── GarlandAudioDirector.test.ts
 │   │   │       ├── GarlandLayout.test.ts
 │   │   │       └── GuirlandaDasLembrancasState.test.ts
+│   │   ├── lanterna-magica
+│   │   │   ├── EXPERIENCE.md
+│   │   │   ├── EXPERIENCE_REQUIREMENTS.json
+│   │   │   ├── SPEC.md
+│   │   │   ├── package.json
+│   │   │   ├── src
+│   │   │   │   ├── definition.ts
+│   │   │   │   ├── domain
+│   │   │   │   │   ├── LanternPuzzleLevels.ts
+│   │   │   │   │   ├── LanternStateMachine.ts
+│   │   │   │   │   ├── LanternaMagicaState.ts
+│   │   │   │   │   ├── OpticalModel.ts
+│   │   │   │   │   └── PhotonChargeModel.ts
+│   │   │   │   ├── index.ts
+│   │   │   │   ├── runtime
+│   │   │   │   │   ├── LanternaLayoutManager.ts
+│   │   │   │   │   └── phaser
+│   │   │   │   │       ├── LanternaAudioDirector.ts
+│   │   │   │   │       ├── LanternaProceduralArt.ts
+│   │   │   │   │       ├── LanternaScene.ts
+│   │   │   │   │       └── createLanternaMagicaGame.ts
+│   │   │   │   └── tuning.ts
+│   │   │   └── tests
+│   │   │       ├── LanternStateMachine.test.ts
+│   │   │       ├── LanternaLayoutManager.test.ts
+│   │   │       ├── OpticalHint.test.ts
+│   │   │       ├── OpticalModel.test.ts
+│   │   │       └── PhotonChargeModel.test.ts
 │   │   ├── magic-photo
 │   │   │   ├── ART_PROMPTS_V2.md
 │   │   │   ├── ASSET_MANIFEST.md
 │   │   │   ├── ASSET_PROVENANCE.md
+│   │   │   ├── EXPERIENCE.md
+│   │   │   ├── EXPERIENCE_REQUIREMENTS.json
+│   │   │   ├── GAMEPLAY_STATE_MAP.md
+│   │   │   ├── SPEC.md
 │   │   │   ├── assets
 │   │   │   │   └── manifest.json
-│   │   │   ├── EXPERIENCE_REQUIREMENTS.json
-│   │   │   ├── EXPERIENCE.md
-│   │   │   ├── GAMEPLAY_STATE_MAP.md
 │   │   │   ├── package.json
-│   │   │   ├── SPEC.md
 │   │   │   ├── src
 │   │   │   │   ├── definition.ts
 │   │   │   │   ├── domain
@@ -592,27 +788,27 @@
 │   │   │   │   ├── index.ts
 │   │   │   │   └── runtime
 │   │   │   │       ├── MagicEventBus.ts
-│   │   │   │       ├── phaser
-│   │   │   │       │   ├── AudioManager.ts
-│   │   │   │       │   ├── createMagicPhotoGame.ts
-│   │   │   │       │   ├── FXManager.ts
-│   │   │   │       │   ├── GiftController.ts
-│   │   │   │       │   ├── HintManager.ts
-│   │   │   │       │   ├── IceController.ts
-│   │   │   │       │   ├── MagicPhotoHud.ts
-│   │   │   │       │   ├── ProceduralArt.ts
-│   │   │   │       │   ├── visualAssets.ts
-│   │   │   │       │   └── WinterEnvironment.ts
-│   │   │   │       └── PhotoLayoutManager.ts
+│   │   │   │       ├── PhotoLayoutManager.ts
+│   │   │   │       └── phaser
+│   │   │   │           ├── AudioManager.ts
+│   │   │   │           ├── FXManager.ts
+│   │   │   │           ├── GiftController.ts
+│   │   │   │           ├── HintManager.ts
+│   │   │   │           ├── IceController.ts
+│   │   │   │           ├── MagicPhotoHud.ts
+│   │   │   │           ├── ProceduralArt.ts
+│   │   │   │           ├── WinterEnvironment.ts
+│   │   │   │           ├── createMagicPhotoGame.ts
+│   │   │   │           └── visualAssets.ts
 │   │   │   └── tests
 │   │   │       ├── AudioAndEvents.test.ts
 │   │   │       └── MagicPhoto.test.ts
 │   │   ├── memory
 │   │   │   ├── ASSET_PROVENANCE.md
+│   │   │   ├── SPEC.md
 │   │   │   ├── assets
 │   │   │   │   └── manifest.json
 │   │   │   ├── package.json
-│   │   │   ├── SPEC.md
 │   │   │   ├── src
 │   │   │   │   ├── definition.ts
 │   │   │   │   ├── domain
@@ -628,10 +824,10 @@
 │   │   │   │   │   ├── MemoryCardLab.ts
 │   │   │   │   │   ├── MemoryInteractionArbiter.ts
 │   │   │   │   │   └── phaser
-│   │   │   │   │       ├── audioAssets.ts
-│   │   │   │   │       ├── createMemoryGame.ts
 │   │   │   │   │       ├── MemoryAudioDirector.ts
 │   │   │   │   │       ├── MemorySoundPolicy.ts
+│   │   │   │   │       ├── audioAssets.ts
+│   │   │   │   │       ├── createMemoryGame.ts
 │   │   │   │   │       └── visualAssets.ts
 │   │   │   │   └── tuning.ts
 │   │   │   └── tests
@@ -639,12 +835,12 @@
 │   │   │       └── MemoryDomain.test.ts
 │   │   ├── mosaico-em-queda
 │   │   │   ├── ASSET_PROVENANCE.md
+│   │   │   ├── EXPERIENCE.md
+│   │   │   ├── EXPERIENCE_REQUIREMENTS.json
+│   │   │   ├── SPEC.md
 │   │   │   ├── assets
 │   │   │   │   └── manifest.json
-│   │   │   ├── EXPERIENCE_REQUIREMENTS.json
-│   │   │   ├── EXPERIENCE.md
 │   │   │   ├── package.json
-│   │   │   ├── SPEC.md
 │   │   │   ├── src
 │   │   │   │   ├── definition.ts
 │   │   │   │   ├── domain
@@ -673,8 +869,6 @@
 │   │   │   │   │   ├── MosaicIdleAssist.ts
 │   │   │   │   │   ├── MosaicRuntimePhotoPlan.ts
 │   │   │   │   │   └── phaser
-│   │   │   │   │       ├── audioAssets.ts
-│   │   │   │   │       ├── createMosaicoEmQuedaGame.ts
 │   │   │   │   │       ├── MosaicAudioDirector.ts
 │   │   │   │   │       ├── MosaicBoardPresentation.ts
 │   │   │   │   │       ├── MosaicChromePresentation.ts
@@ -688,7 +882,6 @@
 │   │   │   │   │       ├── MosaicInputController.ts
 │   │   │   │   │       ├── MosaicInputLatch.ts
 │   │   │   │   │       ├── MosaicMemoryFramePresentation.ts
-│   │   │   │   │       ├── MosaicoEmQuedaScene.ts
 │   │   │   │   │       ├── MosaicPhotoViewer.ts
 │   │   │   │   │       ├── MosaicPointerOwnership.ts
 │   │   │   │   │       ├── MosaicPresentationDirector.ts
@@ -700,6 +893,9 @@
 │   │   │   │   │       ├── MosaicVfxDirector.ts
 │   │   │   │   │       ├── MosaicVictoryPresentation.ts
 │   │   │   │   │       ├── MosaicViewportAdapter.ts
+│   │   │   │   │       ├── MosaicoEmQuedaScene.ts
+│   │   │   │   │       ├── audioAssets.ts
+│   │   │   │   │       ├── createMosaicoEmQuedaGame.ts
 │   │   │   │   │       └── visualAssets.ts
 │   │   │   │   └── tuning.ts
 │   │   │   └── tests
@@ -723,13 +919,13 @@
 │   │   │       └── TetrominoStates.test.ts
 │   │   ├── puzzle-swap
 │   │   │   ├── ASSET_PROVENANCE.md
-│   │   │   ├── assets
-│   │   │   │   └── manifest.json
-│   │   │   ├── EXPERIENCE_REQUIREMENTS.json
 │   │   │   ├── EXPERIENCE.md
-│   │   │   ├── package.json
+│   │   │   ├── EXPERIENCE_REQUIREMENTS.json
 │   │   │   ├── PLAN.md
 │   │   │   ├── SPEC.md
+│   │   │   ├── assets
+│   │   │   │   └── manifest.json
+│   │   │   ├── package.json
 │   │   │   ├── src
 │   │   │   │   ├── assets
 │   │   │   │   │   └── assetLabCatalog.ts
@@ -750,13 +946,13 @@
 │   │   │   │   ├── runtime
 │   │   │   │   │   └── phaser
 │   │   │   │   │       ├── .gitkeep
+│   │   │   │   │       ├── PuzzleBoardLayout.ts
 │   │   │   │   │       ├── audioAssets.ts
 │   │   │   │   │       ├── createPuzzleSwapGame.ts
 │   │   │   │   │       ├── presentation
 │   │   │   │   │       │   ├── PuzzleAudioDirector.ts
 │   │   │   │   │       │   ├── PuzzleFeedback.ts
 │   │   │   │   │       │   └── PuzzleScenePresentation.ts
-│   │   │   │   │       ├── PuzzleBoardLayout.ts
 │   │   │   │   │       └── visualAssets.ts
 │   │   │   │   └── tuning.ts
 │   │   │   └── tests
@@ -772,14 +968,14 @@
 │   │   ├── rena-das-lembrancas
 │   │   │   ├── ART_DIRECTION.md
 │   │   │   ├── ASSET_PROVENANCE.md
+│   │   │   ├── AUDIO_SCORE.md
+│   │   │   ├── EXPERIENCE.md
+│   │   │   ├── EXPERIENCE_REQUIREMENTS.json
+│   │   │   ├── MOTION_SCORE.md
+│   │   │   ├── SPEC.md
 │   │   │   ├── assets
 │   │   │   │   └── manifest.json
-│   │   │   ├── AUDIO_SCORE.md
-│   │   │   ├── EXPERIENCE_REQUIREMENTS.json
-│   │   │   ├── EXPERIENCE.md
-│   │   │   ├── MOTION_SCORE.md
 │   │   │   ├── package.json
-│   │   │   ├── SPEC.md
 │   │   │   ├── src
 │   │   │   │   ├── definition.ts
 │   │   │   │   ├── domain
@@ -788,14 +984,14 @@
 │   │   │   │   │   └── RudolphRound.ts
 │   │   │   │   ├── index.ts
 │   │   │   │   ├── runtime
-│   │   │   │   │   ├── phaser
-│   │   │   │   │   │   ├── createRenaDasLembrancasGame.ts
-│   │   │   │   │   │   ├── MemoryFrameView.ts
-│   │   │   │   │   │   ├── ReindeerView.ts
-│   │   │   │   │   │   ├── RudolphAudioDirector.ts
-│   │   │   │   │   │   ├── RudolphControls.ts
-│   │   │   │   │   │   └── RudolphWorld.ts
-│   │   │   │   │   └── RudolphLayout.ts
+│   │   │   │   │   ├── RudolphLayout.ts
+│   │   │   │   │   └── phaser
+│   │   │   │   │       ├── MemoryFrameView.ts
+│   │   │   │   │       ├── ReindeerView.ts
+│   │   │   │   │       ├── RudolphAudioDirector.ts
+│   │   │   │   │       ├── RudolphControls.ts
+│   │   │   │   │       ├── RudolphWorld.ts
+│   │   │   │   │       └── createRenaDasLembrancasGame.ts
 │   │   │   │   └── tuning.ts
 │   │   │   └── tests
 │   │   │       ├── RudolphAudioDirector.test.ts
@@ -803,14 +999,14 @@
 │   │   └── tic-tac-toe
 │   │       ├── ART_DIRECTION.md
 │   │       ├── ASSET_PROVENANCE.md
+│   │       ├── AUDIO_SCORE.md
+│   │       ├── EXPERIENCE.md
+│   │       ├── EXPERIENCE_REQUIREMENTS.json
+│   │       ├── MOTION_SCORE.md
+│   │       ├── SPEC.md
 │   │       ├── assets
 │   │       │   └── manifest.json
-│   │       ├── AUDIO_SCORE.md
-│   │       ├── EXPERIENCE_REQUIREMENTS.json
-│   │       ├── EXPERIENCE.md
-│   │       ├── MOTION_SCORE.md
 │   │       ├── package.json
-│   │       ├── SPEC.md
 │   │       ├── src
 │   │       │   ├── definition.ts
 │   │       │   ├── domain
@@ -824,11 +1020,11 @@
 │   │       │   │   └── TicTacToeTypes.ts
 │   │       │   ├── index.ts
 │   │       │   ├── runtime
-│   │       │   │   ├── phaser
-│   │       │   │   │   └── createTicTacToeGame.ts
 │   │       │   │   ├── TicTacToeInputArbiter.ts
 │   │       │   │   ├── TicTacToeLayout.ts
-│   │       │   │   └── TicTacToePointerArbiter.ts
+│   │       │   │   ├── TicTacToePointerArbiter.ts
+│   │       │   │   └── phaser
+│   │       │   │       └── createTicTacToeGame.ts
 │   │       │   └── tuning.ts
 │   │       └── tests
 │   │           ├── .gitkeep
@@ -901,56 +1097,58 @@
 ├── pnpm-lock.yaml
 ├── pnpm-workspace.yaml
 ├── prettier.config.mjs
-├── README.md
 ├── tests
 │   ├── e2e
 │   │   ├── christmas-shell.spec.ts
 │   │   ├── crystal-games.spec.ts
+│   │   ├── estilingue-das-lembrancas.spec.ts
+│   │   ├── globo-das-lembrancas.spec.ts
 │   │   ├── guirlanda-das-lembrancas.spec.ts
 │   │   ├── lifecycle.spec.ts
 │   │   ├── magic-photo.spec.ts
 │   │   ├── rena-das-lembrancas-input.spec.ts
 │   │   └── rena-das-lembrancas.spec.ts
-│   ├── fixtures
-│   │   ├── session-12-mixed
-│   │   │   ├── manifest.json
-│   │   │   ├── ph_001.jpg
-│   │   │   ├── ph_002.jpg
-│   │   │   ├── ph_003.jpg
-│   │   │   ├── ph_004.jpg
-│   │   │   ├── ph_005.jpg
-│   │   │   ├── ph_006.jpg
-│   │   │   ├── ph_007.jpg
-│   │   │   ├── ph_008.jpg
-│   │   │   ├── ph_009.jpg
-│   │   │   ├── ph_010.jpg
-│   │   │   ├── ph_011.jpg
-│   │   │   └── ph_012.jpg
-│   │   ├── session-120-mixed
-│   │   │   ├── manifest.json
-│   │   │   ├── ph_001.jpg
-│   │   │   ├── ph_002.jpg
-│   │   │   ├── ph_003.jpg
-│   │   │   ├── ph_004.jpg
-│   │   │   ├── ph_005.jpg
-│   │   │   ├── ph_006.jpg
-│   │   │   ├── ph_007.jpg
-│   │   │   ├── ph_008.jpg
-│   │   │   ├── ph_009.jpg
-│   │   │   ├── ph_010.jpg
-│   │   │   ├── ph_011.jpg
-│   │   │   └── ph_012.jpg
-│   │   └── session-4
-│   │       ├── manifest.json
-│   │       ├── ph_001.jpg
-│   │       ├── ph_002.jpg
-│   │       ├── ph_003.jpg
-│   │       └── ph_004.jpg
-│   └── visual
+│   └── fixtures
+│       ├── session-12-mixed
+│       │   ├── manifest.json
+│       │   ├── ph_001.jpg
+│       │   ├── ph_002.jpg
+│       │   ├── ph_003.jpg
+│       │   ├── ph_004.jpg
+│       │   ├── ph_005.jpg
+│       │   ├── ph_006.jpg
+│       │   ├── ph_007.jpg
+│       │   ├── ph_008.jpg
+│       │   ├── ph_009.jpg
+│       │   ├── ph_010.jpg
+│       │   ├── ph_011.jpg
+│       │   └── ph_012.jpg
+│       ├── session-120-mixed
+│       │   ├── manifest.json
+│       │   ├── ph_001.jpg
+│       │   ├── ph_002.jpg
+│       │   ├── ph_003.jpg
+│       │   ├── ph_004.jpg
+│       │   ├── ph_005.jpg
+│       │   ├── ph_006.jpg
+│       │   ├── ph_007.jpg
+│       │   ├── ph_008.jpg
+│       │   ├── ph_009.jpg
+│       │   ├── ph_010.jpg
+│       │   ├── ph_011.jpg
+│       │   └── ph_012.jpg
+│       └── session-4
+│           ├── manifest.json
+│           ├── ph_001.jpg
+│           ├── ph_002.jpg
+│           ├── ph_003.jpg
+│           └── ph_004.jpg
 ├── tools
 │   ├── asset-factory
 │   │   ├── package.json
 │   │   ├── scripts
+│   │   │   ├── prepare-estilingue-art.mjs
+│   │   │   ├── prepare-estilingue-audio.mjs
 │   │   │   ├── prepare-magic-photo-art.mjs
 │   │   │   ├── prepare-magic-photo-audio.mjs
 │   │   │   ├── prepare-rudolph-art.mjs
@@ -966,9 +1164,8 @@
 │   ├── export-puzzle-source-reader.mjs
 │   ├── fixture-generator
 │   │   ├── package.json
-│   │   ├── src
-│   │   │   └── index.ts
-│   │   └── tests
+│   │   └── src
+│   │       └── index.ts
 │   ├── game-generator
 │   │   ├── package.json
 │   │   ├── src
@@ -992,6 +1189,7 @@
 ├── vendor
 │   └── phaser-skills
 │       └── v4.2.1
+│           ├── README.md
 │           ├── audio-and-sound
 │           │   └── SKILL.md
 │           ├── events-system
@@ -999,60 +1197,69 @@
 │           ├── filters-and-postfx
 │           │   └── SKILL.md
 │           ├── game-object-components
-│           │   ├── references
-│           │   │   └── REFERENCE.md
-│           │   └── SKILL.md
+│           │   ├── SKILL.md
+│           │   └── references
+│           │       └── REFERENCE.md
 │           ├── game-setup-and-config
 │           │   └── SKILL.md
 │           ├── input-keyboard-mouse-touch
-│           │   ├── references
-│           │   │   └── REFERENCE.md
-│           │   └── SKILL.md
+│           │   ├── SKILL.md
+│           │   └── references
+│           │       └── REFERENCE.md
 │           ├── loading-assets
-│           │   ├── references
-│           │   │   └── REFERENCE.md
-│           │   └── SKILL.md
+│           │   ├── SKILL.md
+│           │   └── references
+│           │       └── REFERENCE.md
 │           ├── particles
-│           │   ├── references
-│           │   │   └── REFERENCE.md
-│           │   └── SKILL.md
-│           ├── README.md
+│           │   ├── SKILL.md
+│           │   └── references
+│           │       └── REFERENCE.md
 │           ├── render-textures
 │           │   └── SKILL.md
 │           ├── scale-and-responsive
 │           │   └── SKILL.md
 │           ├── scenes
-│           │   ├── references
-│           │   │   └── REFERENCE.md
-│           │   └── SKILL.md
+│           │   ├── SKILL.md
+│           │   └── references
+│           │       └── REFERENCE.md
 │           ├── sprites-and-images
-│           │   ├── references
-│           │   │   └── REFERENCE.md
-│           │   └── SKILL.md
+│           │   ├── SKILL.md
+│           │   └── references
+│           │       └── REFERENCE.md
 │           ├── time-and-timers
 │           │   └── SKILL.md
 │           ├── tweens
 │           │   └── SKILL.md
 │           ├── v3-to-v4-migration
 │           │   └── SKILL.md
-│           ├── v4-new-features
-│           │   ├── references
-│           │   │   └── REFERENCE.md
-│           │   └── SKILL.md
-│           └── v4.2.1.zip
+│           └── v4-new-features
+│               ├── SKILL.md
+│               └── references
+│                   └── REFERENCE.md
 └── vitest.config.ts
 ```
 
 ## Package entry points
 
-| Package                              | Manifest                                  | Entry             |
-| ------------------------------------ | ----------------------------------------- | ----------------- |
-| `@christmas-games/play`              | `apps\play\package.json`                  | `—`               |
-| `@christmas-games/platform`          | `packages\platform\package.json`          | `./src/index.ts`  |
-| `@christmas-games/theme`             | `packages\theme\package.json`             | `./src/index.ts`  |
-| `@christmas-games/dev-smoke`         | `packages\games\dev-smoke\package.json`   | `[object Object]` |
-| `@christmas-games/puzzle-swap`       | `packages\games\puzzle-swap\package.json` | `[object Object]` |
-| `@christmas-games/memory`            | `packages\games\memory\package.json`      | `[object Object]` |
-| `@christmas-games/tic-tac-toe`       | `packages\games\tic-tac-toe\package.json` | `[object Object]` |
-| `@christmas-games/media-pipeline`    | `tools\media-pipeline\package.json`       | `—`               |
-| `@christmas-games/fixture-generator` | `tools\fixture-generator\package.json`    | `—`               |
+| Package                                      | Manifest                                                | Entry                                                                                                                                                                      |
+| -------------------------------------------- | ------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `@christmas-games/catalog-server`            | `apps/catalog-server/package.json`                      | `—`                                                                                                                                                                        |
+| `@christmas-games/play`                      | `apps/play/package.json`                                | `—`                                                                                                                                                                        |
+| `@christmas-games/dev-smoke`                 | `packages/games/dev-smoke/package.json`                 | `{".":"./src/index.ts","./definition":"./src/definition.ts"}`                                                                                                              |
+| `@christmas-games/estilingue-das-lembrancas` | `packages/games/estilingue-das-lembrancas/package.json` | `{".":"./src/index.ts","./definition":"./src/definition.ts"}`                                                                                                              |
+| `@christmas-games/expresso-das-fotos`        | `packages/games/expresso-das-fotos/package.json`        | `{".":"./src/index.ts","./definition":"./src/definition.ts"}`                                                                                                              |
+| `@christmas-games/globo-das-lembrancas`      | `packages/games/globo-das-lembrancas/package.json`      | `{".":"./src/index.ts","./definition":"./src/definition.ts"}`                                                                                                              |
+| `@christmas-games/guirlanda-das-lembrancas`  | `packages/games/guirlanda-das-lembrancas/package.json`  | `{".":"./src/index.ts","./definition":"./src/definition.ts"}`                                                                                                              |
+| `@christmas-games/lanterna-magica`           | `packages/games/lanterna-magica/package.json`           | `{".":"./src/index.ts","./definition":"./src/definition.ts"}`                                                                                                              |
+| `@christmas-games/magic-photo`               | `packages/games/magic-photo/package.json`               | `{".":"./src/index.ts","./definition":"./src/definition.ts"}`                                                                                                              |
+| `@christmas-games/memory`                    | `packages/games/memory/package.json`                    | `{".":"./src/index.ts","./definition":"./src/definition.ts"}`                                                                                                              |
+| `@christmas-games/mosaico-em-queda`          | `packages/games/mosaico-em-queda/package.json`          | `{".":"./src/index.ts","./definition":"./src/definition.ts"}`                                                                                                              |
+| `@christmas-games/puzzle-swap`               | `packages/games/puzzle-swap/package.json`               | `{".":"./src/index.ts","./asset-lab":"./src/assets/assetLabCatalog.ts","./performance-lab":"./src/lab/PuzzlePerformanceScenario.ts","./definition":"./src/definition.ts"}` |
+| `@christmas-games/rena-das-lembrancas`       | `packages/games/rena-das-lembrancas/package.json`       | `{".":"./src/index.ts","./definition":"./src/definition.ts"}`                                                                                                              |
+| `@christmas-games/tic-tac-toe`               | `packages/games/tic-tac-toe/package.json`               | `{".":"./src/index.ts","./definition":"./src/definition.ts"}`                                                                                                              |
+| `@christmas-games/platform`                  | `packages/platform/package.json`                        | `./src/index.ts`                                                                                                                                                           |
+| `@christmas-games/theme`                     | `packages/theme/package.json`                           | `./src/index.ts`                                                                                                                                                           |
+| `@christmas-games/asset-factory`             | `tools/asset-factory/package.json`                      | `—`                                                                                                                                                                        |
+| `@christmas-games/fixture-generator`         | `tools/fixture-generator/package.json`                  | `—`                                                                                                                                                                        |
+| `@christmas-games/game-generator`            | `tools/game-generator/package.json`                     | `—`                                                                                                                                                                        |
+| `@christmas-games/media-pipeline`            | `tools/media-pipeline/package.json`                     | `—`                                                                                                                                                                        |

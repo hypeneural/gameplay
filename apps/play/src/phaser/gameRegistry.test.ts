@@ -48,4 +48,37 @@ describe('game registry', () => {
       photoSelection: 'subset',
     });
   });
+
+  it('ships Globo de Neve das Lembranças as a lazy single-photo game in production catalog', () => {
+    expect(gameDefinitions.map((game) => game.id)).toContain('globo-das-lembrancas');
+    expect(getInstalledGame('globo-das-lembrancas')?.definition).toMatchObject({
+      id: 'globo-das-lembrancas',
+      minPhotos: 1,
+      recommendedPhotos: 1,
+      photoSelection: 'single',
+      supportsMixedOrientation: true,
+    });
+  });
+
+  it('ships Estilingue Mágico das Lembranças as a lazy single-photo game in production catalog', () => {
+    expect(gameDefinitions.map((game) => game.id)).toContain('estilingue-das-lembrancas');
+    expect(getInstalledGame('estilingue-das-lembrancas')?.definition).toMatchObject({
+      id: 'estilingue-das-lembrancas',
+      minPhotos: 1,
+      recommendedPhotos: 1,
+      photoSelection: 'single',
+      supportsMixedOrientation: true,
+    });
+  });
+
+  it('ships A Lanterna Mágica das Lembranças as a lazy single-photo game in production catalog', () => {
+    expect(gameDefinitions.map((game) => game.id)).toContain('lanterna-magica');
+    expect(getInstalledGame('lanterna-magica')?.definition).toMatchObject({
+      id: 'lanterna-magica',
+      minPhotos: 1,
+      recommendedPhotos: 1,
+      photoSelection: 'single',
+      supportsMixedOrientation: true,
+    });
+  });
 });

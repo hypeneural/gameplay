@@ -1,0 +1,38 @@
+{
+  "version": 1,
+  "gameId": "globo-das-lembrancas",
+  "fantasy": "brincadeira-natalina-com-foto",
+  "playerVerbs": ["tocar", "escolher"],
+  "interactionStates": [
+    "parado",
+    "pressionado",
+    "selecionado",
+    "em-movimento",
+    "acertou",
+    "tente-de-novo",
+    "dica",
+    "concluido"
+  ],
+  "targetSessionSeconds": 120,
+  "victory": {
+    "nextAction": "escolher-outra-foto",
+    "photoPriority": "alta"
+  },
+  "assetRoles": [
+    "foto-protagonista",
+    "cenario",
+    "moldura-da-foto",
+    "acao-principal",
+    "feedback-de-selecao",
+    "feedback-de-dica",
+    "feedback-de-acerto",
+    "feedback-de-vitoria",
+    "som-de-toque",
+    "som-de-acerto",
+    "som-de-vitoria"
+  ],
+  "quality": {
+    "low": "sem-efeitos-decorativos",
+    "reducedMotion": "sem-movimento-continuo"
+  }
+}

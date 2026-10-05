@@ -77,11 +77,32 @@ export default defineConfig({
       '@christmas-games/mosaico-em-queda': fileURLToPath(
         new URL('../../packages/games/mosaico-em-queda/src/index.ts', import.meta.url),
       ),
+      '@christmas-games/globo-das-lembrancas/definition': fileURLToPath(
+        new URL('../../packages/games/globo-das-lembrancas/src/definition.ts', import.meta.url),
+      ),
+      '@christmas-games/globo-das-lembrancas': fileURLToPath(
+        new URL('../../packages/games/globo-das-lembrancas/src/index.ts', import.meta.url),
+      ),
+      '@christmas-games/estilingue-das-lembrancas/definition': fileURLToPath(
+        new URL(
+          '../../packages/games/estilingue-das-lembrancas/src/definition.ts',
+          import.meta.url,
+        ),
+      ),
+      '@christmas-games/estilingue-das-lembrancas': fileURLToPath(
+        new URL('../../packages/games/estilingue-das-lembrancas/src/index.ts', import.meta.url),
+      ),
       '@christmas-games/rena-das-lembrancas/definition': fileURLToPath(
         new URL('../../packages/games/rena-das-lembrancas/src/definition.ts', import.meta.url),
       ),
       '@christmas-games/rena-das-lembrancas': fileURLToPath(
         new URL('../../packages/games/rena-das-lembrancas/src/index.ts', import.meta.url),
+      ),
+      '@christmas-games/lanterna-magica/definition': fileURLToPath(
+        new URL('../../packages/games/lanterna-magica/src/definition.ts', import.meta.url),
+      ),
+      '@christmas-games/lanterna-magica': fileURLToPath(
+        new URL('../../packages/games/lanterna-magica/src/index.ts', import.meta.url),
       ),
     },
   },

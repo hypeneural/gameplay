@@ -62,12 +62,20 @@ export function GameScreen({
   const [completionActionsVisible, setCompletionActionsVisible] = useState(false);
   const memoryCompletion = definition.id === 'memory';
   const rudolphCompletion = definition.id === 'rena-das-lembrancas';
+  const globoCompletion = definition.id === 'globo-das-lembrancas';
+  const estilingueCompletion = definition.id === 'estilingue-das-lembrancas';
   const celebrationCompletion =
-    memoryCompletion || definition.id === 'mosaico-em-queda' || rudolphCompletion;
+    memoryCompletion ||
+    definition.id === 'mosaico-em-queda' ||
+    rudolphCompletion ||
+    globoCompletion ||
+    estilingueCompletion;
   const magicPhoto = definition.id === 'magic-photo';
   const immersivePhotoGame =
     definition.id === 'guirlanda-das-lembrancas' ||
     definition.id === 'rena-das-lembrancas' ||
+    globoCompletion ||
+    estilingueCompletion ||
     magicPhoto;
   // Trinca owns its finale in the same physical mural as the board. The
   // generic sheet is useful for the other games, but would cover the winning
@@ -139,7 +147,9 @@ export function GameScreen({
                     question:
                       definition.id === 'rena-das-lembrancas'
                         ? 'Seu Álbum de Natal está completo!'
-                        : 'Suas lembranças, iluminadas',
+                        : globoCompletion
+                          ? 'O Globo de Neve das Lembranças brilhou!'
+                          : 'Suas lembranças, iluminadas',
                   }
                 : {})}
             {...(memoryCompletion

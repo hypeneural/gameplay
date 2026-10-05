@@ -1,6 +1,9 @@
 # Documentation index
 
 - [Relatório de Auditoria e Estado Geral do Repositório (2026-09-11)](quality/RELATORIO_AUDITORIA_E_ESTADO_REPOSITORIO_2026-09-11.md)
+- [Análise Forense e Guia de Produção em VPS (600 a 800 Galerias de Clientes)](architecture/PRODUCAO_VPS_MULTI_CLIENTES_600_800_GALERIAS.md)
+- [Análise Forense de Engenharia — Lógicas, Assets, Física e Áudio dos Jogos Mais Elaborados](architecture/JOGOS_ELABORADOS_ENGENHARIA_LOGICAS_ASSETS_E_FISICA.md)
+- [A Lanterna Mágica das Lembranças — Especificação e Engenharia Óptica](product/LANTERNA_MAGICA_DAS_LEMBRANCAS.md)
 - [Magic Photo — instruções e estrelas interativas](quality/MAGIC_PHOTO_HUD_2026-09-08.md)
 - [Magic Photo — implementação local concluída](exec-plans/completed/CG-MAGIC-PHOTO.md)
 
@@ -84,6 +87,7 @@
 - [Analytics contracts](analytics/CONTRACTS.md)
 - [Privacy and data handling](privacy/DATA_HANDLING.md)
 - [Quality gates](quality/QUALITY_GATES.md)
+- [Guia de contribuição](../CONTRIBUTING.md)
 - [Game experience review rubric](quality/GAME_EXPERIENCE_REVIEW.md)
 - [Android reference protocol](quality/ANDROID_REFERENCE_PROTOCOL.md)
 - [Performance measurement contract](quality/PERFORMANCE_MEASUREMENT_CONTRACT.md)

@@ -1,0 +1,848 @@
+{
+  "version": 2,
+  "gameId": "globo-das-lembrancas",
+  "budget": {
+    "publicBytesMax": 1500000,
+    "runtimeBytesMax": 950000,
+    "visualBytesMax": 550000
+  },
+  "assets": [
+    {
+      "id": "background-sala-natal-v1",
+      "kind": "background",
+      "format": "webp",
+      "source": {
+        "provider": "Christmas Games offline art pipeline",
+        "origin": "project-created",
+        "identifier": "background-sala-natal-v1",
+        "license": "project-owned",
+        "reviewedOn": "2026-09-12",
+        "reviewedBy": "Codex-globo-art-review",
+        "record": "ASSET_PROVENANCE.md#imagens-e-cenografia"
+      },
+      "art": {
+        "family": "globo-diorama-v1",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Cenário aconchegante de sala de estar natalina com lareira acesa e mesa de apoio rústica."
+      },
+      "processing": {
+        "recipe": "prepare-globo-art:cozy-room:webp84",
+        "tools": ["sharp-0.35.3"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/globo-das-lembrancas/backgrounds/sala-natal-aconchegante-v1.webp",
+        "publicPath": "/assets/globo-das-lembrancas/backgrounds/sala-natal-aconchegante-v1.webp",
+        "bytes": 87350,
+        "sha256": "6387743185bfd9ac32741e6e32f1661ca00270c87ae8c8f28b94db183a8e54e4",
+        "dimensions": {
+          "width": 768,
+          "height": 1376
+        },
+        "textureKey": "globo-bg-sala-natal-v1",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        }
+      }
+    },
+    {
+      "id": "carved-wood-base-v1",
+      "kind": "ui",
+      "format": "webp",
+      "source": {
+        "provider": "Christmas Games offline art pipeline",
+        "origin": "project-created",
+        "identifier": "carved-wood-base-v1",
+        "license": "project-owned",
+        "reviewedOn": "2026-09-12",
+        "reviewedBy": "Codex-globo-art-review",
+        "record": "ASSET_PROVENANCE.md#imagens-e-cenografia"
+      },
+      "art": {
+        "family": "globo-diorama-v1",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Base de mogno escuro entalhado com frisos dourados e encaixes para os botões natalinos."
+      },
+      "processing": {
+        "recipe": "prepare-globo-art:wood-base:webp90",
+        "tools": ["sharp-0.35.3"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/globo-das-lembrancas/art/carved-wood-base-v1.webp",
+        "publicPath": "/assets/globo-das-lembrancas/art/carved-wood-base-v1.webp",
+        "bytes": 76318,
+        "sha256": "0dd288ee8e2b45c52319745f850371f6a3afae93d3b6936951f7c5aa8e43cbe0",
+        "dimensions": {
+          "width": 504,
+          "height": 420
+        },
+        "textureKey": "globo-carved-wood-base-v1",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        }
+      }
+    },
+    {
+      "id": "glass-dome-specular-v1",
+      "kind": "ui",
+      "format": "webp",
+      "source": {
+        "provider": "Christmas Games offline art pipeline",
+        "origin": "project-created",
+        "identifier": "glass-dome-specular-v1",
+        "license": "project-owned",
+        "reviewedOn": "2026-09-12",
+        "reviewedBy": "Codex-globo-art-review",
+        "record": "ASSET_PROVENANCE.md#imagens-e-cenografia"
+      },
+      "art": {
+        "family": "globo-diorama-v1",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Cúpula de cristal translúcida com reflexos curvos 3D realistas e base de apoio."
+      },
+      "processing": {
+        "recipe": "prepare-globo-art:glass-dome:webp90",
+        "tools": ["sharp-0.35.3"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/globo-das-lembrancas/art/glass-dome-specular-v1.webp",
+        "publicPath": "/assets/globo-das-lembrancas/art/glass-dome-specular-v1.webp",
+        "bytes": 130914,
+        "sha256": "1ed8fe4871ede9c2f1e3c8277aed18ac10993ad4171b75bfd14c5c504070391b",
+        "dimensions": {
+          "width": 800,
+          "height": 800
+        },
+        "textureKey": "globo-glass-dome-specular-v1",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        }
+      }
+    },
+    {
+      "id": "chave-corda-latao-v1",
+      "kind": "ui",
+      "format": "webp",
+      "source": {
+        "provider": "Christmas Games offline art pipeline",
+        "origin": "project-created",
+        "identifier": "chave-corda-latao-v1",
+        "license": "project-owned",
+        "reviewedOn": "2026-09-12",
+        "reviewedBy": "Codex-globo-art-review",
+        "record": "ASSET_PROVENANCE.md#imagens-e-cenografia"
+      },
+      "art": {
+        "family": "globo-diorama-v1",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Chave de corda mecânica vitoriana de latão maciço com asas de borboleta filigranadas."
+      },
+      "processing": {
+        "recipe": "prepare-globo-art:winding-key:webp90",
+        "tools": ["sharp-0.35.3"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/globo-das-lembrancas/art/chave-corda-latao-v1.webp",
+        "publicPath": "/assets/globo-das-lembrancas/art/chave-corda-latao-v1.webp",
+        "bytes": 36366,
+        "sha256": "b58eee595e0cb12999eba787de5b02aca2d11231105c6885b2b9abe86c223850",
+        "dimensions": {
+          "width": 320,
+          "height": 272
+        },
+        "textureKey": "globo-chave-corda-latao-v1",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        }
+      }
+    },
+    {
+      "id": "botao-natal-1-rubi",
+      "kind": "ui",
+      "format": "webp",
+      "source": {
+        "provider": "Christmas Games offline art pipeline",
+        "origin": "project-created",
+        "identifier": "botao-natal-1-rubi",
+        "license": "project-owned",
+        "reviewedOn": "2026-09-12",
+        "reviewedBy": "Codex-globo-art-review",
+        "record": "ASSET_PROVENANCE.md#imagens-e-cenografia"
+      },
+      "art": {
+        "family": "globo-diorama-v1",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Botão de esmalte rubi com nota musical dourada e engaste de latão."
+      },
+      "processing": {
+        "recipe": "prepare-globo-art:button:webp92",
+        "tools": ["sharp-0.35.3"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/globo-das-lembrancas/art/botao-natal-1-rubi.webp",
+        "publicPath": "/assets/globo-das-lembrancas/art/botao-natal-1-rubi.webp",
+        "bytes": 7252,
+        "sha256": "9ac57b65ac2667d2bc2bd0c298e471070014871e571387e3ec03c3cfdbe32f7d",
+        "dimensions": {
+          "width": 128,
+          "height": 128
+        },
+        "textureKey": "globo-btn-rubi",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        }
+      }
+    },
+    {
+      "id": "botao-natal-2-esmeralda",
+      "kind": "ui",
+      "format": "webp",
+      "source": {
+        "provider": "Christmas Games offline art pipeline",
+        "origin": "project-created",
+        "identifier": "botao-natal-2-esmeralda",
+        "license": "project-owned",
+        "reviewedOn": "2026-09-12",
+        "reviewedBy": "Codex-globo-art-review",
+        "record": "ASSET_PROVENANCE.md#imagens-e-cenografia"
+      },
+      "art": {
+        "family": "globo-diorama-v1",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Botão de esmalte verde esmeralda com pinheiro de Natal dourado."
+      },
+      "processing": {
+        "recipe": "prepare-globo-art:button:webp92",
+        "tools": ["sharp-0.35.3"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/globo-das-lembrancas/art/botao-natal-2-esmeralda.webp",
+        "publicPath": "/assets/globo-das-lembrancas/art/botao-natal-2-esmeralda.webp",
+        "bytes": 7148,
+        "sha256": "cdb244157e4fa39848a6393ac8a825d31e3d28fbee9d0704b5c88424c06e701e",
+        "dimensions": {
+          "width": 128,
+          "height": 128
+        },
+        "textureKey": "globo-btn-esmeralda",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        }
+      }
+    },
+    {
+      "id": "botao-natal-3-safira",
+      "kind": "ui",
+      "format": "webp",
+      "source": {
+        "provider": "Christmas Games offline art pipeline",
+        "origin": "project-created",
+        "identifier": "botao-natal-3-safira",
+        "license": "project-owned",
+        "reviewedOn": "2026-09-12",
+        "reviewedBy": "Codex-globo-art-review",
+        "record": "ASSET_PROVENANCE.md#imagens-e-cenografia"
+      },
+      "art": {
+        "family": "globo-diorama-v1",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Botão de esmalte azul safira com floco de neve e clave de sol dourada."
+      },
+      "processing": {
+        "recipe": "prepare-globo-art:button:webp92",
+        "tools": ["sharp-0.35.3"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/globo-das-lembrancas/art/botao-natal-3-safira.webp",
+        "publicPath": "/assets/globo-das-lembrancas/art/botao-natal-3-safira.webp",
+        "bytes": 8134,
+        "sha256": "7b8931c9cb2b4ec2e75899602b8fde50d9219bf7fe032a9595fd71c93152611b",
+        "dimensions": {
+          "width": 128,
+          "height": 128
+        },
+        "textureKey": "globo-btn-safira",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        }
+      }
+    },
+    {
+      "id": "botao-natal-4-topazio",
+      "kind": "ui",
+      "format": "webp",
+      "source": {
+        "provider": "Christmas Games offline art pipeline",
+        "origin": "project-created",
+        "identifier": "botao-natal-4-topazio",
+        "license": "project-owned",
+        "reviewedOn": "2026-09-12",
+        "reviewedBy": "Codex-globo-art-review",
+        "record": "ASSET_PROVENANCE.md#imagens-e-cenografia"
+      },
+      "art": {
+        "family": "globo-diorama-v1",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Botão de esmalte âmbar topázio com sino de Natal dourado."
+      },
+      "processing": {
+        "recipe": "prepare-globo-art:button:webp92",
+        "tools": ["sharp-0.35.3"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/globo-das-lembrancas/art/botao-natal-4-topazio.webp",
+        "publicPath": "/assets/globo-das-lembrancas/art/botao-natal-4-topazio.webp",
+        "bytes": 7668,
+        "sha256": "6d096f52dad4399b39cfea4208cffc7ce925b3cb3b7384e1547f3c76bd838d81",
+        "dimensions": {
+          "width": 128,
+          "height": 128
+        },
+        "textureKey": "globo-btn-topazio",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        }
+      }
+    },
+    {
+      "id": "winter-diorama-v1",
+      "kind": "background",
+      "format": "webp",
+      "source": {
+        "provider": "Christmas Games offline art pipeline",
+        "origin": "project-created",
+        "identifier": "winter-diorama-v1",
+        "license": "project-owned",
+        "reviewedOn": "2026-09-12",
+        "reviewedBy": "Codex-globo-art-review",
+        "record": "ASSET_PROVENANCE.md#imagens-e-cenografia"
+      },
+      "art": {
+        "family": "globo-diorama-v1",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Cenário de fundo do interior do globo com montanhas e céu azul-noturno."
+      },
+      "processing": {
+        "recipe": "prepare-globo-art:diorama-bg:webp84",
+        "tools": ["sharp-0.35.3"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/globo-das-lembrancas/art/winter-diorama-v1.webp",
+        "publicPath": "/assets/globo-das-lembrancas/art/winter-diorama-v1.webp",
+        "bytes": 13504,
+        "sha256": "740638bfe7eb5f13dbf2f90900f5f8ea1f04b3dd37f065f28892a306dc4f16d5",
+        "dimensions": {
+          "width": 800,
+          "height": 800
+        },
+        "textureKey": "globo-winter-diorama-v1",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        }
+      }
+    },
+    {
+      "id": "key-ratchet-m4a",
+      "kind": "audio",
+      "format": "m4a",
+      "source": {
+        "provider": "owner-authorized-legacy-bundle",
+        "origin": "owner-authorized-legacy",
+        "identifier": "legacy-tap-m4a",
+        "license": "project-owned",
+        "reviewedOn": "2026-09-12",
+        "reviewedBy": "Codex-globo-audio-review",
+        "record": "ASSET_PROVENANCE.md#efeitos-sonoros-e-musica-diegetica"
+      },
+      "art": {
+        "family": "globo-diorama-v1",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Estalo mecânico de mola e catraca de latão."
+      },
+      "processing": {
+        "recipe": "byte-copy:ASSET_PROVENANCE.md#audio-autorizado",
+        "tools": ["asset-copy"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/globo-das-lembrancas/audio/key-ratchet.m4a",
+        "publicPath": "/assets/globo-das-lembrancas/audio/key-ratchet.m4a",
+        "bytes": 2728,
+        "sha256": "036613c5af4bb6209450f9f4a2d4495a4d779b800d240ce3ff0b37312d7df3b8",
+        "durationSeconds": 0.121,
+        "cue": "key-ratchet",
+        "deliveryGroup": "key-ratchet",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        }
+      }
+    },
+    {
+      "id": "key-ratchet-mp3",
+      "kind": "audio",
+      "format": "mp3",
+      "source": {
+        "provider": "owner-authorized-legacy-bundle",
+        "origin": "owner-authorized-legacy",
+        "identifier": "legacy-tap-mp3",
+        "license": "project-owned",
+        "reviewedOn": "2026-09-12",
+        "reviewedBy": "Codex-globo-audio-review",
+        "record": "ASSET_PROVENANCE.md#efeitos-sonoros-e-musica-diegetica"
+      },
+      "art": {
+        "family": "globo-diorama-v1",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Estalo mecânico de mola e catraca de latão."
+      },
+      "processing": {
+        "recipe": "byte-copy:ASSET_PROVENANCE.md#audio-autorizado",
+        "tools": ["asset-copy"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/globo-das-lembrancas/audio/key-ratchet.mp3",
+        "publicPath": "/assets/globo-das-lembrancas/audio/key-ratchet.mp3",
+        "bytes": 2732,
+        "sha256": "089f3952341041802974efce998528de07648a85dcd250ef51870dc6266638d2",
+        "durationSeconds": 0.115,
+        "cue": "key-ratchet",
+        "deliveryGroup": "key-ratchet",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        }
+      }
+    },
+    {
+      "id": "glass-clink-m4a",
+      "kind": "audio",
+      "format": "m4a",
+      "source": {
+        "provider": "owner-authorized-legacy-bundle",
+        "origin": "owner-authorized-legacy",
+        "identifier": "legacy-placement-m4a",
+        "license": "project-owned",
+        "reviewedOn": "2026-09-12",
+        "reviewedBy": "Codex-globo-audio-review",
+        "record": "ASSET_PROVENANCE.md#efeitos-sonoros-e-musica-diegetica"
+      },
+      "art": {
+        "family": "globo-diorama-v1",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Tilintar cristalino ao tocar na cúpula de vidro."
+      },
+      "processing": {
+        "recipe": "byte-copy:ASSET_PROVENANCE.md#audio-autorizado",
+        "tools": ["asset-copy"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/globo-das-lembrancas/audio/glass-clink.m4a",
+        "publicPath": "/assets/globo-das-lembrancas/audio/glass-clink.m4a",
+        "bytes": 7839,
+        "sha256": "46f1a780e41ab3a7170994f91b77ea72acb57d8d1138562678546ac9e3fcf73e",
+        "durationSeconds": 0.477,
+        "cue": "glass-clink",
+        "deliveryGroup": "glass-clink",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        }
+      }
+    },
+    {
+      "id": "glass-clink-mp3",
+      "kind": "audio",
+      "format": "mp3",
+      "source": {
+        "provider": "owner-authorized-legacy-bundle",
+        "origin": "owner-authorized-legacy",
+        "identifier": "legacy-placement-mp3",
+        "license": "project-owned",
+        "reviewedOn": "2026-09-12",
+        "reviewedBy": "Codex-globo-audio-review",
+        "record": "ASSET_PROVENANCE.md#efeitos-sonoros-e-musica-diegetica"
+      },
+      "art": {
+        "family": "globo-diorama-v1",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Tilintar cristalino ao tocar na cúpula de vidro."
+      },
+      "processing": {
+        "recipe": "byte-copy:ASSET_PROVENANCE.md#audio-autorizado",
+        "tools": ["asset-copy"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/globo-das-lembrancas/audio/glass-clink.mp3",
+        "publicPath": "/assets/globo-das-lembrancas/audio/glass-clink.mp3",
+        "bytes": 8492,
+        "sha256": "972097d741f546b23335895a6f39d49abe0970a100714cfdec112c3e437a9c42",
+        "durationSeconds": 0.47,
+        "cue": "glass-clink",
+        "deliveryGroup": "glass-clink",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        }
+      }
+    },
+    {
+      "id": "steam-wipe-m4a",
+      "kind": "audio",
+      "format": "m4a",
+      "source": {
+        "provider": "Christmas Games offline score",
+        "origin": "project-created",
+        "identifier": "paper-v1-source-hash",
+        "license": "project-owned",
+        "reviewedOn": "2026-09-12",
+        "reviewedBy": "Codex-globo-audio-review",
+        "record": "ASSET_PROVENANCE.md#efeitos-sonoros-e-musica-diegetica"
+      },
+      "art": {
+        "family": "globo-diorama-v1",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Fricção suave de flanela ao desembaçar o vidro."
+      },
+      "processing": {
+        "recipe": "byte-copy:ASSET_PROVENANCE.md#audio-autorizado",
+        "tools": ["asset-copy"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/globo-das-lembrancas/audio/steam-wipe.m4a",
+        "publicPath": "/assets/globo-das-lembrancas/audio/steam-wipe.m4a",
+        "bytes": 3641,
+        "sha256": "146dfd9bcb272f27e7a892efa0fbec6c60ba3fb672fa3c46132cb8de8ef5a2e9",
+        "durationSeconds": 0.3,
+        "cue": "steam-wipe",
+        "deliveryGroup": "steam-wipe",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        }
+      }
+    },
+    {
+      "id": "steam-wipe-mp3",
+      "kind": "audio",
+      "format": "mp3",
+      "source": {
+        "provider": "Christmas Games offline score",
+        "origin": "project-created",
+        "identifier": "paper-v1-source-hash",
+        "license": "project-owned",
+        "reviewedOn": "2026-09-12",
+        "reviewedBy": "Codex-globo-audio-review",
+        "record": "ASSET_PROVENANCE.md#efeitos-sonoros-e-musica-diegetica"
+      },
+      "art": {
+        "family": "globo-diorama-v1",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Fricção suave de flanela ao desembaçar o vidro."
+      },
+      "processing": {
+        "recipe": "byte-copy:ASSET_PROVENANCE.md#audio-autorizado",
+        "tools": ["asset-copy"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/globo-das-lembrancas/audio/steam-wipe.mp3",
+        "publicPath": "/assets/globo-das-lembrancas/audio/steam-wipe.mp3",
+        "bytes": 2968,
+        "sha256": "ecc24547d5f952da2c1b7b94618d1e9d1585725ae848df11afd6c2bc695efcf9",
+        "durationSeconds": 0.3,
+        "cue": "steam-wipe",
+        "deliveryGroup": "steam-wipe",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        }
+      }
+    },
+    {
+      "id": "chime-note-m4a",
+      "kind": "audio",
+      "format": "m4a",
+      "source": {
+        "provider": "Christmas Games offline score",
+        "origin": "project-created",
+        "identifier": "bells-v1-source-hash",
+        "license": "project-owned",
+        "reviewedOn": "2026-09-12",
+        "reviewedBy": "Codex-globo-audio-review",
+        "record": "ASSET_PROVENANCE.md#efeitos-sonoros-e-musica-diegetica"
+      },
+      "art": {
+        "family": "globo-diorama-v1",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Nota de carrilhão harmônico ao acender uma gema."
+      },
+      "processing": {
+        "recipe": "byte-copy:ASSET_PROVENANCE.md#audio-autorizado",
+        "tools": ["asset-copy"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/globo-das-lembrancas/audio/chime-note.m4a",
+        "publicPath": "/assets/globo-das-lembrancas/audio/chime-note.m4a",
+        "bytes": 9857,
+        "sha256": "191ec3c3e3ce375fafb520dfa8d9b4e472b69bcc4a7b45bc67fbab3959ba7cff",
+        "durationSeconds": 1.1,
+        "cue": "chime-note",
+        "deliveryGroup": "chime-note",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        }
+      }
+    },
+    {
+      "id": "chime-note-mp3",
+      "kind": "audio",
+      "format": "mp3",
+      "source": {
+        "provider": "Christmas Games offline score",
+        "origin": "project-created",
+        "identifier": "bells-v1-source-hash",
+        "license": "project-owned",
+        "reviewedOn": "2026-09-12",
+        "reviewedBy": "Codex-globo-audio-review",
+        "record": "ASSET_PROVENANCE.md#efeitos-sonoros-e-musica-diegetica"
+      },
+      "art": {
+        "family": "globo-diorama-v1",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Nota de carrilhão harmônico ao acender uma gema."
+      },
+      "processing": {
+        "recipe": "byte-copy:ASSET_PROVENANCE.md#audio-autorizado",
+        "tools": ["asset-copy"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/globo-das-lembrancas/audio/chime-note.mp3",
+        "publicPath": "/assets/globo-das-lembrancas/audio/chime-note.mp3",
+        "bytes": 9447,
+        "sha256": "58c0dc4bbb26206802c314c5d7e28802a797f0ed309dceaaee67d58d5754d350",
+        "durationSeconds": 1.1,
+        "cue": "chime-note",
+        "deliveryGroup": "chime-note",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        }
+      }
+    },
+    {
+      "id": "musicbox-loop-m4a",
+      "kind": "audio",
+      "format": "m4a",
+      "source": {
+        "provider": "Christmas Games offline score",
+        "origin": "project-created",
+        "identifier": "winter-loop-v1-source-hash",
+        "license": "project-owned",
+        "reviewedOn": "2026-09-12",
+        "reviewedBy": "Codex-globo-audio-review",
+        "record": "ASSET_PROVENANCE.md#efeitos-sonoros-e-musica-diegetica"
+      },
+      "art": {
+        "family": "globo-diorama-v1",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Partitura instrumental esparsa de caixinha de música com headroom."
+      },
+      "processing": {
+        "recipe": "byte-copy:ASSET_PROVENANCE.md#audio-autorizado",
+        "tools": ["asset-copy"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/globo-das-lembrancas/audio/musicbox-loop.m4a",
+        "publicPath": "/assets/globo-das-lembrancas/audio/musicbox-loop.m4a",
+        "bytes": 132350,
+        "sha256": "c21eb0bac68427ffd254baa52ce9eddc8187e347558a9b5cffb408213cc6e5df",
+        "durationSeconds": 16,
+        "cue": "musicbox-loop",
+        "deliveryGroup": "musicbox-loop",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        }
+      }
+    },
+    {
+      "id": "musicbox-loop-mp3",
+      "kind": "audio",
+      "format": "mp3",
+      "source": {
+        "provider": "Christmas Games offline score",
+        "origin": "project-created",
+        "identifier": "winter-loop-v1-source-hash",
+        "license": "project-owned",
+        "reviewedOn": "2026-09-12",
+        "reviewedBy": "Codex-globo-audio-review",
+        "record": "ASSET_PROVENANCE.md#efeitos-sonoros-e-musica-diegetica"
+      },
+      "art": {
+        "family": "globo-diorama-v1",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Partitura instrumental esparsa de caixinha de música com headroom."
+      },
+      "processing": {
+        "recipe": "byte-copy:ASSET_PROVENANCE.md#audio-autorizado",
+        "tools": ["asset-copy"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/globo-das-lembrancas/audio/musicbox-loop.mp3",
+        "publicPath": "/assets/globo-das-lembrancas/audio/musicbox-loop.mp3",
+        "bytes": 128565,
+        "sha256": "6fff8b58cd8f8f4d935418eb87f0fa0bf38adaa8dd8413622ae52dc70b20f795",
+        "durationSeconds": 16,
+        "cue": "musicbox-loop",
+        "deliveryGroup": "musicbox-loop",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        }
+      }
+    },
+    {
+      "id": "musicbox-celebrate-m4a",
+      "kind": "audio",
+      "format": "m4a",
+      "source": {
+        "provider": "owner-authorized-legacy-bundle",
+        "origin": "owner-authorized-legacy",
+        "identifier": "legacy-victory-m4a",
+        "license": "project-owned",
+        "reviewedOn": "2026-09-12",
+        "reviewedBy": "Codex-globo-audio-review",
+        "record": "ASSET_PROVENANCE.md#efeitos-sonoros-e-musica-diegetica"
+      },
+      "art": {
+        "family": "globo-diorama-v1",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Fanfarra festiva da caixinha de música para a celebração da foto."
+      },
+      "processing": {
+        "recipe": "byte-copy:ASSET_PROVENANCE.md#audio-autorizado",
+        "tools": ["asset-copy"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/globo-das-lembrancas/audio/musicbox-celebrate.m4a",
+        "publicPath": "/assets/globo-das-lembrancas/audio/musicbox-celebrate.m4a",
+        "bytes": 54781,
+        "sha256": "0ba50705d544dbd4fddbee1f8279240f2eb03425c536658cf156b60d3f382f43",
+        "durationSeconds": 3.776,
+        "cue": "musicbox-celebrate",
+        "deliveryGroup": "musicbox-celebrate",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        }
+      }
+    },
+    {
+      "id": "musicbox-celebrate-mp3",
+      "kind": "audio",
+      "format": "mp3",
+      "source": {
+        "provider": "owner-authorized-legacy-bundle",
+        "origin": "owner-authorized-legacy",
+        "identifier": "legacy-victory-mp3",
+        "license": "project-owned",
+        "reviewedOn": "2026-09-12",
+        "reviewedBy": "Codex-globo-audio-review",
+        "record": "ASSET_PROVENANCE.md#efeitos-sonoros-e-musica-diegetica"
+      },
+      "art": {
+        "family": "globo-diorama-v1",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Fanfarra festiva da caixinha de música para a celebração da foto."
+      },
+      "processing": {
+        "recipe": "byte-copy:ASSET_PROVENANCE.md#audio-autorizado",
+        "tools": ["asset-copy"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/globo-das-lembrancas/audio/musicbox-celebrate.mp3",
+        "publicPath": "/assets/globo-das-lembrancas/audio/musicbox-celebrate.mp3",
+        "bytes": 61484,
+        "sha256": "517c84cfdb393471e71867a2d020fa918767a58858ee12d33a82f50d693df015",
+        "durationSeconds": 3.769,
+        "cue": "musicbox-celebrate",
+        "deliveryGroup": "musicbox-celebrate",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        }
+      }
+    }
+  ]
+}

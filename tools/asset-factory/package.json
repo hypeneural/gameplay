@@ -6,6 +6,8 @@
   "scripts": {
     "prepare:rudolph-art": "node scripts/prepare-rudolph-art.mjs",
     "prepare:rudolph-audio": "node scripts/prepare-rudolph-audio.mjs",
+    "prepare:estilingue-art": "node scripts/prepare-estilingue-art.mjs",
+    "prepare:estilingue-audio": "node scripts/prepare-estilingue-audio.mjs",
     "prepare:magic-photo-art": "node scripts/prepare-magic-photo-art.mjs",
     "prepare:magic-photo-audio": "node scripts/prepare-magic-photo-audio.mjs",
     "prepare:shell-audio": "node scripts/prepare-shell-audio.mjs",

@@ -57,12 +57,21 @@ importers:
       '@christmas-games/dev-smoke':
         specifier: workspace:*
         version: link:../../packages/games/dev-smoke
+      '@christmas-games/estilingue-das-lembrancas':
+        specifier: workspace:*
+        version: link:../../packages/games/estilingue-das-lembrancas
       '@christmas-games/expresso-das-fotos':
         specifier: workspace:*
         version: link:../../packages/games/expresso-das-fotos
+      '@christmas-games/globo-das-lembrancas':
+        specifier: workspace:*
+        version: link:../../packages/games/globo-das-lembrancas
       '@christmas-games/guirlanda-das-lembrancas':
         specifier: workspace:*
         version: link:../../packages/games/guirlanda-das-lembrancas
+      '@christmas-games/lanterna-magica':
+        specifier: workspace:*
+        version: link:../../packages/games/lanterna-magica
       '@christmas-games/magic-photo':
         specifier: workspace:*
         version: link:../../packages/games/magic-photo
@@ -112,6 +121,18 @@ importers:
         specifier: 4.2.1
         version: 4.2.1
 
+  packages/games/estilingue-das-lembrancas:
+    dependencies:
+      '@christmas-games/platform':
+        specifier: workspace:*
+        version: link:../../platform
+      '@christmas-games/theme':
+        specifier: workspace:*
+        version: link:../../theme
+      phaser:
+        specifier: 4.2.1
+        version: 4.2.1
+
   packages/games/expresso-das-fotos:
     dependencies:
       '@christmas-games/platform':
@@ -121,11 +142,35 @@ importers:
         specifier: 4.2.1
         version: 4.2.1
 
+  packages/games/globo-das-lembrancas:
+    dependencies:
+      '@christmas-games/platform':
+        specifier: workspace:*
+        version: link:../../platform
+      '@christmas-games/theme':
+        specifier: workspace:*
+        version: link:../../theme
+      phaser:
+        specifier: 4.2.1
+        version: 4.2.1
+
   packages/games/guirlanda-das-lembrancas:
     dependencies:
       '@christmas-games/platform':
         specifier: workspace:*
         version: link:../../platform
+      phaser:
+        specifier: 4.2.1
+        version: 4.2.1
+
+  packages/games/lanterna-magica:
+    dependencies:
+      '@christmas-games/platform':
+        specifier: workspace:*
+        version: link:../../platform
+      '@christmas-games/theme':
+        specifier: workspace:*
+        version: link:../../theme
       phaser:
         specifier: 4.2.1
         version: 4.2.1
