@@ -12,11 +12,13 @@ Use esta skill para qualquer corte vertical envolvendo fotos reais de clientes, 
 1. Leia `AGENTS.md`.
 2. Leia `docs/exec-plans/active/CG-PHOTO-SESSIONS-ANTIGRAVITY-2.19.1.md`.
 3. Leia `docs/integrations/photo-sessions/AUDITORIA_FORENSE_ANTIGRAVITY_MOBILE_2026-10-06.md`.
-4. Leia `docs/quality/GALLERY_MOBILE_PERFORMANCE_CONTRACT.md`.
-5. Leia `docs/integrations/photo-sessions/MVP_RAPIDO.md`.
-6. Leia `docs/integrations/photo-sessions/PLANO_IMPLEMENTACAO_GALERIA_JOGOS_EVYDFLOW.md`.
-7. Para mídia, leia `docs/media/LOCAL_MEDIA_ARCHITECTURE.md`.
-8. Para UI mobile, leia `.agents/skills/revisao-visual-mobile/SKILL.md`.
+4. Leia `docs/integrations/photo-sessions/GALERIA_NATALINA_MULTI_GALERIAS.md`.
+5. Leia `docs/quality/GALLERY_MOBILE_PERFORMANCE_CONTRACT.md`.
+6. Leia `docs/integrations/photo-sessions/MVP_RAPIDO.md`.
+7. Leia `docs/integrations/photo-sessions/PLANO_IMPLEMENTACAO_GALERIA_JOGOS_EVYDFLOW.md`.
+8. Para mídia, leia `docs/media/LOCAL_MEDIA_ARCHITECTURE.md`.
+9. Para UI mobile, leia `.agents/skills/revisao-visual-mobile/SKILL.md`.
+10. Para a GalleryRoute, leia `.agents/skills/christmas-gallery-album/SKILL.md`.
 
 Não confunda o estado documentado com implementação existente. Verifique código e testes antes de afirmar que uma etapa já existe.
 
@@ -50,10 +52,11 @@ Não comece pela automação de WhatsApp nem por copiar a galeria antiga.
 
 ### 3. Faça multi-cliente por construção
 
-Para toda rota/repository escreva testes com pelo menos duas sessões A/B:
+Para toda rota/repository escreva testes com pelo menos três galerias A/A2/B:
 
+- A e A2 podem compartilhar o mesmo `crmOrderUuid`, mas usam `galleryKey` distinto;
 - A pode ler A;
-- A não pode ler B;
+- A não pode ler A2 nem B;
 - token inválido não mostra fixture;
 - photoId de B com grant de A retorna not-found/forbidden sem vazar existência;
 - revisão STAGED/VALIDATED não substitui ACTIVE;
@@ -66,7 +69,7 @@ Manifesto/recibo precisa conter:
 - `photoSessionId`, `revisionId`, `photoId`;
 - `sourceHash` privado;
 - `recipeKey`;
-- para thumb/card/game: largura, altura, byteLength, sha256 e variante;
+- para thumb/card/game — e `gallery` somente se aprovada por benchmark — largura, altura, byteLength, sha256 e variante;
 - contagem esperada e contagem pronta;
 - worker/build version.
 
@@ -84,7 +87,8 @@ Antes de adicionar dependências, confirme peer compatibility no lockfile atual 
 
 Critérios:
 
-- 8–12 tiles no primeiro lote;
+- mobile <600 px usa uma coluna, proporção natural e sem crop;
+- 6–8 fotos no primeiro lote mobile;
 - `srcset` usa larguras reais;
 - zero Phaser/game chunk/canvas em `/fotos`;
 - lightbox carrega `game` só quando necessário;
