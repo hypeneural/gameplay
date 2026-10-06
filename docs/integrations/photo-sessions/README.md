@@ -6,13 +6,14 @@ Este pacote reúne a análise dos três repositórios, os resultados agregados d
 
 ## Leitura e validação
 
-1. [MVP rápido: caminho crítico e entregas adiáveis](MVP_RAPIDO.md).
-2. [Auditoria forense e arquitetura recomendada](AUDITORIA_WORKFLOW_SESSOES_E_JOGOS.md).
-3. [Plano completo de implementação](PLANO_IMPLEMENTACAO_GALERIA_JOGOS_EVYDFLOW.md).
-4. [Prompt para copiar no ChatGPT e validar com fontes oficiais](PROMPT_VALIDACAO_CHATGPT.md).
-5. [PDF consolidado da edição pública](output/pdf/AUDITORIA_E_PLANO_SESSOES_FOTOS_PUBLICO.pdf).
+1. [Plano ativo para Antigravity 2.19.1](../../exec-plans/active/CG-PHOTO-SESSIONS-ANTIGRAVITY-2.19.1.md) — ordem operacional atual para implementação.
+2. [MVP rápido: caminho crítico e entregas adiáveis](MVP_RAPIDO.md).
+3. [Auditoria forense e arquitetura recomendada](AUDITORIA_WORKFLOW_SESSOES_E_JOGOS.md).
+4. [Plano completo de implementação](PLANO_IMPLEMENTACAO_GALERIA_JOGOS_EVYDFLOW.md).
+5. [Prompt para copiar no ChatGPT e validar com fontes oficiais](PROMPT_VALIDACAO_CHATGPT.md).
+6. [PDF consolidado da edição pública](output/pdf/AUDITORIA_E_PLANO_SESSOES_FOTOS_PUBLICO.pdf).
 
-O documento de MVP apresenta um recorte para revisão técnica: piloto supervisionado com entrega manual do link antes da automação de WhatsApp. O plano completo continua descrevendo o estado final, com outbox e retomada operacional. Nenhuma dessas opções foi implantada por esta publicação.
+Para agentes de implementação, `.agents/rules/photo-sessions-integration.md` e `.agents/skills/photo-sessions-integration/SKILL.md` registram as invariantes de multi-cliente, mídia privada, galeria mobile-first e integração Windows↔VPS. O documento de MVP apresenta um recorte para revisão técnica: piloto supervisionado com entrega manual do link antes da automação de WhatsApp. O plano completo continua descrevendo o estado final, com outbox e retomada operacional. Nenhuma dessas opções foi implantada por esta publicação.
 
 ## Resultado comprovado e seus limites
 
