@@ -1,0 +1,46 @@
+name: Prettier Preview
+
+on:
+  push:
+    branches:
+      - docs/antigravity-photo-sessions-integration
+
+permissions:
+  contents: read
+
+jobs:
+  preview:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: corepack enable
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11.19.0
+          run_install: false
+      - run: pnpm install --frozen-lockfile
+      - name: Format documentation and print canonical contents
+        shell: bash
+        run: |
+          files=(
+            ".agents/rules/photo-sessions-integration.md"
+            ".agents/skills/photo-sessions-integration/SKILL.md"
+            "AGENTS.md"
+            "docs/architecture/FOUNDATION.md"
+            "docs/exec-plans/active/CG-PHOTO-SESSIONS-ANTIGRAVITY-2.19.1.md"
+            "docs/index.md"
+            "docs/integrations/photo-sessions/AUDITORIA_FORENSE_ANTIGRAVITY_MOBILE_2026-10-06.md"
+            "docs/integrations/photo-sessions/README.md"
+            "docs/media/LOCAL_MEDIA_ARCHITECTURE.md"
+            "docs/quality/GALLERY_MOBILE_PERFORMANCE_CONTRACT.md"
+          )
+          pnpm exec prettier --write "${files[@]}"
+          for file in "${files[@]}"; do
+            echo "::FMT_BEGIN::${file}"
+            cat "${file}"
+            echo "::FMT_END::${file}"
+          done
