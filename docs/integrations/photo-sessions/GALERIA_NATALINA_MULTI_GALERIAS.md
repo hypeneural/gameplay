@@ -87,11 +87,11 @@ React Photo Album continua aprovado para layout responsivo, mas o primeiro corte
 
 Receita já medida:
 
-| Variante | Long edge | WebP | Uso atual |
-| --- | ---: | ---: | --- |
-| thumb | 480 | q82 | picker/preview pequeno |
-| card | 800 | q82 | cartas/secundárias |
-| game | 1600 | q82 | hero/puzzle/lightbox |
+| Variante | Long edge | WebP | Uso atual              |
+| -------- | --------: | ---: | ---------------------- |
+| thumb    |       480 |  q82 | picker/preview pequeno |
+| card     |       800 |  q82 | cartas/secundárias     |
+| game     |      1600 |  q82 | hero/puzzle/lightbox   |
 
 O corpus de 30 fotos mediu aproximadamente:
 
