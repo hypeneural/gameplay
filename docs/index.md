@@ -1,5 +1,6 @@
 # Documentation index
 
+- [Plano ativo — Photo Sessions / Antigravity 2.19.1](exec-plans/active/CG-PHOTO-SESSIONS-ANTIGRAVITY-2.19.1.md)
 - [Fotos, galeria mobile, jogos e EvydFlow — auditoria, plano, MVP e prompt de validação](integrations/photo-sessions/README.md)
 
 - [Relatório de Auditoria e Estado Geral do Repositório (2026-09-11)](quality/RELATORIO_AUDITORIA_E_ESTADO_REPOSITORIO_2026-09-11.md)
