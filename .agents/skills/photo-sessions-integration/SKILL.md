@@ -11,10 +11,12 @@ Use esta skill para qualquer corte vertical envolvendo fotos reais de clientes, 
 
 1. Leia `AGENTS.md`.
 2. Leia `docs/exec-plans/active/CG-PHOTO-SESSIONS-ANTIGRAVITY-2.19.1.md`.
-3. Leia `docs/integrations/photo-sessions/MVP_RAPIDO.md`.
-4. Leia `docs/integrations/photo-sessions/PLANO_IMPLEMENTACAO_GALERIA_JOGOS_EVYDFLOW.md`.
-5. Para mídia, leia `docs/media/LOCAL_MEDIA_ARCHITECTURE.md`.
-6. Para UI mobile, leia `.agents/skills/revisao-visual-mobile/SKILL.md`.
+3. Leia `docs/integrations/photo-sessions/AUDITORIA_FORENSE_ANTIGRAVITY_MOBILE_2026-10-06.md`.
+4. Leia `docs/quality/GALLERY_MOBILE_PERFORMANCE_CONTRACT.md`.
+5. Leia `docs/integrations/photo-sessions/MVP_RAPIDO.md`.
+6. Leia `docs/integrations/photo-sessions/PLANO_IMPLEMENTACAO_GALERIA_JOGOS_EVYDFLOW.md`.
+7. Para mídia, leia `docs/media/LOCAL_MEDIA_ARCHITECTURE.md`.
+8. Para UI mobile, leia `.agents/skills/revisao-visual-mobile/SKILL.md`.
 
 Não confunda o estado documentado com implementação existente. Verifique código e testes antes de afirmar que uma etapa já existe.
 
@@ -73,8 +75,10 @@ Falha em qualquer foto/variante bloqueia ativação por default.
 ### 5. Faça a galeria como produto mobile
 
 Preferência inicial:
-- `react-photo-album@3.6.1`, import específico de Masonry.
-- `yet-another-react-lightbox@3.32.2` + Zoom, carregado somente ao abrir foto.
+
+- `react-photo-album@3.6.1`, import específico de Masonry;
+- `yet-another-react-lightbox@3.32.2` + Zoom, carregado somente ao abrir foto;
+- batch controlado pelo app; não adotar o `InfiniteScroll` default no primeiro corte.
 
 Antes de adicionar dependências, confirme peer compatibility no lockfile atual e rode os gates.
 
