@@ -1,4 +1,6 @@
-# Local VPS media architecture
+# Local media architecture
+
+> The media pipeline is a versioned Node/Sharp package, not a VPS-only runtime. For photo sessions, the MVP uses `prepared-derivatives`: the worker runs on the Windows studio machine and the VPS receives only verified derivatives. The storage layout below remains the backend delivery layout. A future `source-ingest` mode may run derivation on the VPS, but it is a separate ingestion contract.
 
 ## Storage layout
 
@@ -13,7 +15,7 @@
     derived/<session-uuid>/<photo-id>/<content-hash>/game.webp
 ```
 
-`storage` is outside the webroot. Token, database id, public photo id, filename and physical path are separate identifiers.
+`storage` is outside the webroot. In the `prepared-derivatives` MVP this VPS storage contains derivatives and publication metadata; it does not require client originals. Token, database id, public photo id, filename and physical path are separate identifiers.
 
 ## Ingestion state machine
 
@@ -22,9 +24,26 @@ pending → processing → ready
                   └→ failed
 ```
 
-The Node worker validates a regular file, a 32 MiB input-byte ceiling, decodability and bounds (`limitInputPixels`, `limitInputChannels`), applies EXIF auto-orientation, records oriented metadata, and writes WebP derivatives using `fit: inside` plus `withoutEnlargement`. A bounded batch adapter isolates one failed photo from the rest of a session. A future queue adapter must set `MEDIA_JOB_CONCURRENCY` and `SHARP_CONCURRENCY` from VPS measurements; initial production target is 2 concurrent photos, never all session photos at once.
+The Node worker validates a regular file, a 32 MiB input-byte ceiling, decodability and bounds (`limitInputPixels`, `limitInputChannels`), applies EXIF auto-orientation, records oriented metadata, and writes WebP derivatives using `fit: inside` plus `withoutEnlargement`. A bounded batch adapter isolates one failed photo from the rest of a session. A future queue adapter must set `MEDIA_JOB_CONCURRENCY` and `SHARP_CONCURRENCY` from measurements on the runtime that actually executes Sharp. For the photo-session MVP this is the Windows studio machine; never infer VPS throughput from the local benchmark and never process every session photo concurrently.
 
-Content hash makes both the stored original and its derivation idempotent. A reused photo id with changed pixels receives a new immutable namespace instead of silently serving the prior original. A worker creates all variants in a sibling staging directory, verifies the WebP format and dimensions, then renames it into the content-hash directory. It writes a sibling `manifest.json.next-<uuid>` and renames that file only after the merged manifest write succeeds. A pre-existing incomplete hash directory is rejected rather than published; the deployment worker must alert and quarantine/rebuild it under a leased job before a retry. The local merge is safe for one writer only: a multi-worker deployment needs a database-backed lease and manifest/state transaction.
+For production photo sessions, derivative identity must include both the immutable source hash and a semantic `recipeKey` covering dimensions, format, quality and relevant encoder/policy versions. Content hash alone is insufficient when the recipe changes. Content addressing still keeps a reused photo id with changed pixels from silently reusing stale media. After the source is copied into a private staging snapshot, hash the snapshot again and compare it with the pre-copy hash before derivation/promotion. A worker creates all variants in a sibling staging directory, verifies WebP format and dimensions, then promotes the complete set into the recipe-scoped immutable namespace. It writes a sibling `manifest.json.next-<uuid>` and renames that file only after the merged manifest write succeeds. A pre-existing incomplete hash directory is rejected rather than published; the deployment worker must alert and quarantine/rebuild it under a leased job before a retry. The local merge is safe for one writer only: a multi-worker deployment needs a database-backed lease and manifest/state transaction.
+
+## Prepared derivatives: Windows -> VPS
+
+The production photo-session path is:
+
+```text
+treated source folder
+  -> freeze manifest
+  -> private snapshot
+  -> Node/Sharp on Windows
+  -> verify thumb/card/game + hashes + real dimensions
+  -> authenticated HTTPS staging upload
+  -> backend exact-set verification
+  -> atomic revision activation
+```
+
+Only an activated revision is visible to Hub, gallery and games. The backend never treats the arrival of the last file as implicit activation.
 
 ## Authorized delivery
 
