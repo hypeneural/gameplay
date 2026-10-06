@@ -2,12 +2,12 @@
 
 ## Runtime ownership
 
-| Owner          | Responsibility                                                            | Must not own                             |
-| -------------- | ------------------------------------------------------------------------- | ---------------------------------------- |
-| React shell    | session, Hub, picker, share, safe area, errors, navigation                | Scene references or game state internals |
-| Phaser runtime | gameplay rendering, touch input, screen-space layout, game-owned assets   | session authorization or DOM shell       |
-| Platform       | contracts, game context, analytics shape, clock/random/haptics interfaces | concrete game implementations            |
-| Theme          | tokens and quality profile                                                | game business rules                      |
+| Owner          | Responsibility                                                                                                 | Must not own                                   |
+| -------------- | -------------------------------------------------------------------------------------------------------------- | ---------------------------------------------- |
+| React shell    | session, Hub, picker, share, safe area, errors, navigation                                                     | Scene references or game state internals       |
+| Phaser runtime | gameplay rendering, touch input, screen-space layout, game-owned assets                                        | session authorization or DOM shell             |
+| Platform       | contracts, game context, analytics shape, clock/random/haptics interfaces                                      | concrete game implementations                  |
+| Theme          | tokens and quality profile                                                                                     | game business rules                            |
 | Media pipeline | deterministic Node/Sharp derivation; photo-session MVP runs prepared derivatives on the Windows studio machine | a browser import path or session authorization |
 
 ## Photo-session deployment boundary
