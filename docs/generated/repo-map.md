@@ -523,6 +523,7 @@
 │   ├── index.md
 │   ├── integrations
 │   │   └── photo-sessions
+│   │       ├── AUDITORIA_FORENSE_ANTIGRAVITY_MOBILE_2026-10-06.md
 │   │       ├── AUDITORIA_WORKFLOW_SESSOES_E_JOGOS.md
 │   │       ├── MVP_RAPIDO.md
 │   │       ├── PLANO_IMPLEMENTACAO_GALERIA_JOGOS_EVYDFLOW.md
@@ -561,6 +562,7 @@
 │   ├── quality
 │   │   ├── ANDROID_REFERENCE_PROTOCOL.md
 │   │   ├── ASSET_LAB_CONTRACT.md
+│   │   ├── GALLERY_MOBILE_PERFORMANCE_CONTRACT.md
 │   │   ├── GAME_EXPERIENCE_REVIEW.md
 │   │   ├── GUIRLANDA_DAS_LEMBRANCAS_NATIVE_LIKE_REVIEW_2026-09-04.md
 │   │   ├── HUB_E_ABERTURAS_IMPLEMENTATION_2026-09-06.md
