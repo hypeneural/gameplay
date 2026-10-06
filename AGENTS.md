@@ -6,7 +6,7 @@ Build a safe, local-VPS, mobile-first factory for personalized photo minigames. 
 
 ## Start here
 
-1. Read `docs/index.md`, the active execution plan and the relevant game `SPEC.md`.
+1. Read `docs/index.md`, the active execution plan and the relevant game `SPEC.md`. For photo-session/gallery work, the active plan is `docs/exec-plans/active/CG-PHOTO-SESSIONS-ANTIGRAVITY-2.19.1.md`.
 2. For presentation or asset work, read `docs/experience/christmas/ART_BIBLE.md` and `docs/assets/ASSET_MANIFEST_CONTRACT.md`.
 3. For Phaser work, read the matching file in `vendor/phaser-skills/v4.2.1/`, then inspect installed types and a 4.2.1 official example.
 4. Make the smallest coherent change and run `pnpm check:fast`.
@@ -22,7 +22,7 @@ Build a safe, local-VPS, mobile-first factory for personalized photo minigames. 
 - `packages/platform`: contracts, deterministic runtime primitives and fakes.
 - `packages/theme`: tokens and quality profiles shared by React and Phaser.
 - `packages/games/<game>`: isolated game domain/runtime/spec.
-- `tools/media-pipeline`: Node/VPS-only Sharp processing; never browser code.
+- `tools/media-pipeline`: Node/Sharp processing shared by controlled runtimes; never browser code. For photo sessions, `prepared-derivatives` runs on the Windows studio machine in the MVP and only validated derivatives are uploaded to the VPS.
 - `tools/asset-factory`: Node/VPS-only inspection, preparation, provenance and
   budgeting of game assets; never browser code.
 - `docs`: system of record. Generated map must match the real tree.
@@ -35,6 +35,7 @@ Build a safe, local-VPS, mobile-first factory for personalized photo minigames. 
 - React receives typed bridge events only, never a Scene or `Phaser.Game`.
 - Create one Phaser game on entry; on exit shut down, remove listeners, release game-owned textures and call `game.destroy(true)`.
 - Never serve originals or filesystem paths. Backend authorization must precede Nginx `X-Accel-Redirect`.
+- For photo sessions, do not derive access from CRM/order identifiers and do not create a second gallery/session authority outside the gameplay backend.
 
 ## Work style
 
