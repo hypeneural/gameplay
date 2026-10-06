@@ -1,4 +1,4 @@
-# CG Photo Sessions — plano ativo para Antigravity 2.19.1
+# CG Photo Sessions — plano ativo para Antigravity / FluentGraft 2.19.1
 
 **Estado:** ativo.  
 **Data de consolidação:** 06/10/2026.  
@@ -9,7 +9,9 @@ Este plano transforma a auditoria de photo sessions em uma sequência implement�
 Leitura obrigatória antes de implementação:
 
 - `docs/integrations/photo-sessions/AUDITORIA_FORENSE_ANTIGRAVITY_MOBILE_2026-10-06.md`;
-- `docs/quality/GALLERY_MOBILE_PERFORMANCE_CONTRACT.md`.
+- `docs/integrations/photo-sessions/GALERIA_NATALINA_MULTI_GALERIAS.md`;
+- `docs/quality/GALLERY_MOBILE_PERFORMANCE_CONTRACT.md`;
+- `.agents/skills/christmas-gallery-album/SKILL.md`.
 
 Proveniência cross-repo no corte de 06/10/2026: o branch `antigravity/soclick-mvp-validation` do EvydFlow está 44 commits à frente de `main`. Registrar o ref exato do EvydFlow em cada handoff; não assumir equivalência entre branches.
 
@@ -23,7 +25,7 @@ EvydFlow Python/YAML
   -> identifica pedido completo + UUID CRM
   -> congela seleção/snapshot privado
   -> executa worker Node/Sharp versionado
-  -> verifica thumb/card/game
+  -> verifica thumb/card/game (+ gallery somente se benchmark aprovar)
   -> envia somente derivados via HTTPS
                          |
                          v
@@ -43,7 +45,7 @@ apps/play
   /s/:token/game/:id    Jogos
 ```
 
-A mesma `photoSessionId + activeRevisionId` alimenta Hub, galeria e jogos.
+A mesma `photoSessionId + activeRevisionId` alimenta Hub, galeria e jogos. No MVP, `photoSessionId` também é a identidade canônica de uma galeria pública; `galleryKey` diferencia galerias ligadas ao mesmo pedido/CRM.
 
 ## 2. Fronteiras obrigatórias
 
@@ -63,7 +65,8 @@ Nunca reutilizar um ID para papéis diferentes.
 ```text
 crmOrderNumber   string completa; referência humana
 crmOrderUuid     identidade do CRM
-photoSessionId   UUID estável da experiência
+galleryKey       chave estável da galeria no contexto do pedido
+photoSessionId   UUID estável da experiência/galeria
 revisionId       UUID de coleção imutável
 photoId          ID opaco estável da fotografia
 accessToken      capability aleatória de entrada
@@ -72,13 +75,13 @@ browserGrant     sessão de browser/cookie autorizada
 
 Constraints iniciais recomendadas:
 
-- `photo_sessions.crm_order_uuid` unique quando presente;
+- `photo_sessions (crm_order_uuid, gallery_key)` unique quando `crm_order_uuid` estiver presente; não tornar `crm_order_uuid` único isoladamente;
 - idempotency key única por criação/revisão/ativação;
 - `photos (session_id, photo_id)` unique;
 - `media_assets (revision_id, photo_id, variant)` unique;
 - `active_revision_id` só aceita revisão VALIDATED pertencente à sessão.
 
-Número completo do pedido nunca vira token público.
+Número completo do pedido nunca vira token público. Uma mesma ordem pode ter múltiplas galerias, cada uma com `galleryKey`, `photoSessionId`, revisão ativa e token próprios.
 
 ## 4. Revisões e concorrência
 
@@ -119,6 +122,8 @@ Receita inicial:
 | game     |              1600 | WebP    |        82 | lightbox/hero/jogos   |
 
 Todas preservam proporção com auto-orient, sRGB, `fit: inside` e sem upscale.
+
+Antes de congelar o contrato da Galeria Natalina, executar benchmark de `card=800` × candidato `gallery=1200` × `game=1600`, com retratos e paisagens. `gallery=1200` só entra na receita se a medição demonstrar ganho visual/bytes aceitável.
 
 ### Requisitos antes de integrar ao EvydFlow
 
@@ -179,7 +184,7 @@ domain_outbox_events   # pode entrar junto da automação de entrega
 
 Backups precisam incluir banco + storage privado da revisão ativa e ser restauráveis em ambiente de teste.
 
-## 8. Acesso público e multi-clientes
+## 8. Acesso público, multi-clientes e multi-galerias
 
 Entrada:
 
@@ -198,14 +203,17 @@ Preferir cookie host-only:
 
 Uma aba não pode trocar silenciosamente o contexto de outra. Requests de sessão devem ser explicitamente escopados pelo objeto solicitado; o backend verifica que o grant daquele browser cobre a sessão.
 
-Casos obrigatórios A/B:
+Casos obrigatórios A/A2/B:
 
+- A e A2 podem compartilhar o mesmo `crmOrderUuid` com `galleryKey` diferente;
 - A lê A;
-- A não lê B;
+- A não lê A2 nem B;
 - photoId B com grant A é negado;
 - token revogado para de abrir novas respostas;
 - token inválido/expirado nunca cai em fixture;
-- estado React de A é limpo ao navegar para B.
+- estado React de A é limpo ao navegar para B;
+- revisão de A não altera A2 ou B;
+- duas abas com galerias distintas não disputam um contexto global.
 
 ## 9. Entrega de mídia
 
@@ -251,19 +259,23 @@ Não virtualizar o grid no MVP. Reavaliar somente com perfis reais de sessões g
 
 ### Comportamento
 
-- 8–12 fotos no primeiro lote.
-- progressão em lotes limitados com fallback "Ver mais".
-- sentinel não pode provocar carregamento de toda coleção no primeiro layout.
-- tiles usam `thumb/card` por `srcset/sizes`.
+- abaixo de 600 CSS px: álbum de uma coluna, uma foto abaixo da outra, proporção natural e sem crop;
+- 600–899 CSS px: duas colunas;
+- 900+ CSS px: duas ou três colunas conforme container;
+- 6–8 fotos no primeiro lote mobile;
+- progressão em lotes limitados com fallback "Ver mais";
+- sentinel não pode provocar carregamento de toda coleção no primeiro layout;
+- feed usa `card` e, se aprovado por benchmark, `gallery`, sempre por `srcset/sizes`.
 - cada descritor `w` usa largura real do arquivo, não o nome 480/800/1600.
-- lightbox usa `game` e no máximo vizinhas necessárias.
+- lightbox usa `card + game` no contrato de três variantes; se `gallery=1200` for aprovado, usa `gallery + game`, com no máximo vizinhas necessárias.
 - hero/lightbox sempre `contain`.
 - `cover` só quando crop seguro for comprovado.
 - preserve scroll e foto escolhida em Hub -> fotos -> jogo -> fotos.
 - browser Back/Forward é comportamento principal, não fallback.
 - nenhum request de Phaser/chunk de jogo/canvas em `/fotos`.
 - reduced motion remove decoração repetitiva.
-- decoração natalina não compete com a fotografia.
+- decoração natalina não compete com a fotografia;
+- assets compartilhados da galeria pertencem a `christmas-shell/gallery`, com manifesto/proveniência, e não a um jogo específico.
 
 ### Budgets de entrada
 
@@ -274,7 +286,7 @@ Metas de engenharia, a validar em aparelhos:
 | Phaser requests em `/fotos`        | 0                                         |
 | canvas em `/fotos`                 | 0                                         |
 | `game.webp` no grid inicial        | 0                                         |
-| tiles montados inicialmente        | 8–12                                      |
+| fotos montadas inicialmente mobile | 6–8                                       |
 | overflow horizontal em 390/412/430 | 0                                         |
 | CLS p75                            | <= 0,1                                    |
 | LCP p75                            | <= 2,5 s                                  |
@@ -306,7 +318,7 @@ No repositório Python, criar `IGameplayProvider`, não reutilizar `IFtpProvider
 Contrato mínimo:
 
 ```text
-resolve_or_create_session(...)
+resolve_or_create_session(crmOrderUuid, galleryKey, ...)
 begin_revision(...)
 upload_derivative(...)
 verify_revision(...)
@@ -336,11 +348,11 @@ O novo flow não pode herdar as práticas operacionais legadas do EvydFlow. Ante
 
 ### PR 1 — contratos + documentação
 
-IDs, schemas e recipeKey. Alinhar documentação global. Sem alterar fluxo legado.
+IDs, `galleryKey`, schemas e recipeKey. Substituir `crm_order_uuid UNIQUE` por `(crm_order_uuid, gallery_key)` e alinhar documentação global. Sem alterar fluxo legado.
 
-### PR 2 — worker Windows
+### PR 2 — worker Windows + benchmark da galeria
 
-Stable photoId, recipeKey, rehash snapshot, dimensões por variante, stdout JSON, testes.
+Stable photoId, recipeKey, rehash snapshot, dimensões por variante, stdout JSON e testes. Rodar benchmark 800 × 1200 × 1600 e decidir se a variante `gallery` entra no contrato.
 
 ### PR 3 — backend session/revision
 
@@ -352,15 +364,15 @@ Rotas internas, service auth, idempotência e testes de lote parcial.
 
 ### PR 5 — public access/media
 
-Token bootstrap, browser grant, media authorization, Nginx internal, A/B isolation.
+Token bootstrap, browser grant, media authorization, Nginx internal e isolamento A/A2/B.
 
 ### PR 6 — React SessionProvider
 
 Hidratação real, estados de acesso, abort/cleanup; produção sem fixture.
 
-### PR 7 — GalleryRoute
+### PR 7 — GalleryRoute / Galeria Natalina
 
-Masonry, responsive variants, lazy lightbox e navigation state. Zero Phaser gate.
+Álbum de uma coluna no mobile, responsive variants, batches próprios, lazy lightbox, `christmas-shell/gallery` e navigation state. Zero Phaser gate.
 
 ### PR 8 — Puzzle vertical slice
 
@@ -395,7 +407,7 @@ pnpm test:e2e
 Testes adicionais obrigatórios:
 
 - colisão de pedidos com mesmos quatro últimos dígitos;
-- session A/B cross-access;
+- session/gallery A/A2/B cross-access;
 - upload interrompido;
 - arquivo extra/faltante/hash errado;
 - replay de idempotency key;
@@ -417,7 +429,7 @@ Não bloquear o piloto com:
 - microservices;
 - service worker/PWA;
 - AVIF;
-- quarta variante;
+- quarta variante sem benchmark;
 - virtualização do grid;
 - todos os 11 jogos;
 - migração automática de URLs numéricas;
@@ -425,7 +437,7 @@ Não bloquear o piloto com:
 
 Não adiar:
 
-- isolamento multi-cliente;
+- isolamento multi-cliente e multi-galerias;
 - autorização por mídia;
 - recipeKey;
 - IDs estáveis;
