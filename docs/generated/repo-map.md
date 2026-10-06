@@ -6,8 +6,12 @@
 
 ```text
 ├── .agents
+│   ├── rules
+│   │   └── photo-sessions-integration.md
 │   └── skills
 │       ├── diretor-jogo-natal
+│       │   └── SKILL.md
+│       ├── photo-sessions-integration
 │       │   └── SKILL.md
 │       └── revisao-visual-mobile
 │           └── SKILL.md
@@ -470,7 +474,8 @@
 │   │   ├── CG-MOBILE-FIRST-CREATIVE-VELOCITY.md
 │   │   ├── CG-PUZZLE-NATIVE-LIKE-ITERATION.md
 │   │   ├── active
-│   │   │   └── .gitkeep
+│   │   │   ├── .gitkeep
+│   │   │   └── CG-PHOTO-SESSIONS-ANTIGRAVITY-2.19.1.md
 │   │   └── completed
 │   │       ├── CG-BOOTSTRAP.md
 │   │       ├── CG-CONTROLES-CRISTALINOS-DOS-JOGOS.md
