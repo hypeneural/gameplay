@@ -7,8 +7,11 @@
 ```text
 ├── .agents
 │   ├── rules
+│   │   ├── christmas-gallery-album.md
 │   │   └── photo-sessions-integration.md
 │   └── skills
+│       ├── christmas-gallery-album
+│       │   └── SKILL.md
 │       ├── diretor-jogo-natal
 │       │   └── SKILL.md
 │       ├── photo-sessions-integration
@@ -525,6 +528,7 @@
 │   │   └── photo-sessions
 │   │       ├── AUDITORIA_FORENSE_ANTIGRAVITY_MOBILE_2026-10-06.md
 │   │       ├── AUDITORIA_WORKFLOW_SESSOES_E_JOGOS.md
+│   │       ├── GALERIA_NATALINA_MULTI_GALERIAS.md
 │   │       ├── MVP_RAPIDO.md
 │   │       ├── PLANO_IMPLEMENTACAO_GALERIA_JOGOS_EVYDFLOW.md
 │   │       ├── PROMPT_VALIDACAO_CHATGPT.md
