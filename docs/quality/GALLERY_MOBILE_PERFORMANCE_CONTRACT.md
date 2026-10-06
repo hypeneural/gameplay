@@ -193,4 +193,3 @@ No laboratório registrar:
 - posição de scroll antes/depois do jogo.
 
 Não registrar token, telefone, CRM, path local ou URL privada completa em analytics.
-
