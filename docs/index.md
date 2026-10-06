@@ -1,8 +1,9 @@
 # Documentation index
 
+- [Galeria Natalina e multi-galerias](integrations/photo-sessions/GALERIA_NATALINA_MULTI_GALERIAS.md)
 - [Auditoria forense — Antigravity, workflow e galeria mobile](integrations/photo-sessions/AUDITORIA_FORENSE_ANTIGRAVITY_MOBILE_2026-10-06.md)
 - [Contrato de performance — galeria mobile](quality/GALLERY_MOBILE_PERFORMANCE_CONTRACT.md)
-- [Plano ativo — Photo Sessions / Antigravity 2.19.1](exec-plans/active/CG-PHOTO-SESSIONS-ANTIGRAVITY-2.19.1.md)
+- [Plano ativo — Photo Sessions / Antigravity / FluentGraft 2.19.1](exec-plans/active/CG-PHOTO-SESSIONS-ANTIGRAVITY-2.19.1.md)
 - [Fotos, galeria mobile, jogos e EvydFlow — auditoria, plano, MVP e prompt de validação](integrations/photo-sessions/README.md)
 
 - [Relatório de Auditoria e Estado Geral do Repositório (2026-09-11)](quality/RELATORIO_AUDITORIA_E_ESTADO_REPOSITORIO_2026-09-11.md)
