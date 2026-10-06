@@ -1,5 +1,7 @@
 # Documentation index
 
+- [Auditoria forense — Antigravity, workflow e galeria mobile](integrations/photo-sessions/AUDITORIA_FORENSE_ANTIGRAVITY_MOBILE_2026-10-06.md)
+- [Contrato de performance — galeria mobile](quality/GALLERY_MOBILE_PERFORMANCE_CONTRACT.md)
 - [Plano ativo — Photo Sessions / Antigravity 2.19.1](exec-plans/active/CG-PHOTO-SESSIONS-ANTIGRAVITY-2.19.1.md)
 - [Fotos, galeria mobile, jogos e EvydFlow — auditoria, plano, MVP e prompt de validação](integrations/photo-sessions/README.md)
 
