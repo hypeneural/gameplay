@@ -1,6 +1,6 @@
 ---
 trigger: model_decision
-description: "Ative ao trabalhar com photo sessions, galeria de clientes, mídia privada, backend de sessão, ingestão HTTPS ou integração EvydFlow."
+description: 'Ative ao trabalhar com photo sessions, galeria de clientes, mídia privada, backend de sessão, ingestão HTTPS ou integração EvydFlow.'
 ---
 
 # Integração de sessões fotográficas
@@ -66,6 +66,7 @@ A rota canônica é `/s/:token/fotos`, dentro de `apps/play`, usando a mesma Ses
 - Natal é ambientação; não cubra fotos com efeitos contínuos pesados.
 
 Preferência validada para o primeiro corte:
+
 - `react-photo-album` somente para layout/responsive images.
 - `yet-another-react-lightbox` + Zoom, lazy, para viewer.
 - Não copie Tailwind/shadcn/React Router da galeria legada.
