@@ -6,6 +6,13 @@
 
 Este plano transforma a auditoria de photo sessions em uma sequência implementável para o Antigravity, mantendo o corte operacional real: EvydFlow no Windows 11 e produto/backend na VPS.
 
+Leitura obrigatória antes de implementação:
+
+- `docs/integrations/photo-sessions/AUDITORIA_FORENSE_ANTIGRAVITY_MOBILE_2026-10-06.md`;
+- `docs/quality/GALLERY_MOBILE_PERFORMANCE_CONTRACT.md`.
+
+Proveniência cross-repo no corte de 06/10/2026: o branch `antigravity/soclick-mvp-validation` do EvydFlow está 44 commits à frente de `main`. Registrar o ref exato do EvydFlow em cada handoff; não assumir equivalência entre branches.
+
 ## 1. Decisão arquitetural
 
 Não criar outra plataforma para a galeria e não reescrever o EvydFlow.
@@ -234,6 +241,8 @@ Validada para a stack React 19 do repositório em 06/10/2026:
 
 Não portar Tailwind/shadcn/React Router/TanStack Query da galeria antiga.
 
+No primeiro corte, usar React Photo Album somente para layout/`srcset` e manter o batch loader no app. Não adotar `react-photo-album/scroll` com os root margins default sem medição; o smoke da galeria legada já mostrou over-fetch no mobile.
+
 Não usar CSS Masonry experimental como única implementação de produção.
 
 Não virtualizar o grid no MVP. Reavaliar somente com perfis reais de sessões grandes.
@@ -315,7 +324,11 @@ Piloto:
 
 Isso mantém privacidade/atomicidade no caminho crítico e adia somente side effects de comunicação.
 
-## 13. Sequência de PRs
+## 13. Gate de contenção antes do piloto
+
+O novo flow não pode herdar as práticas operacionais legadas do EvydFlow. Antes de link real de cliente, tratar credenciais/runtime/logs rastreados, logging de payload, compartilhamento público gravável e FTP legado. Rotacionar/revogar credenciais potencialmente expostas antes de qualquer limpeza destrutiva de histórico. O photo-session flow não move as fontes para `TRATADAS` e não repete side effect após timeout sem reconciliação de `UNKNOWN_OUTCOME`.
+
+## 14. Sequência de PRs
 
 ### PR 1 — contratos + documentação
 IDs, schemas e recipeKey. Alinhar documentação global. Sem alterar fluxo legado.
@@ -349,7 +362,7 @@ Android + Safari/iPhone, restore/rollback e entrega manual.
 
 Somente depois: outbox/WhatsApp, mais jogos, cache avançado, AVIF, virtualização ou multi-host.
 
-## 14. Gates de aceite
+## 15. Gates de aceite
 
 Cada PR:
 ```bash
@@ -378,7 +391,7 @@ Testes adicionais obrigatórios:
 - backup/restore de banco + media;
 - rollback para revisão ativa anterior sem reapontar bytes incompletos.
 
-## 15. Itens deliberadamente adiados
+## 16. Itens deliberadamente adiados
 
 Não bloquear o piloto com:
 - Postgres;
@@ -403,7 +416,7 @@ Não adiar:
 - preservação dos originais;
 - logs sem secrets/PII.
 
-## 16. Regra de handoff para Antigravity
+## 17. Regra de handoff para Antigravity
 
 Não declarar uma fase concluída só porque o código compila. Para cada corte, registrar:
 
