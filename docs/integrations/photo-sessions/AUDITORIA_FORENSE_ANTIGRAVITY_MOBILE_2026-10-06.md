@@ -326,53 +326,74 @@ aplicação já possui composição, histórico e lifecycle próprios adequados 
 
 ## 8. Estratégia mobile de imagem
 
-O grid não deve oferecer `game` como candidato inicial.
+A revisão posterior do corpus e do layout mudou a recomendação de mobile: abaixo de
+600 CSS px a Galeria Natalina deve ser um **álbum de uma coluna**, com cada foto na
+proporção natural. O feed não deve oferecer `game` como candidato inicial.
 
-Por tile:
+No contrato atual de três variantes:
 
 ```text
-src       -> thumb ou card seguro
-srcset    -> thumb + card com larguras intrínsecas reais
-sizes     -> slot real do masonry
+feed
+src       -> card
+srcset    -> card com largura intrínseca real
+sizes     -> largura útil do álbum
 loading   -> lazy, exceto candidato LCP explicitamente escolhido
 decoding  -> async
-```
 
-No lightbox:
-
-```text
+lightbox
 src       -> game
 srcset    -> card + game
 fit       -> contain
 preload   -> 1 no mobile inicialmente
 ```
 
+Há uma lacuna específica para retratos full-width: `card=800` significa long edge,
+então a largura real de um retrato típico fica perto de 568 px. Em um slot de
+aproximadamente 406 CSS px, isso entrega apenas ~1,4× de densidade.
+
+**RECOMENDAÇÃO:** benchmarkar uma variante `gallery=1200` antes de congelar o
+contrato. Um retrato típico passaria a cerca de 852 px de largura e cobriria melhor
+DPR ~2.
+
+Se o benchmark aprovar:
+
+```text
+feed      -> card + gallery
+lightbox  -> gallery + game
+jogo      -> política atual thumb/card/game por papel
+```
+
 O browser só pode receber descritores `w` iguais à largura intrínseca real do
-arquivo. Os nomes 480/800/1600 representam lado maior da receita e não devem ser
+arquivo. Os nomes 480/800/1200/1600 representam lado maior da receita e não devem ser
 copiados para `srcset` como se fossem sempre width.
 
-A foto candidata a LCP pode receber eager/high priority; não marcar todo o grid como
+A foto candidata a LCP pode receber eager/high priority; não marcar todo o álbum como
 high priority.
 
-## 9. Estratégia de render do grid
+## 9. Estratégia de render do álbum
 
 Primeiro corte recomendado:
 
-- 8 a 12 tiles montados;
-- duas colunas na faixa típica de aproximadamente 390–430 CSS px;
+- abaixo de 600 CSS px: uma coluna, uma foto abaixo da outra, proporção natural;
+- 600–899 CSS px: duas colunas;
+- 900+ CSS px: duas ou três colunas conforme container;
+- 6 a 8 fotos montadas inicialmente no mobile;
 - lote seguinte pequeno e explícito;
 - observer com antecipação curta, se usado;
 - botão manual continua disponível;
-- nada de `game.webp` no grid;
+- nada de `game.webp` no feed;
 - nada de Phaser;
 - preservar scroll por sessão e revisão;
 - abrir foto não perde índice/seleção;
 - voltar de jogo restaura scroll e `selectedPhotoId`.
 
+O álbum não usa `aspect-ratio: 4/5` nem `object-fit: cover`; essas regras pertencem
+ao picker/seleção, não à visualização fotográfica completa.
+
 Não usar "quantidade de itens no array React" como proxy para rede. Os testes precisam
 contar requests e bytes por variante.
 
-## 10. Backend e multi-cliente
+## 10. Backend, multi-cliente e multi-galerias
 
 Persistência mínima:
 
@@ -401,8 +422,14 @@ activate(session, newRevision, expectedActiveRevision)
 
 Falha se a revisão ativa divergiu.
 
-Todo teste de repository/route deve possuir sessão A e B. O teste deve tentar combinar
-grant A com photoId/revision B e esperar negação sem vazamento de existência.
+No MVP, `photoSessionId` é também a identidade canônica de uma galeria pública.
+`galleryKey` diferencia galerias do mesmo pedido/CRM. A constraint correta é
+`(crm_order_uuid, gallery_key)`; tornar `crm_order_uuid` único isoladamente
+impediria multi-galerias.
+
+Todo teste de repository/route deve possuir A, A2 e B. A e A2 compartilham o mesmo
+`crmOrderUuid` com `galleryKey` distinto. O teste tenta combinar grant A com
+photoId/revision A2 ou B e espera negação sem vazamento de existência.
 
 ## 11. Contrato de performance e experiência
 
@@ -425,7 +452,7 @@ Gates determinísticos de laboratório:
 - batches limitados;
 - sem overflow horizontal em 390/412/430;
 - três ciclos galeria -> jogo -> galeria sem crescimento contínuo de canvas/runtime;
-- sessão A nunca apresenta mídia/estado da sessão B.
+- galeria A nunca apresenta mídia/estado de A2 ou B.
 
 ## 12. Ordem de execução para o Antigravity
 
@@ -441,7 +468,8 @@ Gates determinísticos de laboratório:
 - separar DTO público e receipt privado;
 - adicionar `GalleryRoute`;
 - remover fallback de fixture em produção;
-- testes A/B de identidade.
+- `galleryKey` e constraint multi-galerias;
+- testes A/A2/B de identidade.
 
 ### Fase 2 — media pipeline
 
@@ -450,7 +478,8 @@ Gates determinísticos de laboratório:
 - snapshot rehash;
 - manifest completo;
 - CLI JSON versionada;
-- zero-failure collection receipt.
+- zero-failure collection receipt;
+- benchmark 800 × 1200 × 1600 e decisão explícita sobre `gallery`.
 
 ### Fase 3 — backend
 
@@ -478,10 +507,12 @@ Gates determinísticos de laboratório:
 
 ### Fase 6 — GalleryRoute
 
-- React Photo Album;
+- álbum de uma coluna no mobile;
+- React Photo Album para layout responsivo acima do mobile;
 - batch controlado;
 - responsive image;
 - lightbox lazy;
+- assets `christmas-shell/gallery` com manifesto/proveniência;
 - history/scroll;
 - gates do contrato mobile.
 
@@ -495,7 +526,7 @@ seleção. Provar galeria -> Puzzle -> galeria antes de ampliar catálogo.
 Criar `IGameplayProvider` independente do FTP legado:
 
 ```text
-resolve_or_create_session
+resolve_or_create_session(crmOrderUuid, galleryKey, ...)
 begin_revision
 upload_derivative
 verify_revision
@@ -531,6 +562,6 @@ O primeiro marco comercial requer, no mínimo:
 - autorização de mídia;
 - galeria sem Phaser e com rede limitada;
 - ciclo galeria/jogo restaurável;
-- isolamento A/B;
+- isolamento A/A2/B;
 - Android e Safari/iPhone físicos;
 - rollback/restore comprovados.
