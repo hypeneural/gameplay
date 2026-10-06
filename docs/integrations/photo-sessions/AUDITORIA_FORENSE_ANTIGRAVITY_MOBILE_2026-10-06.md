@@ -153,7 +153,7 @@ interface Photo {
   width: number;
   height: number;
   aspectRatio: number;
-  orientation: "portrait" | "landscape";
+  orientation: 'portrait' | 'landscape';
   variants: Record<PhotoVariant, PhotoVariantAsset>;
 }
 ```
@@ -534,4 +534,3 @@ O primeiro marco comercial requer, no mínimo:
 - isolamento A/B;
 - Android e Safari/iPhone físicos;
 - rollback/restore comprovados.
-
