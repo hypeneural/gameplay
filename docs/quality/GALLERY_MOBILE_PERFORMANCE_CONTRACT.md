@@ -9,7 +9,7 @@ metas de campo.
 Aplica-se a:
 
 - `GalleryRoute`;
-- grid/masonry;
+- álbum de uma coluna no mobile e masonry responsivo acima de 600 px;
 - `PhotoPrint` quando usado na galeria;
 - lightbox;
 - restauração de scroll;
@@ -27,7 +27,7 @@ Uma execução de Playwright em `/s/:token/fotos` deve provar:
 3. nenhum `canvas` no DOM;
 4. nenhum request de variante `game` antes de abrir hero/lightbox;
 5. token inválido não renderiza fixture;
-6. sessão A não renderiza foto, revisão ou seleção da sessão B;
+6. sessão/galeria A não renderiza foto, revisão ou seleção de A2/B;
 7. abrir/fechar lightbox não muda 1, 2 ou 3;
 8. não há overflow horizontal em 390, 412, 430 e 768 CSS px.
 
@@ -43,19 +43,27 @@ height
 
 O adaptador da galeria cria `srcset` somente com larguras intrínsecas reais.
 
-Grid inicial:
+Feed inicial no contrato de três variantes:
 
 ```text
-candidatos = thumb + card
+candidatos = card
 game       = proibido
 loading    = lazy por default
 decoding   = async
 ```
 
+Se `gallery=1200` for aprovada por benchmark:
+
+```text
+candidatos = card + gallery
+game       = proibido
+```
+
 Lightbox:
 
 ```text
-candidatos = card + game
+candidatos = card + game        # contrato atual
+# ou gallery + game se 1200 for aprovada
 fit        = contain
 preload    = 1 no mobile inicialmente
 ```
@@ -64,9 +72,10 @@ Somente o recurso realmente candidato a LCP pode usar `eager` e prioridade alta.
 
 ## 4. Renderização progressiva
 
-Primeiro corte:
+Primeiro corte mobile:
 
-- montar 8 a 12 tiles;
+- abaixo de 600 CSS px usar uma coluna, largura quase total e proporção natural;
+- montar 6 a 8 fotos;
 - buscar/renderizar lote seguinte de forma limitada;
 - manter botão "Ver mais" como fallback;
 - se houver IntersectionObserver, usar antecipação curta e medir requests;
@@ -102,7 +111,7 @@ experimental separada.
 
 Estes valores são budgets de engenharia do MVP, não resultados já medidos em campo.
 
-- tiles montados inicialmente: 8–12;
+- fotos montadas inicialmente no mobile: 6–8;
 - Phaser requests: 0;
 - game-runtime requests: 0;
 - canvas: 0;
@@ -141,11 +150,12 @@ Criar cenários dedicados para:
 7. três ciclos Gallery -> Puzzle -> Gallery;
 8. token inválido;
 9. token revogado durante uso;
-10. sessão A seguida de sessão B na mesma aba;
-11. duas abas com sessões distintas;
-12. portrait/landscape misturados;
+10. galeria A seguida de A2 e B na mesma aba;
+11. duas abas com galerias distintas;
+12. portrait/landscape misturados sem crop no álbum mobile;
 13. coleção de 30 fotos;
-14. coleção grande sintética, antes de considerar virtualização.
+14. coleção grande sintética, antes de considerar virtualização;
+15. benchmark visual/rede com card=800, gallery=1200 candidata e game=1600.
 
 Em cada cenário relevante, capturar resource entries e classificar por variante.
 
@@ -189,7 +199,8 @@ No laboratório registrar:
 - resource timing;
 - contagem de canvas;
 - chunks JS carregados;
-- número de tiles montados;
+- número de fotos montadas;
+- `photoSessionId + activeRevisionId` do estado de UI sem registrar token;
 - posição de scroll antes/depois do jogo.
 
 Não registrar token, telefone, CRM, path local ou URL privada completa em analytics.
