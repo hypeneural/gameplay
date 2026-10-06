@@ -22,12 +22,15 @@ Nunca derive autorização do número do pedido. Mantenha identidades distintas:
 
 - `crmOrderNumber`: número completo como string, somente referência operacional.
 - `crmOrderUuid`: identidade CRM quando disponível.
-- `photoSessionId`: UUID estável da experiência do cliente.
+- `photoSessionId`: UUID estável da experiência/galeria do cliente.
+- `galleryKey`: chave estável que diferencia galerias dentro do mesmo contexto CRM/pedido.
 - `revisionId`: UUID de uma coleção imutável.
 - `photoId`: identificador opaco estável, independente de nome/ordem do arquivo.
 - `accessToken`: capability aleatória, separada de pedido/sessão/foto.
 
 Toda leitura de sessão e mídia deve validar explicitamente sessão, revisão ativa, photoId e variante. Cliente A nunca pode resolver objetos de cliente B, mesmo conhecendo UUIDs.
+
+Multi-galerias é suportado pela mesma autoridade: uma `photoSessionId` representa uma galeria pública e `(crmOrderUuid, galleryKey)` diferencia galerias ligadas ao mesmo pedido. Não crie uma segunda autoridade `gallery` no backend.
 
 ## Revisões e publicação
 
@@ -46,6 +49,8 @@ A receita inicial permanece WebP 82, `fit: inside`, `withoutEnlargement`, auto-o
 - `card`: lado maior 800.
 - `game`: lado maior 1600.
 
+`gallery=1200` é somente candidato de benchmark para o álbum full-width. Não o transforme em quarta variante de produção antes de medir 800 × 1200 × 1600 em retratos/paisagens e em aparelho real.
+
 Cada variante deve registrar URL/identidade, largura real, altura real, bytes e SHA-256. 480/800/1600 são lados maiores, não descritores `w` de `srcset`.
 
 Cache/namespace de derivado inclui `sourceHash + recipeKey`. Depois de copiar a fonte para staging, re-hasheie o snapshot e compare com o hash calculado antes da cópia antes de promover a saída.
@@ -57,13 +62,15 @@ A API pública nunca recebe source path, nome original, sourceHash, telefone ou 
 A rota canônica é `/s/:token/fotos`, dentro de `apps/play`, usando a mesma Session e a mesma seleção dos jogos.
 
 - A galeria não pode carregar Phaser, canvas nem chunks de jogo.
-- Grid usa `thumb/card` responsivamente; `game` é reservado para hero/lightbox/jogo.
-- Comece com 8–12 fotos montadas e avance em lotes limitados; IntersectionObserver nunca pode fazer o acervo inteiro antecipar silenciosamente.
+- Abaixo de 600 CSS px, a Galeria Natalina é um álbum de uma coluna, com proporção natural e sem crop. Em 600–899 px, duas colunas; em 900+ px, duas ou três conforme o container.
+- O feed usa `card` e, se o benchmark aprovar, `gallery`; `game` é reservado para hero/lightbox/jogo.
+- Comece com 6–8 fotos montadas no álbum mobile e avance em lotes limitados; IntersectionObserver nunca pode fazer o acervo inteiro antecipar silenciosamente.
 - Lightbox é importado sob demanda e prefetcha no máximo a foto corrente e vizinhas necessárias.
 - Hero/lightbox usam `contain`; `cover` só é permitido quando o enquadramento seguro estiver comprovado.
 - Preserve scroll, photoId selecionada e Back/Forward ao alternar Hub, galeria e jogo.
 - Safe areas, `100dvh/100svh`, toque, reduced motion e ausência de overflow horizontal são requisitos.
 - Natal é ambientação; não cubra fotos com efeitos contínuos pesados.
+- Assets visuais compartilhados da Galeria Natalina pertencem a `christmas-shell/gallery`, com manifesto e proveniência; não dependa estruturalmente de assets de um jogo específico.
 
 Preferência validada para o primeiro corte:
 
@@ -71,6 +78,7 @@ Preferência validada para o primeiro corte:
 - `yet-another-react-lightbox` + Zoom, lazy, para viewer.
 - Não copie Tailwind/shadcn/React Router da galeria legada.
 - Não introduza virtualização, CSS Masonry experimental, AVIF, quarta variante ou service worker sem medição que justifique.
+- Leia também `.agents/rules/christmas-gallery-album.md` e `.agents/skills/christmas-gallery-album/SKILL.md`.
 
 ## Privacidade e segurança
 
