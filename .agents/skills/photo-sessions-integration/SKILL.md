@@ -83,6 +83,7 @@ Preferência inicial:
 Antes de adicionar dependências, confirme peer compatibility no lockfile atual e rode os gates.
 
 Critérios:
+
 - 8–12 tiles no primeiro lote;
 - `srcset` usa larguras reais;
 - zero Phaser/game chunk/canvas em `/fotos`;
@@ -94,16 +95,19 @@ Critérios:
 ### 6. Valide antes de avançar
 
 Durante iteração:
+
 ```bash
 pnpm check:fast
 ```
 
 Antes de handoff:
+
 ```bash
 pnpm validate
 ```
 
 Se a mudança acrescentar arquivos rastreados:
+
 ```bash
 pnpm repo:map
 pnpm repo:map:check
