@@ -47,14 +47,14 @@ A mesma `photoSessionId + activeRevisionId` alimenta Hub, galeria e jogos.
 
 ## 2. Fronteiras obrigatórias
 
-| Boundary | Dono | Regra |
-| --- | --- | --- |
-| Intake/CRM/fila operacional | EvydFlow | Continua Python/YAML no Windows. |
-| Derivação de imagem | `tools/media-pipeline` | Mesmo pacote Node/Sharp, executado localmente no MVP. |
-| Sessão/revisão pública | backend gameplay | Única autoridade; não duplicar em EvydFlow ou frontend. |
-| Galeria/Hub/jogos | `apps/play` | Uma Session e uma seleção compartilhada. |
-| Entrega de bytes privados | backend + Nginx | Autorizar primeiro; arquivo fora da webroot. |
-| Galeria legada | referência | Reaproveitar UX, não API, auth ou stack completa. |
+| Boundary                    | Dono                   | Regra                                                   |
+| --------------------------- | ---------------------- | ------------------------------------------------------- |
+| Intake/CRM/fila operacional | EvydFlow               | Continua Python/YAML no Windows.                        |
+| Derivação de imagem         | `tools/media-pipeline` | Mesmo pacote Node/Sharp, executado localmente no MVP.   |
+| Sessão/revisão pública      | backend gameplay       | Única autoridade; não duplicar em EvydFlow ou frontend. |
+| Galeria/Hub/jogos           | `apps/play`            | Uma Session e uma seleção compartilhada.                |
+| Entrega de bytes privados   | backend + Nginx        | Autorizar primeiro; arquivo fora da webroot.            |
+| Galeria legada              | referência             | Reaproveitar UX, não API, auth ou stack completa.       |
 
 ## 3. Modelo de identidade
 
@@ -112,11 +112,11 @@ Fonte: arquivos tratados diretamente na raiz selecionada. Não usar BAIXA/QC com
 
 Receita inicial:
 
-| Variante | Lado maior máximo | Formato | Qualidade | Uso |
-| --- | ---: | --- | ---: | --- |
-| thumb | 480 | WebP | 82 | tiles pequenos/picker |
-| card | 800 | WebP | 82 | grid grande/memória |
-| game | 1600 | WebP | 82 | lightbox/hero/jogos |
+| Variante | Lado maior máximo | Formato | Qualidade | Uso                   |
+| -------- | ----------------: | ------- | --------: | --------------------- |
+| thumb    |               480 | WebP    |        82 | tiles pequenos/picker |
+| card     |               800 | WebP    |        82 | grid grande/memória   |
+| game     |              1600 | WebP    |        82 | lightbox/hero/jogos   |
 
 Todas preservam proporção com auto-orient, sRGB, `fit: inside` e sem upscale.
 
@@ -150,6 +150,7 @@ Toda mutação importante aceita idempotency key. Upload confere tamanho, hash, 
 `verify` compara o conjunto remoto exato, não apenas contagem.
 
 `activate` exige:
+
 - revisão VALIDATED;
 - zero arquivo ausente/extra;
 - `expectedActiveRevisionId`;
@@ -198,6 +199,7 @@ Preferir cookie host-only:
 Uma aba não pode trocar silenciosamente o contexto de outra. Requests de sessão devem ser explicitamente escopados pelo objeto solicitado; o backend verifica que o grant daquele browser cobre a sessão.
 
 Casos obrigatórios A/B:
+
 - A lê A;
 - A não lê B;
 - photoId B com grant A é negado;
@@ -267,17 +269,17 @@ Não virtualizar o grid no MVP. Reavaliar somente com perfis reais de sessões g
 
 Metas de engenharia, a validar em aparelhos:
 
-| Budget | Gate |
-| --- | --- |
-| Phaser requests em `/fotos` | 0 |
-| canvas em `/fotos` | 0 |
-| `game.webp` no grid inicial | 0 |
-| tiles montados inicialmente | 8–12 |
-| overflow horizontal em 390/412/430 | 0 |
-| CLS p75 | <= 0,1 |
-| LCP p75 | <= 2,5 s |
-| INP p75 | <= 200 ms |
-| preload de lightbox | corrente + no máximo vizinhas necessárias |
+| Budget                             | Gate                                      |
+| ---------------------------------- | ----------------------------------------- |
+| Phaser requests em `/fotos`        | 0                                         |
+| canvas em `/fotos`                 | 0                                         |
+| `game.webp` no grid inicial        | 0                                         |
+| tiles montados inicialmente        | 8–12                                      |
+| overflow horizontal em 390/412/430 | 0                                         |
+| CLS p75                            | <= 0,1                                    |
+| LCP p75                            | <= 2,5 s                                  |
+| INP p75                            | <= 200 ms                                 |
+| preload de lightbox                | corrente + no máximo vizinhas necessárias |
 
 Os budgets de Web Vitals são metas de campo; Lighthouse isolado não os homologa.
 
@@ -289,6 +291,7 @@ Estados:
 `loading | ready | unavailable | expired | revoked | empty | retryable-error`.
 
 Ao trocar token/sessão:
+
 - abortar requests antigos;
 - descartar resposta tardia que não corresponde a session/revision esperadas;
 - limpar seleção/lightbox de outro cliente;
@@ -317,6 +320,7 @@ Depois do piloto:
 Novo flow deve ser independente de BAIXA/QC/FTP e, inicialmente, não enviar WhatsApp automaticamente.
 
 Piloto:
+
 - operador informa/confirma UUID CRM;
 - EvydFlow publica revisão;
 - operador confere ACTIVE + destinatário;
@@ -331,33 +335,43 @@ O novo flow não pode herdar as práticas operacionais legadas do EvydFlow. Ante
 ## 14. Sequência de PRs
 
 ### PR 1 — contratos + documentação
+
 IDs, schemas e recipeKey. Alinhar documentação global. Sem alterar fluxo legado.
 
 ### PR 2 — worker Windows
+
 Stable photoId, recipeKey, rehash snapshot, dimensões por variante, stdout JSON, testes.
 
 ### PR 3 — backend session/revision
+
 SQLite, repositories, constraints e CAS de activeRevision.
 
 ### PR 4 — ingest/verify/activate
+
 Rotas internas, service auth, idempotência e testes de lote parcial.
 
 ### PR 5 — public access/media
+
 Token bootstrap, browser grant, media authorization, Nginx internal, A/B isolation.
 
 ### PR 6 — React SessionProvider
+
 Hidratação real, estados de acesso, abort/cleanup; produção sem fixture.
 
 ### PR 7 — GalleryRoute
+
 Masonry, responsive variants, lazy lightbox e navigation state. Zero Phaser gate.
 
 ### PR 8 — Puzzle vertical slice
+
 Galeria -> selecionar -> Puzzle -> sair -> mesma foto/scroll.
 
 ### PR 9 — EvydFlow provider
+
 CLI local + upload HTTPS + verify + activate + recovery.
 
 ### PR 10 — piloto físico
+
 Android + Safari/iPhone, restore/rollback e entrega manual.
 
 Somente depois: outbox/WhatsApp, mais jogos, cache avançado, AVIF, virtualização ou multi-host.
@@ -365,11 +379,13 @@ Somente depois: outbox/WhatsApp, mais jogos, cache avançado, AVIF, virtualizaç
 ## 15. Gates de aceite
 
 Cada PR:
+
 ```bash
 pnpm check:fast
 ```
 
 Antes de merge do corte:
+
 ```bash
 pnpm check
 pnpm build
@@ -377,6 +393,7 @@ pnpm test:e2e
 ```
 
 Testes adicionais obrigatórios:
+
 - colisão de pedidos com mesmos quatro últimos dígitos;
 - session A/B cross-access;
 - upload interrompido;
@@ -394,6 +411,7 @@ Testes adicionais obrigatórios:
 ## 16. Itens deliberadamente adiados
 
 Não bloquear o piloto com:
+
 - Postgres;
 - fila distribuída;
 - microservices;
@@ -406,6 +424,7 @@ Não bloquear o piloto com:
 - envio automático de WhatsApp.
 
 Não adiar:
+
 - isolamento multi-cliente;
 - autorização por mídia;
 - recipeKey;
