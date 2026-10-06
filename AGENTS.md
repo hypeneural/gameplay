@@ -6,7 +6,7 @@ Build a safe, local-VPS, mobile-first factory for personalized photo minigames. 
 
 ## Start here
 
-1. Read `docs/index.md`, the active execution plan and the relevant game `SPEC.md`. For photo-session/gallery work, the active plan is `docs/exec-plans/active/CG-PHOTO-SESSIONS-ANTIGRAVITY-2.19.1.md`.
+1. Read `docs/index.md`, the active execution plan and the relevant game `SPEC.md`. For photo-session/gallery work, read `docs/exec-plans/active/CG-PHOTO-SESSIONS-ANTIGRAVITY-2.19.1.md`; for GalleryRoute/album work also read `.agents/rules/christmas-gallery-album.md` and `.agents/skills/christmas-gallery-album/SKILL.md`.
 2. For presentation or asset work, read `docs/experience/christmas/ART_BIBLE.md` and `docs/assets/ASSET_MANIFEST_CONTRACT.md`.
 3. For Phaser work, read the matching file in `vendor/phaser-skills/v4.2.1/`, then inspect installed types and a 4.2.1 official example.
 4. Make the smallest coherent change and run `pnpm check:fast`.
