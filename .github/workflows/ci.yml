@@ -76,6 +76,11 @@ jobs:
       - name: Production Build (fail-closed customer sessions)
         run: pnpm build
 
+      - name: Build and verify VPS staging artifact
+        run: |
+          pnpm release:staging
+          pnpm release:verify
+
   gallery-e2e:
     name: Gallery mobile E2E
     needs: validate
