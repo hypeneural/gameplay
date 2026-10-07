@@ -60,6 +60,9 @@ jobs:
       - name: Verify release inventory and SHA-256
         run: pnpm release:verify
 
+      - name: Smoke compiled staging runtime
+        run: pnpm release:smoke-runtime
+
       - name: Upload immutable release bundle
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
