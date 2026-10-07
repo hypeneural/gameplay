@@ -1,45 +1,83 @@
-# Servidor de catálogo e prévia social
+# Servidor de catálogo e gateway de sessão
 
-Este app entrega o HTML inicial de uma sessão autorizada e insere as tags Open
-Graph antes de o React carregar. Ele é separado de `apps/play`: o navegador
-continua responsável pela interação, enquanto este servidor decide se um link
-existe e qual imagem social pode ser entregue.
+Este app entrega o HTML inicial de uma sessão autorizada, insere Open Graph antes do React e expõe o health check do gateway. O browser continua responsável pela interação; o Node decide se o link existe e qual arte social pode ser entregue.
+
+## Estado atual
+
+O código de VPS está deliberadamente limitado a **staging-demo sintético**.
+
+Em produção, o processo só inicia quando recebe:
+
+```text
+NODE_ENV=production
+CATALOG_RELEASE_STAGE=staging-demo
+CATALOG_PUBLIC_ORIGIN=https://...
+CATALOG_SOCIAL_PREVIEW_FILE=/caminho/privado/social-preview.json
+CATALOG_APPLICATION_SHELL=/srv/christmas-games/current/web/index.html
+```
+
+Antes de abrir a porta, o processo valida o app shell e o JSON de preview. O estágio `pilot` continua bloqueado por `deploy/readiness.json`.
 
 ## Fluxo
 
 ```text
-Robô ou família → GET /s/<token> → servidor autoriza → HTML com OG
-Robô social → GET /s/<token>/social-preview → servidor revalida
-Nginx interno ← X-Accel-Redirect ← derivada genérica ou consentida
+família/robô → GET /s/<token> → servidor autoriza → HTML com OG
+família      → GET /s/<token>/fotos → mesmo shell autorizado
+família      → GET /s/<token>/game/<id> → mesmo shell autorizado
+robô social  → GET /s/<token>/social-preview → servidor revalida
+Nginx interno ← X-Accel-Redirect ← arte genérica/consentida
+monitor      → GET /healthz → status + releaseStage
 ```
 
-O repositório de exemplo é um arquivo externo de configuração. Em produção ele
-pode ser substituído por um adaptador de banco que cumpra a interface
-`SocialPreviewRepository`, sem mudar a rota, o HTML ou o Nginx.
+O repository adapter atual usa um arquivo privado e recarrega a configuração em cada decisão para observar revogação. Um futuro adaptador SQLite pode substituir essa interface sem mudar a borda HTTP.
 
-## Configuração do VPS
+## Comandos
 
-1. Gere o build de `apps/play` com `pnpm build`.
-2. Copie a arte WebP aprovada para
-   `/srv/christmas-games/catalog-social/evydencia-christmas-v1.webp`.
-3. Copie `config/social-preview.example.json` para fora da webroot, troque os
-   valores de exemplo por tokens opacos e mantenha permissões apenas do usuário
-   do serviço.
-4. Defina `NODE_ENV=production`, `CATALOG_PUBLIC_ORIGIN` com o domínio HTTPS
-   canônico escolhido para os jogos, `CATALOG_SOCIAL_PREVIEW_FILE` com o caminho
-   privado da configuração e, se necessário, `CATALOG_APPLICATION_SHELL`.
-5. Inicie `pnpm --filter @christmas-games/catalog-server start` atrás do Nginx,
-   usando o exemplo `nginx/catalog-social-preview.conf.example` como base.
+Desenvolvimento:
 
-O servidor recusa HTTP quando `NODE_ENV=production`. Ele responde sem cache
-para que uma revogação seja observada em novas requisições. Redes sociais podem
-manter uma cópia anterior por política própria; isso não pode ser removido pelo
-cliente nem pelo React.
+```bash
+pnpm --filter @christmas-games/catalog-server start:dev
+```
 
-## Consentimento de foto
+Build compilado:
 
-O padrão é sempre `generic`. `customer-photo` só é aceito quando o operador
-registra `consent: "granted"`, uma chave de derivada opaca e uma versão de
-prévia. Ao mudar o consentimento para `revoked`, a mesma rota volta a entregar
-a arte genérica na próxima requisição. Não coloque no arquivo de configuração
-nome de cliente, caminho físico, telefone, id interno ou URL de original.
+```bash
+pnpm --filter @christmas-games/catalog-server build
+pnpm --filter @christmas-games/catalog-server start
+```
+
+Na VPS, não execute `tsx`. O artifact de staging contém somente `server/*.js`.
+
+## Deploy canônico
+
+Não use este diretório como fonte principal de deploy. O caminho canônico é:
+
+- `deploy/readiness.json`;
+- `deploy/vps/`;
+- `docs/ops/VPS_STAGING_DEMO_RUNBOOK.md`;
+- `.agents/skills/vps-staging-release/SKILL.md`.
+
+O template completo de Nginx é `deploy/vps/nginx/christmas-games.conf.example`.
+
+Ordem mínima antes de promoção:
+
+```bash
+pnpm agent:doctor
+pnpm check
+pnpm release:staging
+pnpm release:verify
+```
+
+Depois da cópia para um release imutável na VPS, rode:
+
+```bash
+node ops/tools/verify-vps-release.mjs .
+```
+
+antes de trocar o symlink `current`.
+
+## Consentimento de foto social
+
+O padrão é sempre `generic`. `customer-photo` só é aceito quando o registro possui consentimento explícito. No estágio atual, `customerDataAllowed=false`; portanto staging-demo não deve conter foto real de cliente.
+
+Nunca coloque no arquivo de configuração nome de cliente, caminho físico, telefone, pedido, credencial, URL de original ou token em logs.
