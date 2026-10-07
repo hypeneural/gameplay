@@ -1,3 +1,4 @@
+import { execFileSync } from 'node:child_process';
 import { URL } from 'node:url';
 import { readFile } from 'node:fs/promises';
 
@@ -14,6 +15,24 @@ const workflowSources = await Promise.all([
 ]);
 
 const failures = [];
+
+const trackedFiles = readTrackedFiles();
+const forbiddenTrackedPatterns = [
+  /(^|\/)credentials\.json$/i,
+  /(^|\/)\.env(?:\.|$)/i,
+  /\.(?:db|sqlite|sqlite3|log|pem|key|p12|pfx)$/i,
+  /-(?:wal|shm)$/i,
+  /(^|\/)id_(?:rsa|ed25519)$/i,
+];
+const forbiddenTrackedFiles = trackedFiles.filter((path) =>
+  forbiddenTrackedPatterns.some((pattern) => pattern.test(path)),
+);
+if (forbiddenTrackedFiles.length > 0) {
+  failures.push(
+    `Sensitive/runtime files are tracked by Git: ${forbiddenTrackedFiles.join(', ')}.`,
+  );
+}
+
 const nodeMajor = Number(process.versions.node.split('.')[0]);
 if (nodeMajor !== 24) failures.push(`Node 24 required; running ${process.versions.node}.`);
 
@@ -123,4 +142,17 @@ if (failures.length > 0) {
       canonicalCommands: agentState.canonicalCommands,
     })}\n`,
   );
+}
+
+function readTrackedFiles() {
+  try {
+    return execFileSync('git', ['ls-files'], {
+      encoding: 'utf8',
+      stdio: ['ignore', 'pipe', 'ignore'],
+    })
+      .split(/\r?\n/)
+      .filter(Boolean);
+  } catch {
+    return [];
+  }
 }
