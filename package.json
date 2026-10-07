@@ -28,6 +28,8 @@
     "media:process": "pnpm --filter @christmas-games/media-pipeline process",
     "media:inspect": "pnpm --filter @christmas-games/media-pipeline inspect",
     "media:prepare-local": "pnpm --filter @christmas-games/media-pipeline prepare-local",
+    "gallery:prepare": "pnpm --filter @christmas-games/media-pipeline gallery-lab -- --prepare-only",
+    "gallery:lab": "pnpm --filter @christmas-games/media-pipeline gallery-lab",
     "game:new": "pnpm --filter @christmas-games/game-generator new",
     "asset:doctor": "pnpm --filter @christmas-games/asset-factory run doctor",
     "asset:validate": "pnpm --filter @christmas-games/asset-factory run validate",
