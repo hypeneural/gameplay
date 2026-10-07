@@ -1,8 +1,12 @@
-import { createHash } from 'node:crypto';
 import { execFileSync } from 'node:child_process';
-import { cp, mkdir, readFile, readdir, rm, stat, writeFile } from 'node:fs/promises';
-import { basename, join, relative, sep } from 'node:path';
+import { cp, mkdir, readFile, rm, stat, writeFile } from 'node:fs/promises';
+import { basename, join, relative } from 'node:path';
 import { fileURLToPath, URL } from 'node:url';
+import {
+  assertNoForbiddenReleaseFiles,
+  assertReleaseAllowed,
+  inventoryReleaseFiles,
+} from './release-utils.mjs';
 
 const repositoryRoot = fileURLToPath(new URL('../../', import.meta.url));
 const readinessPath = join(repositoryRoot, 'deploy', 'readiness.json');
@@ -29,11 +33,19 @@ const socialSource = join(
   'social',
   'evydencia-christmas-v1.webp',
 );
+const socialConfigExampleSource = join(
+  repositoryRoot,
+  'apps',
+  'catalog-server',
+  'config',
+  'social-preview.example.json',
+);
 const opsSource = join(repositoryRoot, 'deploy', 'vps');
 
 await assertFile(join(webSource, 'index.html'), 'apps/play/dist/index.html');
 await assertFile(join(serverSource, 'main.js'), 'apps/catalog-server/dist/main.js');
 await assertFile(socialSource, 'generic social preview');
+await assertFile(socialConfigExampleSource, 'social preview config example');
 
 await rm(outputRoot, { recursive: true, force: true });
 await mkdir(outputRoot, { recursive: true });
@@ -43,8 +55,9 @@ await copyTree(serverSource, join(outputRoot, 'server'), { excludeSourceMaps: tr
 await mkdir(join(outputRoot, 'public', 'social'), { recursive: true });
 await cp(socialSource, join(outputRoot, 'public', 'social', basename(socialSource)));
 await copyTree(opsSource, join(outputRoot, 'ops'), { excludeSourceMaps: true });
+await cp(socialConfigExampleSource, join(outputRoot, 'ops', 'social-preview.example.json'));
 
-const files = await inventoryFiles(outputRoot);
+const files = await inventoryReleaseFiles(outputRoot);
 assertNoForbiddenReleaseFiles(files);
 
 const release = {
@@ -89,23 +102,6 @@ function parseArguments(argv) {
   return { stage, checkOnly };
 }
 
-function assertReleaseAllowed(readiness, stage) {
-  const allowed = Array.isArray(readiness.allowedReleaseStages)
-    ? readiness.allowedReleaseStages
-    : [];
-  if (!allowed.includes(stage)) {
-    const blockers = Array.isArray(readiness.blockersBeforePilot)
-      ? readiness.blockersBeforePilot.join('; ')
-      : 'readiness blockers are not documented';
-    throw new Error(
-      `Release stage ${stage} is blocked by deploy/readiness.json. Allowed: ${allowed.join(', ') || 'none'}. Blockers: ${blockers}`,
-    );
-  }
-  if (stage === 'staging-demo' && readiness.customerDataAllowed === true) {
-    throw new Error('staging-demo must never allow customer data.');
-  }
-}
-
 async function copyTree(source, destination, { excludeSourceMaps }) {
   await cp(source, destination, {
     recursive: true,
@@ -125,51 +121,6 @@ async function assertFile(path, label) {
       `Missing ${label}. Run the canonical staging build before preparing a release.`,
       { cause: error },
     );
-  }
-}
-
-async function inventoryFiles(root) {
-  const result = [];
-  await visit(root);
-  result.sort((left, right) => left.path.localeCompare(right.path));
-  return result;
-
-  async function visit(directory) {
-    const entries = await readdir(directory, { withFileTypes: true });
-    for (const entry of entries) {
-      const absolute = join(directory, entry.name);
-      if (entry.isDirectory()) {
-        await visit(absolute);
-        continue;
-      }
-      if (!entry.isFile()) continue;
-      const bytes = await readFile(absolute);
-      result.push({
-        path: relative(root, absolute).split(sep).join('/'),
-        bytes: bytes.byteLength,
-        sha256: createHash('sha256').update(bytes).digest('hex'),
-      });
-    }
-  }
-}
-
-function assertNoForbiddenReleaseFiles(files) {
-  const forbidden = files.filter(({ path }) => {
-    const lower = path.toLowerCase();
-    return (
-      lower.endsWith('.map') ||
-      lower.endsWith('.ts') ||
-      lower.endsWith('.tsx') ||
-      lower.endsWith('/.env') ||
-      lower === '.env' ||
-      lower.includes('credentials.json') ||
-      lower.includes('node_modules/') ||
-      lower.includes('originals/') ||
-      lower.includes('local-test-media')
-    );
-  });
-  if (forbidden.length > 0) {
-    throw new Error(`Forbidden files in VPS release: ${forbidden.map(({ path }) => path).join(', ')}`);
   }
 }
 
