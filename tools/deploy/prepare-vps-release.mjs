@@ -41,6 +41,7 @@ const socialConfigExampleSource = join(
   'social-preview.example.json',
 );
 const opsSource = join(repositoryRoot, 'deploy', 'vps');
+const releaseToolsSource = join(repositoryRoot, 'tools', 'deploy');
 
 await assertFile(join(webSource, 'index.html'), 'apps/play/dist/index.html');
 await assertFile(join(serverSource, 'main.js'), 'apps/catalog-server/dist/main.js');
@@ -56,6 +57,10 @@ await mkdir(join(outputRoot, 'public', 'social'), { recursive: true });
 await cp(socialSource, join(outputRoot, 'public', 'social', basename(socialSource)));
 await copyTree(opsSource, join(outputRoot, 'ops'), { excludeSourceMaps: true });
 await cp(socialConfigExampleSource, join(outputRoot, 'ops', 'social-preview.example.json'));
+await mkdir(join(outputRoot, 'ops', 'tools'), { recursive: true });
+for (const toolName of ['release-utils.mjs', 'verify-vps-release.mjs', 'smoke-staging.mjs']) {
+  await cp(join(releaseToolsSource, toolName), join(outputRoot, 'ops', 'tools', toolName));
+}
 
 const files = await inventoryReleaseFiles(outputRoot);
 assertNoForbiddenReleaseFiles(files);
