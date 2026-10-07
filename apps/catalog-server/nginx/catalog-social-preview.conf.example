@@ -1,34 +1,13 @@
-# Compatibility reference only.
-# Canonical full VPS template:
+# DEPRECATED — DO NOT INSTALL THIS FILE.
+#
+# The catalog server used to ship a social-preview-only Nginx snippet here.
+# That topology no longer covers the complete Hub/Gallery/Game staging edge.
+#
+# Canonical VPS template:
 #   deploy/vps/nginx/christmas-games.conf.example
 #
-# Keep this file aligned with the session route shape so an old include cannot
-# break direct Gallery reloads. TLS remains owned by the outer HTTPS server.
-
-location ~ ^/s/[A-Za-z0-9_-]{16,128}(?:/fotos|/game/[a-z0-9-]{1,64}|/social-preview)?$ {
-    access_log off;
-    log_not_found off;
-    proxy_pass http://127.0.0.1:4180;
-    proxy_http_version 1.1;
-    proxy_set_header Host $host;
-    proxy_set_header X-Forwarded-Proto $scheme;
-    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-    add_header Referrer-Policy "no-referrer" always;
-    add_header X-Content-Type-Options "nosniff" always;
-}
-
-location = /_catalog_social/evydencia-christmas-v1.webp {
-    internal;
-    alias /srv/christmas-games/current/public/social/evydencia-christmas-v1.webp;
-    default_type image/webp;
-    add_header X-Content-Type-Options "nosniff" always;
-}
-
-# Reserved for a future customer-media pilot. staging-demo must not contain
-# customer derivatives.
-location ~ ^/_customer_social/([A-Za-z0-9_-]{16,128})\.webp$ {
-    internal;
-    alias /srv/christmas-private/derived/social/$1.webp;
-    default_type image/webp;
-    add_header X-Content-Type-Options "nosniff" always;
-}
+# Canonical runbook:
+#   docs/ops/VPS_STAGING_DEMO_RUNBOOK.md
+#
+# Keeping this stub prevents old links from silently becoming a second source
+# of truth. Do not add directives here.
