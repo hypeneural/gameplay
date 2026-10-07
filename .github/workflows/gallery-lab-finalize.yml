@@ -50,7 +50,7 @@ jobs:
         shell: bash
         run: |
           mkdir -p "$RUNNER_TEMP/gallery-input" "$RUNNER_TEMP/gallery-storage"
-          node --input-type=module <<'NODE'
+          pnpm --filter @christmas-games/media-pipeline exec node --input-type=module <<'NODE'
           import sharp from 'sharp';
           const root = process.env.RUNNER_TEMP + '/gallery-input';
           await sharp({ create: { width: 700, height: 500, channels: 3, background: '#103e35' } }).jpeg().toFile(root + '/family-landscape.jpg');
