@@ -6,10 +6,18 @@ on:
   pull_request:
     branches: ['**']
 
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   validate:
     name: Quality Gates & Build
     runs-on: ubuntu-latest
+    timeout-minutes: 20
 
     steps:
       - name: Checkout repository
@@ -57,5 +65,8 @@ jobs:
           done
           pnpm asset:validate --owner christmas-shell
 
-      - name: Production Build
+      - name: Check deploy readiness policy
+        run: pnpm deploy:readiness
+
+      - name: Production Build (fail-closed customer sessions)
         run: pnpm build
