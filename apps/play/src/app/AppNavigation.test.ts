@@ -34,10 +34,7 @@ describe('AppNavigation', () => {
 
   it('compares route identity without exposing a run or photo identifier', () => {
     expect(
-      sameRoute(
-        { kind: 'gallery', token: 'session' },
-        { kind: 'gallery', token: 'session' },
-      ),
+      sameRoute({ kind: 'gallery', token: 'session' }, { kind: 'gallery', token: 'session' }),
     ).toBe(true);
     expect(
       sameRoute(

@@ -2,10 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import type { Photo } from '@christmas-games/platform';
 import { playInterfaceTap } from '../audio/playInterfaceTap.js';
 import { PhotoPrint } from './PhotoPrint.js';
-import {
-  GALLERY_LIGHTBOX_SIZES,
-  GALLERY_LIGHTBOX_VARIANTS,
-} from '../gallery/galleryPolicy.js';
+import { GALLERY_LIGHTBOX_SIZES, GALLERY_LIGHTBOX_VARIANTS } from '../gallery/galleryPolicy.js';
 
 interface SessionGalleryLightboxProps {
   photos: readonly Photo[];

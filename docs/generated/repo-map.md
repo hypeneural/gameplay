@@ -26,7 +26,8 @@
 │   │   └── feature_request.md
 │   ├── pull_request_template.md
 │   └── workflows
-│       └── ci.yml
+│       ├── ci.yml
+│       └── gallery-native-like-finalize.yml
 ├── .gitignore
 ├── .node-version
 ├── .prettierignore
@@ -356,6 +357,7 @@
 │       │   │   ├── CompletionActions.tsx
 │       │   │   ├── MagicPhotoWinter.tsx
 │       │   │   ├── PhotoPrint.tsx
+│       │   │   ├── SessionGalleryLightbox.tsx
 │       │   │   ├── SessionPhotoAlbum.tsx
 │       │   │   ├── ShareButton.tsx
 │       │   │   ├── ShellControls.tsx
@@ -371,6 +373,10 @@
 │       │   │   ├── useChristmasMagic.ts
 │       │   │   ├── useShellInteractions.ts
 │       │   │   └── useSnowfall.ts
+│       │   ├── gallery
+│       │   │   ├── galleryPolicy.test.ts
+│       │   │   └── galleryPolicy.ts
+│       │   ├── gallery.css
 │       │   ├── magic-photo.css
 │       │   ├── main.tsx
 │       │   ├── phaser
@@ -392,6 +398,7 @@
 │       │   │   ├── Hub.tsx
 │       │   │   ├── LoadingState.tsx
 │       │   │   ├── PerformanceLab.tsx
+│       │   │   ├── SessionGallery.tsx
 │       │   │   └── ThemeLab.tsx
 │       │   ├── sharing
 │       │   │   ├── shareLink.test.ts
@@ -1136,7 +1143,8 @@
 │   │   ├── lifecycle.spec.ts
 │   │   ├── magic-photo.spec.ts
 │   │   ├── rena-das-lembrancas-input.spec.ts
-│   │   └── rena-das-lembrancas.spec.ts
+│   │   ├── rena-das-lembrancas.spec.ts
+│   │   └── session-gallery.spec.ts
 │   └── fixtures
 │       ├── session-12-mixed
 │       │   ├── manifest.json

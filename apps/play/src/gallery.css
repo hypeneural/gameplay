@@ -352,9 +352,7 @@
     max(88px, calc(env(safe-area-inset-bottom) + 76px));
   overflow: auto;
   overscroll-behavior: contain;
-  background:
-    radial-gradient(circle at 50% 50%, rgb(38 80 66 / 26%), transparent 52%),
-    #031214;
+  background: radial-gradient(circle at 50% 50%, rgb(38 80 66 / 26%), transparent 52%), #031214;
   touch-action: pan-y pinch-zoom;
 }
 

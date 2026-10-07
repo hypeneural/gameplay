@@ -51,7 +51,10 @@ export function PhotoPrint({
   );
 }
 
-function buildSrcSet(photo: Photo, variants: readonly PhotoVariant[] | undefined): string | undefined {
+function buildSrcSet(
+  photo: Photo,
+  variants: readonly PhotoVariant[] | undefined,
+): string | undefined {
   if (!variants?.length || !photo.variantMetrics) return undefined;
 
   const sources = new Map<number, string>();

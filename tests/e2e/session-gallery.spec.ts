@@ -1,6 +1,8 @@
 import { expect, test } from '@playwright/test';
 
-test('gallery is a bounded mobile album and stays engine-free before gameplay', async ({ page }) => {
+test('gallery is a bounded mobile album and stays engine-free before gameplay', async ({
+  page,
+}) => {
   const requested: string[] = [];
   page.on('request', (request) => requested.push(request.url()));
 
@@ -11,17 +13,17 @@ test('gallery is a bounded mobile album and stays engine-free before gameplay', 
   await expect(page.locator('.gallery-card')).toHaveCount(8);
   await expect(page.locator('canvas')).toHaveCount(0);
 
-  expect(
-    requested.some((url) => /node_modules\/\.vite\/deps\/phaser(?:\.js|_)/i.test(url)),
-  ).toBe(false);
+  expect(requested.some((url) => /node_modules\/\.vite\/deps\/phaser(?:\.js|_)/i.test(url))).toBe(
+    false,
+  );
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
 
   const viewportWidth = page.viewportSize()!.width;
-  const columnCount = await page.locator('.gallery-grid').evaluate((element) =>
-    getComputedStyle(element)
-      .gridTemplateColumns.split(' ')
-      .filter(Boolean).length,
-  );
+  const columnCount = await page
+    .locator('.gallery-grid')
+    .evaluate(
+      (element) => getComputedStyle(element).gridTemplateColumns.split(' ').filter(Boolean).length,
+    );
   expect(columnCount).toBe(viewportWidth < 600 ? 1 : viewportWidth < 900 ? 2 : 3);
 
   if (viewportWidth < 600) {

@@ -5,7 +5,10 @@ export const GALLERY_BATCH_SIZE = 8;
 export const GALLERY_AUTOLOAD_ROOT_MARGIN = '160px 0px';
 
 export const GALLERY_FEED_VARIANTS = ['thumb', 'card'] as const satisfies readonly PhotoVariant[];
-export const GALLERY_LIGHTBOX_VARIANTS = ['card', 'game'] as const satisfies readonly PhotoVariant[];
+export const GALLERY_LIGHTBOX_VARIANTS = [
+  'card',
+  'game',
+] as const satisfies readonly PhotoVariant[];
 
 export const GALLERY_FEED_SIZES =
   '(max-width: 599px) calc(100vw - 24px), (max-width: 899px) calc((100vw - 44px) / 2), min(31vw, 320px)';
