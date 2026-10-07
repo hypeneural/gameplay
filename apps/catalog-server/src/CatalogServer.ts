@@ -18,6 +18,9 @@ export interface CatalogServerDependencies {
   readonly previews: SocialPreviewRepository;
   readonly audit: SocialPreviewAudit;
   readonly clock: SocialPreviewClock;
+  readonly runtime?: {
+    readonly releaseStage: string;
+  };
 }
 
 /**
@@ -44,7 +47,20 @@ async function handleRequest(
     send(response, 405, 'Método não permitido.');
     return;
   }
+
   const requestUrl = new URL(request.url ?? '/', 'http://catalog.invalid');
+  if (requestUrl.pathname === '/healthz') {
+    const body = JSON.stringify({
+      status: 'ok',
+      releaseStage: dependencies.runtime?.releaseStage ?? 'test',
+    });
+    response.setHeader('Cache-Control', 'no-store');
+    response.setHeader('Content-Type', 'application/json; charset=utf-8');
+    response.setHeader('Referrer-Policy', 'no-referrer');
+    send(response, 200, body, request.method === 'HEAD');
+    return;
+  }
+
   const route = parseSocialRoute(requestUrl.pathname);
   if (!route) {
     sendNotFound(response);
@@ -70,6 +86,7 @@ async function handleRequest(
     // browser never receives a filesystem path or original-photo URL.
     response.setHeader('X-Accel-Redirect', preview.internalUri);
     response.setHeader('Cache-Control', 'private, no-store');
+    response.setHeader('Referrer-Policy', 'no-referrer');
     response.setHeader('X-Content-Type-Options', 'nosniff');
     response.statusCode = 200;
     response.end();
@@ -83,7 +100,7 @@ async function handleRequest(
   );
   response.setHeader('Cache-Control', 'private, no-store');
   response.setHeader('Content-Type', 'text/html; charset=utf-8');
-  response.setHeader('Referrer-Policy', 'same-origin');
+  response.setHeader('Referrer-Policy', 'no-referrer');
   response.setHeader('X-Content-Type-Options', 'nosniff');
   send(response, 200, html, request.method === 'HEAD');
 }
