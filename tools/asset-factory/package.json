@@ -17,7 +17,8 @@
     "catalog": "tsx src/index.ts catalog",
     "budget": "tsx src/index.ts budget",
     "manifest": "tsx src/index.ts manifest",
-    "migrate": "tsx src/index.ts migrate"
+    "migrate": "tsx src/index.ts migrate",
+    "validate-all": "tsx src/validateAll.ts"
   },
   "dependencies": {
     "sharp": "0.35.3"
