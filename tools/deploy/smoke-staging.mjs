@@ -59,9 +59,14 @@ process.stdout.write(
 );
 
 async function request(pathname) {
-  const response = await globalThis.fetch(new URL(pathname, origin), {
-    redirect: 'error',
-    headers: { accept: 'text/html,application/json' },
-  });
-  return { response, body: await response.text() };
+  try {
+    const response = await globalThis.fetch(new URL(pathname, origin), {
+      redirect: 'error',
+      headers: { accept: 'text/html,application/json' },
+      signal: globalThis.AbortSignal.timeout(10_000),
+    });
+    return { response, body: await response.text() };
+  } catch {
+    throw new Error('Staging smoke request failed before receiving a valid HTTP response.');
+  }
 }
