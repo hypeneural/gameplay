@@ -77,6 +77,7 @@ for (const script of [
   'gallery:prepare',
   'gallery:lab',
   'deploy:readiness',
+  'deploy:staging-config',
   'release:staging',
   'release:verify',
   'deploy:smoke',
