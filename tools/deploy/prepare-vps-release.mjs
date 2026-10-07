@@ -58,6 +58,11 @@ await assertFile(socialConfigExampleSource, 'social preview config example');
 
 await rm(outputRoot, { recursive: true, force: true });
 await mkdir(outputRoot, { recursive: true });
+await writeFile(
+  join(outputRoot, 'package.json'),
+  `${JSON.stringify({ private: true, type: 'module' }, null, 2)}\n`,
+  'utf8',
+);
 
 await copyTree(webSource, join(outputRoot, 'web'), { excludeSourceMaps: true });
 await copyTree(serverSource, join(outputRoot, 'server'), { excludeSourceMaps: true });
