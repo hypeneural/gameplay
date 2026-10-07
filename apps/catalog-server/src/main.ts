@@ -19,7 +19,9 @@ parsePreviewConfiguration(JSON.parse(previewSource), { rejectExampleTokens: envi
 const server = createCatalogServer({
   publicOrigin: runtime.publicOrigin,
   loadApplicationShell: async () => applicationShell,
-  previews: createFilePreviewRepository(runtime.previewConfigPath),
+  previews: createFilePreviewRepository(runtime.previewConfigPath, {
+    rejectExampleTokens: environment === 'production',
+  }),
   audit: {
     async record(entry) {
       // A integração de auditoria só recebe decisão, versão e data. Nunca
