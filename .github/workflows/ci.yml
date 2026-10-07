@@ -64,13 +64,7 @@ jobs:
         run: pnpm check
 
       - name: Validate Assets & Provenance
-        shell: bash
-        run: |
-          for manifest in packages/games/*/assets/manifest.json; do
-            game=$(basename "$(dirname "$(dirname "$manifest")")")
-            pnpm asset:validate --game "$game"
-          done
-          pnpm asset:validate --owner christmas-shell
+        run: pnpm asset:validate:all
 
       - name: Check deploy readiness policy
         run: pnpm deploy:readiness
