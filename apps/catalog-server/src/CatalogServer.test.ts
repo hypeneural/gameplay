@@ -131,6 +131,26 @@ describe('CatalogServer', () => {
     );
   });
 
+  it('refuses customer-photo previews in staging-demo even when config says granted', async () => {
+    const customerPreview = {
+      status: 'active' as const,
+      preview: {
+        kind: 'customer-photo' as const,
+        consent: 'granted' as const,
+        derivativeKey: 'social-preview-4Q4bB7GmT2pX',
+        version: 'social-v3',
+      },
+    };
+    const audit = vi.fn(async () => undefined);
+    const baseUrl = await startServer(customerPreview, audit, 'staging-demo');
+
+    const response = await fetch(`${baseUrl}/s/local-demo-token/social-preview`);
+
+    expect(response.status).toBe(404);
+    expect(response.headers.get('x-accel-redirect')).toBeNull();
+    expect(audit).not.toHaveBeenCalled();
+  });
+
   it('fails closed for an unknown or revoked link', async () => {
     const baseUrl = await startServer(
       { status: 'revoked' },
@@ -152,6 +172,7 @@ function startServer(
     readonly previewVersion: string;
     readonly occurredAt: string;
   }) => Promise<void>,
+  releaseStage?: string,
 ): Promise<string> {
   const server = createCatalogServer({
     publicOrigin: parsePublicOrigin('https://jogos.exemplo.test'),
@@ -159,6 +180,7 @@ function startServer(
     previews: { getByPublicToken: async () => record },
     audit: { record: auditRecord },
     clock: { now: () => new Date('2026-08-25T12:00:00.000Z') },
+    ...(releaseStage === undefined ? {} : { runtime: { releaseStage } }),
   });
   servers.push(server);
   return new Promise((resolve, reject) => {
