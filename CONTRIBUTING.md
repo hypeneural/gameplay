@@ -30,10 +30,13 @@ cd gameplay
 # 2. Instalar dependências estritas
 pnpm install --frozen-lockfile
 
-# 3. Gerar fixtures de teste locais
+# 3. Confirmar estágio/contratos do repositório
+pnpm agent:doctor
+
+# 4. Gerar fixtures de teste locais
 pnpm fixtures:generate
 
-# 4. Iniciar o servidor de desenvolvimento
+# 5. Iniciar o servidor de desenvolvimento
 pnpm dev
 ```
 
@@ -99,6 +102,9 @@ packages/games/<nome-do-jogo>/
 Antes de abrir um Pull Request, você **deve** validar seu código com os scripts oficiais:
 
 ```bash
+# 0. Estado/readiness do repositório
+pnpm agent:doctor
+
 # 1. Validação Rápida (Execução obrigatória durante o desenvolvimento)
 pnpm check:fast
 
@@ -130,6 +136,7 @@ pnpm repo:map
 
 Ao abrir um Pull Request no GitHub, garanta que:
 
+- [ ] `pnpm agent:doctor` retorna `status=ok` e o estágio pedido é permitido por `deploy/readiness.json`.
 - [ ] O código passa 100% verde em `pnpm check:fast` (0 erros de tipagem, 0 erros de linter, 100% de testes unitários passando).
 - [ ] O jogo não importa bibliotecas proibidas em seu `domain/` (validado pelo `dependency-cruiser`).
 - [ ] O ciclo de vida do Phaser limpa listeners de eventos e executa `game.destroy(true)` na desmontagem.
