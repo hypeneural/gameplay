@@ -15,7 +15,7 @@ interface SessionPhotoAlbumProps {
   onOpenGallery?(): void;
 }
 
-/** Full galleries live in their own route; compact game covers retain the picker. */
+/** Quick selection stays modal; the full gallery can live in its own route. */
 export function SessionPhotoAlbum({
   session,
   photo,
@@ -123,20 +123,26 @@ export function SessionPhotoAlbum({
           type="button"
           onClick={() => {
             playInterfaceTap('open');
-            if (onOpenGallery) {
-              onOpenGallery();
-              return;
-            }
             setOpen(true);
           }}
         >
-          <ShellIcon name="photos" />{' '}
-          <span>
-            {compact ? 'Trocar foto' : onOpenGallery ? 'Abrir álbum de Natal' : 'Ver suas fotos'}
-          </span>
+          <ShellIcon name="photos" /> <span>{compact ? 'Trocar foto' : 'Ver suas fotos'}</span>
         </button>
         {onSnow ? <SnowGlobeButton burst={snowBurst} onSnow={onSnow} /> : null}
       </div>
+      {onOpenGallery && !compact ? (
+        <button
+          className="album-open crystal-control"
+          data-testid="open-full-gallery"
+          type="button"
+          onClick={() => {
+            playInterfaceTap('open');
+            onOpenGallery();
+          }}
+        >
+          <ShellIcon name="photos" /> <span>Abrir álbum completo</span>
+        </button>
+      ) : null}
       {open ? (
         <PhotoPicker
           key={session.id}
