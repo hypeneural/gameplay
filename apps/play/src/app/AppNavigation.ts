@@ -3,7 +3,7 @@ export interface SessionRoute {
   token: string;
 }
 
-export interface GalleryRoute {
+interface GalleryRoute {
   kind: 'gallery';
   token: string;
 }
