@@ -35,6 +35,24 @@ describe('parsePreviewConfiguration', () => {
     });
   });
 
+  it('rejects example tokens when the runtime requests production-safe configuration', () => {
+    expect(() =>
+      parsePreviewConfiguration(
+        {
+          version: 1,
+          sessions: [
+            {
+              token: 'demo-session-token-change-me-001',
+              status: 'active',
+              preview: { kind: 'generic', version: genericPreviewVersion },
+            },
+          ],
+        },
+        { rejectExampleTokens: true },
+      ),
+    ).toThrow('sessão inválida');
+  });
+
   it('rejects a token that cannot appear in a public route', () => {
     expect(() =>
       parsePreviewConfiguration({
