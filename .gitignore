@@ -2,6 +2,7 @@
 .local-private-media/
 .local-test-media/
 **/.local-test-media/
+.release/
 # Local operational reports: preserve on disk, never publish infrastructure details.
 docs/architecture/ANALISE_FORENSE_MELHORIAS_README_E_ESTRUTURA_GITHUB.md
 docs/architecture/AUDITORIA_FORENSE_DNS_PLESK_VPS_JOGOS_FOTOSDENATAL.md
