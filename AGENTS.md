@@ -7,7 +7,7 @@ Build a safe, local-VPS, mobile-first factory for personalized photo minigames. 
 ## Start here
 
 1. Run `pnpm agent:doctor`. If it does not return `status=ok`, stop and fix the reported repository contradiction before product work.
-2. Read `docs/index.md`, `deploy/readiness.json`, the active execution plan and the relevant owner `AGENTS.md`/`SPEC.md` before editing.
+2. Read `.agents/current-state.json`, `deploy/readiness.json`, `docs/index.md`, the active execution plan and the relevant owner `AGENTS.md`/`SPEC.md` before editing. Treat the two JSON files as machine-readable stage/priority gates; long audit documents never override them.
 3. For photo-session/gallery work, read `docs/integrations/photo-sessions/AUDITORIA_NODE_FIRST_GALLERY_LAB_2026-10-06.md` before the active plan; use the Node-first Gallery Lab to prove media + Hub + Gallery + games before involving EvydFlow/Python whenever the task can be validated locally. For GalleryRoute/album work also read `.agents/rules/christmas-gallery-album.md` and `.agents/skills/christmas-gallery-album/SKILL.md`.
 4. For presentation or asset work, read `docs/experience/christmas/ART_BIBLE.md` and `docs/assets/ASSET_MANIFEST_CONTRACT.md`.
 5. For Phaser work, read the matching file in `vendor/phaser-skills/v4.2.1/`, then inspect installed types and a 4.2.1 official example.
@@ -18,7 +18,7 @@ Build a safe, local-VPS, mobile-first factory for personalized photo minigames. 
 
 This section is intentionally repetitive and deterministic. A weaker agent must not infer a release stage or invent a shortcut.
 
-1. **Classify the task first:** `local-lab`, `vps-staging-demo`, or `pilot`. Read `deploy/readiness.json`; if the requested stage is not in `allowedReleaseStages`, do not work around the block.
+1. **Classify the task first:** `local-lab`, `vps-staging-demo`, or `pilot`. Read `.agents/current-state.json` and `deploy/readiness.json`; if the requested stage is not allowed or the task appears under `forbiddenUntilPilot`, do not work around the block.
 2. **Inspect before mutation:** fetch/read the target file, its nearest owner instructions and relevant tests. Never replace a file from memory or from an older audit snapshot.
 3. **Use canonical commands only:** start with `pnpm agent:doctor`; local photos use `pnpm gallery:lab`; readiness uses `pnpm deploy:readiness`; VPS demo packaging uses `pnpm release:staging` + `pnpm release:verify`; repository proof uses `pnpm check`/`pnpm validate`.
 4. **One authority per concern:** session/media authority stays in `apps/catalog-server`; UI stays in `apps/play`; image derivation stays in `tools/media-pipeline`; games stay in their packages. Do not create parallel session stores, alternate galleries or ad-hoc upload servers.
@@ -42,7 +42,7 @@ This section is intentionally repetitive and deterministic. A weaker agent must 
 
 `pnpm release:staging` is the only currently allowed VPS release command. It builds Vite with mode `staging-demo`, compiles `apps/catalog-server`, checks `deploy/readiness.json` and writes an ignored `.release/vps` bundle. Run `pnpm release:verify` before promotion. Staging uses synthetic/fixture photos only. Real customer data is forbidden until `pilotReady` becomes true through implementation and evidence, not by assertion.
 
-For deploy/VPS work, read `.agents/rules/staging-release-safety.md` and `.agents/skills/vps-staging-release/SKILL.md`.
+For deploy/VPS work, read `.agents/rules/staging-release-safety.md` and `.agents/skills/vps-staging-release/SKILL.md`. For the declared next milestone `real-session-authority`, read `apps/catalog-server/AGENTS.md` and `.agents/skills/real-session-authority/SKILL.md` before touching persistence or session APIs.
 
 ## Source order
 
