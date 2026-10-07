@@ -54,6 +54,21 @@ describe('CatalogServer', () => {
     });
   });
 
+  it('serves a direct gallery reload with its own canonical path', async () => {
+    const baseUrl = await startServer(
+      activeGeneric,
+      vi.fn(async () => undefined),
+    );
+
+    const response = await fetch(`${baseUrl}/s/local-demo-token/fotos`);
+
+    expect(response.status).toBe(200);
+    expect(response.headers.get('content-type')).toContain('text/html');
+    expect(await response.text()).toContain(
+      '<link rel="canonical" href="https://jogos.exemplo.test/s/local-demo-token/fotos" />',
+    );
+  });
+
   it('authorizes the generic image before asking Nginx for its internal asset', async () => {
     const baseUrl = await startServer(
       activeGeneric,
