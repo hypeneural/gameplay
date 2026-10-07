@@ -2,7 +2,7 @@
 
 ## Mission
 
-Build a safe, local-VPS, mobile-first factory for personalized photo minigames. This repository is optimized for legibility, deterministic domains and runtime evidence. Prefer boring, explicit paths over clever automation.
+Build a safe, local-VPS, mobile-first factory for personalized photo minigames. This repository is public on GitHub, so operational/customer data is out of scope for version control by definition. The repository is optimized for legibility, deterministic domains and runtime evidence. Prefer boring, explicit paths over clever automation.
 
 ## Start here
 
