@@ -47,9 +47,10 @@
     "test:e2e:gallery": "playwright test tests/e2e/session-gallery.spec.ts",
     "release:verify": "node tools/deploy/verify-vps-release.mjs",
     "deploy:smoke": "node tools/deploy/smoke-staging.mjs",
-    "validate:staging": "pnpm agent:doctor && pnpm check && pnpm asset:validate:all && pnpm test:e2e:gallery && pnpm release:staging && pnpm release:verify",
+    "validate:staging": "pnpm agent:doctor && pnpm check && pnpm asset:validate:all && pnpm test:e2e:gallery && pnpm release:staging && pnpm release:verify && pnpm release:smoke-runtime",
     "deploy:staging-config": "node tools/deploy/create-staging-preview-config.mjs",
-    "asset:validate:all": "pnpm --filter @christmas-games/asset-factory run validate-all"
+    "asset:validate:all": "pnpm --filter @christmas-games/asset-factory run validate-all",
+    "release:smoke-runtime": "node tools/deploy/smoke-release-runtime.mjs"
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",
