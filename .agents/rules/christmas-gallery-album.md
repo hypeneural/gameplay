@@ -7,6 +7,14 @@ description: 'Ative ao editar GalleryRoute, álbum natalino, responsive images, 
 
 Estas regras especializam a integração de photo sessions para o álbum fotográfico.
 
+## Validação Node-first
+
+- Antes de integrar EvydFlow/Python, prove fotos reais + Hub + Galeria + jogos com `pnpm gallery:prepare` e `pnpm gallery:lab` quando a tarefa puder ser exercitada localmente.
+- O Gallery Lab é loopback/dev-only; não transforme o middleware Vite em endpoint de produção e não exponha originals, paths ou nomes de fonte ao browser.
+- O pipeline de mídia é único. Não replique resize, identidade de receita ou manifesto em Python.
+- Quando a internal API de photo sessions existir, prove `prepare -> revision -> upload -> verify -> activate` primeiro por um publisher Node manual. EvydFlow entra depois como orquestrador do mesmo worker e da mesma API.
+- Não use FTP, webroot ou JSON estático como ponte temporária para uma publicação real.
+
 ## Modelo de galeria
 
 - No MVP, `photoSessionId` é também a identidade canônica de uma galeria pública.
@@ -33,6 +41,8 @@ Receita comprovada existente:
 - `thumb`: long edge 480;
 - `card`: long edge 800;
 - `game`: long edge 1600.
+
+O namespace de derivados deve incluir `sourceHash + recipeKey`, e o manifesto deve registrar `width`, `height` e `byteLength` reais de cada variante. Nome de receita nunca substitui dimensão intrínseca.
 
 Não transforme uma quarta variante em contrato sem benchmark. O candidato preferido para o álbum é:
 
@@ -61,7 +71,7 @@ Para álbum de uma coluna no mobile:
 
 ## Stack externa aprovada
 
-- Use `react-photo-album` para layout/responsive images e `yet-another-react-lightbox` + Zoom, lazy, como viewer primário.
+- Use `react-photo-album` para layout/responsive images e `yet-another-react-lightbox` + Zoom, lazy, como viewer primário quando o DTO de produção estiver fechado e o benchmark justificar a troca do fallback atual.
 - `PhotoSwipe` + wrapper React é challenger de benchmark somente se YARL falhar ou ficar marginal em aparelho físico.
 - Não mantenha dois viewers, dois engines de masonry ou dois virtualizers no produto.
 - Virtualização só entra após profiling; `lightGallery` e particle engines Canvas/WebGL ficam fora do primeiro corte.
@@ -88,6 +98,7 @@ Direção:
 
 Leia também:
 
+- `docs/integrations/photo-sessions/AUDITORIA_NODE_FIRST_GALLERY_LAB_2026-10-06.md`;
 - `docs/integrations/photo-sessions/AUDITORIA_GITHUB_GALERIA_NATALINA_MOBILE_2026-10-06.md`;
 - `docs/integrations/photo-sessions/GALERIA_NATALINA_MULTI_GALERIAS.md`;
 - `docs/quality/GALLERY_MOBILE_PERFORMANCE_CONTRACT.md`;
