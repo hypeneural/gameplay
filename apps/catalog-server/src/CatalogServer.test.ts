@@ -41,6 +41,22 @@ describe('CatalogServer', () => {
     expect(await response.json()).toEqual({ status: 'ok', releaseStage: 'test' });
   });
 
+  it('reports unavailable without leaking readiness errors', async () => {
+    const baseUrl = await startServer(
+      activeGeneric,
+      vi.fn(async () => undefined),
+      undefined,
+      async () => {
+        throw new Error('/private/path/config.json is invalid');
+      },
+    );
+
+    const response = await fetch(`${baseUrl}/healthz`);
+
+    expect(response.status).toBe(503);
+    expect(await response.json()).toEqual({ status: 'unavailable', releaseStage: 'test' });
+  });
+
   it('renders complete Open Graph markup before the browser runs React', async () => {
     const audit = vi.fn(async () => undefined);
     const baseUrl = await startServer(activeGeneric, audit);
@@ -176,6 +192,7 @@ function startServer(
     readonly occurredAt: string;
   }) => Promise<void>,
   releaseStage?: string,
+  readiness?: () => Promise<void>,
 ): Promise<string> {
   const server = createCatalogServer({
     publicOrigin: parsePublicOrigin('https://jogos.exemplo.test'),
@@ -184,6 +201,7 @@ function startServer(
     audit: { record: auditRecord },
     clock: { now: () => new Date('2026-08-25T12:00:00.000Z') },
     ...(releaseStage === undefined ? {} : { runtime: { releaseStage } }),
+    ...(readiness === undefined ? {} : { readiness }),
   });
   servers.push(server);
   return new Promise((resolve, reject) => {
