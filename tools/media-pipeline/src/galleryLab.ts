@@ -34,7 +34,7 @@ interface GalleryLabSummary {
   readonly worker: typeof mediaWorkerFingerprint;
 }
 
-export async function runGalleryLab(options: GalleryLabOptions): Promise<GalleryLabSummary> {
+async function runGalleryLab(options: GalleryLabOptions): Promise<GalleryLabSummary> {
   const storageRoot = resolve(options.storageRoot);
   const prepared = await prepareLocalMedia({
     sourceDirectory: resolve(options.sourceDirectory),
@@ -80,10 +80,17 @@ export async function runGalleryLab(options: GalleryLabOptions): Promise<Gallery
 }
 
 async function launchPlayServer(storageRoot: string, port: number): Promise<void> {
-  const command = process.platform === 'win32' ? 'pnpm.cmd' : 'pnpm';
+  // Gallery Lab is itself launched through a pnpm script. Reuse the actual pnpm
+  // JS entrypoint with the current Node executable instead of spawning
+  // pnpm.cmd. This keeps shell=false on Windows and preserves structured args.
+  const pnpmEntry = process.env.npm_execpath;
+  if (!pnpmEntry) {
+    throw new Error('Gallery Lab must be launched through pnpm so npm_execpath is available.');
+  }
   const child = spawn(
-    command,
+    process.execPath,
     [
+      pnpmEntry,
       '--filter',
       '@christmas-games/play',
       'dev',
@@ -99,6 +106,7 @@ async function launchPlayServer(storageRoot: string, port: number): Promise<void
       env: { ...process.env, LOCAL_TEST_MEDIA_ROOT: storageRoot },
       stdio: 'inherit',
       windowsHide: false,
+      shell: false,
     },
   );
 
