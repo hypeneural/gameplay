@@ -1,3 +1,4 @@
+import { URL } from 'node:url';
 import { readFile } from 'node:fs/promises';
 
 const readiness = JSON.parse(await readFile(new URL('../../deploy/readiness.json', import.meta.url), 'utf8'));
