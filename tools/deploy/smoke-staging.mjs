@@ -48,6 +48,12 @@ if (invalid.response.status !== 404) {
 }
 checks.push({ name: 'invalid-token', status: invalid.response.status });
 
+const fixture = await request('/fixtures/portrait.svg');
+if (fixture.response.status !== 200) {
+  throw new Error('Synthetic staging fixture is not reachable through the static edge.');
+}
+checks.push({ name: 'fixture-static', status: fixture.response.status });
+
 process.stdout.write(
   `${JSON.stringify({ status: 'ok', origin: origin.origin, checks })}\n`,
 );
