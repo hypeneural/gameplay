@@ -22,6 +22,7 @@ A regra principal é simples: o repositório só permite o estágio declarado em
 - Não faça build/Sharp/testes pesados na VPS.
 - Não copie `node_modules`, TypeScript, sourcemaps, DB/WAL, logs, originals, credenciais ou mídia local para o release.
 - Não edite JavaScript dentro de `current`; produza um release novo e imutável.
+- `release:staging` exige árvore Git limpa e HEAD resolvível; não empacote alteração local não commitada.
 - Não faça deploy se CI, `agent:doctor`, `release:verify` ou readiness estiverem vermelhos.
 - O catalog-server fica em `127.0.0.1`; Nginx é a única borda pública.
 - Capability token não entra em access log. Estratégia de erro/log para token real continua bloqueador de piloto.
