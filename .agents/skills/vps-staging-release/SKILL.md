@@ -41,6 +41,7 @@ O único diretório publicável é `.release/vps`.
 
 Ele precisa conter:
 
+- `package.json` mínimo com `type=module`;
 - `web/`;
 - `server/`;
 - `public/social/`;
@@ -57,8 +58,8 @@ Na VPS:
 - copie/extrai o artifact;
 - execute a verificação de release antes de ativar quando a ferramenta estiver disponível na workstation/artifact de operação;
 - mantenha env/config privados em `/etc/christmas-games`;
-- aponte `current` para o novo release;
-- reinicie o serviço;
+- troque `current` de forma atômica para o novo release;
+- reinicie o serviço; o `ExecStartPre` deve verificar o release antes de iniciar o Node;
 - valide `127.0.0.1:4180/healthz` antes do Nginx.
 
 Nunca altere arquivos dentro do release ativo.
