@@ -2,7 +2,7 @@ import type { URL } from 'node:url';
 import { resolve } from 'node:path';
 import { parsePublicOrigin } from './socialPreview.js';
 
-export type CatalogReleaseStage = 'development' | 'staging-demo';
+type CatalogReleaseStage = 'development' | 'staging-demo';
 
 export interface CatalogRuntimeConfig {
   readonly releaseStage: CatalogReleaseStage;
