@@ -1,8 +1,8 @@
 import { createHash } from 'node:crypto';
 import { execFileSync } from 'node:child_process';
 import { cp, mkdir, readFile, readdir, rm, stat, writeFile } from 'node:fs/promises';
-import { basename, join, relative, resolve, sep } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { basename, join, relative, sep } from 'node:path';
+import { fileURLToPath, URL } from 'node:url';
 
 const repositoryRoot = fileURLToPath(new URL('../../', import.meta.url));
 const readinessPath = join(repositoryRoot, 'deploy', 'readiness.json');
