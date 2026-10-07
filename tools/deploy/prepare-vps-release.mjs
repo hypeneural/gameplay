@@ -16,19 +16,24 @@ const options = parseArguments(process.argv.slice(2));
 const readiness = JSON.parse(await readFile(readinessPath, 'utf8'));
 assertReleaseAllowed(readiness, options.stage);
 
-if (options.checkOnly) {
-  process.stdout.write(
-    `${JSON.stringify({ status: 'allowed', stage: options.stage, readiness: readiness.currentStage })}\n`,
-  );
-  process.exit(0);
-}
-
 const gitState = readGitState();
 if (gitState.dirty) {
-  throw new Error('Refusing to package a VPS release from a dirty Git worktree. Commit the intended source first.');
+  throw new Error('Refusing VPS release readiness from a dirty Git worktree. Commit the intended source first.');
 }
 if (gitState.sha === 'unknown') {
-  throw new Error('Refusing to package a VPS release without a resolvable Git HEAD.');
+  throw new Error('Refusing VPS release readiness without a resolvable Git HEAD.');
+}
+
+if (options.checkOnly) {
+  process.stdout.write(
+    `${JSON.stringify({
+      status: 'allowed',
+      stage: options.stage,
+      readiness: readiness.currentStage,
+      gitSha: gitState.sha,
+    })}\n`,
+  );
+  process.exit(0);
 }
 
 const webSource = join(repositoryRoot, 'apps', 'play', 'dist');
