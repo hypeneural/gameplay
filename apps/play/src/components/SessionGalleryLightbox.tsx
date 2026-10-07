@@ -25,7 +25,7 @@ export function SessionGalleryLightbox({
   onPlayPhoto,
 }: SessionGalleryLightboxProps): React.JSX.Element {
   const dialogRef = useRef<HTMLDialogElement>(null);
-  const touchStartRef = useRef<{ x: number; y: number }>();
+  const touchStartRef = useRef<{ x: number; y: number } | undefined>(undefined);
   const [zoomed, setZoomed] = useState(false);
   const photo = photos[index];
 
