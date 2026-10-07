@@ -16,6 +16,8 @@ Build a safe, local-VPS, mobile-first factory for personalized photo minigames. 
 
 ## AntiGravity 2.19.1 safe execution protocol
 
+`AntiGravity 2.19.1` is the canonical repository label. The operator may refer to the same agent workflow as `Point Gravity` or `FluentGraft`; treat those names as aliases and do not create parallel rules, skills or architectures for them.
+
 This section is intentionally repetitive and deterministic. A weaker agent must not infer a release stage or invent a shortcut.
 
 1. **Classify the task first:** `local-lab`, `vps-staging-demo`, or `pilot`. Read `.agents/current-state.json` and `deploy/readiness.json`; if the requested stage is not allowed or the task appears under `forbiddenUntilPilot`, do not work around the block.
