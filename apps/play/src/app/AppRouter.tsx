@@ -64,8 +64,7 @@ export function AppRouter(): React.JSX.Element {
     [],
   );
   const usesLocalTestMedia = useMemo(
-    () =>
-      releaseMode === 'development' && shouldUseLocalTestMedia(window.location.search),
+    () => releaseMode === 'development' && shouldUseLocalTestMedia(window.location.search),
     [releaseMode],
   );
   const localTestMediaSearch = usesLocalTestMedia ? '?test-media=local' : '';

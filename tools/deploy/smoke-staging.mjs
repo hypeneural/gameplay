@@ -54,9 +54,7 @@ if (fixture.response.status !== 200) {
 }
 checks.push({ name: 'fixture-static', status: fixture.response.status });
 
-process.stdout.write(
-  `${JSON.stringify({ status: 'ok', origin: origin.origin, checks })}\n`,
-);
+process.stdout.write(`${JSON.stringify({ status: 'ok', origin: origin.origin, checks })}\n`);
 
 async function request(pathname) {
   try {

@@ -28,7 +28,10 @@ afterEach(async () => {
 
 describe('CatalogServer', () => {
   it('exposes a token-free health endpoint for VPS supervision', async () => {
-    const baseUrl = await startServer(activeGeneric, vi.fn(async () => undefined));
+    const baseUrl = await startServer(
+      activeGeneric,
+      vi.fn(async () => undefined),
+    );
 
     const response = await fetch(`${baseUrl}/healthz`);
 

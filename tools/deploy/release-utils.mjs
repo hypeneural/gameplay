@@ -12,8 +12,13 @@ export function assertReleaseAllowed(readiness, stage) {
   if (!Array.isArray(readiness.allowedReleaseStages)) {
     throw new Error('deploy/readiness.json allowedReleaseStages must be an array.');
   }
-  if (typeof readiness.pilotReady !== 'boolean' || typeof readiness.customerDataAllowed !== 'boolean') {
-    throw new Error('deploy/readiness.json must declare pilotReady and customerDataAllowed booleans.');
+  if (
+    typeof readiness.pilotReady !== 'boolean' ||
+    typeof readiness.customerDataAllowed !== 'boolean'
+  ) {
+    throw new Error(
+      'deploy/readiness.json must declare pilotReady and customerDataAllowed booleans.',
+    );
   }
   if (!readiness.allowedReleaseStages.includes(stage)) {
     const blockers = Array.isArray(readiness.blockersBeforePilot)
@@ -95,6 +100,8 @@ export function assertNoForbiddenReleaseFiles(files) {
     );
   });
   if (forbidden.length > 0) {
-    throw new Error(`Forbidden files in VPS release: ${forbidden.map(({ path }) => path).join(', ')}`);
+    throw new Error(
+      `Forbidden files in VPS release: ${forbidden.map(({ path }) => path).join(', ')}`,
+    );
   }
 }

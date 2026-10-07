@@ -1,9 +1,7 @@
 {
   "schemaVersion": 1,
   "currentStage": "vps-staging-demo",
-  "allowedReleaseStages": [
-    "staging-demo"
-  ],
+  "allowedReleaseStages": ["staging-demo"],
   "pilotReady": false,
   "customerDataAllowed": false,
   "automaticDeliveryAllowed": false,

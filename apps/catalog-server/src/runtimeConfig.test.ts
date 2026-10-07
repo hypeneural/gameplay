@@ -24,12 +24,42 @@ describe('resolveCatalogRuntimeConfig', () => {
   });
 
   it.each([
-    ['release stage', { CATALOG_PUBLIC_ORIGIN: 'https://jogos.example.test', CATALOG_SOCIAL_PREVIEW_FILE: '/tmp/preview.json', CATALOG_APPLICATION_SHELL: shell }],
-    ['public origin', { CATALOG_RELEASE_STAGE: 'staging-demo', CATALOG_SOCIAL_PREVIEW_FILE: '/tmp/preview.json', CATALOG_APPLICATION_SHELL: shell }],
-    ['preview config', { CATALOG_RELEASE_STAGE: 'staging-demo', CATALOG_PUBLIC_ORIGIN: 'https://jogos.example.test', CATALOG_APPLICATION_SHELL: shell }],
-    ['application shell', { CATALOG_RELEASE_STAGE: 'staging-demo', CATALOG_PUBLIC_ORIGIN: 'https://jogos.example.test', CATALOG_SOCIAL_PREVIEW_FILE: '/tmp/preview.json' }],
+    [
+      'release stage',
+      {
+        CATALOG_PUBLIC_ORIGIN: 'https://jogos.example.test',
+        CATALOG_SOCIAL_PREVIEW_FILE: '/tmp/preview.json',
+        CATALOG_APPLICATION_SHELL: shell,
+      },
+    ],
+    [
+      'public origin',
+      {
+        CATALOG_RELEASE_STAGE: 'staging-demo',
+        CATALOG_SOCIAL_PREVIEW_FILE: '/tmp/preview.json',
+        CATALOG_APPLICATION_SHELL: shell,
+      },
+    ],
+    [
+      'preview config',
+      {
+        CATALOG_RELEASE_STAGE: 'staging-demo',
+        CATALOG_PUBLIC_ORIGIN: 'https://jogos.example.test',
+        CATALOG_APPLICATION_SHELL: shell,
+      },
+    ],
+    [
+      'application shell',
+      {
+        CATALOG_RELEASE_STAGE: 'staging-demo',
+        CATALOG_PUBLIC_ORIGIN: 'https://jogos.example.test',
+        CATALOG_SOCIAL_PREVIEW_FILE: '/tmp/preview.json',
+      },
+    ],
   ])('fails closed when production %s is missing', (_label, environment) => {
-    expect(() => resolveCatalogRuntimeConfig('production', environment, '/fallback/index.html')).toThrow();
+    expect(() =>
+      resolveCatalogRuntimeConfig('production', environment, '/fallback/index.html'),
+    ).toThrow();
   });
 
   it('keeps local development HTTP-only defaults explicit', () => {

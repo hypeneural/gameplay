@@ -135,18 +135,18 @@ Antes de qualquer tarefa automatizada, `pnpm agent:doctor` informa o estágio pe
 
 O repositório conta com uma esteira rigorosa de verificação estática e testes automatizados:
 
-| Comando               | Descrição da Operação                                                                                                                 | Tempo Médio |
-| :-------------------- | :------------------------------------------------------------------------------------------------------------------------------------ | :---------- |
-| `pnpm agent:doctor`   | Valida estágio, comandos canônicos e contradições de readiness para agentes/automação.                                                         | ~1s         |
-| `pnpm check:fast`     | Executa TypeScript (`tsc`), Linter (`eslint`) e todos os testes unitários (`vitest`).                                                 | ~20s        |
-| `pnpm check`          | Portão completo: `check:fast` + regras arquiteturais (`depcruise`), deadcode (`knip`), formatação (`prettier`) e mapa do repositório. | ~35s        |
-| `pnpm test:e2e`       | Bateria de testes de ponta a ponta no navegador headless via **Playwright**.                                                          | ~60s        |
-| `pnpm validate`       | Validação máxima de pré-merge: `check` + build de produção + `test:e2e`.                                                              | ~90s        |
-| `pnpm build`          | Build normal fail-closed: compila web + catalog-server, mas não habilita sessão privada real.                                          | ~15s        |
-| `pnpm release:staging`| Gera o artifact sintético e imutável para VPS staging-demo.                                                                           | variável    |
-| `pnpm release:verify` | Recalcula inventário/bytes/SHA-256 e rejeita alteração ou arquivo proibido no artifact.                                                | ~1s         |
-| `pnpm repo:map`       | Sincroniza e regenera o índice topológico de arquivos em `docs/generated/repo-map.md`.                                                | ~2s         |
-| `pnpm asset:validate` | Valida integridade, proveniência e orçamento de todos os assets gráficos e sonoros.                                                   | ~3s         |
+| Comando                | Descrição da Operação                                                                                                                 | Tempo Médio |
+| :--------------------- | :------------------------------------------------------------------------------------------------------------------------------------ | :---------- |
+| `pnpm agent:doctor`    | Valida estágio, comandos canônicos e contradições de readiness para agentes/automação.                                                | ~1s         |
+| `pnpm check:fast`      | Executa TypeScript (`tsc`), Linter (`eslint`) e todos os testes unitários (`vitest`).                                                 | ~20s        |
+| `pnpm check`           | Portão completo: `check:fast` + regras arquiteturais (`depcruise`), deadcode (`knip`), formatação (`prettier`) e mapa do repositório. | ~35s        |
+| `pnpm test:e2e`        | Bateria de testes de ponta a ponta no navegador headless via **Playwright**.                                                          | ~60s        |
+| `pnpm validate`        | Validação máxima de pré-merge: `check` + build de produção + `test:e2e`.                                                              | ~90s        |
+| `pnpm build`           | Build normal fail-closed: compila web + catalog-server, mas não habilita sessão privada real.                                         | ~15s        |
+| `pnpm release:staging` | Gera o artifact sintético e imutável para VPS staging-demo.                                                                           | variável    |
+| `pnpm release:verify`  | Recalcula inventário/bytes/SHA-256 e rejeita alteração ou arquivo proibido no artifact.                                               | ~1s         |
+| `pnpm repo:map`        | Sincroniza e regenera o índice topológico de arquivos em `docs/generated/repo-map.md`.                                                | ~2s         |
+| `pnpm asset:validate`  | Valida integridade, proveniência e orçamento de todos os assets gráficos e sonoros.                                                   | ~3s         |
 
 ---
 

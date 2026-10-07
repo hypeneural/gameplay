@@ -1,9 +1,6 @@
 import { readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
-import {
-  assertNoForbiddenReleaseFiles,
-  inventoryReleaseFiles,
-} from './release-utils.mjs';
+import { assertNoForbiddenReleaseFiles, inventoryReleaseFiles } from './release-utils.mjs';
 
 const releaseRoot = resolve(process.argv[2] ?? '.release/vps');
 const releasePath = resolve(releaseRoot, 'RELEASE.json');
@@ -26,7 +23,9 @@ assertNoForbiddenReleaseFiles(actual);
 
 const expected = [...release.files].sort((left, right) => left.path.localeCompare(right.path));
 if (expected.length !== actual.length) {
-  throw new Error(`Release inventory mismatch: expected ${expected.length}, found ${actual.length}.`);
+  throw new Error(
+    `Release inventory mismatch: expected ${expected.length}, found ${actual.length}.`,
+  );
 }
 
 for (let index = 0; index < expected.length; index += 1) {
@@ -39,7 +38,9 @@ for (let index = 0; index < expected.length; index += 1) {
     wanted.bytes !== found.bytes ||
     wanted.sha256 !== found.sha256
   ) {
-    throw new Error(`Release integrity mismatch at ${wanted?.path ?? found?.path ?? 'unknown entry'}.`);
+    throw new Error(
+      `Release integrity mismatch at ${wanted?.path ?? found?.path ?? 'unknown entry'}.`,
+    );
   }
 }
 

@@ -8,11 +8,11 @@ Este documento não substitui `AGENTS.md`, o plano ativo ou os `SPEC.md`. Ele de
 
 Antes de editar qualquer arquivo, classifique a tarefa em exatamente um estágio:
 
-| Estágio | Uso | Dados de cliente | Comando principal |
-| --- | --- | --- | --- |
-| `local-lab` | desenvolvimento, Gallery Lab, fixtures, testes | proibidos fora de pasta local controlada | `pnpm gallery:lab` / `pnpm check:fast` |
-| `vps-staging-demo` | validar build, Nginx, systemd, mobile e jogos na VPS | proibidos | `pnpm release:staging` |
-| `pilot` | sessão real de família | bloqueado no estado atual | nenhum; leia `deploy/readiness.json` |
+| Estágio            | Uso                                                  | Dados de cliente                         | Comando principal                      |
+| ------------------ | ---------------------------------------------------- | ---------------------------------------- | -------------------------------------- |
+| `local-lab`        | desenvolvimento, Gallery Lab, fixtures, testes       | proibidos fora de pasta local controlada | `pnpm gallery:lab` / `pnpm check:fast` |
+| `vps-staging-demo` | validar build, Nginx, systemd, mobile e jogos na VPS | proibidos                                | `pnpm release:staging`                 |
+| `pilot`            | sessão real de família                               | bloqueado no estado atual                | nenhum; leia `deploy/readiness.json`   |
 
 Se a tarefa disser “produção”, “cliente”, “pedido real”, “WhatsApp real” ou “piloto”, leia `deploy/readiness.json`. Enquanto `pilotReady=false`, não improvise um caminho alternativo.
 
@@ -89,18 +89,18 @@ Não pule diretamente para E2E ou deploy quando typecheck/unit ainda falham.
 
 ## 3. Comandos canônicos
 
-| Intenção | Comando |
-| --- | --- |
-| iniciar frontend local | `pnpm dev` |
+| Intenção                                  | Comando                                   |
+| ----------------------------------------- | ----------------------------------------- |
+| iniciar frontend local                    | `pnpm dev`                                |
 | preparar fotos reais sem iniciar servidor | `pnpm gallery:prepare --source "<pasta>"` |
-| preparar fotos + abrir Gallery Lab | `pnpm gallery:lab --source "<pasta>"` |
-| prova rápida de código | `pnpm check:fast` |
-| gate estático completo | `pnpm check` |
-| build normal fail-closed | `pnpm build` |
-| conferir release permitido | `pnpm deploy:readiness` |
-| montar artefato VPS sintético | `pnpm release:staging` |
-| E2E completo | `pnpm test:e2e` |
-| pré-handoff máximo | `pnpm validate` |
+| preparar fotos + abrir Gallery Lab        | `pnpm gallery:lab --source "<pasta>"`     |
+| prova rápida de código                    | `pnpm check:fast`                         |
+| gate estático completo                    | `pnpm check`                              |
+| build normal fail-closed                  | `pnpm build`                              |
+| conferir release permitido                | `pnpm deploy:readiness`                   |
+| montar artefato VPS sintético             | `pnpm release:staging`                    |
+| E2E completo                              | `pnpm test:e2e`                           |
+| pré-handoff máximo                        | `pnpm validate`                           |
 
 Não invente variantes desses comandos quando a intenção já está coberta.
 
@@ -166,18 +166,18 @@ Interrompa a implementação e registre o bloqueio quando qualquer condição ab
 
 Quando um gate falhar, classifique antes de corrigir:
 
-| Falha | Primeira ação |
-| --- | --- |
-| TypeScript | corrija o contrato/tipo; não use cast amplo |
-| ESLint | corrija a estrutura; não desabilite regra |
-| Vitest | reproduza o teste isolado e identifique regressão |
-| Knip | remova export/dependência morta ou conecte o uso real |
-| Dependency Cruiser | mova a dependência para a camada dona |
-| Repo map | rode `pnpm repo:map` após árvore final |
-| build Vite | trate import/chunk/config; não mude target sem justificativa |
-| catalog build | preserve NodeNext/ESM e imports `.js` |
-| release packager | leia o erro; não copie manualmente arquivo bloqueado |
-| Nginx health | cheque systemd → `127.0.0.1:4180/healthz` → Nginx, nessa ordem |
+| Falha              | Primeira ação                                                  |
+| ------------------ | -------------------------------------------------------------- |
+| TypeScript         | corrija o contrato/tipo; não use cast amplo                    |
+| ESLint             | corrija a estrutura; não desabilite regra                      |
+| Vitest             | reproduza o teste isolado e identifique regressão              |
+| Knip               | remova export/dependência morta ou conecte o uso real          |
+| Dependency Cruiser | mova a dependência para a camada dona                          |
+| Repo map           | rode `pnpm repo:map` após árvore final                         |
+| build Vite         | trate import/chunk/config; não mude target sem justificativa   |
+| catalog build      | preserve NodeNext/ESM e imports `.js`                          |
+| release packager   | leia o erro; não copie manualmente arquivo bloqueado           |
+| Nginx health       | cheque systemd → `127.0.0.1:4180/healthz` → Nginx, nessa ordem |
 
 ## 9. Regras de Git para agente
 

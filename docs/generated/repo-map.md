@@ -8,7 +8,8 @@
 ├── .agents
 │   ├── rules
 │   │   ├── christmas-gallery-album.md
-│   │   └── photo-sessions-integration.md
+│   │   ├── photo-sessions-integration.md
+│   │   └── staging-release-safety.md
 │   └── skills
 │       ├── christmas-gallery-album
 │       │   └── SKILL.md
@@ -16,7 +17,9 @@
 │       │   └── SKILL.md
 │       ├── photo-sessions-integration
 │       │   └── SKILL.md
-│       └── revisao-visual-mobile
+│       ├── revisao-visual-mobile
+│       │   └── SKILL.md
+│       └── vps-staging-release
 │           └── SKILL.md
 ├── .dependency-cruiser.cjs
 ├── .gitattributes
@@ -26,7 +29,8 @@
 │   │   └── feature_request.md
 │   ├── pull_request_template.md
 │   └── workflows
-│       └── ci.yml
+│       ├── ci.yml
+│       └── release-staging.yml
 ├── .gitignore
 ├── .node-version
 ├── .prettierignore
@@ -46,13 +50,16 @@
 │   │   ├── public
 │   │   │   └── social
 │   │   │       └── evydencia-christmas-v1.webp
-│   │   └── src
-│   │       ├── CatalogServer.test.ts
-│   │       ├── CatalogServer.ts
-│   │       ├── filePreviewRepository.test.ts
-│   │       ├── filePreviewRepository.ts
-│   │       ├── main.ts
-│   │       └── socialPreview.ts
+│   │   ├── src
+│   │   │   ├── CatalogServer.test.ts
+│   │   │   ├── CatalogServer.ts
+│   │   │   ├── filePreviewRepository.test.ts
+│   │   │   ├── filePreviewRepository.ts
+│   │   │   ├── main.ts
+│   │   │   ├── runtimeConfig.test.ts
+│   │   │   ├── runtimeConfig.ts
+│   │   │   └── socialPreview.ts
+│   │   └── tsconfig.build.json
 │   └── play
 │       ├── AGENTS.md
 │       ├── assets
@@ -345,7 +352,9 @@
 │       │   │   ├── GameQuality.test.ts
 │       │   │   ├── GameQuality.ts
 │       │   │   ├── LocalTestSession.test.ts
-│       │   │   └── LocalTestSession.ts
+│       │   │   ├── LocalTestSession.ts
+│       │   │   ├── ReleaseMode.test.ts
+│       │   │   └── ReleaseMode.ts
 │       │   ├── audio
 │       │   │   ├── playInterfaceTap.test.ts
 │       │   │   ├── playInterfaceTap.ts
@@ -456,8 +465,16 @@
 │       ├── cordao-luzes-v1.png
 │       ├── moldura-lembranca-v1.png
 │       └── oficina-fundo-vertical-v1.png
+├── deploy
+│   ├── readiness.json
+│   └── vps
+│       ├── catalog.env.example
+│       ├── christmas-games-catalog.service.example
+│       └── nginx
+│           └── christmas-games.conf.example
 ├── docs
 │   ├── ai
+│   │   ├── ANTIGRAVITY_2_19_1_RUNBOOK.md
 │   │   ├── CODEX_CAPABILITY_STACK.md
 │   │   └── PHASER_SKILL_MAP.md
 │   ├── analytics
@@ -555,6 +572,8 @@
 │   │   ├── LOCAL_MEDIA_ARCHITECTURE.md
 │   │   ├── NATAL_2024_CORPUS_BASELINE.md
 │   │   └── PHOTO_CORPUS_BASELINE.md
+│   ├── ops
+│   │   └── VPS_STAGING_DEMO_RUNBOOK.md
 │   ├── plan
 │   │   └── IMPLEMENTATION_PLAN.md
 │   ├── privacy
@@ -574,6 +593,7 @@
 │   ├── quality
 │   │   ├── ANDROID_REFERENCE_PROTOCOL.md
 │   │   ├── ASSET_LAB_CONTRACT.md
+│   │   ├── AUDITORIA_FORENSE_ANTIGRAVITY_REPO_DEPLOY_2026-10-07.md
 │   │   ├── GALLERY_MOBILE_PERFORMANCE_CONTRACT.md
 │   │   ├── GAME_EXPERIENCE_REVIEW.md
 │   │   ├── GUIRLANDA_DAS_LEMBRANCAS_NATIVE_LIKE_REVIEW_2026-09-04.md
@@ -1181,6 +1201,7 @@
 │           ├── ph_003.jpg
 │           └── ph_004.jpg
 ├── tools
+│   ├── agent-doctor.mjs
 │   ├── asset-factory
 │   │   ├── package.json
 │   │   ├── scripts
@@ -1198,6 +1219,12 @@
 │   │   └── tests
 │   │       └── asset-factory.test.ts
 │   ├── clean.mjs
+│   ├── deploy
+│   │   ├── prepare-vps-release.mjs
+│   │   ├── release-utils.mjs
+│   │   ├── release-utils.test.mjs
+│   │   ├── smoke-staging.mjs
+│   │   └── verify-vps-release.mjs
 │   ├── export-puzzle-source-reader.mjs
 │   ├── fixture-generator
 │   │   ├── package.json

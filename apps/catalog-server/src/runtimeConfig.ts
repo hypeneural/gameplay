@@ -23,10 +23,7 @@ export function resolveCatalogRuntimeConfig(
   if (production && !configuredOrigin) {
     throw new Error('CATALOG_PUBLIC_ORIGIN é obrigatório em produção.');
   }
-  const publicOrigin = parsePublicOrigin(
-    configuredOrigin ?? 'http://127.0.0.1:4180',
-    !production,
-  );
+  const publicOrigin = parsePublicOrigin(configuredOrigin ?? 'http://127.0.0.1:4180', !production);
 
   const previewConfigPath = environment.CATALOG_SOCIAL_PREVIEW_FILE;
   if (!previewConfigPath) {
@@ -47,10 +44,7 @@ export function resolveCatalogRuntimeConfig(
   };
 }
 
-function resolveReleaseStage(
-  production: boolean,
-  value: string | undefined,
-): CatalogReleaseStage {
+function resolveReleaseStage(production: boolean, value: string | undefined): CatalogReleaseStage {
   if (!production) return 'development';
   if (value === 'staging-demo') return value;
   throw new Error(

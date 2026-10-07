@@ -1,21 +1,14 @@
 import { readFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import { createCatalogServer } from './CatalogServer.js';
-import {
-  createFilePreviewRepository,
-  parsePreviewConfiguration,
-} from './filePreviewRepository.js';
+import { createFilePreviewRepository, parsePreviewConfiguration } from './filePreviewRepository.js';
 import { resolveCatalogRuntimeConfig } from './runtimeConfig.js';
 
 const environment = process.env.NODE_ENV ?? 'development';
 const defaultApplicationShellPath = fileURLToPath(
   new URL('../../play/dist/index.html', import.meta.url),
 );
-const runtime = resolveCatalogRuntimeConfig(
-  environment,
-  process.env,
-  defaultApplicationShellPath,
-);
+const runtime = resolveCatalogRuntimeConfig(environment, process.env, defaultApplicationShellPath);
 
 const [applicationShell, previewSource] = await Promise.all([
   readFile(runtime.applicationShellPath, 'utf8'),
