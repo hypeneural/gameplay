@@ -4,15 +4,44 @@
 **Data de consolidação:** 06/10/2026.  
 **Baseline de partida:** `codex/puzzle-native-like-v1` em `53d301cfa1fc078e4538bb77a29478fb49376145`.
 
-Este plano transforma a auditoria de photo sessions em uma sequência implementável para o Antigravity, mantendo o corte operacional real: EvydFlow no Windows 11 e produto/backend na VPS.
+Este plano transforma a auditoria de photo sessions em uma sequência implementável para o Antigravity. O caminho operacional continua sendo EvydFlow no Windows 11 e produto/backend na VPS, mas **a validação deve acontecer antes em Node-first**: Gallery Lab local, staging-demo VPS e publisher Node manual precedem a integração Python.
 
 Leitura obrigatória antes de implementação:
 
+- `docs/quality/AUDITORIA_FORENSE_ANTIGRAVITY_REPO_DEPLOY_2026-10-07.md`;
+- `docs/integrations/photo-sessions/AUDITORIA_NODE_FIRST_GALLERY_LAB_2026-10-06.md`;
 - `docs/integrations/photo-sessions/AUDITORIA_FORENSE_ANTIGRAVITY_MOBILE_2026-10-06.md`;
 - `docs/integrations/photo-sessions/AUDITORIA_GITHUB_GALERIA_NATALINA_MOBILE_2026-10-06.md`;
 - `docs/integrations/photo-sessions/GALERIA_NATALINA_MULTI_GALERIAS.md`;
 - `docs/quality/GALLERY_MOBILE_PERFORMANCE_CONTRACT.md`;
 - `.agents/skills/christmas-gallery-album/SKILL.md`.
+
+## 0. Checkpoint atual do branch
+
+**IMPLEMENTADO:**
+
+- GalleryRoute native-like com lote limitado e retorno Gallery → Puzzle → Gallery;
+- Gallery Lab Node-first com Sharp, recipeKey e métricas reais;
+- `production-disabled` como build normal fail-closed;
+- `staging-demo` sintético como único release VPS permitido;
+- catalog-server compilado, health check, startup config fail-closed e shutdown gracioso;
+- artifact imutável com inventário/SHA-256 e verificador próprio;
+- CI com quality gates + Gallery mobile E2E;
+- `pnpm agent:doctor` para detectar contradição de estágio/comandos.
+
+**BLOQUEADO antes de cliente real:**
+
+- SessionRepository SQLite/migrations;
+- browser grant e SessionProvider real;
+- media authorization privada;
+- internal revision API + CAS activate;
+- publisher Node manual;
+- backup/restore;
+- token/log strategy para capability real;
+- GitHub required checks/ruleset;
+- Android e Safari/iPhone físicos.
+
+**Próximo corte permitido:** SessionRepository SQLite + contrato real de sessão. Não integrar EvydFlow ainda.
 
 Proveniência cross-repo no corte de 06/10/2026: o branch `antigravity/soclick-mvp-validation` do EvydFlow está 44 commits à frente de `main`. Registrar o ref exato do EvydFlow em cada handoff; não assumir equivalência entre branches.
 
