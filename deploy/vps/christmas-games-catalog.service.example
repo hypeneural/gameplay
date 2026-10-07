@@ -16,20 +16,23 @@ TimeoutStartSec=20s
 TimeoutStopSec=15s
 UMask=0077
 
-# Conservative hardening for the current read-mostly gateway. The future
-# SQLite/media backend must explicitly add only the writable paths it needs.
+# Conservative hardening for the current read-only staging gateway. The future
+# SQLite/media backend must explicitly add only the exact writable paths it needs.
 NoNewPrivileges=true
 PrivateTmp=true
+PrivateDevices=true
 ProtectSystem=strict
 ProtectHome=true
 ProtectKernelTunables=true
 ProtectKernelModules=true
+ProtectKernelLogs=true
 ProtectControlGroups=true
 RestrictSUIDSGID=true
 LockPersonality=true
 CapabilityBoundingSet=
 AmbientCapabilities=
-ReadWritePaths=/var/lib/christmas-games /srv/christmas-private
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+SystemCallArchitectures=native
 
 [Install]
 WantedBy=multi-user.target
