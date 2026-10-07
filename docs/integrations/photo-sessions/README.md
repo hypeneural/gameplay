@@ -6,17 +6,18 @@ Este pacote reúne a análise dos três repositórios, os resultados agregados d
 
 ## Leitura e validação
 
-1. [Galeria Natalina e multi-galerias](GALERIA_NATALINA_MULTI_GALERIAS.md) — álbum vertical mobile, tamanhos de imagem, assets e isolamento de múltiplas galerias.
-2. [Auditoria forense Antigravity + galeria mobile](AUDITORIA_FORENSE_ANTIGRAVITY_MOBILE_2026-10-06.md) — estado real, riscos, bibliotecas e ordem técnica.
-3. [Contrato de performance da galeria mobile](../../quality/GALLERY_MOBILE_PERFORMANCE_CONTRACT.md) — gates de rede, imagem, Web Vitals e aparelhos.
-4. [Plano ativo para Antigravity / FluentGraft 2.19.1](../../exec-plans/active/CG-PHOTO-SESSIONS-ANTIGRAVITY-2.19.1.md) — ordem operacional atual para implementação.
-5. [MVP rápido: caminho crítico e entregas adiáveis](MVP_RAPIDO.md).
-6. [Auditoria forense e arquitetura recomendada](AUDITORIA_WORKFLOW_SESSOES_E_JOGOS.md).
-7. [Plano completo de implementação](PLANO_IMPLEMENTACAO_GALERIA_JOGOS_EVYDFLOW.md).
-8. [Prompt para copiar no ChatGPT e validar com fontes oficiais](PROMPT_VALIDACAO_CHATGPT.md).
-9. [PDF consolidado da edição pública](output/pdf/AUDITORIA_E_PLANO_SESSOES_FOTOS_PUBLICO.pdf).
+1. [Auditoria GitHub — donors da Galeria Natalina mobile](AUDITORIA_GITHUB_GALERIA_NATALINA_MOBILE_2026-10-06.md) — comparação de layout, viewer, virtualização, animação, licenças e integração com gameplay.
+2. [Galeria Natalina e multi-galerias](GALERIA_NATALINA_MULTI_GALERIAS.md) — álbum vertical mobile, tamanhos de imagem, assets e isolamento de múltiplas galerias.
+3. [Auditoria forense Antigravity + galeria mobile](AUDITORIA_FORENSE_ANTIGRAVITY_MOBILE_2026-10-06.md) — estado real, riscos, bibliotecas e ordem técnica.
+4. [Contrato de performance da galeria mobile](../../quality/GALLERY_MOBILE_PERFORMANCE_CONTRACT.md) — gates de rede, imagem, Web Vitals e aparelhos.
+5. [Plano ativo para Antigravity / FluentGraft 2.19.1](../../exec-plans/active/CG-PHOTO-SESSIONS-ANTIGRAVITY-2.19.1.md) — ordem operacional atual para implementação.
+6. [MVP rápido: caminho crítico e entregas adiáveis](MVP_RAPIDO.md).
+7. [Auditoria forense e arquitetura recomendada](AUDITORIA_WORKFLOW_SESSOES_E_JOGOS.md).
+8. [Plano completo de implementação](PLANO_IMPLEMENTACAO_GALERIA_JOGOS_EVYDFLOW.md).
+9. [Prompt para copiar no ChatGPT e validar com fontes oficiais](PROMPT_VALIDACAO_CHATGPT.md).
+10. [PDF consolidado da edição pública](output/pdf/AUDITORIA_E_PLANO_SESSOES_FOTOS_PUBLICO.pdf).
 
-Para agentes de implementação, `.agents/rules/photo-sessions-integration.md`, `.agents/rules/christmas-gallery-album.md`, `.agents/skills/photo-sessions-integration/SKILL.md` e `.agents/skills/christmas-gallery-album/SKILL.md` registram as invariantes de multi-cliente, mídia privada, galeria mobile-first e integração Windows↔VPS. O documento de MVP apresenta um recorte para revisão técnica: piloto supervisionado com entrega manual do link antes da automação de WhatsApp. O plano completo continua descrevendo o estado final, com outbox e retomada operacional. Nenhuma dessas opções foi implantada por esta publicação.
+Para agentes de implementação, `.agents/rules/photo-sessions-integration.md`, `.agents/rules/christmas-gallery-album.md`, `.agents/skills/photo-sessions-integration/SKILL.md` e `.agents/skills/christmas-gallery-album/SKILL.md` registram as invariantes de multi-cliente, mídia privada, galeria mobile-first e integração Windows↔VPS. A auditoria GitHub classifica dependências: React Photo Album + Yet Another React Lightbox são o caminho primário; PhotoSwipe é challenger de benchmark; virtualização é reserva; particle engines e lightGallery não entram no primeiro corte. O documento de MVP apresenta um recorte para revisão técnica: piloto supervisionado com entrega manual do link antes da automação de WhatsApp. O plano completo continua descrevendo o estado final, com outbox e retomada operacional. Nenhuma dessas opções foi implantada por esta publicação.
 
 ## Resultado comprovado e seus limites
 
