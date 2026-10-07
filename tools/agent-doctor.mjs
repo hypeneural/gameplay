@@ -17,6 +17,9 @@ const workflowSources = await Promise.all([
 const failures = [];
 
 const trackedFiles = readTrackedFiles();
+if (!trackedFiles) {
+  failures.push('Unable to read the Git index; repository safety checks cannot be trusted.');
+}
 const forbiddenTrackedPatterns = [
   /(^|\/)credentials\.json$/i,
   /(^|\/)\.env(?:\.|$)/i,
@@ -24,9 +27,10 @@ const forbiddenTrackedPatterns = [
   /-(?:wal|shm)$/i,
   /(^|\/)id_(?:rsa|ed25519)$/i,
 ];
-const forbiddenTrackedFiles = trackedFiles.filter((path) =>
-  forbiddenTrackedPatterns.some((pattern) => pattern.test(path)),
-);
+const forbiddenTrackedFiles = (trackedFiles ?? []).filter((path) => {
+  if (path === '.env.example' || path.endsWith('/.env.example')) return false;
+  return forbiddenTrackedPatterns.some((pattern) => pattern.test(path));
+});
 if (forbiddenTrackedFiles.length > 0) {
   failures.push(
     `Sensitive/runtime files are tracked by Git: ${forbiddenTrackedFiles.join(', ')}.`,
@@ -153,6 +157,6 @@ function readTrackedFiles() {
       .split(/\r?\n/)
       .filter(Boolean);
   } catch {
-    return [];
+    return undefined;
   }
 }
