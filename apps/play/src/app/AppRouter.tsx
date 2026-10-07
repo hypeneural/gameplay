@@ -15,6 +15,7 @@ import { ThemeLab } from '../screens/ThemeLab.js';
 import { createAppServices } from './AppServices.js';
 import { parseAppRoute, routePath } from './AppNavigation.js';
 import { resolveGameQuality } from './GameQuality.js';
+import { resolveBrowserReleaseMode } from './ReleaseMode.js';
 import {
   disposeInterfaceAudio,
   playInterfaceTap,
@@ -53,6 +54,7 @@ const PerformanceLab = import.meta.env.DEV
 
 export function AppRouter(): React.JSX.Element {
   const initialRoute = useMemo(() => parseAppRoute(window.location.pathname), []);
+  const releaseMode = useMemo(() => resolveBrowserReleaseMode(import.meta.env), []);
   const services = useMemo(createAppServices, []);
   const quality = useMemo(
     () =>
@@ -61,7 +63,11 @@ export function AppRouter(): React.JSX.Element {
       ),
     [],
   );
-  const usesLocalTestMedia = useMemo(() => shouldUseLocalTestMedia(window.location.search), []);
+  const usesLocalTestMedia = useMemo(
+    () =>
+      releaseMode === 'development' && shouldUseLocalTestMedia(window.location.search),
+    [releaseMode],
+  );
   const localTestMediaSearch = usesLocalTestMedia ? '?test-media=local' : '';
   const developmentScenario = useMemo(() => {
     if (!import.meta.env.DEV) return undefined;
@@ -308,6 +314,21 @@ export function AppRouter(): React.JSX.Element {
     setRoute(pending.route);
   };
 
+  const isDevelopmentRoute =
+    route.kind === 'theme-lab' ||
+    route.kind === 'experience-lab' ||
+    route.kind === 'asset-lab' ||
+    route.kind === 'performance-lab';
+
+  if (isDevelopmentRoute && releaseMode !== 'development') {
+    return (
+      <main className="shell unavailable-game" role="alert">
+        <p className="eyebrow">ROTA NÃO PUBLICADA</p>
+        <h1>Este laboratório existe somente no ambiente local.</h1>
+      </main>
+    );
+  }
+
   if (route.kind === 'theme-lab') return <ThemeLab />;
   if (route.kind === 'experience-lab') return <ExperienceLab />;
   if (route.kind === 'asset-lab') return <AssetLab />;
@@ -327,6 +348,16 @@ export function AppRouter(): React.JSX.Element {
       <main className="shell unavailable-game" role="alert">
         <p className="eyebrow">DESENVOLVIMENTO LOCAL</p>
         <h1>Este laboratório não está publicado.</h1>
+      </main>
+    );
+  }
+
+  if (releaseMode === 'production-disabled') {
+    return (
+      <main className="shell unavailable-game" role="alert">
+        <p className="eyebrow">PUBLICAÇÃO PROTEGIDA</p>
+        <h1>As sessões privadas ainda não foram ativadas neste release.</h1>
+        <p>Use o build staging-demo apenas para validação sintética na VPS.</p>
       </main>
     );
   }
@@ -382,7 +413,7 @@ export function AppRouter(): React.JSX.Element {
         onSelectPhoto={setSelectedPhotoId}
         selectedPhotoId={selectedPhoto.id}
         session={session}
-        showFixtureSelector={!usesLocalTestMedia}
+        showFixtureSelector={releaseMode === 'development' && !usesLocalTestMedia}
       />
     );
   }
