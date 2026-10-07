@@ -254,7 +254,15 @@ function parseFlags(
 async function main(): Promise<void> {
   const result = await prepareLocalMedia(parseArguments(process.argv.slice(2)));
   process.stdout.write(
-    `${JSON.stringify({ status: 'ready', ...result, worker: mediaWorkerFingerprint })}\n`,
+    `${JSON.stringify({
+      status: 'ready',
+      ready: result.ready,
+      failed: result.failed,
+      sessionId: result.sessionId,
+      publicToken: result.publicToken,
+      recipeKey: result.recipeKey,
+      worker: mediaWorkerFingerprint,
+    })}\n`,
   );
 }
 
