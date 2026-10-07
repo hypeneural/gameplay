@@ -27,6 +27,17 @@ afterEach(async () => {
 });
 
 describe('CatalogServer', () => {
+  it('exposes a token-free health endpoint for VPS supervision', async () => {
+    const baseUrl = await startServer(activeGeneric, vi.fn(async () => undefined));
+
+    const response = await fetch(`${baseUrl}/healthz`);
+
+    expect(response.status).toBe(200);
+    expect(response.headers.get('cache-control')).toBe('no-store');
+    expect(response.headers.get('referrer-policy')).toBe('no-referrer');
+    expect(await response.json()).toEqual({ status: 'ok', releaseStage: 'test' });
+  });
+
   it('renders complete Open Graph markup before the browser runs React', async () => {
     const audit = vi.fn(async () => undefined);
     const baseUrl = await startServer(activeGeneric, audit);
@@ -36,6 +47,7 @@ describe('CatalogServer', () => {
     expect(response.status).toBe(200);
     expect(response.headers.get('content-type')).toContain('text/html');
     expect(response.headers.get('cache-control')).toBe('private, no-store');
+    expect(response.headers.get('referrer-policy')).toBe('no-referrer');
     const html = await response.text();
     expect(html).toContain(
       '<link rel="canonical" href="https://jogos.exemplo.test/s/local-demo-token" />',
