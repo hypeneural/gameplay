@@ -17,8 +17,13 @@ export function createFilePreviewRepository(configPath: string): SocialPreviewRe
   };
 }
 
+export interface PreviewConfigurationOptions {
+  readonly rejectExampleTokens?: boolean;
+}
+
 export function parsePreviewConfiguration(
   value: unknown,
+  options: PreviewConfigurationOptions = {},
 ): ReadonlyMap<string, SocialPreviewRecord> {
   if (!isRecord(value) || value.version !== 1 || !Array.isArray(value.sessions)) {
     throw new Error('A configuração de prévia social deve conter version 1 e sessions.');
@@ -29,13 +34,18 @@ export function parsePreviewConfiguration(
       !isRecord(entry) ||
       typeof entry.token !== 'string' ||
       !isOpaquePublicToken(entry.token) ||
-      records.has(entry.token)
+      records.has(entry.token) ||
+      (options.rejectExampleTokens === true && isExampleToken(entry.token))
     ) {
       throw new Error('A configuração de prévia social contém uma sessão inválida ou repetida.');
     }
     records.set(entry.token, parsePreviewRecord(entry));
   }
   return records;
+}
+
+function isExampleToken(token: string): boolean {
+  return token.toLowerCase().includes('change-me') || token.toLowerCase().includes('example');
 }
 
 function parsePreviewRecord(value: Record<string, unknown>): SocialPreviewRecord {
