@@ -101,6 +101,7 @@ Não pule diretamente para E2E ou deploy quando typecheck/unit ainda falham.
 | gate estático completo                    | `pnpm check`                              |
 | build normal fail-closed                  | `pnpm build`                              |
 | conferir release permitido                | `pnpm deploy:readiness`                   |
+| gerar config/token sintético privado       | `pnpm deploy:staging-config --output "<fora-do-repo>"` |
 | montar artefato VPS sintético             | `pnpm release:staging`                    |
 | E2E completo                              | `pnpm test:e2e`                           |
 | pré-handoff máximo                        | `pnpm validate`                           |
