@@ -5,20 +5,22 @@ description: Implemente e valide a Galeria Natalina como álbum mobile-first int
 
 # Christmas Gallery Album
 
-Use esta skill ao implementar ou revisar `GalleryRoute`, `PhotoPrint`, lightbox, responsive images, assets natalinos compartilhados ou suporte multi-galerias.
+Use esta skill ao implementar ou revisar `GalleryRoute`, `PhotoPrint`, lightbox, responsive images, assets natalinos compartilhados, media pipeline ou suporte multi-galerias.
 
 ## Leitura obrigatória
 
 1. `AGENTS.md`.
 2. `.agents/rules/photo-sessions-integration.md`.
 3. `.agents/rules/christmas-gallery-album.md`.
-4. `docs/integrations/photo-sessions/GALERIA_NATALINA_MULTI_GALERIAS.md`.
-5. `docs/integrations/photo-sessions/AUDITORIA_GITHUB_GALERIA_NATALINA_MOBILE_2026-10-06.md`.
-6. `docs/integrations/photo-sessions/AUDITORIA_FORENSE_ANTIGRAVITY_MOBILE_2026-10-06.md`.
-7. `docs/quality/GALLERY_MOBILE_PERFORMANCE_CONTRACT.md`.
-8. `docs/experience/christmas/ART_BIBLE.md`.
-9. `docs/experience/christmas/SCENE_GRAMMAR.md`.
-10. `docs/assets/ASSET_MANIFEST_CONTRACT.md`.
+4. `docs/integrations/photo-sessions/AUDITORIA_NODE_FIRST_GALLERY_LAB_2026-10-06.md`.
+5. `docs/integrations/photo-sessions/GALERIA_NATALINA_MULTI_GALERIAS.md`.
+6. `docs/integrations/photo-sessions/AUDITORIA_GITHUB_GALERIA_NATALINA_MOBILE_2026-10-06.md`.
+7. `docs/integrations/photo-sessions/AUDITORIA_FORENSE_ANTIGRAVITY_MOBILE_2026-10-06.md`.
+8. `docs/quality/GALLERY_MOBILE_PERFORMANCE_CONTRACT.md`.
+9. `docs/media/LOCAL_MEDIA_ARCHITECTURE.md`.
+10. `docs/experience/christmas/ART_BIBLE.md`.
+11. `docs/experience/christmas/SCENE_GRAMMAR.md`.
+12. `docs/assets/ASSET_MANIFEST_CONTRACT.md`.
 
 Não escolha uma dependência pela popularidade. Use a classificação do audit GitHub: RPA + YARL são o caminho externo aprovado; PhotoSwipe é challenger; virtualização é reserva; lightGallery/particle engines não entram no primeiro corte.
 
@@ -35,11 +37,36 @@ Preserve a fundação existente antes de trocar bibliotecas:
 - `Photo.variantMetrics` é opcional e contém dimensões intrínsecas reais do derivado;
 - `PhotoPrint` só gera descritores `w` quando `variantMetrics` existe; nunca inventa largura a partir do nome da receita;
 - Hub → Gallery → Puzzle → Gallery preserva `selectedPhotoId` e scroll;
-- decoração do álbum é CSS/DOM, sem Canvas/WebGL e sem usar asset pertencente a jogo.
+- decoração do álbum é CSS/DOM, sem Canvas/WebGL e sem usar asset pertencente a jogo;
+- media pipeline local usa `sourceHash + recipeKey`, re-hash do snapshot e métricas reais `width/height/byteLength` por variante;
+- Gallery Lab Node-first prepara fotos reais e sobe Hub/Galeria/Jogos sem depender de EvydFlow/Python.
 
-Evidência automatizada do corte atual: o E2E específico da galeria passou nos projetos Playwright de 390, 412, 430 e 768 CSS px, cobrindo lote inicial, colunas responsivas, ausência de Phaser/canvas antes do jogo e restauração de foto/scroll no ciclo Gallery → Puzzle → Gallery. Essa evidência em Chromium não substitui Android físico nem Safari/iPhone antes do piloto.
+Evidência automatizada do corte de galeria: o E2E específico passou nos projetos Playwright de 390, 412, 430 e 768 CSS px, cobrindo lote inicial, colunas responsivas, ausência de Phaser/canvas antes do jogo e restauração de foto/scroll no ciclo Gallery → Puzzle → Gallery. Essa evidência em Chromium não substitui Android físico nem Safari/iPhone antes do piloto.
 
-Enquanto sessão real/API ainda não fornecer `variantMetrics` completo, mantenha o renderer DOM atual como fallback correto. Não instale RPA/YARL apenas para substituir uma tela funcional sem antes fechar o DTO e medir bundle/rede. Quando o DTO real estiver pronto, RPA/YARL podem substituir somente o layout/viewer atrás das mesmas fronteiras; não reescreva rota, seleção, scroll restoration ou gameplay integration.
+## Etapa 0 obrigatória — prove com Gallery Lab antes do Python
+
+Se a tarefa puder ser validada com uma pasta real de fotos, comece aqui:
+
+```powershell
+pnpm gallery:prepare --source "C:\Fotos\Sessao-Tratada"
+```
+
+Use o receipt JSON para conferir `ready`, `failed`, `recipeKey` e worker fingerprint. Para revisão visual/interativa:
+
+```powershell
+pnpm gallery:lab --source "C:\Fotos\Sessao-Tratada"
+```
+
+O lab imprime links para Hub, Galeria e Puzzle e sobe Vite somente em `127.0.0.1` por default.
+
+Regras:
+
+- não criar fixture nova se uma pasta real puder ser preparada;
+- não usar `photo-001` posicional;
+- não inventar outro pipeline de imagem;
+- não transformar o middleware Vite local em endpoint de produção;
+- não criar FTP/webroot upload temporário para contornar backend ainda ausente;
+- não integrar EvydFlow antes de o mesmo conjunto de fotos passar pelo Gallery Lab.
 
 ## Ordem de implementação
 
@@ -53,9 +80,11 @@ Antes de CSS adicional, garanta:
 - autorização de mídia por sessão/revisão/photoId;
 - abort/cleanup quando a rota troca de galeria.
 
+Enquanto sessão real/API ainda não fornecer `variantMetrics` completo, mantenha o renderer DOM atual como fallback correto. O Gallery Lab já fornece métricas reais para homologação local; não use essa exceção local como substituto do DTO de produção.
+
 ### 2. Prove multi-galerias
 
-Monte fixtures A, B e A2:
+Monte A, B e A2:
 
 - A e A2 podem compartilhar o mesmo `crmOrderUuid`, mas têm `galleryKey` distinto;
 - B pertence a outro contexto;
@@ -133,7 +162,17 @@ Mantenha fronteiras estreitas entre plataforma e renderer:
 - retorno do jogo restaura a mesma sessão/revisão, foto e scroll;
 - browser Back/Forward e gesto nativo são o caminho principal de retorno.
 
-### 8. Assets natalinos
+### 8. Publicação manual Node antes do EvydFlow
+
+Quando o backend implementar a internal API de photo sessions, crie primeiro um publisher Node manual:
+
+```text
+prepare -> session -> revision -> upload -> verify -> activate
+```
+
+Esse publisher consome o mesmo manifesto do media pipeline. Ele deve ser aprovado antes de qualquer adapter Python. Se a publicação falhar aqui, o problema é backend/contrato e não CRM/fila/WhatsApp.
+
+### 9. Assets natalinos
 
 Não reutilize um asset de Puzzle como dependência permanente do shell.
 
@@ -148,7 +187,7 @@ Se criar arte de galeria:
 - prefira SVG/CSS e arte estática;
 - não introduza Canvas/WebGL para neve no feed.
 
-### 9. Jogos
+### 10. Jogos
 
 Não mude todos os jogos por causa da galeria.
 
@@ -176,11 +215,12 @@ pnpm validate
 
 Evidências obrigatórias:
 
+- receipt do `gallery:prepare` para corpus real;
 - 390, 412, 430 e 768 CSS px;
 - resource requests classificados por variante;
 - zero Phaser/game chunk/canvas em `/fotos`;
 - nenhuma imagem do feed usando `game` antes do lightbox;
-- Gallery A/B/A2 isolation;
+- Gallery A/B/A2 isolation quando backend real existir;
 - três ciclos Gallery → Puzzle → Gallery;
 - 20 ciclos lightbox open/close sem crescimento persistente de DOM/listeners;
 - se YARL entrar, viewer continua em lazy chunk e não aumenta bundle inicial da rota além do budget aprovado;
@@ -190,6 +230,8 @@ Evidências obrigatórias:
 
 Registre:
 
+- qual comando Gallery Lab foi usado e quantas fotos passaram;
+- recipeKey/worker fingerprint;
 - layout aprovado por faixa;
 - variante usada em feed/lightbox;
 - resultado do benchmark 800/1200/1600, quando executado;
