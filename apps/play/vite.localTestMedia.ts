@@ -99,7 +99,7 @@ async function handleRequest(
           card: `/__local-test/media/${photo.id}/card`,
           game: `/__local-test/media/${photo.id}/game`,
         },
-        ...(config.version === 2 ? { variantMetrics: photo.variantMetrics } : {}),
+        ...('variantMetrics' in photo ? { variantMetrics: photo.variantMetrics } : {}),
       })),
     });
     return;
