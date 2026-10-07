@@ -13,5 +13,6 @@ export const GALLERY_LIGHTBOX_SIZES = '100vw';
 
 export function nextGalleryVisibleCount(current: number, total: number): number {
   if (total <= 0) return 0;
-  return Math.min(Math.max(current, GALLERY_INITIAL_PHOTO_COUNT) + GALLERY_BATCH_SIZE, total);
+  if (current <= 0) return Math.min(GALLERY_INITIAL_PHOTO_COUNT, total);
+  return Math.min(current + GALLERY_BATCH_SIZE, total);
 }
