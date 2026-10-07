@@ -92,6 +92,7 @@ async function handleRequest(
     response.setHeader('X-Accel-Redirect', preview.internalUri);
     response.setHeader('Cache-Control', 'private, no-store');
     response.setHeader('Referrer-Policy', 'no-referrer');
+    response.setHeader('X-Robots-Tag', 'noindex, nofollow, noarchive');
     response.setHeader('X-Content-Type-Options', 'nosniff');
     response.statusCode = 200;
     response.end();
@@ -106,6 +107,7 @@ async function handleRequest(
   response.setHeader('Cache-Control', 'private, no-store');
   response.setHeader('Content-Type', 'text/html; charset=utf-8');
   response.setHeader('Referrer-Policy', 'no-referrer');
+  response.setHeader('X-Robots-Tag', 'noindex, nofollow, noarchive');
   response.setHeader('X-Content-Type-Options', 'nosniff');
   send(response, 200, html, request.method === 'HEAD');
 }
