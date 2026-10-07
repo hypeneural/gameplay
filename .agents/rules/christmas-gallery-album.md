@@ -59,6 +59,14 @@ Para álbum de uma coluna no mobile:
 - apenas a foto realmente candidata a LCP pode ser eager/high priority;
 - conte requests e bytes reais por variante em E2E.
 
+## Stack externa aprovada
+
+- Use `react-photo-album` para layout/responsive images e `yet-another-react-lightbox` + Zoom, lazy, como viewer primário.
+- `PhotoSwipe` + wrapper React é challenger de benchmark somente se YARL falhar ou ficar marginal em aparelho físico.
+- Não mantenha dois viewers, dois engines de masonry ou dois virtualizers no produto.
+- Virtualização só entra após profiling; `lightGallery` e particle engines Canvas/WebGL ficam fora do primeiro corte.
+- Nenhuma biblioteca externa recebe `Session`, token ou `GameContext`; use adapters estreitos.
+
 ## Assets natalinos
 
 A Galeria Natalina pertence ao owner `christmas-shell`, não a um jogo específico.
@@ -80,6 +88,7 @@ Direção:
 
 Leia também:
 
+- `docs/integrations/photo-sessions/AUDITORIA_GITHUB_GALERIA_NATALINA_MOBILE_2026-10-06.md`;
 - `docs/integrations/photo-sessions/GALERIA_NATALINA_MULTI_GALERIAS.md`;
 - `docs/quality/GALLERY_MOBILE_PERFORMANCE_CONTRACT.md`;
 - `.agents/skills/christmas-gallery-album/SKILL.md`.
