@@ -1,4 +1,4 @@
-import { access, readFile } from 'node:fs/promises';
+import { readFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import { createCatalogServer } from './CatalogServer.js';
 import {
@@ -17,13 +17,15 @@ const runtime = resolveCatalogRuntimeConfig(
   defaultApplicationShellPath,
 );
 
-await access(runtime.applicationShellPath);
-const previewSource = await readFile(runtime.previewConfigPath, 'utf8');
+const [applicationShell, previewSource] = await Promise.all([
+  readFile(runtime.applicationShellPath, 'utf8'),
+  readFile(runtime.previewConfigPath, 'utf8'),
+]);
 parsePreviewConfiguration(JSON.parse(previewSource));
 
 const server = createCatalogServer({
   publicOrigin: runtime.publicOrigin,
-  loadApplicationShell: () => readFile(runtime.applicationShellPath, 'utf8'),
+  loadApplicationShell: async () => applicationShell,
   previews: createFilePreviewRepository(runtime.previewConfigPath),
   audit: {
     async record(entry) {
