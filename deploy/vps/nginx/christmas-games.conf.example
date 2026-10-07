@@ -10,6 +10,20 @@ location ^~ /assets/ {
     add_header X-Content-Type-Options "nosniff" always;
 }
 
+# staging-demo uses only synthetic fixture photos copied by Vite from public/.
+# Keep this location explicit so it cannot become a generic SPA fallback.
+location ^~ /fixtures/ {
+    try_files $uri =404;
+    add_header Cache-Control "public, max-age=3600" always;
+    add_header X-Content-Type-Options "nosniff" always;
+}
+
+location = /favicon.svg {
+    try_files $uri =404;
+    add_header Cache-Control "public, max-age=86400" always;
+    add_header X-Content-Type-Options "nosniff" always;
+}
+
 # Token-free liveness endpoint for systemd/monitoring.
 location = /healthz {
     access_log off;
@@ -23,6 +37,7 @@ location = /healthz {
 # logs. This covers Hub, direct Gallery reload, games and social preview.
 location ~ ^/s/[A-Za-z0-9_-]{16,128}(?:/fotos|/game/[a-z0-9-]{1,64}|/social-preview)?$ {
     access_log off;
+    log_not_found off;
     proxy_pass http://127.0.0.1:4180;
     proxy_http_version 1.1;
     proxy_set_header Host $host;
