@@ -169,7 +169,8 @@ function isLocalTestMediaConfig(value: unknown): value is LocalTestMediaConfig {
     return false;
   }
   return config.photos.every(
-    (photo) => isBasePhoto(photo) && 'variantMetrics' in photo && isVariantMetrics(photo.variantMetrics),
+    (photo) =>
+      isBasePhoto(photo) && 'variantMetrics' in photo && isVariantMetrics(photo.variantMetrics),
   );
 }
 

@@ -534,6 +534,7 @@
 │   │   └── photo-sessions
 │   │       ├── AUDITORIA_FORENSE_ANTIGRAVITY_MOBILE_2026-10-06.md
 │   │       ├── AUDITORIA_GITHUB_GALERIA_NATALINA_MOBILE_2026-10-06.md
+│   │       ├── AUDITORIA_NODE_FIRST_GALLERY_LAB_2026-10-06.md
 │   │       ├── AUDITORIA_WORKFLOW_SESSOES_E_JOGOS.md
 │   │       ├── GALERIA_NATALINA_MULTI_GALERIAS.md
 │   │       ├── MVP_RAPIDO.md
@@ -1213,9 +1214,11 @@
 │   │   ├── AGENTS.md
 │   │   ├── package.json
 │   │   ├── src
+│   │   │   ├── galleryLab.ts
 │   │   │   ├── index.ts
 │   │   │   ├── inspect.ts
-│   │   │   └── prepareLocal.ts
+│   │   │   ├── prepareLocal.ts
+│   │   │   └── recipe.ts
 │   │   └── tests
 │   │       ├── inspect.test.ts
 │   │       └── media-pipeline.test.ts

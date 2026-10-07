@@ -180,7 +180,9 @@ function opaquePhotoIdFromSourceName(name: string): string {
 
 async function existingSessionUuid(storageRoot: string): Promise<string | undefined> {
   try {
-    const value = JSON.parse(await readFile(join(storageRoot, 'local-test-session.json'), 'utf8')) as {
+    const value = JSON.parse(
+      await readFile(join(storageRoot, 'local-test-session.json'), 'utf8'),
+    ) as {
       session?: { id?: unknown };
     };
     const id = value.session?.id;
@@ -251,7 +253,9 @@ function parseFlags(
 
 async function main(): Promise<void> {
   const result = await prepareLocalMedia(parseArguments(process.argv.slice(2)));
-  process.stdout.write(`${JSON.stringify({ status: 'ready', ...result, worker: mediaWorkerFingerprint })}\n`);
+  process.stdout.write(
+    `${JSON.stringify({ status: 'ready', ...result, worker: mediaWorkerFingerprint })}\n`,
+  );
 }
 
 if (process.argv[1]?.endsWith('prepareLocal.ts')) {
@@ -259,7 +263,8 @@ if (process.argv[1]?.endsWith('prepareLocal.ts')) {
     process.stderr.write(
       `${JSON.stringify({
         code: 'local_gallery_prepare_failed',
-        message: error instanceof Error ? error.message : 'Unknown local gallery preparation error.',
+        message:
+          error instanceof Error ? error.message : 'Unknown local gallery preparation error.',
       })}\n`,
     );
     process.exitCode = 1;

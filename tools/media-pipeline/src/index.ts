@@ -405,9 +405,7 @@ async function allDerivativesAreValid(directory: string): Promise<boolean> {
 
 async function allDerivativeFilesExist(directory: string): Promise<boolean> {
   return (
-    await Promise.all(
-      mediaVariants.map(([variant]) => exists(join(directory, `${variant}.webp`))),
-    )
+    await Promise.all(mediaVariants.map(([variant]) => exists(join(directory, `${variant}.webp`))))
   ).every(Boolean);
 }
 

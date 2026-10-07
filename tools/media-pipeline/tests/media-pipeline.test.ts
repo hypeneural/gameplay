@@ -225,7 +225,11 @@ describe('processMediaJob', () => {
 
     expect(second.ready).toBe(3);
     expect(second.sessionId).toBe(config.session.id);
-    expect(nextConfig.photos.find((photo) => photo.orientation === 'landscape')!.id).toBe(landscapeId);
-    expect(nextConfig.photos.find((photo) => photo.orientation === 'portrait')!.id).toBe(portraitId);
+    expect(nextConfig.photos.find((photo) => photo.orientation === 'landscape')!.id).toBe(
+      landscapeId,
+    );
+    expect(nextConfig.photos.find((photo) => photo.orientation === 'portrait')!.id).toBe(
+      portraitId,
+    );
   });
 });
