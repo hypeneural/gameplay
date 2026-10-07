@@ -26,8 +26,7 @@
 │   │   └── feature_request.md
 │   ├── pull_request_template.md
 │   └── workflows
-│       ├── ci.yml
-│       └── gallery-native-like-finalize.yml
+│       └── ci.yml
 ├── .gitignore
 ├── .node-version
 ├── .prettierignore
