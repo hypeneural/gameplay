@@ -10,8 +10,10 @@ Na workstation ou GitHub Actions:
 
 ```bash
 pnpm install --frozen-lockfile
+pnpm agent:doctor
 pnpm check
 pnpm release:staging
+pnpm release:verify
 ```
 
 Saída local ignorada pelo Git:
@@ -46,12 +48,13 @@ Use um usuário de serviço dedicado `christmas-games`, sem login interativo. O 
 
 1. Crie usuário/grupo de serviço e diretórios com permissões mínimas.
 2. Copie `.release/vps` para um novo diretório em `/srv/christmas-games/releases/` usando um ID imutável (timestamp + SHA é suficiente).
-3. Copie `ops/catalog.env.example` para `/etc/christmas-games/catalog.env`, ajuste somente domínio/caminhos e aplique `chmod 600`.
-4. Crie `/etc/christmas-games/social-preview.json` a partir do exemplo do repositório usando exclusivamente token de demonstração opaco. Não use pedido, telefone ou token de cliente.
-5. Instale `ops/christmas-games-catalog.service.example` como `/etc/systemd/system/christmas-games-catalog.service`.
-6. Inclua `ops/nginx/christmas-games.conf.example` dentro do servidor HTTPS já administrado pela VPS/Plesk.
-7. Valide `nginx -t` antes de reload.
-8. Aponte `/srv/christmas-games/current` para o release e inicie o serviço.
+3. **Antes de ativar o release**, entre no diretório copiado e execute `node ops/tools/verify-vps-release.mjs .`. Não continue se SHA/inventário divergirem.
+4. Copie `ops/catalog.env.example` para `/etc/christmas-games/catalog.env`, ajuste somente domínio/caminhos e aplique `chmod 600`.
+5. Crie `/etc/christmas-games/social-preview.json` a partir do exemplo do repositório usando exclusivamente token de demonstração opaco. Não use pedido, telefone ou token de cliente.
+6. Instale `ops/christmas-games-catalog.service.example` como `/etc/systemd/system/christmas-games-catalog.service`.
+7. Inclua `ops/nginx/christmas-games.conf.example` dentro do servidor HTTPS já administrado pela VPS/Plesk.
+8. Valide `nginx -t` antes de reload.
+9. Aponte `/srv/christmas-games/current` para o release e inicie o serviço.
 
 ## 4. Ordem de validação
 
@@ -63,7 +66,17 @@ curl --fail --silent http://127.0.0.1:4180/healthz
 curl --fail --silent https://SEU-DOMINIO/healthz
 ```
 
-Depois abra o token demo:
+Depois abra o token demo. Para smoke automatizado a partir da workstation/CI, prefira:
+
+```bash
+CG_STAGING_ORIGIN=https://SEU-DOMINIO \
+CG_STAGING_TOKEN=<token-sintetico> \
+pnpm deploy:smoke
+```
+
+O comando não imprime o token e também verifica a fixture sintética estática.
+
+Depois, faça a inspeção manual:
 
 ```text
 https://SEU-DOMINIO/s/<demo-token>
