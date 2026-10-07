@@ -1,7 +1,13 @@
 # Play shell
 
-- React owns routes, session state, Hub, errors, sharing and the safe-area shell.
+- React owns routes, session state, Hub, Gallery, errors, sharing and the safe-area shell.
+- Read root `AGENTS.md`, `.agents/current-state.json` and `.agents/rules/christmas-gallery-album.md` before Gallery/session work.
 - Phaser exists only while gameplay is active. Use `PhaserHost`; do not instantiate Phaser in a screen.
-- Keep Phaser imports dynamic in `src/phaser/createGame.ts` so the Hub bundle stays engine-free.
-- React communicates with games only through the discriminated `GameBridge` events.
-- Run `pnpm check:fast` during iteration and `pnpm validate` before declaring a feature ready.
+- Keep Phaser imports dynamic in `src/phaser/createGame.ts` so Hub and `/fotos` remain engine-free.
+- `/s/:token/fotos` must not mount canvas, request Phaser or load game runtime chunks before the user enters a game.
+- React communicates with games only through discriminated `GameBridge` events.
+- Local Gallery Lab media is allowed only in development. `staging-demo` uses synthetic fixtures. Normal production mode remains `production-disabled` until the real SessionProvider/authority exists.
+- Never turn an invalid/unknown production session into `createFixtureSession` fallback.
+- Preserve browser Back/Forward, gallery scroll and `selectedPhotoId` across Gallery -> game -> Gallery.
+- Responsive `srcset` is emitted only when actual per-variant intrinsic dimensions exist.
+- Run `pnpm check:fast` during iteration; Gallery changes also run `pnpm test:e2e:gallery`; run `pnpm check` before handoff.
