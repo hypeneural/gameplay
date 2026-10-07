@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "currentStage": "vps-staging-demo",
+  "allowedReleaseStages": ["staging-demo"],
+  "pilotReady": false,
+  "customerDataAllowed": false,
+  "automaticDeliveryAllowed": false,
+  "blockersBeforePilot": [
+    "real session repository and API in apps/catalog-server",
+    "browser grant authorization and cross-session isolation",
+    "private derivative media authorization through X-Accel-Redirect",
+    "SQLite/WAL migrations, backup and tested restore",
+    "manual Node publisher against the real internal API",
+    "physical Android and iPhone/Safari pilot validation"
+  ]
+}
