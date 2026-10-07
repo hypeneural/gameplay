@@ -10,7 +10,8 @@
   },
   "scripts": {
     "dev": "pnpm --filter @christmas-games/play dev",
-    "build": "pnpm --filter @christmas-games/play build",
+    "build": "pnpm --filter @christmas-games/play build && pnpm --filter @christmas-games/catalog-server build",
+    "build:staging-demo": "pnpm --filter @christmas-games/play build:staging-demo && pnpm --filter @christmas-games/catalog-server build",
     "typecheck": "tsc --noEmit --project tsconfig.json",
     "lint": "eslint .",
     "test:unit": "vitest run",
@@ -30,6 +31,8 @@
     "media:prepare-local": "pnpm --filter @christmas-games/media-pipeline prepare-local",
     "gallery:prepare": "pnpm --filter @christmas-games/media-pipeline gallery-lab --prepare-only",
     "gallery:lab": "pnpm --filter @christmas-games/media-pipeline gallery-lab",
+    "deploy:readiness": "node tools/deploy/prepare-vps-release.mjs --stage staging-demo --check-only",
+    "release:staging": "pnpm build:staging-demo && node tools/deploy/prepare-vps-release.mjs --stage staging-demo",
     "game:new": "pnpm --filter @christmas-games/game-generator new",
     "asset:doctor": "pnpm --filter @christmas-games/asset-factory run doctor",
     "asset:validate": "pnpm --filter @christmas-games/asset-factory run validate",
