@@ -39,6 +39,9 @@ for (const [name, suffix] of [
   if (result.response.headers.get('referrer-policy') !== 'no-referrer') {
     throw new Error(`${name} route is missing Referrer-Policy: no-referrer.`);
   }
+  if (!result.response.headers.get('x-robots-tag')?.includes('noindex')) {
+    throw new Error(`${name} route is missing private noindex policy.`);
+  }
   if (result.response.headers.get('x-frame-options') !== 'DENY') {
     throw new Error(`${name} route is missing X-Frame-Options: DENY.`);
   }
