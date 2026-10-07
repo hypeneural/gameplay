@@ -37,6 +37,8 @@ Preserve a fundação existente antes de trocar bibliotecas:
 - Hub → Gallery → Puzzle → Gallery preserva `selectedPhotoId` e scroll;
 - decoração do álbum é CSS/DOM, sem Canvas/WebGL e sem usar asset pertencente a jogo.
 
+Evidência automatizada do corte atual: o E2E específico da galeria passou nos projetos Playwright de 390, 412, 430 e 768 CSS px, cobrindo lote inicial, colunas responsivas, ausência de Phaser/canvas antes do jogo e restauração de foto/scroll no ciclo Gallery → Puzzle → Gallery. Essa evidência em Chromium não substitui Android físico nem Safari/iPhone antes do piloto.
+
 Enquanto sessão real/API ainda não fornecer `variantMetrics` completo, mantenha o renderer DOM atual como fallback correto. Não instale RPA/YARL apenas para substituir uma tela funcional sem antes fechar o DTO e medir bundle/rede. Quando o DTO real estiver pronto, RPA/YARL podem substituir somente o layout/viewer atrás das mesmas fronteiras; não reescreva rota, seleção, scroll restoration ou gameplay integration.
 
 ## Ordem de implementação
