@@ -1,3 +1,4 @@
+import type { URL } from 'node:url';
 import { resolve } from 'node:path';
 import { parsePublicOrigin } from './socialPreview.js';
 
