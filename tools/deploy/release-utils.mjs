@@ -88,6 +88,10 @@ export function assertNoForbiddenReleaseFiles(files) {
       lower.endsWith('.log') ||
       lower.endsWith('.pem') ||
       lower.endsWith('.key') ||
+      lower.endsWith('.p12') ||
+      lower.endsWith('.pfx') ||
+      basename === 'id_rsa' ||
+      basename === 'id_ed25519' ||
       basename === '.env' ||
       basename === 'credentials.json' ||
       basename.endsWith('-wal') ||
