@@ -1,5 +1,8 @@
+import { mkdtemp, rm, writeFile } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
-import { parsePreviewConfiguration } from './filePreviewRepository.js';
+import { createFilePreviewRepository, parsePreviewConfiguration } from './filePreviewRepository.js';
 import { genericPreviewVersion } from './socialPreview.js';
 
 describe('parsePreviewConfiguration', () => {
@@ -51,6 +54,52 @@ describe('parsePreviewConfiguration', () => {
         { rejectExampleTokens: true },
       ),
     ).toThrow('sessão inválida');
+  });
+
+  it('re-applies production token policy after an atomic config replacement', async () => {
+    const root = await mkdtemp(join(tmpdir(), 'catalog-preview-'));
+    const path = join(root, 'social-preview.json');
+    try {
+      await writeFile(
+        path,
+        JSON.stringify({
+          version: 1,
+          sessions: [
+            {
+              token: 'safe-staging-token-1234567890',
+              status: 'active',
+              preview: { kind: 'generic', version: genericPreviewVersion },
+            },
+          ],
+        }),
+        'utf8',
+      );
+      const repository = createFilePreviewRepository(path, { rejectExampleTokens: true });
+      await expect(repository.getByPublicToken('safe-staging-token-1234567890')).resolves.toMatchObject({
+        status: 'active',
+      });
+
+      await writeFile(
+        path,
+        JSON.stringify({
+          version: 1,
+          sessions: [
+            {
+              token: 'demo-session-token-change-me-001',
+              status: 'active',
+              preview: { kind: 'generic', version: genericPreviewVersion },
+            },
+          ],
+        }),
+        'utf8',
+      );
+
+      await expect(repository.getByPublicToken('demo-session-token-change-me-001')).rejects.toThrow(
+        'sessão inválida',
+      );
+    } finally {
+      await rm(root, { recursive: true, force: true });
+    }
   });
 
   it('rejects a token that cannot appear in a public route', () => {
