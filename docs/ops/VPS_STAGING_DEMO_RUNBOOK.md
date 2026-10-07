@@ -20,6 +20,7 @@ Saída local ignorada pelo Git:
 
 ```text
 .release/vps/
+  package.json
   web/
   server/
   public/social/
@@ -46,15 +47,23 @@ Use um usuário de serviço dedicado `christmas-games`, sem login interativo. O 
 
 ## 3. Primeira instalação
 
-1. Crie usuário/grupo de serviço e diretórios com permissões mínimas.
-2. Copie `.release/vps` para um novo diretório em `/srv/christmas-games/releases/` usando um ID imutável (timestamp + SHA é suficiente).
-3. **Antes de ativar o release**, entre no diretório copiado e execute `node ops/tools/verify-vps-release.mjs .`. Não continue se SHA/inventário divergirem.
-4. Copie `ops/catalog.env.example` para `/etc/christmas-games/catalog.env`, ajuste somente domínio/caminhos e aplique `chmod 600`.
-5. Crie `/etc/christmas-games/social-preview.json` a partir de `ops/social-preview.example.json` do próprio artifact usando exclusivamente token de demonstração opaco. Não use pedido, telefone ou token de cliente.
-6. Instale `ops/christmas-games-catalog.service.example` como `/etc/systemd/system/christmas-games-catalog.service`.
-7. Inclua `ops/nginx/christmas-games.conf.example` dentro do servidor HTTPS já administrado pela VPS/Plesk.
-8. Valide `nginx -t` antes de reload.
-9. Aponte `/srv/christmas-games/current` para o release e inicie o serviço.
+1. Confirme `node --version` na VPS: o serviço exige Node 24 e o template assume `/usr/bin/node`. Se o binário gerenciado pelo host estiver em outro caminho, ajuste o template antes de instalar; não use NVM interativo em serviço systemd.
+2. Crie usuário/grupo de serviço e diretórios com permissões mínimas.
+3. Copie `.release/vps` para um novo diretório em `/srv/christmas-games/releases/` usando um ID imutável (timestamp + SHA é suficiente).
+4. **Antes de ativar o release**, entre no diretório copiado e execute `node ops/tools/verify-vps-release.mjs .`. Não continue se SHA/inventário divergirem.
+5. Copie `ops/catalog.env.example` para `/etc/christmas-games/catalog.env`, ajuste somente domínio/caminhos e aplique `chmod 600`.
+6. Crie `/etc/christmas-games/social-preview.json` a partir de `ops/social-preview.example.json` do próprio artifact usando exclusivamente token de demonstração opaco. Não use pedido, telefone ou token de cliente.
+7. Instale `ops/christmas-games-catalog.service.example` como `/etc/systemd/system/christmas-games-catalog.service`.
+8. Inclua `ops/nginx/christmas-games.conf.example` dentro do servidor HTTPS já administrado pela VPS/Plesk.
+9. Valide `nginx -t` antes de reload.
+10. Promova o symlink de forma atômica. Exemplo, executado a partir de `/srv/christmas-games`:
+
+```bash
+ln -s "releases/<release-id>" current.next
+mv -Tf current.next current
+```
+
+11. Execute `systemctl daemon-reload` quando o unit file mudar e inicie/reinicie o serviço. O `ExecStartPre` verifica SHA/inventário novamente antes de cada start.`/srv/christmas-games/current` para o release e inicie o serviço.
 
 ## 4. Ordem de validação
 
@@ -97,7 +106,7 @@ Critérios mínimos:
 
 ## 5. Promoção e rollback
 
-Cada release deve ser imutável. Para promover, altere apenas o symlink `current` e reinicie o serviço. Mantenha o release anterior até concluir health + smoke mobile.
+Cada release deve ser imutável. Para promover, troque apenas o symlink `current` de forma atômica e reinicie o serviço. Mantenha o release anterior até concluir health + smoke mobile.
 
 Em falha:
 
