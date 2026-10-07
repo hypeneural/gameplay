@@ -6,6 +6,8 @@
 
 Este documento define como o álbum fotográfico natalino entra no mesmo fluxo de sessões, mídia e jogos sem criar uma segunda plataforma.
 
+A seleção de bibliotecas/donors externos é regida por `AUDITORIA_GITHUB_GALERIA_NATALINA_MOBILE_2026-10-06.md`. No primeiro corte, React Photo Album + Yet Another React Lightbox formam a stack aprovada; PhotoSwipe é challenger de benchmark em aparelho físico, não uma segunda implementação permanente.
+
 ## 1. Modelo canônico
 
 A Galeria Natalina não é uma autoridade paralela. Ela é uma projeção da sessão ativa:
@@ -167,9 +169,9 @@ Primeiro corte mobile:
 
 Não usar o helper de infinite scroll com margens default sem medição.
 
-## 7. Lightbox
+## 7. Viewer e gestos
 
-Usar YARL + Zoom em módulo lazy.
+Viewer primário: Yet Another React Lightbox + Zoom em módulo lazy.
 
 No mobile:
 
@@ -178,6 +180,10 @@ No mobile:
 - swipe/pinch;
 - foto atual e vizinhas necessárias somente;
 - fechar restaura scroll/seleção.
+
+PhotoSwipe + `react-photoswipe-gallery` é o challenger oficial. Ele só deve ser implementado em spike se o viewer primário falhar ou ficar marginal em Safari/iPhone, swipe/zoom, memória ou ciclos de abrir/fechar. O produto final mantém um único viewer.
+
+Nenhuma biblioteca de viewer recebe `Session`, token ou `GameContext` integral. `LightboxSlideAdapter` fornece somente id/alt e variantes responsivas necessárias.
 
 ## 8. Direção visual natalina
 
@@ -211,7 +217,10 @@ Proibido:
 - moldura pesada em todas as fotos;
 - neve contínua sobre rostos;
 - loops de partículas durante rolagem longa;
+- Canvas/WebGL apenas para ambientação natalina;
 - decoração que muda o crop da fotografia.
+
+Microinterações de estrela/brilho devem preferir SVG/CSS de curta duração, respeitar `prefers-reduced-motion` e desaparecer no quality tier LOW.
 
 ## 9. Estado e isolamento multi-galerias
 
@@ -278,20 +287,24 @@ Política recomendada:
 - Expresso/Mosaico/Rudolph: promoção por papel já é a referência;
 - Guirlanda deve evoluir de várias `game` para uma hero `game` + secundárias `card`, promovidas somente quando necessário.
 
+A ação `Jogar com esta foto` apenas define `selectedPhotoId` no estado da sessão e navega pelo roteador existente. A biblioteca de galeria não importa Phaser nem cria um segundo bridge para jogos.
+
 ## 12. Ordem de execução
 
 1. Ajustar contrato `photoSessionId + galleryKey` e constraints multi-galerias.
 2. Evoluir DTO de variantes com dimensões reais.
-3. Rodar benchmark 800 × 1200 × 1600.
-4. Decidir se `gallery=1200` entra na receita.
-5. Implementar SessionProvider real e isolamento A/A2/B.
-6. Implementar GalleryRoute de uma coluna no mobile.
-7. Adicionar responsive images e batch controlado.
-8. Lazy lightbox.
-9. Criar/registrar assets `christmas-shell/gallery`.
-10. Provar Gallery → Puzzle → Gallery.
-11. Otimizar Guirlanda.
-12. Android/iPhone + rede móvel + restore/rollback.
+3. Criar `GalleryPhotoAdapter` e `LightboxSlideAdapter` puros.
+4. Rodar benchmark 800 × 1200 × 1600.
+5. Decidir se `gallery=1200` entra na receita.
+6. Implementar SessionProvider real e isolamento A/A2/B.
+7. Implementar GalleryRoute de uma coluna no mobile com batch próprio.
+8. Integrar React Photo Album.
+9. Integrar YARL + Zoom em lazy chunk.
+10. Criar/registrar assets `christmas-shell/gallery`.
+11. Provar Gallery → Puzzle → Gallery.
+12. Otimizar Guirlanda.
+13. Android/iPhone + rede móvel + restore/rollback.
+14. Só então executar spike PhotoSwipe ou virtualização se uma medição exigir.
 
 ## 13. Critério de aceite
 
@@ -302,7 +315,9 @@ A Galeria Natalina só está pronta para piloto quando:
 - mobile usa uma coluna sem crop;
 - requests iniciais são limitados;
 - feed não baixa `game` antecipadamente;
+- viewer não faz parte do bundle inicial da galeria;
 - assets natalinos têm manifesto/proveniência;
 - zero Phaser/canvas em `/fotos`;
 - retorno de jogo preserva foto e scroll;
+- 20 ciclos de abrir/fechar viewer não deixam crescimento persistente de DOM/listeners;
 - Android físico e Safari/iPhone foram exercitados.
