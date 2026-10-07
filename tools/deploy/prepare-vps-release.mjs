@@ -23,6 +23,14 @@ if (options.checkOnly) {
   process.exit(0);
 }
 
+const gitState = readGitState();
+if (gitState.dirty) {
+  throw new Error('Refusing to package a VPS release from a dirty Git worktree. Commit the intended source first.');
+}
+if (gitState.sha === 'unknown') {
+  throw new Error('Refusing to package a VPS release without a resolvable Git HEAD.');
+}
+
 const webSource = join(repositoryRoot, 'apps', 'play', 'dist');
 const serverSource = join(repositoryRoot, 'apps', 'catalog-server', 'dist');
 const socialSource = join(
@@ -68,7 +76,7 @@ assertNoForbiddenReleaseFiles(files);
 const release = {
   schemaVersion: 1,
   stage: options.stage,
-  gitSha: readGitSha(),
+  gitSha: gitState.sha,
   generatedAt: new Date().toISOString(),
   nodeVersion: process.version,
   customerDataAllowed: readiness.customerDataAllowed === true,
@@ -129,14 +137,24 @@ async function assertFile(path, label) {
   }
 }
 
-function readGitSha() {
+function readGitState() {
   try {
-    return execFileSync('git', ['rev-parse', 'HEAD'], {
+    const sha = execFileSync('git', ['rev-parse', 'HEAD'], {
       cwd: repositoryRoot,
       encoding: 'utf8',
       stdio: ['ignore', 'pipe', 'ignore'],
     }).trim();
+    const status = execFileSync(
+      'git',
+      ['status', '--porcelain=v1', '--untracked-files=all'],
+      {
+        cwd: repositoryRoot,
+        encoding: 'utf8',
+        stdio: ['ignore', 'pipe', 'ignore'],
+      },
+    ).trim();
+    return { sha, dirty: status.length > 0 };
   } catch {
-    return 'unknown';
+    return { sha: 'unknown', dirty: true };
   }
 }
