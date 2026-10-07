@@ -9,6 +9,7 @@ User=christmas-games
 Group=christmas-games
 WorkingDirectory=/srv/christmas-games/current
 EnvironmentFile=/etc/christmas-games/catalog.env
+ExecStartPre=/usr/bin/node /srv/christmas-games/current/ops/tools/verify-vps-release.mjs /srv/christmas-games/current
 ExecStart=/usr/bin/node /srv/christmas-games/current/server/main.js
 Restart=on-failure
 RestartSec=2s
