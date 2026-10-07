@@ -2,7 +2,9 @@
 
 **Objetivo:** permitir que um modelo de menor capacidade execute mudanças seguras sem precisar reconstruir a arquitetura por inferência.
 
-Este documento não substitui `AGENTS.md`, o plano ativo ou os `SPEC.md`. Ele define a sequência operacional obrigatória para reduzir erros de escopo, publicação e segurança.
+Este documento não substitui `AGENTS.md`, `.agents/current-state.json`, o plano ativo ou os `SPEC.md`. Ele define a sequência operacional obrigatória para reduzir erros de escopo, publicação e segurança.
+
+`AntiGravity 2.19.1` é o nome canônico interno. Se o operador disser `Point Gravity` ou `FluentGraft`, trate como alias do mesmo fluxo; não crie configuração paralela.
 
 ## 1. Regra principal
 
@@ -39,11 +41,12 @@ Não crie um novo app, serviço ou store porque o local correto parece difícil.
 Leia, nesta ordem:
 
 1. `AGENTS.md`;
-2. `deploy/readiness.json` quando a tarefa toca VPS/produção;
-3. o `AGENTS.md`, regra ou `SPEC.md` mais próximo;
-4. o arquivo atual que será alterado;
-5. os testes do comportamento alterado;
-6. o plano ativo quando a mudança é estrutural.
+2. `.agents/current-state.json`;
+3. `deploy/readiness.json` quando a tarefa toca VPS/produção;
+4. o `AGENTS.md`, regra ou `SPEC.md` mais próximo;
+5. o arquivo atual que será alterado;
+6. os testes do comportamento alterado;
+7. o plano ativo quando a mudança é estrutural.
 
 Nunca copie uma implementação de uma auditoria antiga sem conferir o head atual.
 
@@ -146,7 +149,7 @@ O packager rejeita artefatos proibidos e não copia:
 - `.local-test-media`;
 - `credentials.json`.
 
-O bundle esperado contém `web/`, `server/`, `public/social/`, `ops/` e `RELEASE.json`.
+O bundle esperado contém `package.json` (`private=true`, `type=module`), `web/`, `server/`, `public/social/`, `ops/` e `RELEASE.json`. O packager recusa árvore Git suja e o verificador exige os arquivos mínimos de runtime antes da promoção.
 
 ## 7. Stop conditions
 
@@ -177,6 +180,7 @@ Quando um gate falhar, classifique antes de corrigir:
 | build Vite         | trate import/chunk/config; não mude target sem justificativa   |
 | catalog build      | preserve NodeNext/ESM e imports `.js`                          |
 | release packager   | leia o erro; não copie manualmente arquivo bloqueado           |
+| agent:doctor       | corrija a contradição de estado/workflow; não contorne o gate   |
 | Nginx health       | cheque systemd → `127.0.0.1:4180/healthz` → Nginx, nessa ordem |
 
 ## 9. Regras de Git para agente
