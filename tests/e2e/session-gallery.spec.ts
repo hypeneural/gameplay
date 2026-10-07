@@ -16,10 +16,19 @@ test('gallery is a bounded mobile album and stays engine-free before gameplay', 
   ).toBe(false);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
 
-  const first = page.locator('.gallery-card').first();
-  const firstBox = await first.boundingBox();
-  expect(firstBox).not.toBeNull();
-  expect(firstBox!.width).toBeGreaterThan(page.viewportSize()!.width * 0.8);
+  const viewportWidth = page.viewportSize()!.width;
+  const columnCount = await page.locator('.gallery-grid').evaluate((element) =>
+    getComputedStyle(element)
+      .gridTemplateColumns.split(' ')
+      .filter(Boolean).length,
+  );
+  expect(columnCount).toBe(viewportWidth < 600 ? 1 : viewportWidth < 900 ? 2 : 3);
+
+  if (viewportWidth < 600) {
+    const firstBox = await page.locator('.gallery-card').first().boundingBox();
+    expect(firstBox).not.toBeNull();
+    expect(firstBox!.width).toBeGreaterThan(viewportWidth * 0.8);
+  }
 });
 
 test('gallery lightbox stays DOM-only and returns from Puzzle to the same photo and scroll', async ({
