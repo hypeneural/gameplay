@@ -29,13 +29,21 @@ describe('release safety policy', () => {
     ).toThrow(/customer data/);
   });
 
-  it('rejects release files that can contain private/runtime state', () => {
-    expect(() =>
-      assertNoForbiddenReleaseFiles([
-        { path: 'server/app.js', bytes: 10, sha256: 'x' },
-        { path: 'private/session.sqlite', bytes: 20, sha256: 'y' },
-      ]),
-    ).toThrow(/session\.sqlite/);
+  it('rejects release files that can contain private/runtime state or credentials', () => {
+    for (const path of [
+      'private/session.sqlite',
+      'private/session.sqlite-wal',
+      'ops/tls/client.p12',
+      'ops/tls/id_ed25519',
+      'logs/catalog.log',
+    ]) {
+      expect(() =>
+        assertNoForbiddenReleaseFiles([
+          { path: 'server/app.js', bytes: 10, sha256: 'x' },
+          { path, bytes: 20, sha256: 'y' },
+        ]),
+      ).toThrow();
+    }
   });
 
   it('creates a deterministic path, byte and SHA-256 inventory', async () => {
