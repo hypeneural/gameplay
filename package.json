@@ -47,7 +47,8 @@
     "test:e2e:gallery": "playwright test tests/e2e/session-gallery.spec.ts",
     "release:verify": "node tools/deploy/verify-vps-release.mjs",
     "deploy:smoke": "node tools/deploy/smoke-staging.mjs",
-    "validate:staging": "pnpm agent:doctor && pnpm check && pnpm release:staging && pnpm release:verify"
+    "validate:staging": "pnpm agent:doctor && pnpm check && pnpm release:staging && pnpm release:verify",
+    "deploy:staging-config": "node tools/deploy/create-staging-preview-config.mjs"
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",
