@@ -374,49 +374,94 @@ Isso mantém privacidade/atomicidade no caminho crítico e adia somente side eff
 
 O novo flow não pode herdar as práticas operacionais legadas do EvydFlow. Antes de link real de cliente, tratar credenciais/runtime/logs rastreados, logging de payload, compartilhamento público gravável e FTP legado. Rotacionar/revogar credenciais potencialmente expostas antes de qualquer limpeza destrutiva de histórico. O photo-session flow não move as fontes para `TRATADAS` e não repete side effect após timeout sem reconciliação de `UNKNOWN_OUTCOME`.
 
-## 14. Sequência de PRs
+## 14. Estado de implementação e próximos cortes
 
-### PR 1 — contratos + documentação
+Esta seção substitui a sequência histórica. **Não reimplemente itens marcados como presentes no branch apenas porque documentos antigos os descrevem como PR futuro.** Confirme no código e nos testes.
 
-IDs, `galleryKey`, schemas e recipeKey. Substituir `crm_order_uuid UNIQUE` por `(crm_order_uuid, gallery_key)` e alinhar documentação global. Sem alterar fluxo legado.
+### Já presente no branch atual
 
-### PR 2 — worker Windows + benchmark da galeria
+- contratos de `galleryKey`, recipe identity e métricas reais por variante;
+- worker Sharp Node-first com snapshot rehash e Gallery Lab;
+- GalleryRoute native-like, batching, lightbox lazy e retorno Gallery → Puzzle → Gallery;
+- build `production-disabled` fail-closed;
+- release `staging-demo` sintético;
+- catalog-server compilado, health, startup validation e shutdown gracioso;
+- Nginx/systemd templates de staging;
+- release inventariado/verificado por SHA-256;
+- `agent:doctor`, readiness e estado machine-readable.
 
-Stable photoId, recipeKey, rehash snapshot, dimensões por variante, stdout JSON e testes. Rodar benchmark 800 × 1200 × 1600 e decidir se a variante `gallery` entra no contrato.
+### Próximo corte A — real-session-authority
 
-### PR 3 — backend session/revision
+Owner: `apps/catalog-server`.
 
-SQLite, repositories, constraints e CAS de activeRevision.
+Leia `apps/catalog-server/AGENTS.md` e `.agents/skills/real-session-authority/SKILL.md`.
 
-### PR 4 — ingest/verify/activate
+Entregas:
 
-Rotas internas, service auth, idempotência e testes de lote parcial.
+- migrations explícitas;
+- Session/Revision/Photo/Media repositories;
+- SQLite em disco local atrás de adapter;
+- A/A2/B isolation tests;
+- idempotência;
+- STAGED → VALIDATED;
+- CAS de `activeRevisionId`;
+- restart/persistence test.
 
-### PR 5 — public access/media
+**Não** habilitar cliente real, grant público ou EvydFlow neste corte.
 
-Token bootstrap, browser grant, media authorization, Nginx internal e isolamento A/A2/B.
+### Próximo corte B — public access e browser grant
 
-### PR 6 — React SessionProvider
+Somente depois do A verde:
 
-Hidratação real, estados de acesso, abort/cleanup; produção sem fixture.
+- capability bootstrap;
+- browser grant;
+- SessionProvider real;
+- token inválido/revogado fail-closed;
+- produção sem fixture;
+- duas abas A/B isoladas.
 
-### PR 7 — GalleryRoute / Galeria Natalina
+### Próximo corte C — private media authorization
 
-Álbum de uma coluna no mobile, responsive variants, batches próprios, lazy lightbox, `christmas-shell/gallery` e navigation state. Zero Phaser gate.
+- resolver somente a `activeRevision`;
+- validar ownership de photoId/variant;
+- `X-Accel-Redirect` para derivado privado;
+- originais nunca servidos;
+- cross-session denial tests.
 
-### PR 8 — Puzzle vertical slice
+### Próximo corte D — internal revision API
 
-Galeria -> selecionar -> Puzzle -> sair -> mesma foto/scroll.
+- create/resolve session;
+- begin revision;
+- record/upload receipt;
+- exact-set verify;
+- CAS activate;
+- service authentication;
+- idempotency replay/recovery.
 
-### PR 9 — EvydFlow provider
+### Próximo corte E — publisher Node manual
 
-CLI local + upload HTTPS + verify + activate + recovery.
+Publicar uma sessão de teste pelo contrato interno usando o mesmo manifesto do media worker.
 
-### PR 10 — piloto físico
+O publisher Node é obrigatório antes de Python/EvydFlow porque reduz a superfície de diagnóstico do protocolo.
 
-Android + Safari/iPhone, restore/rollback e entrega manual.
+### Próximo corte F — pilot gate
 
-Somente depois: outbox/WhatsApp, mais jogos, cache avançado, AVIF, virtualização ou multi-host.
+- backup/restore comprovados;
+- token/log strategy de capability real;
+- A/A2/B;
+- carga representativa;
+- Android físico;
+- Safari/iPhone;
+- GitHub required checks/ruleset;
+- rollback operacional.
+
+Só este corte pode propor alterar `pilotReady`, e apenas com evidência.
+
+### Próximo corte G — EvydFlow provider
+
+Implementar `IGameplayProvider` sobre os contratos já provados. Não mover Sharp para Python, não reutilizar FTP e não criar API paralela.
+
+Depois do piloto: outbox/WhatsApp, mais jogos, cache avançado, AVIF, virtualização ou multi-host.
 
 ## 15. Gates de aceite
 
