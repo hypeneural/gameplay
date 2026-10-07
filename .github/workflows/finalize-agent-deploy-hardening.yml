@@ -1,0 +1,63 @@
+name: Finalize Agent Deploy Hardening
+
+on:
+  push:
+    branches:
+      - docs/antigravity-photo-sessions-integration
+
+permissions:
+  contents: write
+
+concurrency:
+  group: finalize-agent-deploy-hardening
+  cancel-in-progress: true
+
+jobs:
+  finalize:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          ref: docs/antigravity-photo-sessions-integration
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v7.0.0
+        with:
+          node-version: 24
+
+      - run: corepack enable
+
+      - uses: pnpm/action-setup@v6.1.0
+        with:
+          version: 11.19.0
+          run_install: false
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Remove this temporary workflow before mapping
+        run: rm .github/workflows/finalize-agent-deploy-hardening.yml
+
+      - name: Apply canonical formatting and repository map
+        run: |
+          pnpm format
+          pnpm repo:map
+
+      - name: Prove finalized tree
+        run: |
+          pnpm agent:doctor
+          pnpm check
+
+      - name: Commit final tree
+        shell: bash
+        run: |
+          if git diff --quiet && git diff --cached --quiet; then
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "chore(repo): finalize agent and deploy hardening"
+          git push origin HEAD:docs/antigravity-photo-sessions-integration
