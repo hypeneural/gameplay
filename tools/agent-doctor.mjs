@@ -37,6 +37,15 @@ if (forbiddenTrackedFiles.length > 0) {
   );
 }
 
+const secretMarkerFiles = scanTrackedSecretMarkers();
+if (secretMarkerFiles === undefined) {
+  failures.push('Unable to scan tracked text for strong secret markers.');
+} else if (secretMarkerFiles.length > 0) {
+  failures.push(
+    `Tracked text contains strong secret markers; inspect locally without pasting values: ${secretMarkerFiles.join(', ')}.`,
+  );
+}
+
 const nodeMajor = Number(process.versions.node.split('.')[0]);
 if (nodeMajor !== 24) failures.push(`Node 24 required; running ${process.versions.node}.`);
 
@@ -160,6 +169,39 @@ function readTrackedFiles() {
       .split(/\r?\n/)
       .filter(Boolean);
   } catch {
+    return undefined;
+  }
+}
+
+function scanTrackedSecretMarkers() {
+  try {
+    const pattern = [
+      '-----BEGIN (RSA |EC |OPENSSH )?PRIVATE KEY-----',
+      'github_pat_[A-Za-z0-9_]{20,}',
+      'gh[pousr]_[A-Za-z0-9]{20,}',
+      'sk-[A-Za-z0-9_-]{20,}',
+      'AKIA[0-9A-Z]{16}',
+      'AIza[0-9A-Za-z_-]{30,}',
+      'xox[baprs]-[0-9A-Za-z-]{20,}',
+    ].join('|');
+    const output = execFileSync(
+      'git',
+      ['grep', '-I', '-l', '-E', pattern, '--', '.'],
+      {
+        encoding: 'utf8',
+        stdio: ['ignore', 'pipe', 'ignore'],
+      },
+    );
+    return output.split(/\r?\n/).filter(Boolean);
+  } catch (error) {
+    if (
+      error &&
+      typeof error === 'object' &&
+      'status' in error &&
+      error.status === 1
+    ) {
+      return [];
+    }
     return undefined;
   }
 }
