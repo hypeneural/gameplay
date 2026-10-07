@@ -39,7 +39,8 @@
     "galleryLab": "pnpm gallery:lab --source \"<folder>\"",
     "galleryE2E": "pnpm test:e2e:gallery",
     "stagingRelease": "pnpm release:staging",
-    "verifyRelease": "pnpm release:verify"
+    "verifyRelease": "pnpm release:verify",
+    "stagingConfig": "pnpm deploy:staging-config --output \"<private-path-outside-repository>\""
   },
   "handoffRequiredFields": [
     "current stage",
