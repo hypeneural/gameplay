@@ -50,7 +50,7 @@ Use um usuário de serviço dedicado `christmas-games`, sem login interativo. O 
 2. Copie `.release/vps` para um novo diretório em `/srv/christmas-games/releases/` usando um ID imutável (timestamp + SHA é suficiente).
 3. **Antes de ativar o release**, entre no diretório copiado e execute `node ops/tools/verify-vps-release.mjs .`. Não continue se SHA/inventário divergirem.
 4. Copie `ops/catalog.env.example` para `/etc/christmas-games/catalog.env`, ajuste somente domínio/caminhos e aplique `chmod 600`.
-5. Crie `/etc/christmas-games/social-preview.json` a partir do exemplo do repositório usando exclusivamente token de demonstração opaco. Não use pedido, telefone ou token de cliente.
+5. Crie `/etc/christmas-games/social-preview.json` a partir de `ops/social-preview.example.json` do próprio artifact usando exclusivamente token de demonstração opaco. Não use pedido, telefone ou token de cliente.
 6. Instale `ops/christmas-games-catalog.service.example` como `/etc/systemd/system/christmas-games-catalog.service`.
 7. Inclua `ops/nginx/christmas-games.conf.example` dentro do servidor HTTPS já administrado pela VPS/Plesk.
 8. Valide `nginx -t` antes de reload.
