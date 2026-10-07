@@ -14,6 +14,7 @@ interface HubProps extends ShellControlProps {
   games: readonly GameDefinition[];
   onFixtureChange(count: 4 | 12 | 120 | 172): void;
   onOpenGame(gameId: string): void;
+  onOpenGallery(): void;
   onPrefetchGame(gameId: string): void;
   onSelectPhoto(photoId: string): void;
   selectedPhotoId: string;
@@ -27,6 +28,7 @@ export function Hub({
   games,
   onFixtureChange,
   onOpenGame,
+  onOpenGallery,
   onPrefetchGame,
   onSelectPhoto,
   selectedPhotoId,
@@ -60,6 +62,7 @@ export function Hub({
         session={session}
         photo={selectedPhoto}
         onSelect={onSelectPhoto}
+        onOpenGallery={onOpenGallery}
         snowBurst={snowBurst}
         onSnow={makeSnow}
       />
