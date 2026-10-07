@@ -133,6 +133,11 @@ function parseArguments(argv: readonly string[]): GalleryLabOptions {
 
   for (let index = 0; index < argv.length; index += 1) {
     const flag = argv[index];
+    // Accept the conventional option separator as a no-op. The root scripts
+    // do not require it, but tolerating it makes direct package invocation less
+    // brittle and prevents a wrapper from turning a harmless separator into a
+    // product error.
+    if (flag === '--') continue;
     if (flag === '--prepare-only') {
       prepareOnly = true;
       continue;
