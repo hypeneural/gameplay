@@ -46,7 +46,7 @@ jobs:
           pnpm format
           pnpm repo:map
 
-      - name: Smoke canonical Gallery Lab prepare command after CLI compatibility fix
+      - name: Smoke canonical Gallery Lab prepare command after final cleanup
         shell: bash
         run: |
           mkdir -p "$RUNNER_TEMP/gallery-input" "$RUNNER_TEMP/gallery-storage"
