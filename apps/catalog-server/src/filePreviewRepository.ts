@@ -7,12 +7,15 @@ import type { SocialPreviewRecord, SocialPreviewRepository } from './socialPrevi
  * reloads on every decision so consent revocation does not wait for a process
  * restart. A database adapter can replace it through the same interface.
  */
-export function createFilePreviewRepository(configPath: string): SocialPreviewRepository {
+export function createFilePreviewRepository(
+  configPath: string,
+  options: PreviewConfigurationOptions = {},
+): SocialPreviewRepository {
   return {
     async getByPublicToken(token) {
       const source = await readFile(configPath, 'utf8');
       const parsed: unknown = JSON.parse(source);
-      return parsePreviewConfiguration(parsed).get(token);
+      return parsePreviewConfiguration(parsed, options).get(token);
     },
   };
 }
