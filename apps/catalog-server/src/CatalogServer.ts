@@ -95,20 +95,33 @@ type SocialRoute = {
 };
 
 function parseSocialRoute(pathname: string): SocialRoute | undefined {
-  const match =
-    /^\/s\/([a-zA-Z0-9_-]{16,128})(?:\/game\/([a-z0-9-]{1,64}))?(?:\/(social-preview))?$/.exec(
-      pathname,
-    );
-  if (!match) return undefined;
-  const token = match[1]!;
+  const segments = pathname.split('/').filter(Boolean);
+  if (segments[0] !== 's' || !segments[1] || segments.length < 2 || segments.length > 4) {
+    return undefined;
+  }
+
+  const token = segments[1];
   if (!isOpaquePublicToken(token)) return undefined;
-  const gameId = match[2];
+  const encodedToken = encodeURIComponent(token);
+
+  if (segments.length === 2) {
+    return { kind: 'session', token, canonicalPath: `/s/${encodedToken}` };
+  }
+
+  if (segments.length === 3 && segments[2] === 'fotos') {
+    return { kind: 'session', token, canonicalPath: `/s/${encodedToken}/fotos` };
+  }
+
+  if (segments.length === 3 && segments[2] === 'social-preview') {
+    return { kind: 'social-preview', token, canonicalPath: `/s/${encodedToken}` };
+  }
+
+  const gameId = segments[2] === 'game' ? segments[3] : undefined;
+  if (!gameId || !/^[a-z0-9-]{1,64}$/.test(gameId)) return undefined;
   return {
-    kind: match[3] === 'social-preview' ? 'social-preview' : 'session',
+    kind: 'session',
     token,
-    canonicalPath: gameId
-      ? `/s/${encodeURIComponent(token)}/game/${encodeURIComponent(gameId)}`
-      : `/s/${encodeURIComponent(token)}`,
+    canonicalPath: `/s/${encodedToken}/game/${encodeURIComponent(gameId)}`,
   };
 }
 
