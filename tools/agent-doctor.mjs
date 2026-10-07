@@ -1,8 +1,8 @@
 import { URL } from 'node:url';
 import { readFile } from 'node:fs/promises';
 
-const readiness = JSON.parse(await readFile(new URL('../../deploy/readiness.json', import.meta.url), 'utf8'));
-const rootPackage = JSON.parse(await readFile(new URL('../../package.json', import.meta.url), 'utf8'));
+const readiness = JSON.parse(await readFile(new URL('../deploy/readiness.json', import.meta.url), 'utf8'));
+const rootPackage = JSON.parse(await readFile(new URL('../package.json', import.meta.url), 'utf8'));
 
 const failures = [];
 const nodeMajor = Number(process.versions.node.split('.')[0]);
