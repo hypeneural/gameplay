@@ -74,6 +74,11 @@ async function handleRequest(
     return;
   }
 
+  if (dependencies.runtime?.releaseStage === 'staging-demo' && preview.kind === 'customer-photo') {
+    sendNotFound(response);
+    return;
+  }
+
   await dependencies.audit.record({
     route: route.kind === 'session' ? 'session-html' : 'social-image',
     preview: preview.kind,
