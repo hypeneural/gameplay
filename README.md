@@ -22,7 +22,7 @@ O **Christmas Games** é uma plataforma de experiências interativas natalinas d
 - 🔒 **Privacidade de Dados & Mídia Segura:** Fotos originais em alta resolução nunca são servidas ou expostas à internet. O pipeline Node/Sharp faz a higienização de metadados EXIF e gera derivadas WebP com hash criptográfico SHA-256 servidas sob demanda.
 - 🧩 **Domínios Puros & Determinismo:** Cada jogo possui um módulo `domain/` desacoplado de React, DOM e Phaser. Regras de física, pontuação e estado são 100% testáveis via sementes pseudoaleatórias previsíveis.
 - 🧹 **Zero Memory Leak Lifecycle:** Um único ciclo de vida do Phaser é instanciado na entrada do jogo e completamente destruído ao sair (`game.destroy(true)`), liberando texturas WebGL, listeners de toque e instâncias de Web Audio.
-- ⚡ **Implantação planejada:** A documentação descreve a proposta de hospedagem isolada. A validação do repositório não comprova implantação, disponibilidade ou capacidade da VPS.
+- ⚡ **Staging empacotável, piloto bloqueado:** O repositório já gera um artifact sintético verificável para VPS, mas isso não comprova disponibilidade/capacidade nem autoriza dados reais; `deploy/readiness.json` continua sendo o gate do piloto.
 
 ---
 
