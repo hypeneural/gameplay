@@ -3,6 +3,11 @@ export interface SessionRoute {
   token: string;
 }
 
+export interface GalleryRoute {
+  kind: 'gallery';
+  token: string;
+}
+
 export interface GameCoverRoute {
   kind: 'game-cover';
   token: string;
@@ -27,11 +32,14 @@ interface PerformanceLabRoute {
 
 export type AppRoute =
   | SessionRoute
+  | GalleryRoute
   | GameCoverRoute
   | ThemeLabRoute
   | ExperienceLabRoute
   | AssetLabRoute
   | PerformanceLabRoute;
+
+export type PublicRoute = SessionRoute | GalleryRoute | GameCoverRoute;
 
 const fallbackSessionRoute: SessionRoute = { kind: 'session', token: 'local-demo-token' };
 
@@ -45,17 +53,18 @@ export function parseAppRoute(pathname: string): AppRoute {
   if (segments[0] !== 's' || !segments[1]) return fallbackSessionRoute;
 
   const token = decodeSegment(segments[1]);
+  if (segments[2] === 'fotos' && !segments[3]) return { kind: 'gallery', token };
   if (segments[2] === 'game' && segments[3]) {
     return { kind: 'game-cover', token, gameId: decodeSegment(segments[3]) };
   }
   return { kind: 'session', token };
 }
 
-export function routePath(route: SessionRoute | GameCoverRoute): string {
+export function routePath(route: PublicRoute): string {
   const token = encodeURIComponent(route.token);
-  return route.kind === 'session'
-    ? `/s/${token}`
-    : `/s/${token}/game/${encodeURIComponent(route.gameId)}`;
+  if (route.kind === 'session') return `/s/${token}`;
+  if (route.kind === 'gallery') return `/s/${token}/fotos`;
+  return `/s/${token}/game/${encodeURIComponent(route.gameId)}`;
 }
 
 export function sameRoute(first: AppRoute, second: AppRoute): boolean {
@@ -72,10 +81,11 @@ export function sameRoute(first: AppRoute, second: AppRoute): boolean {
   ) {
     return true;
   }
-  return (
-    first.token === second.token &&
-    (first.kind === 'session' || first.gameId === (second as GameCoverRoute).gameId)
-  );
+  if (first.token !== second.token) return false;
+  if (first.kind === 'game-cover' && second.kind === 'game-cover') {
+    return first.gameId === second.gameId;
+  }
+  return true;
 }
 
 function decodeSegment(value: string): string {
