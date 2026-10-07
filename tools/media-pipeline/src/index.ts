@@ -1,20 +1,23 @@
 import { createHash, randomUUID } from 'node:crypto';
 import { createReadStream } from 'node:fs';
-import { access, copyFile, mkdir, readFile, rename, stat, writeFile } from 'node:fs/promises';
-import { basename, dirname, join } from 'node:path';
+import { access, copyFile, mkdir, readFile, rename, rm, stat, writeFile } from 'node:fs/promises';
+import { dirname, join } from 'node:path';
 import sharp, { type Sharp } from 'sharp';
 import { z } from 'zod';
+import {
+  mediaRecipeKey,
+  mediaRecipeQuality,
+  mediaVariants,
+  mediaWorkerFingerprint,
+} from './recipe.js';
+import type { MediaVariant, MediaVariantMetric } from './recipe.js';
 
 const MAX_INPUT_PIXELS = 40_000_000;
 const MAX_INPUT_CHANNELS = 5;
 const MAX_INPUT_BYTES = 32 * 1024 * 1024;
 const supportedFormats = new Set(['jpeg', 'png', 'webp']);
-const derivativeVariants = [
-  ['thumb', 480],
-  ['card', 800],
-  ['game', 1600],
-] as const;
 const opaquePhotoId = z.string().regex(/^[a-zA-Z0-9][a-zA-Z0-9_-]{0,127}$/);
+const recipeKeySchema = z.string().regex(/^[a-zA-Z0-9][a-zA-Z0-9._-]{0,255}$/);
 
 export const mediaJobSchema = z.object({
   sourcePath: z.string().min(1),
@@ -31,16 +34,20 @@ export interface MediaManifestEntry {
   state: MediaState;
   /** SHA-256 of the immutable stored original and its derivative namespace. */
   contentHash?: string;
+  /** Semantic media recipe. A source hash alone is not a complete cache key. */
+  recipeKey?: string;
   width?: number;
   height?: number;
   aspectRatio?: number;
   orientation?: 'portrait' | 'landscape' | 'square';
-  derivatives?: Record<'thumb' | 'card' | 'game', string>;
+  derivatives?: Record<MediaVariant, string>;
+  derivativeMetrics?: Record<MediaVariant, MediaVariantMetric>;
   error?: string;
 }
 
 export interface MediaManifest {
-  version: 1;
+  version: 2;
+  worker: typeof mediaWorkerFingerprint;
   entries: readonly MediaManifestEntry[];
 }
 
@@ -49,25 +56,48 @@ export interface MediaBatchResult {
   failed: readonly MediaManifestEntry[];
 }
 
+const mediaVariantMetricSchema = z.object({
+  width: z.number().int().positive(),
+  height: z.number().int().positive(),
+  byteLength: z.number().int().positive(),
+});
+const derivativeMetricsSchema = z.object({
+  thumb: mediaVariantMetricSchema,
+  card: mediaVariantMetricSchema,
+  game: mediaVariantMetricSchema,
+});
+const derivativesSchema = z.object({ thumb: z.string(), card: z.string(), game: z.string() });
 const mediaManifestEntrySchema = z.object({
   photoId: opaquePhotoId,
   state: z.enum(['pending', 'processing', 'ready', 'failed']),
   contentHash: z.string().optional(),
+  recipeKey: recipeKeySchema.optional(),
   width: z.number().positive().optional(),
   height: z.number().positive().optional(),
   aspectRatio: z.number().positive().optional(),
   orientation: z.enum(['portrait', 'landscape', 'square']).optional(),
-  derivatives: z.object({ thumb: z.string(), card: z.string(), game: z.string() }).optional(),
+  derivatives: derivativesSchema.optional(),
+  derivativeMetrics: derivativeMetricsSchema.optional(),
   error: z.string().optional(),
 });
-const mediaManifestSchema = z.object({
+const legacyMediaManifestSchema = z.object({
   version: z.literal(1),
+  entries: z.array(mediaManifestEntrySchema),
+});
+const mediaManifestSchema = z.object({
+  version: z.literal(2),
+  worker: z.object({
+    version: z.string(),
+    recipeKey: recipeKeySchema,
+    sharpVersion: z.string(),
+    libvipsVersion: z.string(),
+  }),
   entries: z.array(mediaManifestEntrySchema),
 });
 
 function mediaPaths(job: MediaJob, contentHash: string) {
-  // Content-addressing originals prevents a reused photoId from silently
-  // serving stale pixels after a photographer replaces a source file.
+  // Originals are source-addressed; derivatives additionally include recipeKey
+  // so an encoder/resize policy change can never reuse stale browser media.
   const originalDirectory = join(
     job.storageRoot,
     'originals',
@@ -81,6 +111,7 @@ function mediaPaths(job: MediaJob, contentHash: string) {
     job.sessionUuid,
     job.photoId,
     contentHash,
+    mediaRecipeKey,
   );
   return { originalDirectory, derivedDirectory };
 }
@@ -116,7 +147,7 @@ export async function processMediaJob(input: MediaJob): Promise<MediaManifestEnt
     throw new Error('The media source has no usable dimensions after EXIF orientation.');
   }
 
-  await ensureDerivatives(image, derivedDirectory);
+  const derivativeMetrics = await ensureDerivatives(image, derivedDirectory);
 
   const width = metadata.autoOrient.width;
   const height = metadata.autoOrient.height;
@@ -124,6 +155,7 @@ export async function processMediaJob(input: MediaJob): Promise<MediaManifestEnt
     photoId: job.photoId,
     state: 'ready',
     contentHash,
+    recipeKey: mediaRecipeKey,
     width,
     height,
     aspectRatio: width / height,
@@ -133,6 +165,7 @@ export async function processMediaJob(input: MediaJob): Promise<MediaManifestEnt
       card: join(derivedDirectory, 'card.webp'),
       game: join(derivedDirectory, 'game.webp'),
     },
+    derivativeMetrics,
   };
 }
 
@@ -163,6 +196,7 @@ export async function processMediaJobs(
           results[index] = {
             photoId: input.photoId,
             state: 'failed',
+            recipeKey: mediaRecipeKey,
             error: 'media_processing_failed',
           };
         }
@@ -177,9 +211,9 @@ export async function processMediaJobs(
 }
 
 /**
- * Upserts entries rather than replacing a session manifest. This fixes the
- * one-photo CLI path while preserving atomic publication per local writer.
- * A distributed worker must still add a DB/queue lease before concurrent use.
+ * Upserts entries rather than replacing a session manifest. The local writer
+ * is deliberately single-process; a distributed worker must add a DB/queue
+ * lease before concurrent use.
  */
 export async function writeManifest(
   storageRoot: string,
@@ -191,7 +225,8 @@ export async function writeManifest(
   const byPhotoId = new Map(current.entries.map((entry) => [entry.photoId, entry]));
   for (const entry of entries) byPhotoId.set(entry.photoId, entry);
   const manifest: MediaManifest = {
-    version: 1,
+    version: 2,
+    worker: mediaWorkerFingerprint,
     entries: [...byPhotoId.values()].sort((left, right) =>
       left.photoId.localeCompare(right.photoId),
     ),
@@ -204,20 +239,28 @@ export async function writeManifest(
 }
 
 async function readManifest(manifestPath: string): Promise<MediaManifest> {
-  if (!(await exists(manifestPath))) return { version: 1, entries: [] };
+  if (!(await exists(manifestPath))) {
+    return { version: 2, worker: mediaWorkerFingerprint, entries: [] };
+  }
   const parsed: unknown = JSON.parse(await readFile(manifestPath, 'utf8'));
-  const manifest = mediaManifestSchema.parse(parsed);
+  const v2 = mediaManifestSchema.safeParse(parsed);
+  const manifest = v2.success ? v2.data : legacyMediaManifestSchema.parse(parsed);
   return {
-    version: manifest.version,
+    version: 2,
+    worker: mediaWorkerFingerprint,
     entries: manifest.entries.map((entry) => ({
       photoId: entry.photoId,
       state: entry.state,
       ...(entry.contentHash === undefined ? {} : { contentHash: entry.contentHash }),
+      ...(entry.recipeKey === undefined ? {} : { recipeKey: entry.recipeKey }),
       ...(entry.width === undefined ? {} : { width: entry.width }),
       ...(entry.height === undefined ? {} : { height: entry.height }),
       ...(entry.aspectRatio === undefined ? {} : { aspectRatio: entry.aspectRatio }),
       ...(entry.orientation === undefined ? {} : { orientation: entry.orientation }),
       ...(entry.derivatives === undefined ? {} : { derivatives: entry.derivatives }),
+      ...(entry.derivativeMetrics === undefined
+        ? {}
+        : { derivativeMetrics: entry.derivativeMetrics }),
       ...(entry.error === undefined ? {} : { error: entry.error }),
     })),
   };
@@ -239,15 +282,32 @@ async function ensureOriginal(
   const temporaryPath = `${originalPath}.next-${randomUUID()}`;
   await copyFile(sourcePath, temporaryPath);
   try {
-    await rename(temporaryPath, originalPath);
-  } catch (error) {
-    if (!(await exists(originalPath))) throw error;
-    if ((await hashFile(originalPath)) !== contentHash) throw error;
+    // The source can change between the first hash and copy. Re-hashing the
+    // private snapshot closes that TOCTOU window before any derivative exists.
+    if ((await hashFile(temporaryPath)) !== contentHash) {
+      throw new Error('Media source changed while the private snapshot was being created.');
+    }
+    try {
+      await rename(temporaryPath, originalPath);
+    } catch (error) {
+      if (!(await exists(originalPath))) throw error;
+      if ((await hashFile(originalPath)) !== contentHash) throw error;
+    }
+    if ((await hashFile(originalPath)) !== contentHash) {
+      throw new Error('Promoted original does not match the expected content hash.');
+    }
+  } finally {
+    await rm(temporaryPath, { force: true });
   }
 }
 
-async function ensureDerivatives(image: Sharp, derivedDirectory: string): Promise<void> {
-  if (await allDerivativesAreValid(derivedDirectory)) return;
+async function ensureDerivatives(
+  image: Sharp,
+  derivedDirectory: string,
+): Promise<Record<MediaVariant, MediaVariantMetric>> {
+  if (await allDerivativesAreValid(derivedDirectory)) {
+    return inspectDerivativeMetrics(derivedDirectory);
+  }
   if (await exists(derivedDirectory)) {
     throw new Error(
       'Derived directory exists but is incomplete or invalid; do not publish a partial media set.',
@@ -256,39 +316,75 @@ async function ensureDerivatives(image: Sharp, derivedDirectory: string): Promis
 
   const stagingDirectory = `${derivedDirectory}.staging-${randomUUID()}`;
   await mkdir(stagingDirectory, { recursive: true });
-  const oriented = image.clone().autoOrient();
-  const generated = await Promise.all(
-    derivativeVariants.map(async ([variant, maxSize]) => {
-      const output = await oriented
-        .clone()
-        .resize({ width: maxSize, height: maxSize, fit: 'inside', withoutEnlargement: true })
-        .webp({ quality: 82 })
-        .toFile(join(stagingDirectory, `${variant}.webp`));
-      return { maxSize, output };
+  try {
+    const oriented = image.clone().autoOrient().toColourspace('srgb');
+    const generated = await Promise.all(
+      mediaVariants.map(async ([variant, maxSize]) => {
+        const output = await oriented
+          .clone()
+          .resize({ width: maxSize, height: maxSize, fit: 'inside', withoutEnlargement: true })
+          .webp({ quality: mediaRecipeQuality })
+          .toFile(join(stagingDirectory, `${variant}.webp`));
+        if (!output.width || !output.height || !output.size) {
+          throw new Error(`Derivative ${variant} did not report complete output metrics.`);
+        }
+        return {
+          variant,
+          maxSize,
+          metric: {
+            width: output.width,
+            height: output.height,
+            byteLength: output.size,
+          } satisfies MediaVariantMetric,
+          format: output.format,
+        };
+      }),
+    );
+    if (
+      !generated.every(
+        ({ maxSize, metric, format }) =>
+          format === 'webp' && metric.width <= maxSize && metric.height <= maxSize,
+      ) ||
+      !(await allDerivativeFilesExist(stagingDirectory))
+    ) {
+      throw new Error('Derivative staging did not produce every valid WebP variant.');
+    }
+    try {
+      await rename(stagingDirectory, derivedDirectory);
+    } catch (error) {
+      if (!(await allDerivativesAreValid(derivedDirectory))) throw error;
+    }
+    return inspectDerivativeMetrics(derivedDirectory);
+  } finally {
+    await rm(stagingDirectory, { recursive: true, force: true });
+  }
+}
+
+async function inspectDerivativeMetrics(
+  directory: string,
+): Promise<Record<MediaVariant, MediaVariantMetric>> {
+  const metrics = await Promise.all(
+    mediaVariants.map(async ([variant]) => {
+      const path = join(directory, `${variant}.webp`);
+      const [metadata, file] = await Promise.all([
+        sharp(path, { failOn: 'warning' }).metadata(),
+        stat(path),
+      ]);
+      if (!metadata.width || !metadata.height || file.size <= 0) {
+        throw new Error(`Derivative ${variant} is missing intrinsic metrics.`);
+      }
+      return [
+        variant,
+        { width: metadata.width, height: metadata.height, byteLength: file.size },
+      ] as const;
     }),
   );
-  if (
-    !generated.every(
-      ({ maxSize, output }) =>
-        output.format === 'webp' &&
-        Boolean(output.width && output.height) &&
-        output.width <= maxSize &&
-        output.height <= maxSize,
-    ) ||
-    !(await allDerivativeFilesExist(stagingDirectory))
-  ) {
-    throw new Error('Derivative staging did not produce every valid WebP variant.');
-  }
-  try {
-    await rename(stagingDirectory, derivedDirectory);
-  } catch (error) {
-    if (!(await allDerivativesAreValid(derivedDirectory))) throw error;
-  }
+  return Object.fromEntries(metrics) as Record<MediaVariant, MediaVariantMetric>;
 }
 
 async function allDerivativesAreValid(directory: string): Promise<boolean> {
   const checks = await Promise.all(
-    derivativeVariants.map(async ([variant, maxSize]) => {
+    mediaVariants.map(async ([variant, maxSize]) => {
       const path = join(directory, `${variant}.webp`);
       if (!(await exists(path))) return false;
       try {
@@ -310,7 +406,7 @@ async function allDerivativesAreValid(directory: string): Promise<boolean> {
 async function allDerivativeFilesExist(directory: string): Promise<boolean> {
   return (
     await Promise.all(
-      derivativeVariants.map(([variant]) => exists(join(directory, `${variant}.webp`))),
+      mediaVariants.map(([variant]) => exists(join(directory, `${variant}.webp`))),
     )
   ).every(Boolean);
 }
@@ -337,9 +433,27 @@ async function main(): Promise<void> {
   }
   const result = await processMediaJob({ sourcePath, storageRoot, sessionUuid, photoId });
   await writeManifest(storageRoot, sessionUuid, [result]);
-  console.log(`Processed ${basename(sourcePath)} as ${result.photoId}.`);
+  process.stdout.write(
+    `${JSON.stringify({
+      status: result.state,
+      photoId: result.photoId,
+      contentHash: result.contentHash,
+      recipeKey: result.recipeKey,
+      width: result.width,
+      height: result.height,
+      derivativeMetrics: result.derivativeMetrics,
+    })}\n`,
+  );
 }
 
 if (process.argv[1]?.endsWith('index.ts')) {
-  void main();
+  void main().catch((error: unknown) => {
+    process.stderr.write(
+      `${JSON.stringify({
+        code: 'media_processing_failed',
+        message: error instanceof Error ? error.message : 'Unknown media processing error.',
+      })}\n`,
+    );
+    process.exitCode = 1;
+  });
 }
