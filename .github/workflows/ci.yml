@@ -2,7 +2,9 @@ name: CI
 
 on:
   push:
-    branches: ['**']
+    branches:
+      - main
+      - codex/puzzle-native-like-v1
   pull_request:
     branches: ['**']
 
