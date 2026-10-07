@@ -6,6 +6,7 @@
 
 ```text
 ├── .agents
+│   ├── current-state.json
 │   ├── rules
 │   │   ├── christmas-gallery-album.md
 │   │   ├── photo-sessions-integration.md
@@ -17,6 +18,8 @@
 │       │   └── SKILL.md
 │       ├── photo-sessions-integration
 │       │   └── SKILL.md
+│       ├── real-session-authority
+│       │   └── SKILL.md
 │       ├── revisao-visual-mobile
 │       │   └── SKILL.md
 │       └── vps-staging-release
@@ -27,6 +30,7 @@
 │   ├── ISSUE_TEMPLATE
 │   │   ├── bug_report.md
 │   │   └── feature_request.md
+│   ├── dependabot.yml
 │   ├── pull_request_template.md
 │   └── workflows
 │       ├── ci.yml
@@ -40,6 +44,7 @@
 ├── README.md
 ├── apps
 │   ├── catalog-server
+│   │   ├── AGENTS.md
 │   │   ├── ASSET_PROVENANCE.md
 │   │   ├── README.md
 │   │   ├── config
