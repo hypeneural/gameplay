@@ -97,7 +97,8 @@ Não pule diretamente para E2E ou deploy quando typecheck/unit ainda falham.
 | iniciar frontend local                    | `pnpm dev`                                |
 | preparar fotos reais sem iniciar servidor | `pnpm gallery:prepare --source "<pasta>"` |
 | preparar fotos + abrir Gallery Lab        | `pnpm gallery:lab --source "<pasta>"`     |
-| prova rápida de código                    | `pnpm check:fast`                         |
+| prova rápida de código                    | `pnpm check:fast`
+| validar todos os assets/proveniência       | `pnpm asset:validate:all`                         |
 | gate estático completo                    | `pnpm check`                              |
 | build normal fail-closed                  | `pnpm build`                              |
 | conferir release permitido                | `pnpm deploy:readiness`                   |
