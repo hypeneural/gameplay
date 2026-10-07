@@ -1,11 +1,14 @@
-import { randomUUID } from 'node:crypto';
-import { readdir, stat, writeFile, rename, mkdir } from 'node:fs/promises';
+import { createHash, randomUUID } from 'node:crypto';
+import { mkdir, readFile, readdir, rename, rm, stat, writeFile } from 'node:fs/promises';
 import { dirname, extname, join } from 'node:path';
 import { processMediaJobs, writeManifest } from './index.js';
+import { mediaRecipeKey, mediaWorkerFingerprint } from './recipe.js';
 import type { MediaManifestEntry } from './index.js';
+import type { MediaVariant, MediaVariantMetric } from './recipe.js';
 
 const supportedExtensions = new Set(['.jpg', '.jpeg', '.png', '.webp']);
-const defaultSessionUuid = '4d9d4b45-8ec3-45f1-91db-e46f3fec0c48';
+const defaultPublicToken = 'local-private-test';
+const defaultDisplayName = 'Galeria Natalina - laboratório local';
 
 export interface LocalTestPhotoConfig {
   readonly id: string;
@@ -14,14 +17,16 @@ export interface LocalTestPhotoConfig {
   readonly height: number;
   readonly aspectRatio: number;
   readonly orientation: 'portrait' | 'landscape' | 'square';
+  readonly variantMetrics: Record<MediaVariant, MediaVariantMetric>;
 }
 
 /**
  * This config deliberately contains no original filename or storage path. The
- * Vite-only local endpoint maps its opaque photo ids back to the private cache.
+ * Vite-only local endpoint maps opaque photo ids back to the private cache.
  */
 export interface LocalTestMediaConfig {
-  readonly version: 1;
+  readonly version: 2;
+  readonly worker: typeof mediaWorkerFingerprint;
   readonly session: {
     readonly id: string;
     readonly publicToken: string;
@@ -34,64 +39,92 @@ export interface PrepareLocalMediaOptions {
   readonly sourceDirectory: string;
   readonly storageRoot: string;
   readonly sessionUuid?: string;
+  readonly displayName?: string;
   readonly concurrency?: number;
 }
 
 export interface PrepareLocalMediaResult {
   readonly ready: number;
   readonly failed: number;
+  readonly sessionId: string;
+  readonly publicToken: string;
+  readonly recipeKey: string;
   readonly configPath: string;
+}
+
+interface SupportedSource {
+  readonly sourcePath: string;
+  readonly photoId: string;
 }
 
 /**
  * Creates an opaque, local-only session from immediate supported files. It
  * never walks child folders, so exports and delivery copies cannot leak into a
- * test game accidentally.
+ * test game accidentally. The config is published only when every source is
+ * ready; a partial batch removes any stale config and fails closed.
  */
 export async function prepareLocalMedia(
   options: PrepareLocalMediaOptions,
 ): Promise<PrepareLocalMediaResult> {
-  const sessionUuid = options.sessionUuid ?? defaultSessionUuid;
   const concurrency = options.concurrency ?? 2;
   const files = await supportedFiles(options.sourceDirectory);
   if (files.length === 0) {
     throw new Error('No direct JPEG, PNG or WebP files were found for the local test session.');
   }
+  const sessionUuid =
+    options.sessionUuid ?? (await existingSessionUuid(options.storageRoot)) ?? randomUUID();
+  const configPath = join(options.storageRoot, 'local-test-session.json');
 
   const batch = await processMediaJobs(
-    files.map((sourcePath, index) => ({
+    files.map(({ sourcePath, photoId }) => ({
       sourcePath,
       storageRoot: options.storageRoot,
       sessionUuid,
-      photoId: `photo-${String(index + 1).padStart(3, '0')}`,
+      photoId,
     })),
     concurrency,
   );
   await writeManifest(options.storageRoot, sessionUuid, [...batch.ready, ...batch.failed]);
 
+  if (batch.failed.length > 0 || batch.ready.length !== files.length) {
+    await rm(configPath, { force: true });
+    throw new Error(
+      `Local gallery preparation failed closed: ${batch.ready.length}/${files.length} photos ready and ${batch.failed.length} failed.`,
+    );
+  }
+
   const config: LocalTestMediaConfig = {
-    version: 1,
+    version: 2,
+    worker: mediaWorkerFingerprint,
     session: {
       id: sessionUuid,
-      publicToken: 'local-private-test',
-      displayName: 'Teste local privado',
+      publicToken: defaultPublicToken,
+      displayName: options.displayName ?? defaultDisplayName,
     },
     photos: batch.ready.map(toLocalTestPhoto),
   };
-  const configPath = join(options.storageRoot, 'local-test-session.json');
   await writeJsonAtomically(configPath, config);
 
-  return { ready: batch.ready.length, failed: batch.failed.length, configPath };
+  return {
+    ready: batch.ready.length,
+    failed: 0,
+    sessionId: sessionUuid,
+    publicToken: defaultPublicToken,
+    recipeKey: mediaRecipeKey,
+    configPath,
+  };
 }
 
 function toLocalTestPhoto(entry: MediaManifestEntry): LocalTestPhotoConfig {
   if (
     entry.state !== 'ready' ||
     !entry.contentHash ||
+    entry.recipeKey !== mediaRecipeKey ||
     !entry.width ||
     !entry.height ||
     !entry.aspectRatio ||
-    !entry.orientation
+    !entry.orientation ||
+    !entry.derivativeMetrics
   ) {
     throw new Error('A ready media entry is missing data required for a local test session.');
   }
@@ -102,23 +135,51 @@ function toLocalTestPhoto(entry: MediaManifestEntry): LocalTestPhotoConfig {
     height: entry.height,
     aspectRatio: entry.aspectRatio,
     orientation: entry.orientation,
+    variantMetrics: entry.derivativeMetrics,
   };
 }
 
-async function supportedFiles(sourceDirectory: string): Promise<readonly string[]> {
-  const entries = await readdir(sourceDirectory, { withFileTypes: true });
-  const files = entries
+async function supportedFiles(sourceDirectory: string): Promise<readonly SupportedSource[]> {
+  const entries = (await readdir(sourceDirectory, { withFileTypes: true }))
     .filter((entry) => entry.isFile() && supportedExtensions.has(extname(entry.name).toLowerCase()))
-    .sort((left, right) => left.name.localeCompare(right.name))
-    .map((entry) => join(sourceDirectory, entry.name));
+    .sort((left, right) => left.name.localeCompare(right.name));
+
+  const files = entries.map((entry) => ({
+    sourcePath: join(sourceDirectory, entry.name),
+    // Stable across re-ordering and pixel edits that keep the photographer's
+    // source name. The private name never leaves this process.
+    photoId: opaquePhotoIdFromSourceName(entry.name),
+  }));
+  if (new Set(files.map((file) => file.photoId)).size !== files.length) {
+    throw new Error('Opaque local photo id collision; rename one source before retrying.');
+  }
 
   await Promise.all(
-    files.map(async (path) => {
-      if (!(await stat(path)).isFile())
+    files.map(async ({ sourcePath }) => {
+      if (!(await stat(sourcePath)).isFile()) {
         throw new Error('Local test media source must be a regular file.');
+      }
     }),
   );
   return files;
+}
+
+function opaquePhotoIdFromSourceName(name: string): string {
+  const normalized = name.normalize('NFC').toLowerCase();
+  const digest = createHash('sha256').update(normalized, 'utf8').digest('hex');
+  return `photo-${digest.slice(0, 20)}`;
+}
+
+async function existingSessionUuid(storageRoot: string): Promise<string | undefined> {
+  try {
+    const value = JSON.parse(await readFile(join(storageRoot, 'local-test-session.json'), 'utf8')) as {
+      session?: { id?: unknown };
+    };
+    const id = value.session?.id;
+    return typeof id === 'string' ? id : undefined;
+  } catch {
+    return undefined;
+  }
 }
 
 async function writeJsonAtomically(path: string, value: LocalTestMediaConfig): Promise<void> {
@@ -129,37 +190,60 @@ async function writeJsonAtomically(path: string, value: LocalTestMediaConfig): P
 }
 
 function parseArguments(argv: readonly string[]): PrepareLocalMediaOptions {
-  const [sourceDirectory, storageRoot, ...rest] = argv;
-  if (!sourceDirectory || !storageRoot) {
-    throw new Error(
-      'Usage: pnpm media:prepare-local <source-directory> <private-storage-root> [--session <uuid>] [--concurrency <1-8>]',
-    );
+  const [first, second, ...legacyRest] = argv;
+  if (first && !first.startsWith('--')) {
+    if (!second) {
+      throw new Error(
+        'Usage: pnpm media:prepare-local <source-directory> <private-storage-root> [--session <uuid>] [--display-name <name>] [--concurrency <1-8>]',
+      );
+    }
+    return parseFlags(legacyRest, {
+      sourceDirectory: first,
+      storageRoot: second,
+    });
   }
 
-  let sessionUuid: string | undefined;
-  let concurrency: number | undefined;
-  for (let index = 0; index < rest.length; index += 2) {
-    const flag = rest[index];
-    const value = rest[index + 1];
-    if (!value || (flag !== '--session' && flag !== '--concurrency')) {
-      throw new Error('Expected --session <uuid> and/or --concurrency <1-8>.');
-    }
-    if (flag === '--session') sessionUuid = value;
-    else concurrency = Number(value);
+  const parsed = parseFlags(argv, {});
+  if (!parsed.sourceDirectory || !parsed.storageRoot) {
+    throw new Error(
+      'Usage: pnpm media:prepare-local --source <directory> --storage <private-storage-root> [--session <uuid>] [--display-name <name>] [--concurrency <1-8>]',
+    );
   }
-  return {
-    sourceDirectory,
-    storageRoot,
-    ...(sessionUuid === undefined ? {} : { sessionUuid }),
-    ...(concurrency === undefined ? {} : { concurrency }),
-  };
+  return parsed as PrepareLocalMediaOptions;
+}
+
+function parseFlags(
+  values: readonly string[],
+  initial: Partial<PrepareLocalMediaOptions>,
+): Partial<PrepareLocalMediaOptions> {
+  const options: Partial<PrepareLocalMediaOptions> = { ...initial };
+  for (let index = 0; index < values.length; index += 2) {
+    const flag = values[index];
+    const value = values[index + 1];
+    if (!flag || !value) throw new Error(`Expected a value after ${flag ?? 'option'}.`);
+    if (flag === '--source') options.sourceDirectory = value;
+    else if (flag === '--storage') options.storageRoot = value;
+    else if (flag === '--session') options.sessionUuid = value;
+    else if (flag === '--display-name') options.displayName = value;
+    else if (flag === '--concurrency') options.concurrency = Number(value);
+    else throw new Error(`Unknown media preparation option: ${flag}.`);
+  }
+  return options;
 }
 
 async function main(): Promise<void> {
   const result = await prepareLocalMedia(parseArguments(process.argv.slice(2)));
-  console.log(`Prepared ${result.ready} local test photos; ${result.failed} failed.`);
+  process.stdout.write(`${JSON.stringify({ status: 'ready', ...result, worker: mediaWorkerFingerprint })}\n`);
 }
 
 if (process.argv[1]?.endsWith('prepareLocal.ts')) {
-  void main();
+  void main().catch((error: unknown) => {
+    process.stderr.write(
+      `${JSON.stringify({
+        code: 'local_gallery_prepare_failed',
+        message: error instanceof Error ? error.message : 'Unknown local gallery preparation error.',
+      })}\n`,
+    );
+    process.exitCode = 1;
+  });
 }
