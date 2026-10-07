@@ -14,7 +14,7 @@ const [applicationShell, previewSource] = await Promise.all([
   readFile(runtime.applicationShellPath, 'utf8'),
   readFile(runtime.previewConfigPath, 'utf8'),
 ]);
-parsePreviewConfiguration(JSON.parse(previewSource));
+parsePreviewConfiguration(JSON.parse(previewSource), { rejectExampleTokens: environment === 'production' });
 
 const server = createCatalogServer({
   publicOrigin: runtime.publicOrigin,
