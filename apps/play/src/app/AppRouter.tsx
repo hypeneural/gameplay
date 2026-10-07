@@ -21,7 +21,7 @@ import {
   setInterfaceSoundEnabled,
   stopInterfaceTap,
 } from '../audio/playInterfaceTap.js';
-import type { AppRoute, GameCoverRoute, SessionRoute } from './AppNavigation.js';
+import type { AppRoute, GameCoverRoute, PublicRoute, SessionRoute } from './AppNavigation.js';
 import { fetchLocalTestSession, shouldUseLocalTestMedia } from './LocalTestSession.js';
 import type { Session } from '@christmas-games/platform';
 
@@ -44,6 +44,9 @@ interface GameView {
 }
 
 const initialGameView: GameView = { eventSequence: 0, lastEvent: 'NONE', status: 'loading' };
+const SessionGallery = lazy(async () => ({
+  default: (await import('../screens/SessionGallery.js')).SessionGallery,
+}));
 const PerformanceLab = import.meta.env.DEV
   ? lazy(async () => ({ default: (await import('../screens/PerformanceLab.js')).PerformanceLab }))
   : undefined;
@@ -75,6 +78,7 @@ export function AppRouter(): React.JSX.Element {
   const soundPreferenceRef = useRef(true);
   const [calm, setCalm] = useState(false);
   const hubScrollRef = useRef(0);
+  const galleryScrollRef = useRef(0);
   const [gameAttempt, setGameAttempt] = useState(0);
   const [difficulty, setDifficulty] = useState<GameDifficulty>('normal');
   const [gameView, setGameView] = useState(initialGameView);
@@ -142,6 +146,7 @@ export function AppRouter(): React.JSX.Element {
 
   useEffect(() => {
     if (route.kind === 'session') window.scrollTo(0, hubScrollRef.current);
+    else if (route.kind === 'gallery') window.scrollTo(0, galleryScrollRef.current);
     else if (route.kind === 'game-cover' && !playing) window.scrollTo(0, 0);
   }, [route, playing]);
 
@@ -168,7 +173,7 @@ export function AppRouter(): React.JSX.Element {
   }, [usesLocalTestMedia]);
 
   const writeRoute = useCallback(
-    (nextRoute: SessionRoute | GameCoverRoute, mode: Exclude<HistoryMode, 'none'>) => {
+    (nextRoute: PublicRoute, mode: Exclude<HistoryMode, 'none'>) => {
       const nextIndex =
         mode === 'push' ? navigationIndexRef.current + 1 : navigationIndexRef.current;
       const state: HistoryState = { christmasGamesIndex: nextIndex };
@@ -209,6 +214,8 @@ export function AppRouter(): React.JSX.Element {
 
   useEffect(() => {
     const onPopState = (event: PopStateEvent): void => {
+      if (route.kind === 'session') hubScrollRef.current = window.scrollY;
+      if (route.kind === 'gallery') galleryScrollRef.current = window.scrollY;
       const nextRoute = parseAppRoute(window.location.pathname);
       const nextState = event.state as HistoryState | null;
       navigationIndexRef.current = nextState?.christmasGamesIndex ?? 0;
@@ -220,7 +227,7 @@ export function AppRouter(): React.JSX.Element {
     };
     window.addEventListener('popstate', onPopState);
     return () => window.removeEventListener('popstate', onPopState);
-  }, [requestGameExit]);
+  }, [requestGameExit, route.kind]);
 
   const prefetch = (gameId: string): void => {
     if (!getInstalledGame(gameId)) return;
@@ -232,15 +239,23 @@ export function AppRouter(): React.JSX.Element {
     if (
       !game ||
       session.photos.length < game.definition.minPhotos ||
-      (route.kind !== 'session' && route.kind !== 'game-cover')
+      (route.kind !== 'session' && route.kind !== 'gallery' && route.kind !== 'game-cover')
     )
       return;
     if (route.kind === 'session') hubScrollRef.current = window.scrollY;
+    if (route.kind === 'gallery') galleryScrollRef.current = window.scrollY;
     writeRoute({ kind: 'game-cover', token: route.token, gameId }, 'push');
+  };
+
+  const openGallery = (): void => {
+    if (route.kind !== 'session') return;
+    hubScrollRef.current = window.scrollY;
+    writeRoute({ kind: 'gallery', token: route.token }, 'push');
   };
 
   const goToSession = (token: string): void => {
     const sessionRoute: SessionRoute = { kind: 'session', token };
+    if (route.kind === 'gallery') galleryScrollRef.current = window.scrollY;
     if (playingRef.current) {
       if (navigationIndexRef.current > 0) {
         window.history.back();
@@ -326,6 +341,33 @@ export function AppRouter(): React.JSX.Element {
     );
   }
 
+  if (route.kind === 'gallery') {
+    return (
+      <Suspense
+        fallback={
+          <main className="shell unavailable-game" role="status">
+            <p className="eyebrow">SEU ÁLBUM DE NATAL</p>
+            <h1>Preparando suas lembranças…</h1>
+          </main>
+        }
+      >
+        <SessionGallery
+          key={session.id}
+          session={session}
+          selectedPhotoId={selectedPhoto.id}
+          calm={calm}
+          lowQuality={quality === 'LOW'}
+          onSelectPhoto={setSelectedPhotoId}
+          onBack={() => goToSession(route.token)}
+          onPlayPhoto={(photoId) => {
+            setSelectedPhotoId(photoId);
+            openGame('puzzle-swap');
+          }}
+        />
+      </Suspense>
+    );
+  }
+
   if (route.kind === 'session') {
     return (
       <Hub
@@ -335,6 +377,7 @@ export function AppRouter(): React.JSX.Element {
         games={gameDefinitions}
         onFixtureChange={setFixtureCount}
         onOpenGame={openGame}
+        onOpenGallery={openGallery}
         onPrefetchGame={prefetch}
         onSelectPhoto={setSelectedPhotoId}
         selectedPhotoId={selectedPhoto.id}
