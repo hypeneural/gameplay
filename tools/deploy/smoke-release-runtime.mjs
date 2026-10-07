@@ -158,11 +158,12 @@ async function findFreePort() {
 
 async function stopChild(processHandle) {
   if (processHandle.exitCode !== null) return;
-  processHandle.kill('SIGTERM');
   const exited = once(processHandle, 'exit');
+  processHandle.kill('SIGTERM');
   const timedOut = new Promise((resolvePromise) => setTimeout(resolvePromise, 3_000, 'timeout'));
   if ((await Promise.race([exited, timedOut])) === 'timeout' && processHandle.exitCode === null) {
+    const forcedExit = once(processHandle, 'exit');
     processHandle.kill('SIGKILL');
-    await once(processHandle, 'exit');
+    await forcedExit;
   }
 }
