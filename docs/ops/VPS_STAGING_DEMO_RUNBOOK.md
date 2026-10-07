@@ -63,7 +63,7 @@ ln -s "releases/<release-id>" current.next
 mv -Tf current.next current
 ```
 
-11. Execute `systemctl daemon-reload` quando o unit file mudar e inicie/reinicie o serviço. O `ExecStartPre` verifica SHA/inventário novamente antes de cada start.`/srv/christmas-games/current` para o release e inicie o serviço.
+11. Execute `systemctl daemon-reload` quando o unit file mudar e inicie/reinicie o serviço. O `ExecStartPre` verifica SHA/inventário novamente antes de cada start.
 
 ## 4. Ordem de validação
 
