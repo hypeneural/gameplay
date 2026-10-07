@@ -81,6 +81,7 @@ for (const script of [
   'deploy:staging-config',
   'release:staging',
   'release:verify',
+  'release:smoke-runtime',
   'deploy:smoke',
   'test:e2e:gallery',
 ]) {
