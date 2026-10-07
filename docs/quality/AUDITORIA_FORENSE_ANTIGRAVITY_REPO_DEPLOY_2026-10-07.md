@@ -225,17 +225,29 @@ O workflow manual de staging repete os gates relevantes, gera release e verifica
 
 ### OBSERVADO e atualizado
 
-As actions foram movidas para versões atuais da geração Node 24 e versões explícitas:
+A auditoria encontrou um erro real no guidance anterior: `actions/upload-artifact@v7.0.2` não existe. A release atual validada em 07/10/2026 é `v7.0.1`.
 
-- checkout 7.0.1;
-- setup-node 7.0.0;
-- cache 6.1.0;
-- upload-artifact 7.0.2;
-- pnpm/action-setup 6.1.0.
+Os workflows canônicos agora usam **commit SHA completo**, com comentário da release humana:
 
-Não reduzir para major antiga para "corrigir" warning de runner.
+- checkout v7.0.1 -> `3d3c42e5aac5ba805825da76410c181273ba90b1`;
+- setup-node v7.0.0 -> `820762786026740c76f36085b0efc47a31fe5020`;
+- cache v6.1.0 -> `55cc8345863c7cc4c66a329aec7e433d2d1c52a9`;
+- upload-artifact v7.0.1 -> `043fb46d1a93c77aae656e7c1c64a875d1fc6a0a`;
+- pnpm/action-setup v6.1.0 -> `ea17c68df8912ef543352723c149a84f56e3d413`.
 
-## 14. Risco: base branch sem proteção
+Checkout usa `persist-credentials: false` porque os jobs canônicos não fazem push.
+
+`pnpm agent:doctor` valida que os workflows continuam pinados a SHA completo e que os pins canônicos não foram substituídos silenciosamente por tags/majors.
+
+## 14. Risco: artefato local não corresponder ao commit
+
+### IMPLEMENTADO
+
+`release:staging` agora recusa árvore Git suja ou HEAD não resolvível antes de montar o artifact. Isso impede um `RELEASE.json` apontar para um commit enquanto o bundle contém alterações locais diferentes.
+
+Arquivos ignorados de build/release não bloqueiam o fluxo; fonte nova/modificada não commitada bloqueia.
+
+## 15. Risco: base branch sem proteção
 
 ### OBSERVADO — BLOQUEADOR de governança
 
@@ -256,7 +268,28 @@ Configurar GitHub Ruleset/branch protection com, no mínimo:
 
 Enquanto isso não existir, o runbook do agente trata "não mergear head vermelho" como fronteira humana obrigatória.
 
-## 15. Risco: documentação ficar maior que o modelo consegue usar
+## 16. Risco: modelo escolher prioridade errada
+
+### IMPLEMENTADO
+
+`.agents/current-state.json` é o estado curto e legível por máquina do trabalho atual.
+
+Ele declara:
+
+- modo do repositório;
+- estágio de release;
+- ações permitidas agora;
+- ações proibidas até o piloto;
+- próximo marco;
+- evidências necessárias;
+- comandos canônicos;
+- campos obrigatórios de handoff.
+
+`pnpm agent:doctor` valida que esse estado concorda com `deploy/readiness.json`.
+
+O próximo marco atual é `real-session-authority`, com owner `apps/catalog-server`. O owner ganhou `apps/catalog-server/AGENTS.md` e a skill `.agents/skills/real-session-authority/SKILL.md`.
+
+## 17. Risco: documentação ficar maior que o modelo consegue usar
 
 O repositório possui documentação extensa e útil, mas um modelo menor pode escolher o documento errado.
 
@@ -277,7 +310,7 @@ Deploy tem rule/skill próprios. Gallery tem rule/skill próprios.
 
 O arquivo grande não substitui o comando machine-readable.
 
-## 16. Comandos que o agente deve memorizar
+## 18. Comandos que o agente deve memorizar
 
 ```bash
 pnpm agent:doctor
@@ -293,7 +326,7 @@ pnpm deploy:smoke
 
 Não inventar variações quando esses comandos já cobrem a intenção.
 
-## 17. Caminho mais rápido para colocar algo na VPS
+## 19. Caminho mais rápido para colocar algo na VPS
 
 O objetivo imediato não é "pilot real". É provar infraestrutura e UX no domínio HTTPS real.
 
@@ -316,7 +349,7 @@ Sequência:
 
 Nenhuma foto real é necessária para esse marco.
 
-## 18. Próximos cortes para chegar ao pilot
+## 20. Próximos cortes para chegar ao pilot
 
 ### PR A — SessionRepository SQLite
 
@@ -372,7 +405,7 @@ Somente então alterar readiness para permitir `pilot`.
 
 Implementar `IGameplayProvider` como adapter para contratos já provados. Não mover Sharp para Python e não criar protocolo paralelo.
 
-## 19. Itens deliberadamente adiados
+## 21. Itens deliberadamente adiados
 
 - Postgres;
 - microservices;
@@ -384,7 +417,7 @@ Implementar `IGameplayProvider` como adapter para contratos já provados. Não m
 - automação de WhatsApp;
 - build dentro da VPS.
 
-## 20. Critério de handoff para agente
+## 22. Critério de handoff para agente
 
 Toda entrega deve dizer:
 
