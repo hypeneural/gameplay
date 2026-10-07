@@ -50,14 +50,22 @@ async function handleRequest(
 
   const requestUrl = new URL(request.url ?? '/', 'http://catalog.invalid');
   if (requestUrl.pathname === '/healthz') {
+    let status = 'ok';
+    let statusCode = 200;
+    try {
+      await dependencies.readiness?.();
+    } catch {
+      status = 'unavailable';
+      statusCode = 503;
+    }
     const body = JSON.stringify({
-      status: 'ok',
+      status,
       releaseStage: dependencies.runtime?.releaseStage ?? 'test',
     });
     response.setHeader('Cache-Control', 'no-store');
     response.setHeader('Content-Type', 'application/json; charset=utf-8');
     response.setHeader('Referrer-Policy', 'no-referrer');
-    send(response, 200, body, request.method === 'HEAD');
+    send(response, statusCode, body, request.method === 'HEAD');
     return;
   }
 
