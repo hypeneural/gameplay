@@ -1,5 +1,6 @@
 # Documentation index
 
+- [Auditoria GitHub — donors da Galeria Natalina mobile](integrations/photo-sessions/AUDITORIA_GITHUB_GALERIA_NATALINA_MOBILE_2026-10-06.md)
 - [Galeria Natalina e multi-galerias](integrations/photo-sessions/GALERIA_NATALINA_MULTI_GALERIAS.md)
 - [Auditoria forense — Antigravity, workflow e galeria mobile](integrations/photo-sessions/AUDITORIA_FORENSE_ANTIGRAVITY_MOBILE_2026-10-06.md)
 - [Contrato de performance — galeria mobile](quality/GALLERY_MOBILE_PERFORMANCE_CONTRACT.md)
