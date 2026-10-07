@@ -1,0 +1,57 @@
+name: Reconcile Final Gallery Repo Map
+
+on:
+  push:
+    branches:
+      - docs/antigravity-photo-sessions-integration
+    paths:
+      - '.github/workflows/gallery-repomap-finalize.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  reconcile:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v4
+        with:
+          ref: docs/antigravity-photo-sessions-integration
+          fetch-depth: 0
+
+      - name: Setup Node.js 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Enable Corepack
+        run: corepack enable
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 11.19.0
+          run_install: false
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Remove temporary workflow before generating repository map
+        run: rm .github/workflows/gallery-repomap-finalize.yml
+
+      - name: Regenerate final map and formatting
+        run: |
+          pnpm repo:map
+          pnpm format
+          pnpm check
+
+      - name: Commit final clean tree
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "chore(repo-map): reconcile native-like gallery tree"
+          git push origin HEAD:docs/antigravity-photo-sessions-integration
