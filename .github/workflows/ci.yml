@@ -76,6 +76,7 @@ jobs:
         run: |
           pnpm release:staging
           pnpm release:verify
+          pnpm release:smoke-runtime
 
   gallery-e2e:
     name: Gallery mobile E2E
