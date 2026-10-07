@@ -527,6 +527,7 @@
 │   ├── integrations
 │   │   └── photo-sessions
 │   │       ├── AUDITORIA_FORENSE_ANTIGRAVITY_MOBILE_2026-10-06.md
+│   │       ├── AUDITORIA_GITHUB_GALERIA_NATALINA_MOBILE_2026-10-06.md
 │   │       ├── AUDITORIA_WORKFLOW_SESSOES_E_JOGOS.md
 │   │       ├── GALERIA_NATALINA_MULTI_GALERIAS.md
 │   │       ├── MVP_RAPIDO.md

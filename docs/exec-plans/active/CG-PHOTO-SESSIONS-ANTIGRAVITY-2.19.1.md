@@ -9,6 +9,7 @@ Este plano transforma a auditoria de photo sessions em uma sequência implement�
 Leitura obrigatória antes de implementação:
 
 - `docs/integrations/photo-sessions/AUDITORIA_FORENSE_ANTIGRAVITY_MOBILE_2026-10-06.md`;
+- `docs/integrations/photo-sessions/AUDITORIA_GITHUB_GALERIA_NATALINA_MOBILE_2026-10-06.md`;
 - `docs/integrations/photo-sessions/GALERIA_NATALINA_MULTI_GALERIAS.md`;
 - `docs/quality/GALLERY_MOBILE_PERFORMANCE_CONTRACT.md`;
 - `.agents/skills/christmas-gallery-album/SKILL.md`.
