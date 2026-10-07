@@ -14,8 +14,8 @@ export interface MediaVariantMetric {
   readonly byteLength: number;
 }
 
-export const mediaWorkerVersion = '0.2.0';
-export const mediaRecipeVersion = 1;
+const mediaWorkerVersion = '0.2.0';
+const mediaRecipeVersion = 1;
 export const mediaRecipeQuality = 82;
 
 const sharpVersion = sharp.versions.sharp ?? 'unknown';
