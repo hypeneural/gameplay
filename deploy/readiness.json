@@ -1,7 +1,9 @@
 {
   "schemaVersion": 1,
   "currentStage": "vps-staging-demo",
-  "allowedReleaseStages": ["staging-demo"],
+  "allowedReleaseStages": [
+    "staging-demo"
+  ],
   "pilotReady": false,
   "customerDataAllowed": false,
   "automaticDeliveryAllowed": false,
@@ -11,6 +13,15 @@
     "private derivative media authorization through X-Accel-Redirect",
     "SQLite/WAL migrations, backup and tested restore",
     "manual Node publisher against the real internal API",
+    "token bootstrap/log-redaction strategy suitable for real customer capability URLs",
+    "required GitHub status checks or ruleset on the merge target",
     "physical Android and iPhone/Safari pilot validation"
+  ],
+  "nextMilestone": "real-session-authority",
+  "canonicalStagingCommands": [
+    "pnpm agent:doctor",
+    "pnpm check",
+    "pnpm release:staging",
+    "pnpm release:verify"
   ]
 }
