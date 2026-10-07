@@ -31,6 +31,12 @@ const server = createCatalogServer({
   },
   clock: { now: () => new Date() },
   runtime: { releaseStage: runtime.releaseStage },
+  readiness: async () => {
+    const currentSource = await readFile(runtime.previewConfigPath, 'utf8');
+    parsePreviewConfiguration(JSON.parse(currentSource), {
+      rejectExampleTokens: environment === 'production',
+    });
+  },
 });
 
 server.listen(runtime.port, '127.0.0.1', () => {
