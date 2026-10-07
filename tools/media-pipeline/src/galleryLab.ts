@@ -24,8 +24,6 @@ interface GalleryLabSummary {
   readonly failed: number;
   readonly sessionId: string;
   readonly recipeKey: string;
-  readonly configPath: string;
-  readonly storageRoot: string;
   readonly urls: {
     readonly hub: string;
     readonly gallery: string;
@@ -53,8 +51,6 @@ async function runGalleryLab(options: GalleryLabOptions): Promise<GalleryLabSumm
     failed: prepared.failed,
     sessionId: prepared.sessionId,
     recipeKey: prepared.recipeKey,
-    configPath: prepared.configPath,
-    storageRoot,
     urls: {
       hub: `${origin}${sessionPath}${query}`,
       gallery: `${origin}${sessionPath}/fotos${query}`,
