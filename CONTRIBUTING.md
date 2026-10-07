@@ -112,7 +112,7 @@ pnpm check:fast
 pnpm check
 
 # 3. Validação de Integridade de Assets
-pnpm asset:validate
+pnpm asset:validate:all
 
 # 4. Validação Geral de Pré-Entrega
 pnpm validate
