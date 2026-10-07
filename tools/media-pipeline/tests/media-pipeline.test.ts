@@ -197,7 +197,11 @@ describe('processMediaJob', () => {
         orientation: string;
         width: number;
         height: number;
-        variantMetrics: Record<string, { width: number; height: number; byteLength: number }>;
+        variantMetrics: {
+          thumb: { width: number; height: number; byteLength: number };
+          card: { width: number; height: number; byteLength: number };
+          game: { width: number; height: number; byteLength: number };
+        };
       }>;
     };
 
