@@ -32,7 +32,7 @@
     "gallery:prepare": "pnpm --filter @christmas-games/media-pipeline gallery-lab --prepare-only",
     "gallery:lab": "pnpm --filter @christmas-games/media-pipeline gallery-lab",
     "deploy:readiness": "node tools/deploy/prepare-vps-release.mjs --stage staging-demo --check-only",
-    "release:staging": "pnpm build:staging-demo && node tools/deploy/prepare-vps-release.mjs --stage staging-demo",
+    "release:staging": "pnpm deploy:readiness && pnpm build:staging-demo && node tools/deploy/prepare-vps-release.mjs --stage staging-demo",
     "game:new": "pnpm --filter @christmas-games/game-generator new",
     "asset:doctor": "pnpm --filter @christmas-games/asset-factory run doctor",
     "asset:validate": "pnpm --filter @christmas-games/asset-factory run validate",
