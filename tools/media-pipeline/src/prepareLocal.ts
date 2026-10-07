@@ -52,6 +52,14 @@ export interface PrepareLocalMediaResult {
   readonly configPath: string;
 }
 
+interface MutablePrepareLocalMediaOptions {
+  sourceDirectory?: string;
+  storageRoot?: string;
+  sessionUuid?: string;
+  displayName?: string;
+  concurrency?: number;
+}
+
 interface SupportedSource {
   readonly sourcePath: string;
   readonly photoId: string;
@@ -197,10 +205,14 @@ function parseArguments(argv: readonly string[]): PrepareLocalMediaOptions {
         'Usage: pnpm media:prepare-local <source-directory> <private-storage-root> [--session <uuid>] [--display-name <name>] [--concurrency <1-8>]',
       );
     }
-    return parseFlags(legacyRest, {
+    const parsed = parseFlags(legacyRest, {});
+    return {
       sourceDirectory: first,
       storageRoot: second,
-    });
+      ...(parsed.sessionUuid === undefined ? {} : { sessionUuid: parsed.sessionUuid }),
+      ...(parsed.displayName === undefined ? {} : { displayName: parsed.displayName }),
+      ...(parsed.concurrency === undefined ? {} : { concurrency: parsed.concurrency }),
+    };
   }
 
   const parsed = parseFlags(argv, {});
@@ -209,14 +221,20 @@ function parseArguments(argv: readonly string[]): PrepareLocalMediaOptions {
       'Usage: pnpm media:prepare-local --source <directory> --storage <private-storage-root> [--session <uuid>] [--display-name <name>] [--concurrency <1-8>]',
     );
   }
-  return parsed as PrepareLocalMediaOptions;
+  return {
+    sourceDirectory: parsed.sourceDirectory,
+    storageRoot: parsed.storageRoot,
+    ...(parsed.sessionUuid === undefined ? {} : { sessionUuid: parsed.sessionUuid }),
+    ...(parsed.displayName === undefined ? {} : { displayName: parsed.displayName }),
+    ...(parsed.concurrency === undefined ? {} : { concurrency: parsed.concurrency }),
+  };
 }
 
 function parseFlags(
   values: readonly string[],
-  initial: Partial<PrepareLocalMediaOptions>,
-): Partial<PrepareLocalMediaOptions> {
-  const options: Partial<PrepareLocalMediaOptions> = { ...initial };
+  initial: MutablePrepareLocalMediaOptions,
+): MutablePrepareLocalMediaOptions {
+  const options: MutablePrepareLocalMediaOptions = { ...initial };
   for (let index = 0; index < values.length; index += 2) {
     const flag = values[index];
     const value = values[index + 1];
