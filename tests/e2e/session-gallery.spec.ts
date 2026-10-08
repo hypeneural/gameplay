@@ -67,7 +67,7 @@ test('restores gallery scroll after a later batch and keeps the natural image sh
   page,
 }) => {
   await page.goto('/s/local-demo-token/fotos');
-  await expect(page.getByRole('heading', { name: 'Nosso Natal em família' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: /Álbum de Natal/i })).toBeVisible();
 
   const first = page.locator('.gallery-card').first();
   const ratio = await first.locator('.gallery-photo-frame').evaluate((frame) => {
