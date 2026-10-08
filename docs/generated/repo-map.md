@@ -422,12 +422,12 @@
 │       │   │   ├── GamePreview.tsx
 │       │   │   ├── GameScreen.tsx
 │       │   │   ├── Hub.tsx
-│       │   │   ├── hubGameOrder.test.ts
-│       │   │   ├── hubGameOrder.ts
 │       │   │   ├── LoadingState.tsx
 │       │   │   ├── PerformanceLab.tsx
 │       │   │   ├── SessionGallery.tsx
-│       │   │   └── ThemeLab.tsx
+│       │   │   ├── ThemeLab.tsx
+│       │   │   ├── hubGameOrder.test.ts
+│       │   │   └── hubGameOrder.ts
 │       │   ├── sharing
 │       │   │   ├── shareLink.test.ts
 │       │   │   └── shareLink.ts
