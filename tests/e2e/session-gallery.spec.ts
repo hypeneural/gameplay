@@ -63,7 +63,6 @@ test('gallery lightbox stays DOM-only and returns from Puzzle to the same photo 
     .toBeLessThan(24);
 });
 
-
 test('restores gallery scroll after a later batch and keeps the natural image shape', async ({
   page,
 }) => {

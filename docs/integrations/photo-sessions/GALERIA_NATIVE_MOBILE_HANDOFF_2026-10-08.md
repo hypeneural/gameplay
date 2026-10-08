@@ -1,13 +1,16 @@
 # Auditoria forense e handoff — Galeria Natalina mobile-first
+
 **Data:** 2026-10-08 · **Escopo:** PR #7, branch `feat/christmas-gallery-native-mobile-v2`.
 
 ## Fonte da verdade
+
 - Default atual do repositório: `codex/puzzle-native-like-v1`.
 - PR #7 permanece como entrega isolada; não usar `main` por suposição.
 - Release guard: `deploy/readiness.json` mantém `pilotReady=false`, `customerDataAllowed=false`, `automaticDeliveryAllowed=false`.
 - **Regra funcional**: 1 pedido CRM -> 1 sessão fotográfica -> 1 álbum; mudanças nas fotos criam revisões **da mesma sessão**, não subgalerias. Pedidos diferentes têm tokens/grants isolados. Nunca use telefone, nome, ID de pedido ou sequência para construir token público.
 
 ## Mapa causal de execução
+
 ```text
 Windows / pasta tratada (somente arquivos elegíveis na raiz, sem varredura recursiva)
    -> tools/media-pipeline / Sharp (EXIF autoOrient, conversão sRGB, sem crop)
@@ -23,6 +26,7 @@ Windows / pasta tratada (somente arquivos elegíveis na raiz, sem varredura recu
 ```
 
 ## Responsabilidades sem duplicar infraestrutura
+
 - **React**: URL, histórico, álbum, lightbox, seleção, tema e ações. Não inicializa Phaser na galeria.
 - **Phaser**: somente jogos ativos, destruição e bridge controlados por `PhaserHost`.
 - **Sharp**: um único worker Node responsável por proporção, sRGB e hashes; Python/EvydFlow apenas orquestra após existir publisher Node validado.
@@ -30,6 +34,7 @@ Windows / pasta tratada (somente arquivos elegíveis na raiz, sem varredura recu
 - **CI/Playwright**: validações repetíveis e sintéticas, nunca fotos/clientes reais no repositório.
 
 ## Findings e correções
+
 1. **P1 - retorno de rolagem**: AppRouter efetuava scroll ainda no Suspense fallback; a galeria agora recebe `restoreScrollY` e executa restauração síncrona de layout após os cartões terem sido montados.
 2. **P1 - estética incompleta**: havia CSS natalino sem markup correspondente. Intro e finale agora referenciam os SVGs já registrados sob `christmas-shell/gallery`; finale surge após o último lote.
 3. **P1 - geometria responsiva**: testar retratos/paisagens sem `cover` em 390, 412, 430, 768, incluindo iPhone Safari real.
@@ -38,6 +43,7 @@ Windows / pasta tratada (somente arquivos elegíveis na raiz, sem varredura recu
 6. **P2 - assets**: conferir hashes/bytes/proveniência dos 3 SVGs e linha final LF em Windows; preservar saída estática sem loops decorativos na variante LOW.
 
 ## Critérios determinísticos de aceite
+
 - Galeria única, nenhuma escolha de subgaleria, `.gallery-grid` uma coluna em todos os breakpoints.
 - `.gallery-photo-frame` reserva `width / height` natural. Imagens `object-fit: contain`. Mobile sem overflow.
 - Primeira foto candidata a LCP: eager/high; demais lazy; `srcset` somente de larguras intrínsecas declaradas.
@@ -48,6 +54,7 @@ Windows / pasta tratada (somente arquivos elegíveis na raiz, sem varredura recu
 - Respect `prefers-reduced-motion`, safe areas, foco e botão Voltar do browser; teste físico iPhone/Android pendente até realmente realizado.
 
 ## Referências oficiais (validar versões fixadas)
+
 - React useLayoutEffect: https://react.dev/reference/react/useLayoutEffect
 - React useEffect cleanup: https://react.dev/reference/react/useEffect
 - MDN imagens srcset/sizes: https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/img
@@ -57,6 +64,7 @@ Windows / pasta tratada (somente arquivos elegíveis na raiz, sem varredura recu
 - Sharp autoOrient: https://sharp.pixelplumbing.com/api-operation/
 
 ## Guia Antigravity 2.21.1: sequência menor de execução
+
 1. `git fetch --all --prune`, verificar HEAD do PR #7 e working tree antes de editar.
 2. `pnpm agent:doctor && pnpm check:fast`; corrigir gates locais somente dentro da branch.
 3. `pnpm asset:validate:all && pnpm test:e2e:gallery && pnpm test:e2e:gallery-multi`.
@@ -66,6 +74,7 @@ Windows / pasta tratada (somente arquivos elegíveis na raiz, sem varredura recu
 7. Validar CI oficial do PR, resumir antes/depois e solicitar revisão/merge somente com evidência. Sem deploy a clientes reais.
 
 ## Performance (metas, não resultados)
+
 - LCP p75 <= 2,5 s; INP p75 <= 200 ms; CLS p75 <= 0,1.
 - O budget de 700 KB inicial do laboratório exige instrumentação e revisão em aparelho; não alegar atingimento sem trace.
 - Variantes 480/800/1600 são do lado **maior**. Em retratos, a largura é menor; candidato 1200 px só entra após benchmark de nitidez e custo real.
