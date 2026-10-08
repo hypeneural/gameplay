@@ -2,6 +2,7 @@
 .local-private-media/
 .local-test-media/
 **/.local-test-media/
+.release/
 # Local operational reports: preserve on disk, never publish infrastructure details.
 docs/architecture/ANALISE_FORENSE_MELHORIAS_README_E_ESTRUTURA_GITHUB.md
 docs/architecture/AUDITORIA_FORENSE_DNS_PLESK_VPS_JOGOS_FOTOSDENATAL.md
@@ -19,3 +20,20 @@ tools/fixture-generator/tests/fixtures/
 .env
 .env.*
 !.env.example
+
+# Sensitive/runtime state must never be tracked.
+credentials.json
+*.db
+*.db-wal
+*.db-shm
+*.sqlite
+*.sqlite3
+*.sqlite-wal
+*.sqlite-shm
+*.log
+*.pem
+*.key
+*.p12
+*.pfx
+id_rsa
+id_ed25519

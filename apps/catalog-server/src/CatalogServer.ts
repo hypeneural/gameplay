@@ -18,6 +18,10 @@ export interface CatalogServerDependencies {
   readonly previews: SocialPreviewRepository;
   readonly audit: SocialPreviewAudit;
   readonly clock: SocialPreviewClock;
+  readonly runtime?: {
+    readonly releaseStage: string;
+  };
+  readonly readiness?: () => Promise<void>;
 }
 
 /**
@@ -44,7 +48,28 @@ async function handleRequest(
     send(response, 405, 'Método não permitido.');
     return;
   }
+
   const requestUrl = new URL(request.url ?? '/', 'http://catalog.invalid');
+  if (requestUrl.pathname === '/healthz') {
+    let status = 'ok';
+    let statusCode = 200;
+    try {
+      await dependencies.readiness?.();
+    } catch {
+      status = 'unavailable';
+      statusCode = 503;
+    }
+    const body = JSON.stringify({
+      status,
+      releaseStage: dependencies.runtime?.releaseStage ?? 'test',
+    });
+    response.setHeader('Cache-Control', 'no-store');
+    response.setHeader('Content-Type', 'application/json; charset=utf-8');
+    response.setHeader('Referrer-Policy', 'no-referrer');
+    send(response, statusCode, body, request.method === 'HEAD');
+    return;
+  }
+
   const route = parseSocialRoute(requestUrl.pathname);
   if (!route) {
     sendNotFound(response);
@@ -54,6 +79,11 @@ async function handleRequest(
   const record = await dependencies.previews.getByPublicToken(route.token);
   const preview = record ? resolvePreview(record) : undefined;
   if (!preview) {
+    sendNotFound(response);
+    return;
+  }
+
+  if (dependencies.runtime?.releaseStage === 'staging-demo' && preview.kind === 'customer-photo') {
     sendNotFound(response);
     return;
   }
@@ -70,6 +100,8 @@ async function handleRequest(
     // browser never receives a filesystem path or original-photo URL.
     response.setHeader('X-Accel-Redirect', preview.internalUri);
     response.setHeader('Cache-Control', 'private, no-store');
+    response.setHeader('Referrer-Policy', 'no-referrer');
+    response.setHeader('X-Robots-Tag', 'noindex, nofollow, noarchive');
     response.setHeader('X-Content-Type-Options', 'nosniff');
     response.statusCode = 200;
     response.end();
@@ -83,7 +115,8 @@ async function handleRequest(
   );
   response.setHeader('Cache-Control', 'private, no-store');
   response.setHeader('Content-Type', 'text/html; charset=utf-8');
-  response.setHeader('Referrer-Policy', 'same-origin');
+  response.setHeader('Referrer-Policy', 'no-referrer');
+  response.setHeader('X-Robots-Tag', 'noindex, nofollow, noarchive');
   response.setHeader('X-Content-Type-Options', 'nosniff');
   send(response, 200, html, request.method === 'HEAD');
 }
@@ -95,20 +128,33 @@ type SocialRoute = {
 };
 
 function parseSocialRoute(pathname: string): SocialRoute | undefined {
-  const match =
-    /^\/s\/([a-zA-Z0-9_-]{16,128})(?:\/game\/([a-z0-9-]{1,64}))?(?:\/(social-preview))?$/.exec(
-      pathname,
-    );
-  if (!match) return undefined;
-  const token = match[1]!;
+  const segments = pathname.split('/').filter(Boolean);
+  if (segments[0] !== 's' || !segments[1] || segments.length < 2 || segments.length > 4) {
+    return undefined;
+  }
+
+  const token = segments[1];
   if (!isOpaquePublicToken(token)) return undefined;
-  const gameId = match[2];
+  const encodedToken = encodeURIComponent(token);
+
+  if (segments.length === 2) {
+    return { kind: 'session', token, canonicalPath: `/s/${encodedToken}` };
+  }
+
+  if (segments.length === 3 && segments[2] === 'fotos') {
+    return { kind: 'session', token, canonicalPath: `/s/${encodedToken}/fotos` };
+  }
+
+  if (segments.length === 3 && segments[2] === 'social-preview') {
+    return { kind: 'social-preview', token, canonicalPath: `/s/${encodedToken}` };
+  }
+
+  const gameId = segments[2] === 'game' ? segments[3] : undefined;
+  if (!gameId || !/^[a-z0-9-]{1,64}$/.test(gameId)) return undefined;
   return {
-    kind: match[3] === 'social-preview' ? 'social-preview' : 'session',
+    kind: 'session',
     token,
-    canonicalPath: gameId
-      ? `/s/${encodeURIComponent(token)}/game/${encodeURIComponent(gameId)}`
-      : `/s/${encodeURIComponent(token)}`,
+    canonicalPath: `/s/${encodedToken}/game/${encodeURIComponent(gameId)}`,
   };
 }
 

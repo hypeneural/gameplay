@@ -6,20 +6,36 @@
 
 ```text
 ├── .agents
+│   ├── current-state.json
+│   ├── rules
+│   │   ├── christmas-gallery-album.md
+│   │   ├── photo-sessions-integration.md
+│   │   └── staging-release-safety.md
 │   └── skills
+│       ├── christmas-gallery-album
+│       │   └── SKILL.md
 │       ├── diretor-jogo-natal
 │       │   └── SKILL.md
-│       └── revisao-visual-mobile
+│       ├── photo-sessions-integration
+│       │   └── SKILL.md
+│       ├── real-session-authority
+│       │   └── SKILL.md
+│       ├── revisao-visual-mobile
+│       │   └── SKILL.md
+│       └── vps-staging-release
 │           └── SKILL.md
 ├── .dependency-cruiser.cjs
 ├── .gitattributes
 ├── .github
+│   ├── CODEOWNERS
 │   ├── ISSUE_TEMPLATE
 │   │   ├── bug_report.md
 │   │   └── feature_request.md
+│   ├── dependabot.yml
 │   ├── pull_request_template.md
 │   └── workflows
-│       └── ci.yml
+│       ├── ci.yml
+│       └── release-staging.yml
 ├── .gitignore
 ├── .node-version
 ├── .prettierignore
@@ -29,6 +45,7 @@
 ├── README.md
 ├── apps
 │   ├── catalog-server
+│   │   ├── AGENTS.md
 │   │   ├── ASSET_PROVENANCE.md
 │   │   ├── README.md
 │   │   ├── config
@@ -39,13 +56,16 @@
 │   │   ├── public
 │   │   │   └── social
 │   │   │       └── evydencia-christmas-v1.webp
-│   │   └── src
-│   │       ├── CatalogServer.test.ts
-│   │       ├── CatalogServer.ts
-│   │       ├── filePreviewRepository.test.ts
-│   │       ├── filePreviewRepository.ts
-│   │       ├── main.ts
-│   │       └── socialPreview.ts
+│   │   ├── src
+│   │   │   ├── CatalogServer.test.ts
+│   │   │   ├── CatalogServer.ts
+│   │   │   ├── filePreviewRepository.test.ts
+│   │   │   ├── filePreviewRepository.ts
+│   │   │   ├── main.ts
+│   │   │   ├── runtimeConfig.test.ts
+│   │   │   ├── runtimeConfig.ts
+│   │   │   └── socialPreview.ts
+│   │   └── tsconfig.build.json
 │   └── play
 │       ├── AGENTS.md
 │       ├── assets
@@ -338,7 +358,9 @@
 │       │   │   ├── GameQuality.test.ts
 │       │   │   ├── GameQuality.ts
 │       │   │   ├── LocalTestSession.test.ts
-│       │   │   └── LocalTestSession.ts
+│       │   │   ├── LocalTestSession.ts
+│       │   │   ├── ReleaseMode.test.ts
+│       │   │   └── ReleaseMode.ts
 │       │   ├── audio
 │       │   │   ├── playInterfaceTap.test.ts
 │       │   │   ├── playInterfaceTap.ts
@@ -349,6 +371,7 @@
 │       │   │   ├── CompletionActions.tsx
 │       │   │   ├── MagicPhotoWinter.tsx
 │       │   │   ├── PhotoPrint.tsx
+│       │   │   ├── SessionGalleryLightbox.tsx
 │       │   │   ├── SessionPhotoAlbum.tsx
 │       │   │   ├── ShareButton.tsx
 │       │   │   ├── ShellControls.tsx
@@ -364,6 +387,10 @@
 │       │   │   ├── useChristmasMagic.ts
 │       │   │   ├── useShellInteractions.ts
 │       │   │   └── useSnowfall.ts
+│       │   ├── gallery
+│       │   │   ├── galleryPolicy.test.ts
+│       │   │   └── galleryPolicy.ts
+│       │   ├── gallery.css
 │       │   ├── magic-photo.css
 │       │   ├── main.tsx
 │       │   ├── phaser
@@ -385,6 +412,7 @@
 │       │   │   ├── Hub.tsx
 │       │   │   ├── LoadingState.tsx
 │       │   │   ├── PerformanceLab.tsx
+│       │   │   ├── SessionGallery.tsx
 │       │   │   └── ThemeLab.tsx
 │       │   ├── sharing
 │       │   │   ├── shareLink.test.ts
@@ -443,8 +471,16 @@
 │       ├── cordao-luzes-v1.png
 │       ├── moldura-lembranca-v1.png
 │       └── oficina-fundo-vertical-v1.png
+├── deploy
+│   ├── readiness.json
+│   └── vps
+│       ├── catalog.env.example
+│       ├── christmas-games-catalog.service.example
+│       └── nginx
+│           └── christmas-games.conf.example
 ├── docs
 │   ├── ai
+│   │   ├── ANTIGRAVITY_2_19_1_RUNBOOK.md
 │   │   ├── CODEX_CAPABILITY_STACK.md
 │   │   └── PHASER_SKILL_MAP.md
 │   ├── analytics
@@ -470,7 +506,8 @@
 │   │   ├── CG-MOBILE-FIRST-CREATIVE-VELOCITY.md
 │   │   ├── CG-PUZZLE-NATIVE-LIKE-ITERATION.md
 │   │   ├── active
-│   │   │   └── .gitkeep
+│   │   │   ├── .gitkeep
+│   │   │   └── CG-PHOTO-SESSIONS-ANTIGRAVITY-2.19.1.md
 │   │   └── completed
 │   │       ├── CG-BOOTSTRAP.md
 │   │       ├── CG-CONTROLES-CRISTALINOS-DOS-JOGOS.md
@@ -518,7 +555,11 @@
 │   ├── index.md
 │   ├── integrations
 │   │   └── photo-sessions
+│   │       ├── AUDITORIA_FORENSE_ANTIGRAVITY_MOBILE_2026-10-06.md
+│   │       ├── AUDITORIA_GITHUB_GALERIA_NATALINA_MOBILE_2026-10-06.md
+│   │       ├── AUDITORIA_NODE_FIRST_GALLERY_LAB_2026-10-06.md
 │   │       ├── AUDITORIA_WORKFLOW_SESSOES_E_JOGOS.md
+│   │       ├── GALERIA_NATALINA_MULTI_GALERIAS.md
 │   │       ├── MVP_RAPIDO.md
 │   │       ├── PLANO_IMPLEMENTACAO_GALERIA_JOGOS_EVYDFLOW.md
 │   │       ├── PROMPT_VALIDACAO_CHATGPT.md
@@ -537,6 +578,8 @@
 │   │   ├── LOCAL_MEDIA_ARCHITECTURE.md
 │   │   ├── NATAL_2024_CORPUS_BASELINE.md
 │   │   └── PHOTO_CORPUS_BASELINE.md
+│   ├── ops
+│   │   └── VPS_STAGING_DEMO_RUNBOOK.md
 │   ├── plan
 │   │   └── IMPLEMENTATION_PLAN.md
 │   ├── privacy
@@ -556,6 +599,8 @@
 │   ├── quality
 │   │   ├── ANDROID_REFERENCE_PROTOCOL.md
 │   │   ├── ASSET_LAB_CONTRACT.md
+│   │   ├── AUDITORIA_FORENSE_ANTIGRAVITY_REPO_DEPLOY_2026-10-07.md
+│   │   ├── GALLERY_MOBILE_PERFORMANCE_CONTRACT.md
 │   │   ├── GAME_EXPERIENCE_REVIEW.md
 │   │   ├── GUIRLANDA_DAS_LEMBRANCAS_NATIVE_LIKE_REVIEW_2026-09-04.md
 │   │   ├── HUB_E_ABERTURAS_IMPLEMENTATION_2026-09-06.md
@@ -1124,7 +1169,8 @@
 │   │   ├── lifecycle.spec.ts
 │   │   ├── magic-photo.spec.ts
 │   │   ├── rena-das-lembrancas-input.spec.ts
-│   │   └── rena-das-lembrancas.spec.ts
+│   │   ├── rena-das-lembrancas.spec.ts
+│   │   └── session-gallery.spec.ts
 │   └── fixtures
 │       ├── session-12-mixed
 │       │   ├── manifest.json
@@ -1161,6 +1207,7 @@
 │           ├── ph_003.jpg
 │           └── ph_004.jpg
 ├── tools
+│   ├── agent-doctor.mjs
 │   ├── asset-factory
 │   │   ├── package.json
 │   │   ├── scripts
@@ -1174,10 +1221,19 @@
 │   │   ├── src
 │   │   │   ├── contracts.ts
 │   │   │   ├── index.ts
-│   │   │   └── manifest.ts
+│   │   │   ├── manifest.ts
+│   │   │   └── validateAll.ts
 │   │   └── tests
 │   │       └── asset-factory.test.ts
 │   ├── clean.mjs
+│   ├── deploy
+│   │   ├── create-staging-preview-config.mjs
+│   │   ├── prepare-vps-release.mjs
+│   │   ├── release-utils.mjs
+│   │   ├── release-utils.test.mjs
+│   │   ├── smoke-release-runtime.mjs
+│   │   ├── smoke-staging.mjs
+│   │   └── verify-vps-release.mjs
 │   ├── export-puzzle-source-reader.mjs
 │   ├── fixture-generator
 │   │   ├── package.json
@@ -1194,9 +1250,11 @@
 │   │   ├── AGENTS.md
 │   │   ├── package.json
 │   │   ├── src
+│   │   │   ├── galleryLab.ts
 │   │   │   ├── index.ts
 │   │   │   ├── inspect.ts
-│   │   │   └── prepareLocal.ts
+│   │   │   ├── prepareLocal.ts
+│   │   │   └── recipe.ts
 │   │   └── tests
 │   │       ├── inspect.test.ts
 │   │       └── media-pipeline.test.ts

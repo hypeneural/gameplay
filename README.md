@@ -5,7 +5,6 @@
 [![pnpm](https://img.shields.io/badge/pnpm-11.19.0-orange.svg)](https://pnpm.io/)
 [![Phaser](https://img.shields.io/badge/phaser-4.2.1-blue.svg)](https://phaser.io/)
 [![React](https://img.shields.io/badge/react-19.2.8-61dafb.svg)](https://react.dev/)
-[![Tests](https://img.shields.io/badge/tests-430%20passed-success.svg)](https://vitest.dev/)
 
 > **Mobile-first, deterministic photo minigames factory built for Christmas portrait sessions.**
 >
@@ -23,7 +22,7 @@ O **Christmas Games** é uma plataforma de experiências interativas natalinas d
 - 🔒 **Privacidade de Dados & Mídia Segura:** Fotos originais em alta resolução nunca são servidas ou expostas à internet. O pipeline Node/Sharp faz a higienização de metadados EXIF e gera derivadas WebP com hash criptográfico SHA-256 servidas sob demanda.
 - 🧩 **Domínios Puros & Determinismo:** Cada jogo possui um módulo `domain/` desacoplado de React, DOM e Phaser. Regras de física, pontuação e estado são 100% testáveis via sementes pseudoaleatórias previsíveis.
 - 🧹 **Zero Memory Leak Lifecycle:** Um único ciclo de vida do Phaser é instanciado na entrada do jogo e completamente destruído ao sair (`game.destroy(true)`), liberando texturas WebGL, listeners de toque e instâncias de Web Audio.
-- ⚡ **Implantação planejada:** A documentação descreve a proposta de hospedagem isolada. A validação do repositório não comprova implantação, disponibilidade ou capacidade da VPS.
+- ⚡ **Staging empacotável, piloto bloqueado:** O repositório já gera um artifact sintético verificável para VPS, mas isso não comprova disponibilidade/capacidade nem autoriza dados reais; `deploy/readiness.json` continua sendo o gate do piloto.
 
 ---
 
@@ -65,7 +64,7 @@ flowchart TD
     end
 
     subgraph Tools["Ferramentas e Pipeline (tools/)"]
-        MEDIA["tools/media-pipeline<br/>Sharp 0.34 (strip EXIF, hash SHA-256, 3 variantes WebP)"]
+        MEDIA["tools/media-pipeline<br/>Sharp 0.35.3 (strip EXIF, hash SHA-256, 3 variantes WebP)"]
         FACTORY["tools/asset-factory<br/>Auditoria de proveniência, validação e orçamentos de bundle"]
     end
 
@@ -119,7 +118,16 @@ pnpm dev
 O ambiente estará disponível em:
 
 - **Hub de Jogos (Sessão de Demonstração):** `http://localhost:5173/s/local-demo-token`
+- **Galeria Natalina:** `http://localhost:5173/s/local-demo-token/fotos`
 - **Laboratório Visual de Temas:** `http://localhost:5173/__dev/theme`
+
+Para validar uma pasta real de fotos sem Python/EvydFlow:
+
+```bash
+pnpm gallery:lab --source "<pasta-de-fotos>"
+```
+
+Antes de qualquer tarefa automatizada, `pnpm agent:doctor` informa o estágio permitido e os bloqueadores atuais.
 
 ---
 
@@ -127,15 +135,18 @@ O ambiente estará disponível em:
 
 O repositório conta com uma esteira rigorosa de verificação estática e testes automatizados:
 
-| Comando               | Descrição da Operação                                                                                                                 | Tempo Médio |
-| :-------------------- | :------------------------------------------------------------------------------------------------------------------------------------ | :---------- |
-| `pnpm check:fast`     | Executa TypeScript (`tsc`), Linter (`eslint`) e todos os testes unitários (`vitest`).                                                 | ~20s        |
-| `pnpm check`          | Portão completo: `check:fast` + regras arquiteturais (`depcruise`), deadcode (`knip`), formatação (`prettier`) e mapa do repositório. | ~35s        |
-| `pnpm test:e2e`       | Bateria de testes de ponta a ponta no navegador headless via **Playwright**.                                                          | ~60s        |
-| `pnpm validate`       | Validação máxima de pré-merge: `check` + build de produção + `test:e2e`.                                                              | ~90s        |
-| `pnpm build`          | Compilação otimizada do bundle estático para produção via Vite.                                                                       | ~15s        |
-| `pnpm repo:map`       | Sincroniza e regenera o índice topológico de arquivos em `docs/generated/repo-map.md`.                                                | ~2s         |
-| `pnpm asset:validate` | Valida integridade, proveniência e orçamento de todos os assets gráficos e sonoros.                                                   | ~3s         |
+| Comando                | Descrição da Operação                                                                                                                 | Tempo Médio |
+| :--------------------- | :------------------------------------------------------------------------------------------------------------------------------------ | :---------- |
+| `pnpm agent:doctor`    | Valida estágio, comandos canônicos e contradições de readiness para agentes/automação.                                                | ~1s         |
+| `pnpm check:fast`      | Executa TypeScript (`tsc`), Linter (`eslint`) e todos os testes unitários (`vitest`).                                                 | ~20s        |
+| `pnpm check`           | Portão completo: `check:fast` + regras arquiteturais (`depcruise`), deadcode (`knip`), formatação (`prettier`) e mapa do repositório. | ~35s        |
+| `pnpm test:e2e`        | Bateria de testes de ponta a ponta no navegador headless via **Playwright**.                                                          | ~60s        |
+| `pnpm validate`        | Validação máxima de pré-merge: `check` + build de produção + `test:e2e`.                                                              | ~90s        |
+| `pnpm build`           | Build normal fail-closed: compila web + catalog-server, mas não habilita sessão privada real.                                         | ~15s        |
+| `pnpm release:staging` | Gera o artifact sintético e imutável para VPS staging-demo.                                                                           | variável    |
+| `pnpm release:verify`  | Recalcula inventário/bytes/SHA-256 e rejeita alteração ou arquivo proibido no artifact.                                               | ~1s         |
+| `pnpm repo:map`        | Sincroniza e regenera o índice topológico de arquivos em `docs/generated/repo-map.md`.                                                | ~2s         |
+| `pnpm asset:validate`  | Valida integridade, proveniência e orçamento de todos os assets gráficos e sonoros.                                                   | ~3s         |
 
 ---
 
@@ -143,7 +154,9 @@ O repositório conta com uma esteira rigorosa de verificação estática e teste
 
 O dimensionamento para **600 a 800 galerias de famílias** é uma proposta de arquitetura, sujeita a testes de carga e à integração do backend.
 
-O código local inclui o aplicativo, o servidor de catálogo e ferramentas de mídia. A distribuição para clientes, a persistência das sessões e a entrega autenticada de fotos exigem integração e validação específicas de produção, descritas no [plano multi-clientes](docs/architecture/PRODUCAO_VPS_MULTI_CLIENTES_600_800_GALERIAS.md).
+O repositório já produz um artifact **VPS staging-demo** com dados exclusivamente sintéticos, catalog-server compilado, health check, templates systemd/Nginx e inventário SHA-256. Esse estágio serve para colocar Hub/Galeria/Jogos no domínio real rapidamente, sem fotos de clientes.
+
+O piloto real continua bloqueado por `deploy/readiness.json` até existir sessão persistente, grants, autorização de mídia privada, revisão atômica, backup/restore e validação mobile física. O caminho operacional está em [VPS_STAGING_DEMO_RUNBOOK.md](docs/ops/VPS_STAGING_DEMO_RUNBOOK.md).
 
 Relatórios operacionais com endereços da infraestrutura e instruções de acesso são mantidos apenas localmente. Não fazem parte do repositório público.
 

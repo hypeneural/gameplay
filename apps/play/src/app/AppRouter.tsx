@@ -15,13 +15,14 @@ import { ThemeLab } from '../screens/ThemeLab.js';
 import { createAppServices } from './AppServices.js';
 import { parseAppRoute, routePath } from './AppNavigation.js';
 import { resolveGameQuality } from './GameQuality.js';
+import { resolveBrowserReleaseMode } from './ReleaseMode.js';
 import {
   disposeInterfaceAudio,
   playInterfaceTap,
   setInterfaceSoundEnabled,
   stopInterfaceTap,
 } from '../audio/playInterfaceTap.js';
-import type { AppRoute, GameCoverRoute, SessionRoute } from './AppNavigation.js';
+import type { AppRoute, GameCoverRoute, PublicRoute, SessionRoute } from './AppNavigation.js';
 import { fetchLocalTestSession, shouldUseLocalTestMedia } from './LocalTestSession.js';
 import type { Session } from '@christmas-games/platform';
 
@@ -44,12 +45,16 @@ interface GameView {
 }
 
 const initialGameView: GameView = { eventSequence: 0, lastEvent: 'NONE', status: 'loading' };
+const SessionGallery = lazy(async () => ({
+  default: (await import('../screens/SessionGallery.js')).SessionGallery,
+}));
 const PerformanceLab = import.meta.env.DEV
   ? lazy(async () => ({ default: (await import('../screens/PerformanceLab.js')).PerformanceLab }))
   : undefined;
 
 export function AppRouter(): React.JSX.Element {
   const initialRoute = useMemo(() => parseAppRoute(window.location.pathname), []);
+  const releaseMode = useMemo(() => resolveBrowserReleaseMode(import.meta.env), []);
   const services = useMemo(createAppServices, []);
   const quality = useMemo(
     () =>
@@ -58,7 +63,10 @@ export function AppRouter(): React.JSX.Element {
       ),
     [],
   );
-  const usesLocalTestMedia = useMemo(() => shouldUseLocalTestMedia(window.location.search), []);
+  const usesLocalTestMedia = useMemo(
+    () => releaseMode === 'development' && shouldUseLocalTestMedia(window.location.search),
+    [releaseMode],
+  );
   const localTestMediaSearch = usesLocalTestMedia ? '?test-media=local' : '';
   const developmentScenario = useMemo(() => {
     if (!import.meta.env.DEV) return undefined;
@@ -75,6 +83,7 @@ export function AppRouter(): React.JSX.Element {
   const soundPreferenceRef = useRef(true);
   const [calm, setCalm] = useState(false);
   const hubScrollRef = useRef(0);
+  const galleryScrollRef = useRef(0);
   const [gameAttempt, setGameAttempt] = useState(0);
   const [difficulty, setDifficulty] = useState<GameDifficulty>('normal');
   const [gameView, setGameView] = useState(initialGameView);
@@ -142,6 +151,7 @@ export function AppRouter(): React.JSX.Element {
 
   useEffect(() => {
     if (route.kind === 'session') window.scrollTo(0, hubScrollRef.current);
+    else if (route.kind === 'gallery') window.scrollTo(0, galleryScrollRef.current);
     else if (route.kind === 'game-cover' && !playing) window.scrollTo(0, 0);
   }, [route, playing]);
 
@@ -168,7 +178,7 @@ export function AppRouter(): React.JSX.Element {
   }, [usesLocalTestMedia]);
 
   const writeRoute = useCallback(
-    (nextRoute: SessionRoute | GameCoverRoute, mode: Exclude<HistoryMode, 'none'>) => {
+    (nextRoute: PublicRoute, mode: Exclude<HistoryMode, 'none'>) => {
       const nextIndex =
         mode === 'push' ? navigationIndexRef.current + 1 : navigationIndexRef.current;
       const state: HistoryState = { christmasGamesIndex: nextIndex };
@@ -209,6 +219,8 @@ export function AppRouter(): React.JSX.Element {
 
   useEffect(() => {
     const onPopState = (event: PopStateEvent): void => {
+      if (route.kind === 'session') hubScrollRef.current = window.scrollY;
+      if (route.kind === 'gallery') galleryScrollRef.current = window.scrollY;
       const nextRoute = parseAppRoute(window.location.pathname);
       const nextState = event.state as HistoryState | null;
       navigationIndexRef.current = nextState?.christmasGamesIndex ?? 0;
@@ -220,7 +232,7 @@ export function AppRouter(): React.JSX.Element {
     };
     window.addEventListener('popstate', onPopState);
     return () => window.removeEventListener('popstate', onPopState);
-  }, [requestGameExit]);
+  }, [requestGameExit, route.kind]);
 
   const prefetch = (gameId: string): void => {
     if (!getInstalledGame(gameId)) return;
@@ -232,15 +244,23 @@ export function AppRouter(): React.JSX.Element {
     if (
       !game ||
       session.photos.length < game.definition.minPhotos ||
-      (route.kind !== 'session' && route.kind !== 'game-cover')
+      (route.kind !== 'session' && route.kind !== 'gallery' && route.kind !== 'game-cover')
     )
       return;
     if (route.kind === 'session') hubScrollRef.current = window.scrollY;
+    if (route.kind === 'gallery') galleryScrollRef.current = window.scrollY;
     writeRoute({ kind: 'game-cover', token: route.token, gameId }, 'push');
+  };
+
+  const openGallery = (): void => {
+    if (route.kind !== 'session') return;
+    hubScrollRef.current = window.scrollY;
+    writeRoute({ kind: 'gallery', token: route.token }, 'push');
   };
 
   const goToSession = (token: string): void => {
     const sessionRoute: SessionRoute = { kind: 'session', token };
+    if (route.kind === 'gallery') galleryScrollRef.current = window.scrollY;
     if (playingRef.current) {
       if (navigationIndexRef.current > 0) {
         window.history.back();
@@ -293,6 +313,21 @@ export function AppRouter(): React.JSX.Element {
     setRoute(pending.route);
   };
 
+  const isDevelopmentRoute =
+    route.kind === 'theme-lab' ||
+    route.kind === 'experience-lab' ||
+    route.kind === 'asset-lab' ||
+    route.kind === 'performance-lab';
+
+  if (isDevelopmentRoute && releaseMode !== 'development') {
+    return (
+      <main className="shell unavailable-game" role="alert">
+        <p className="eyebrow">ROTA NÃO PUBLICADA</p>
+        <h1>Este laboratório existe somente no ambiente local.</h1>
+      </main>
+    );
+  }
+
   if (route.kind === 'theme-lab') return <ThemeLab />;
   if (route.kind === 'experience-lab') return <ExperienceLab />;
   if (route.kind === 'asset-lab') return <AssetLab />;
@@ -316,6 +351,16 @@ export function AppRouter(): React.JSX.Element {
     );
   }
 
+  if (releaseMode === 'production-disabled') {
+    return (
+      <main className="shell unavailable-game" role="alert">
+        <p className="eyebrow">PUBLICAÇÃO PROTEGIDA</p>
+        <h1>As sessões privadas ainda não foram ativadas neste release.</h1>
+        <p>Use o build staging-demo apenas para validação sintética na VPS.</p>
+      </main>
+    );
+  }
+
   if (usesLocalTestMedia && !localSession) {
     return (
       <main className="shell unavailable-game" role="status">
@@ -323,6 +368,33 @@ export function AppRouter(): React.JSX.Element {
         <h1>{localSessionError ? 'Sessão local indisponível' : 'Preparando fotos para o jogo…'}</h1>
         {localSessionError ? <p>{localSessionError}</p> : null}
       </main>
+    );
+  }
+
+  if (route.kind === 'gallery') {
+    return (
+      <Suspense
+        fallback={
+          <main className="shell unavailable-game" role="status">
+            <p className="eyebrow">SEU ÁLBUM DE NATAL</p>
+            <h1>Preparando suas lembranças…</h1>
+          </main>
+        }
+      >
+        <SessionGallery
+          key={session.id}
+          session={session}
+          selectedPhotoId={selectedPhoto.id}
+          calm={calm}
+          lowQuality={quality === 'LOW'}
+          onSelectPhoto={setSelectedPhotoId}
+          onBack={() => goToSession(route.token)}
+          onPlayPhoto={(photoId) => {
+            setSelectedPhotoId(photoId);
+            openGame('puzzle-swap');
+          }}
+        />
+      </Suspense>
     );
   }
 
@@ -335,11 +407,12 @@ export function AppRouter(): React.JSX.Element {
         games={gameDefinitions}
         onFixtureChange={setFixtureCount}
         onOpenGame={openGame}
+        onOpenGallery={openGallery}
         onPrefetchGame={prefetch}
         onSelectPhoto={setSelectedPhotoId}
         selectedPhotoId={selectedPhoto.id}
         session={session}
-        showFixtureSelector={!usesLocalTestMedia}
+        showFixtureSelector={releaseMode === 'development' && !usesLocalTestMedia}
       />
     );
   }

@@ -1,0 +1,54 @@
+{
+  "schemaVersion": 1,
+  "repositoryMode": "staging-hardening",
+  "releaseStage": "vps-staging-demo",
+  "releaseGate": "deploy/readiness.json",
+  "activePlan": "docs/exec-plans/active/CG-PHOTO-SESSIONS-ANTIGRAVITY-2.19.1.md",
+  "allowedNow": [
+    "local Gallery Lab with operator-selected local photos and no publication",
+    "synthetic staging-demo release to the VPS",
+    "real session authority implementation inside apps/catalog-server",
+    "private media authorization implementation behind the same catalog-server",
+    "manual Node publisher implementation after the internal revision API exists"
+  ],
+  "forbiddenUntilPilot": [
+    "real customer data on the VPS staging-demo",
+    "automatic WhatsApp delivery",
+    "EvydFlow/Python integration before the manual Node publisher path is proven",
+    "a second gallery/session backend",
+    "changing pilotReady or customerDataAllowed by assertion instead of implementation evidence",
+    "production fallback to fixture data for an invalid or missing session"
+  ],
+  "nextMilestone": {
+    "id": "real-session-authority",
+    "owner": "apps/catalog-server",
+    "goal": "Persist sessions, immutable revisions, photos and media metadata in SQLite/WAL with A/A2/B isolation tests, without enabling customer-facing pilot access.",
+    "requiredEvidence": [
+      "explicit migrations",
+      "repository tests with A/A2/B isolation",
+      "revision state STAGED -> VALIDATED -> ACTIVE",
+      "compare-and-swap active revision",
+      "idempotency contract",
+      "backup and restore procedure tested before pilot"
+    ]
+  },
+  "canonicalCommands": {
+    "diagnose": "pnpm agent:doctor",
+    "fastCheck": "pnpm check:fast",
+    "fullCheck": "pnpm check",
+    "galleryLab": "pnpm gallery:lab --source \"<folder>\"",
+    "galleryE2E": "pnpm test:e2e:gallery",
+    "stagingRelease": "pnpm release:staging",
+    "verifyRelease": "pnpm release:verify",
+    "stagingConfig": "pnpm deploy:staging-config --output \"<private-path-outside-repository>\""
+  },
+  "handoffRequiredFields": [
+    "current stage",
+    "files changed",
+    "invariant added",
+    "tests or commands executed",
+    "CI status",
+    "remaining blocker",
+    "next allowed cut"
+  ]
+}

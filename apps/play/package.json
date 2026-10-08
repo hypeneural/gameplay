@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc --noEmit --project ../../tsconfig.json && vite build"
+    "build": "tsc --noEmit --project ../../tsconfig.json && vite build",
+    "build:staging-demo": "tsc --noEmit --project ../../tsconfig.json && vite build --mode staging-demo"
   },
   "dependencies": {
     "@christmas-games/lanterna-magica": "workspace:*",

@@ -1,0 +1,39 @@
+[Unit]
+Description=Christmas Games catalog/session gateway
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=christmas-games
+Group=christmas-games
+WorkingDirectory=/srv/christmas-games/current
+EnvironmentFile=/etc/christmas-games/catalog.env
+ExecStartPre=/usr/bin/node /srv/christmas-games/current/ops/tools/verify-vps-release.mjs /srv/christmas-games/current
+ExecStart=/usr/bin/node /srv/christmas-games/current/server/main.js
+Restart=on-failure
+RestartSec=2s
+TimeoutStartSec=20s
+TimeoutStopSec=15s
+UMask=0077
+
+# Conservative hardening for the current read-only staging gateway. The future
+# SQLite/media backend must explicitly add only the exact writable paths it needs.
+NoNewPrivileges=true
+PrivateTmp=true
+PrivateDevices=true
+ProtectSystem=strict
+ProtectHome=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectKernelLogs=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+LockPersonality=true
+CapabilityBoundingSet=
+AmbientCapabilities=
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+SystemCallArchitectures=native
+
+[Install]
+WantedBy=multi-user.target

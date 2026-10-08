@@ -27,6 +27,36 @@ afterEach(async () => {
 });
 
 describe('CatalogServer', () => {
+  it('exposes a token-free health endpoint for VPS supervision', async () => {
+    const baseUrl = await startServer(
+      activeGeneric,
+      vi.fn(async () => undefined),
+    );
+
+    const response = await fetch(`${baseUrl}/healthz`);
+
+    expect(response.status).toBe(200);
+    expect(response.headers.get('cache-control')).toBe('no-store');
+    expect(response.headers.get('referrer-policy')).toBe('no-referrer');
+    expect(await response.json()).toEqual({ status: 'ok', releaseStage: 'test' });
+  });
+
+  it('reports unavailable without leaking readiness errors', async () => {
+    const baseUrl = await startServer(
+      activeGeneric,
+      vi.fn(async () => undefined),
+      undefined,
+      async () => {
+        throw new Error('/private/path/config.json is invalid');
+      },
+    );
+
+    const response = await fetch(`${baseUrl}/healthz`);
+
+    expect(response.status).toBe(503);
+    expect(await response.json()).toEqual({ status: 'unavailable', releaseStage: 'test' });
+  });
+
   it('renders complete Open Graph markup before the browser runs React', async () => {
     const audit = vi.fn(async () => undefined);
     const baseUrl = await startServer(activeGeneric, audit);
@@ -36,6 +66,7 @@ describe('CatalogServer', () => {
     expect(response.status).toBe(200);
     expect(response.headers.get('content-type')).toContain('text/html');
     expect(response.headers.get('cache-control')).toBe('private, no-store');
+    expect(response.headers.get('referrer-policy')).toBe('no-referrer');
     const html = await response.text();
     expect(html).toContain(
       '<link rel="canonical" href="https://jogos.exemplo.test/s/local-demo-token" />',
@@ -52,6 +83,21 @@ describe('CatalogServer', () => {
       previewVersion: genericPreviewVersion,
       occurredAt: '2026-08-25T12:00:00.000Z',
     });
+  });
+
+  it('serves a direct gallery reload with its own canonical path', async () => {
+    const baseUrl = await startServer(
+      activeGeneric,
+      vi.fn(async () => undefined),
+    );
+
+    const response = await fetch(`${baseUrl}/s/local-demo-token/fotos`);
+
+    expect(response.status).toBe(200);
+    expect(response.headers.get('content-type')).toContain('text/html');
+    expect(await response.text()).toContain(
+      '<link rel="canonical" href="https://jogos.exemplo.test/s/local-demo-token/fotos" />',
+    );
   });
 
   it('authorizes the generic image before asking Nginx for its internal asset', async () => {
@@ -104,6 +150,26 @@ describe('CatalogServer', () => {
     );
   });
 
+  it('refuses customer-photo previews in staging-demo even when config says granted', async () => {
+    const customerPreview = {
+      status: 'active' as const,
+      preview: {
+        kind: 'customer-photo' as const,
+        consent: 'granted' as const,
+        derivativeKey: 'social-preview-4Q4bB7GmT2pX',
+        version: 'social-v3',
+      },
+    };
+    const audit = vi.fn(async () => undefined);
+    const baseUrl = await startServer(customerPreview, audit, 'staging-demo');
+
+    const response = await fetch(`${baseUrl}/s/local-demo-token/social-preview`);
+
+    expect(response.status).toBe(404);
+    expect(response.headers.get('x-accel-redirect')).toBeNull();
+    expect(audit).not.toHaveBeenCalled();
+  });
+
   it('fails closed for an unknown or revoked link', async () => {
     const baseUrl = await startServer(
       { status: 'revoked' },
@@ -125,6 +191,8 @@ function startServer(
     readonly previewVersion: string;
     readonly occurredAt: string;
   }) => Promise<void>,
+  releaseStage?: string,
+  readiness?: () => Promise<void>,
 ): Promise<string> {
   const server = createCatalogServer({
     publicOrigin: parsePublicOrigin('https://jogos.exemplo.test'),
@@ -132,6 +200,8 @@ function startServer(
     previews: { getByPublicToken: async () => record },
     audit: { record: auditRecord },
     clock: { now: () => new Date('2026-08-25T12:00:00.000Z') },
+    ...(releaseStage === undefined ? {} : { runtime: { releaseStage } }),
+    ...(readiness === undefined ? {} : { readiness }),
   });
   servers.push(server);
   return new Promise((resolve, reject) => {

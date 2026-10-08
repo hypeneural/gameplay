@@ -12,9 +12,10 @@ interface SessionPhotoAlbumProps {
   compact?: boolean;
   snowBurst?: number;
   onSnow?(): void;
+  onOpenGallery?(): void;
 }
 
-/** Full galleries live in a modal, so session size never pushes games down. */
+/** Quick selection stays modal; the full gallery can live in its own route. */
 export function SessionPhotoAlbum({
   session,
   photo,
@@ -22,6 +23,7 @@ export function SessionPhotoAlbum({
   compact = false,
   snowBurst = 0,
   onSnow,
+  onOpenGallery,
 }: SessionPhotoAlbumProps): React.JSX.Element {
   const [open, setOpen] = useState(false);
   const triggerRef = useRef<HTMLButtonElement>(null);
@@ -128,6 +130,19 @@ export function SessionPhotoAlbum({
         </button>
         {onSnow ? <SnowGlobeButton burst={snowBurst} onSnow={onSnow} /> : null}
       </div>
+      {onOpenGallery && !compact ? (
+        <button
+          className="album-open crystal-control"
+          data-testid="open-full-gallery"
+          type="button"
+          onClick={() => {
+            playInterfaceTap('open');
+            onOpenGallery();
+          }}
+        >
+          <ShellIcon name="photos" /> <span>Abrir álbum completo</span>
+        </button>
+      ) : null}
       {open ? (
         <PhotoPicker
           key={session.id}

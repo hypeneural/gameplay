@@ -27,6 +27,14 @@ export interface GameDefinition {
   supportsMixedOrientation: boolean;
 }
 
+export interface PhotoVariantMetrics {
+  /** Intrinsic dimensions of the derived file after orientation and resize. */
+  width: number;
+  height: number;
+  /** Optional transfer-size evidence from the media manifest. */
+  byteLength?: number;
+}
+
 export interface Photo {
   id: string;
   width: number;
@@ -34,6 +42,11 @@ export interface Photo {
   aspectRatio: number;
   orientation: 'portrait' | 'landscape' | 'square';
   variants: Record<PhotoVariant, string>;
+  /**
+   * Transitional responsive-image metadata. The browser must never infer a
+   * width descriptor from a recipe name such as thumb/card/game.
+   */
+  variantMetrics?: Partial<Record<PhotoVariant, PhotoVariantMetrics>>;
   /** Optional normalized photographer metadata. No recognition runs in the browser. */
   focalPoint?: Readonly<{ x: number; y: number }>;
   faceSafeZone?: Readonly<{ x: number; y: number; width: number; height: number }>;

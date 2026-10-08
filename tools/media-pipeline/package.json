@@ -1,12 +1,13 @@
 {
   "name": "@christmas-games/media-pipeline",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "type": "module",
   "scripts": {
     "process": "tsx src/index.ts",
     "inspect": "tsx src/inspect.ts",
-    "prepare-local": "tsx src/prepareLocal.ts"
+    "prepare-local": "tsx src/prepareLocal.ts",
+    "gallery-lab": "tsx src/galleryLab.ts"
   },
   "dependencies": {
     "sharp": "0.35.3",

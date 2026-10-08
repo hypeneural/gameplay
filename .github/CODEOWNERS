@@ -1,0 +1,10 @@
+# Visibility only until a GitHub ruleset requires CODEOWNERS review.
+* @hypeneural
+
+/.github/workflows/ @hypeneural
+/deploy/ @hypeneural
+/tools/deploy/ @hypeneural
+/apps/catalog-server/ @hypeneural
+/apps/play/src/app/ @hypeneural
+/tools/media-pipeline/ @hypeneural
+/.agents/ @hypeneural

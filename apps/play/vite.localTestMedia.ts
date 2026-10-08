@@ -5,22 +5,42 @@ import type { IncomingMessage, ServerResponse } from 'node:http';
 import type { Plugin } from 'vite';
 
 const opaquePhotoId = /^[a-z0-9][a-z0-9-]{0,63}$/i;
+const opaqueRecipeKey = /^[a-z0-9][a-z0-9._-]{0,255}$/i;
 const sha256 = /^[a-f0-9]{64}$/;
-const uuid = /^[a-f0-9]{8}-[a-f0-9]{4}-[1-5][a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/i;
-const variants = new Set(['thumb', 'card', 'game']);
+const uuid = /^[a-f0-9]{8}-[a-f0-9]{4}-[1-8][a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/i;
+const variants = ['thumb', 'card', 'game'] as const;
+type Variant = (typeof variants)[number];
 
-interface LocalTestMediaConfig {
+type VariantMetrics = Record<Variant, { width: number; height: number; byteLength: number }>;
+
+interface LocalTestPhotoBase {
+  id: string;
+  contentHash: string;
+  width: number;
+  height: number;
+  aspectRatio: number;
+  orientation: 'portrait' | 'landscape' | 'square';
+}
+
+interface LocalTestMediaConfigV1 {
   version: 1;
   session: { id: string; publicToken: string; displayName: string };
-  photos: Array<{
-    id: string;
-    contentHash: string;
-    width: number;
-    height: number;
-    aspectRatio: number;
-    orientation: 'portrait' | 'landscape' | 'square';
-  }>;
+  photos: LocalTestPhotoBase[];
 }
+
+interface LocalTestMediaConfigV2 {
+  version: 2;
+  worker: {
+    version: string;
+    recipeKey: string;
+    sharpVersion: string;
+    libvipsVersion: string;
+  };
+  session: { id: string; publicToken: string; displayName: string };
+  photos: Array<LocalTestPhotoBase & { variantMetrics: VariantMetrics }>;
+}
+
+type LocalTestMediaConfig = LocalTestMediaConfigV1 | LocalTestMediaConfigV2;
 
 /**
  * A development-only, loopback-served adapter for real local derivatives.
@@ -79,6 +99,7 @@ async function handleRequest(
           card: `/__local-test/media/${photo.id}/card`,
           game: `/__local-test/media/${photo.id}/game`,
         },
+        ...('variantMetrics' in photo ? { variantMetrics: photo.variantMetrics } : {}),
       })),
     });
     return;
@@ -90,7 +111,7 @@ async function handleRequest(
     return;
   }
   const [, photoId, variant] = match;
-  if (!photoId || !variant || !variants.has(variant)) {
+  if (!photoId || !variant || !variants.includes(variant as Variant)) {
     sendJson(response, 404, { code: 'local_test_media_not_found' });
     return;
   }
@@ -106,6 +127,7 @@ async function handleRequest(
     config.session.id,
     photo.id,
     photo.contentHash,
+    ...(config.version === 2 ? [config.worker.recipeKey] : []),
     `${variant}.webp`,
   );
   if (!path.startsWith(`${derivativeRoot}${sep}`)) {
@@ -140,28 +162,61 @@ async function readConfig(storageRoot: string): Promise<LocalTestMediaConfig> {
 
 function isLocalTestMediaConfig(value: unknown): value is LocalTestMediaConfig {
   if (!value || typeof value !== 'object') return false;
-  const config = value as Partial<LocalTestMediaConfig>;
-  return (
-    config.version === 1 &&
-    !!config.session &&
-    typeof config.session.id === 'string' &&
-    uuid.test(config.session.id) &&
-    typeof config.session.publicToken === 'string' &&
-    typeof config.session.displayName === 'string' &&
-    Array.isArray(config.photos) &&
-    config.photos.every(
-      (photo) =>
-        photo &&
-        opaquePhotoId.test(photo.id) &&
-        sha256.test(photo.contentHash) &&
-        Number.isFinite(photo.width) &&
-        Number.isFinite(photo.height) &&
-        Number.isFinite(photo.aspectRatio) &&
-        (photo.orientation === 'portrait' ||
-          photo.orientation === 'landscape' ||
-          photo.orientation === 'square'),
-    )
+  const config = value as Partial<LocalTestMediaConfigV2> & Partial<LocalTestMediaConfigV1>;
+  if (!isSession(config.session) || !Array.isArray(config.photos)) return false;
+  if (config.version === 1) return config.photos.every(isBasePhoto);
+  if (config.version !== 2 || !config.worker || !opaqueRecipeKey.test(config.worker.recipeKey)) {
+    return false;
+  }
+  return config.photos.every(
+    (photo) =>
+      isBasePhoto(photo) && 'variantMetrics' in photo && isVariantMetrics(photo.variantMetrics),
   );
+}
+
+function isSession(value: unknown): value is LocalTestMediaConfigV1['session'] {
+  if (!value || typeof value !== 'object') return false;
+  const session = value as Partial<LocalTestMediaConfigV1['session']>;
+  return (
+    typeof session.id === 'string' &&
+    uuid.test(session.id) &&
+    typeof session.publicToken === 'string' &&
+    typeof session.displayName === 'string'
+  );
+}
+
+function isBasePhoto(value: unknown): value is LocalTestPhotoBase {
+  if (!value || typeof value !== 'object') return false;
+  const photo = value as Partial<LocalTestPhotoBase>;
+  return (
+    typeof photo.id === 'string' &&
+    opaquePhotoId.test(photo.id) &&
+    typeof photo.contentHash === 'string' &&
+    sha256.test(photo.contentHash) &&
+    Number.isFinite(photo.width) &&
+    Number.isFinite(photo.height) &&
+    Number.isFinite(photo.aspectRatio) &&
+    (photo.orientation === 'portrait' ||
+      photo.orientation === 'landscape' ||
+      photo.orientation === 'square')
+  );
+}
+
+function isVariantMetrics(value: unknown): value is VariantMetrics {
+  if (!value || typeof value !== 'object') return false;
+  const metrics = value as Partial<VariantMetrics>;
+  return variants.every((variant) => {
+    const metric = metrics[variant];
+    return (
+      !!metric &&
+      Number.isInteger(metric.width) &&
+      metric.width > 0 &&
+      Number.isInteger(metric.height) &&
+      metric.height > 0 &&
+      Number.isInteger(metric.byteLength) &&
+      metric.byteLength > 0
+    );
+  });
 }
 
 function sendJson(response: ServerResponse, status: number, body: object): void {
