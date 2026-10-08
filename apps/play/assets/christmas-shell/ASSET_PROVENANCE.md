@@ -89,3 +89,7 @@ Filtro reproduzível: `[0:a]aformat=sample_rates=44100:channel_layouts=mono,sile
 ## gallery-native-v2
 
 Os SVGs da galeria (evergreen-header, starlight-footer e snowflake-seal) sao criacoes originais do projeto, em 2026-10-08, sem imagem de cliente ou componente de terceiros. Origem: `project-created`, licenca `project-owned`. Referencia de design e limites de uso em `GALLERY_PROVENANCE.md`. Os SVGs estaticos ficam fora da fotografia e nao exigem animacao. Validacao visual em aparelhos fisicos permanece pendente.
+
+## gallery-ai-v3
+
+Asset: `gallery-ai-evergreen-v1.webp` (OpenAI image generation, recorte de ornamentacao exclusivamente natalina — ramos de pinheiro, laço vermelho, pinhas, vidro e luzes). Derivado no projeto por crop e Pillow WebP Q30, em 2026-10-08. Arquivo final 392x64, 3316 bytes; SHA-256 `f4291ed8fc1333c7f92b59cbfc49a6c449d7a67de35d2389a65875e57c346f57`. Origem `project-created`, licença `project-owned`; nao contem foto de cliente nem texto. Detalhes de uso e limitações em `GALLERY_PROVENANCE.md#gallery-ai-v3`. A revisão visual física no iPhone/Android ainda é pendente.
