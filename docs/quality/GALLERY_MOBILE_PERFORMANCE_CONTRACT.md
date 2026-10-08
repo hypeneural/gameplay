@@ -14,7 +14,7 @@ Aplica-se a:
 - lightbox;
 - restauração de scroll;
 - requests de mídia privada;
-- transição galeria <-> jogo.
+- transição galeria -> Hub -> jogo (escolha explícita) -> Hub -> galeria.
 
 Não mede FPS de Phaser enquanto um jogo está ativo.
 
@@ -133,8 +133,8 @@ Criar cenários dedicados para:
 3. scroll até fim;
 4. abrir foto central, avançar, voltar e fechar;
 5. compartilhar/copiar link quando suportado;
-6. Gallery -> Puzzle -> Gallery;
-7. três ciclos Gallery -> Puzzle -> Gallery;
+6. Gallery -> Lightbox -> Hub (foto selecionada) -> escolha explícita do jogo -> game cover -> Hub -> Gallery;
+7. três ciclos Gallery -> Hub -> game -> Hub -> Gallery;
 8. token inválido;
 9. token revogado durante uso;
 10. galeria A com nova revisão atômica e galeria B (outro pedido) na mesma aba;

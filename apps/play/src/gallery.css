@@ -116,8 +116,13 @@
   right: 0;
   height: 60px;
   pointer-events: none;
-  background: url('/assets/christmas-shell/gallery/gallery-evergreen-hero-v2.svg') center top / 100%
-    auto no-repeat;
+  background-image: url('/assets/christmas-shell/gallery/gallery-evergreen-hero-v2.svg');
+  background-image: image-set(
+    url('/assets/christmas-shell/gallery/gallery-ai-evergreen-v1.webp') type('image/webp')
+  );
+  background-position: center top;
+  background-repeat: no-repeat;
+  background-size: 100% auto;
 }
 
 .gallery-hero-content {

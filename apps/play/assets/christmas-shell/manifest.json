@@ -32,7 +32,9 @@
       },
       "processing": {
         "recipe": "prepare-shell-audio.mjs:tap",
-        "tools": ["ffmpeg:8.0.1-essentials_build-www.gyan.dev"]
+        "tools": [
+          "ffmpeg:8.0.1-essentials_build-www.gyan.dev"
+        ]
       },
       "runtime": {
         "file": "apps/play/public/assets/christmas-shell/audio/tap-v1.mp3",
@@ -73,7 +75,9 @@
       },
       "processing": {
         "recipe": "prepare-shell-audio.mjs:tap",
-        "tools": ["ffmpeg:8.0.1-essentials_build-www.gyan.dev"]
+        "tools": [
+          "ffmpeg:8.0.1-essentials_build-www.gyan.dev"
+        ]
       },
       "runtime": {
         "file": "apps/play/public/assets/christmas-shell/audio/tap-v1.m4a",
@@ -114,7 +118,9 @@
       },
       "processing": {
         "recipe": "prepare-shell-audio.mjs:toggle",
-        "tools": ["ffmpeg:8.0.1-essentials_build-www.gyan.dev"]
+        "tools": [
+          "ffmpeg:8.0.1-essentials_build-www.gyan.dev"
+        ]
       },
       "runtime": {
         "file": "apps/play/public/assets/christmas-shell/audio/toggle-v1.mp3",
@@ -155,7 +161,9 @@
       },
       "processing": {
         "recipe": "prepare-shell-audio.mjs:toggle",
-        "tools": ["ffmpeg:8.0.1-essentials_build-www.gyan.dev"]
+        "tools": [
+          "ffmpeg:8.0.1-essentials_build-www.gyan.dev"
+        ]
       },
       "runtime": {
         "file": "apps/play/public/assets/christmas-shell/audio/toggle-v1.m4a",
@@ -196,7 +204,9 @@
       },
       "processing": {
         "recipe": "prepare-shell-audio.mjs:magic",
-        "tools": ["ffmpeg:8.0.1-essentials_build-www.gyan.dev"]
+        "tools": [
+          "ffmpeg:8.0.1-essentials_build-www.gyan.dev"
+        ]
       },
       "runtime": {
         "file": "apps/play/public/assets/christmas-shell/audio/magic-v1.mp3",
@@ -237,7 +247,9 @@
       },
       "processing": {
         "recipe": "prepare-shell-audio.mjs:magic",
-        "tools": ["ffmpeg:8.0.1-essentials_build-www.gyan.dev"]
+        "tools": [
+          "ffmpeg:8.0.1-essentials_build-www.gyan.dev"
+        ]
       },
       "runtime": {
         "file": "apps/play/public/assets/christmas-shell/audio/magic-v1.m4a",
@@ -278,7 +290,9 @@
       },
       "processing": {
         "recipe": "prepare-shell-audio.mjs:paper-a",
-        "tools": ["ffmpeg:8.0.1-essentials_build-www.gyan.dev"]
+        "tools": [
+          "ffmpeg:8.0.1-essentials_build-www.gyan.dev"
+        ]
       },
       "runtime": {
         "file": "apps/play/public/assets/christmas-shell/audio/paper-a-v1.mp3",
@@ -319,7 +333,9 @@
       },
       "processing": {
         "recipe": "prepare-shell-audio.mjs:paper-a",
-        "tools": ["ffmpeg:8.0.1-essentials_build-www.gyan.dev"]
+        "tools": [
+          "ffmpeg:8.0.1-essentials_build-www.gyan.dev"
+        ]
       },
       "runtime": {
         "file": "apps/play/public/assets/christmas-shell/audio/paper-a-v1.m4a",
@@ -360,7 +376,9 @@
       },
       "processing": {
         "recipe": "prepare-shell-audio.mjs:paper-b",
-        "tools": ["ffmpeg:8.0.1-essentials_build-www.gyan.dev"]
+        "tools": [
+          "ffmpeg:8.0.1-essentials_build-www.gyan.dev"
+        ]
       },
       "runtime": {
         "file": "apps/play/public/assets/christmas-shell/audio/paper-b-v1.mp3",
@@ -401,7 +419,9 @@
       },
       "processing": {
         "recipe": "prepare-shell-audio.mjs:paper-b",
-        "tools": ["ffmpeg:8.0.1-essentials_build-www.gyan.dev"]
+        "tools": [
+          "ffmpeg:8.0.1-essentials_build-www.gyan.dev"
+        ]
       },
       "runtime": {
         "file": "apps/play/public/assets/christmas-shell/audio/paper-b-v1.m4a",
@@ -442,7 +462,9 @@
       },
       "processing": {
         "recipe": "prepare-shell-audio.mjs:open",
-        "tools": ["ffmpeg:8.0.1-essentials_build-www.gyan.dev"]
+        "tools": [
+          "ffmpeg:8.0.1-essentials_build-www.gyan.dev"
+        ]
       },
       "runtime": {
         "file": "apps/play/public/assets/christmas-shell/audio/open-v1.mp3",
@@ -483,7 +505,9 @@
       },
       "processing": {
         "recipe": "prepare-shell-audio.mjs:open",
-        "tools": ["ffmpeg:8.0.1-essentials_build-www.gyan.dev"]
+        "tools": [
+          "ffmpeg:8.0.1-essentials_build-www.gyan.dev"
+        ]
       },
       "runtime": {
         "file": "apps/play/public/assets/christmas-shell/audio/open-v1.m4a",
@@ -524,7 +548,9 @@
       },
       "processing": {
         "recipe": "prepare-shell-audio.mjs:back",
-        "tools": ["ffmpeg:8.0.1-essentials_build-www.gyan.dev"]
+        "tools": [
+          "ffmpeg:8.0.1-essentials_build-www.gyan.dev"
+        ]
       },
       "runtime": {
         "file": "apps/play/public/assets/christmas-shell/audio/back-v1.mp3",
@@ -565,7 +591,9 @@
       },
       "processing": {
         "recipe": "prepare-shell-audio.mjs:back",
-        "tools": ["ffmpeg:8.0.1-essentials_build-www.gyan.dev"]
+        "tools": [
+          "ffmpeg:8.0.1-essentials_build-www.gyan.dev"
+        ]
       },
       "runtime": {
         "file": "apps/play/public/assets/christmas-shell/audio/back-v1.m4a",
@@ -606,7 +634,9 @@
       },
       "processing": {
         "recipe": "prepare-shell-audio.mjs:reveal",
-        "tools": ["ffmpeg:8.0.1-essentials_build-www.gyan.dev"]
+        "tools": [
+          "ffmpeg:8.0.1-essentials_build-www.gyan.dev"
+        ]
       },
       "runtime": {
         "file": "apps/play/public/assets/christmas-shell/audio/reveal-v1.mp3",
@@ -647,7 +677,9 @@
       },
       "processing": {
         "recipe": "prepare-shell-audio.mjs:reveal",
-        "tools": ["ffmpeg:8.0.1-essentials_build-www.gyan.dev"]
+        "tools": [
+          "ffmpeg:8.0.1-essentials_build-www.gyan.dev"
+        ]
       },
       "runtime": {
         "file": "apps/play/public/assets/christmas-shell/audio/reveal-v1.m4a",
@@ -688,7 +720,9 @@
       },
       "processing": {
         "recipe": "prepare-shell-audio.mjs:bells-a",
-        "tools": ["ffmpeg:8.0.1-essentials_build-www.gyan.dev"]
+        "tools": [
+          "ffmpeg:8.0.1-essentials_build-www.gyan.dev"
+        ]
       },
       "runtime": {
         "file": "apps/play/public/assets/christmas-shell/audio/bells-a-v1.mp3",
@@ -729,7 +763,9 @@
       },
       "processing": {
         "recipe": "prepare-shell-audio.mjs:bells-a",
-        "tools": ["ffmpeg:8.0.1-essentials_build-www.gyan.dev"]
+        "tools": [
+          "ffmpeg:8.0.1-essentials_build-www.gyan.dev"
+        ]
       },
       "runtime": {
         "file": "apps/play/public/assets/christmas-shell/audio/bells-a-v1.m4a",
@@ -770,7 +806,9 @@
       },
       "processing": {
         "recipe": "prepare-shell-audio.mjs:bells-b",
-        "tools": ["ffmpeg:8.0.1-essentials_build-www.gyan.dev"]
+        "tools": [
+          "ffmpeg:8.0.1-essentials_build-www.gyan.dev"
+        ]
       },
       "runtime": {
         "file": "apps/play/public/assets/christmas-shell/audio/bells-b-v1.mp3",
@@ -811,7 +849,9 @@
       },
       "processing": {
         "recipe": "prepare-shell-audio.mjs:bells-b",
-        "tools": ["ffmpeg:8.0.1-essentials_build-www.gyan.dev"]
+        "tools": [
+          "ffmpeg:8.0.1-essentials_build-www.gyan.dev"
+        ]
       },
       "runtime": {
         "file": "apps/play/public/assets/christmas-shell/audio/bells-b-v1.m4a",
@@ -852,7 +892,9 @@
       },
       "processing": {
         "recipe": "prepare-shell-audio.mjs:snow",
-        "tools": ["ffmpeg:8.0.1-essentials_build-www.gyan.dev"]
+        "tools": [
+          "ffmpeg:8.0.1-essentials_build-www.gyan.dev"
+        ]
       },
       "runtime": {
         "file": "apps/play/public/assets/christmas-shell/audio/snow-v1.mp3",
@@ -893,7 +935,9 @@
       },
       "processing": {
         "recipe": "prepare-shell-audio.mjs:snow",
-        "tools": ["ffmpeg:8.0.1-essentials_build-www.gyan.dev"]
+        "tools": [
+          "ffmpeg:8.0.1-essentials_build-www.gyan.dev"
+        ]
       },
       "runtime": {
         "file": "apps/play/public/assets/christmas-shell/audio/snow-v1.m4a",
@@ -934,7 +978,9 @@
       },
       "processing": {
         "recipe": "prepare-shell-audio.mjs:start",
-        "tools": ["ffmpeg:8.0.1-essentials_build-www.gyan.dev"]
+        "tools": [
+          "ffmpeg:8.0.1-essentials_build-www.gyan.dev"
+        ]
       },
       "runtime": {
         "file": "apps/play/public/assets/christmas-shell/audio/start-v1.mp3",
@@ -975,7 +1021,9 @@
       },
       "processing": {
         "recipe": "prepare-shell-audio.mjs:start",
-        "tools": ["ffmpeg:8.0.1-essentials_build-www.gyan.dev"]
+        "tools": [
+          "ffmpeg:8.0.1-essentials_build-www.gyan.dev"
+        ]
       },
       "runtime": {
         "file": "apps/play/public/assets/christmas-shell/audio/start-v1.m4a",
@@ -1014,7 +1062,9 @@
       },
       "processing": {
         "recipe": "gallery-native-v2-svg",
-        "tools": ["vector-svg-authoring"]
+        "tools": [
+          "vector-svg-authoring"
+        ]
       },
       "runtime": {
         "file": "apps/play/public/assets/christmas-shell/gallery/gallery-evergreen-header-v1.svg",
@@ -1055,7 +1105,9 @@
       },
       "processing": {
         "recipe": "gallery-native-v2-svg",
-        "tools": ["vector-svg-authoring"]
+        "tools": [
+          "vector-svg-authoring"
+        ]
       },
       "runtime": {
         "file": "apps/play/public/assets/christmas-shell/gallery/gallery-starlight-footer-v1.svg",
@@ -1096,7 +1148,9 @@
       },
       "processing": {
         "recipe": "gallery-native-v2-svg",
-        "tools": ["vector-svg-authoring"]
+        "tools": [
+          "vector-svg-authoring"
+        ]
       },
       "runtime": {
         "file": "apps/play/public/assets/christmas-shell/gallery/gallery-snowflake-seal-v1.svg",
@@ -1137,7 +1191,9 @@
       },
       "processing": {
         "recipe": "gallery-native-v2-svg",
-        "tools": ["vector-svg-authoring"]
+        "tools": [
+          "vector-svg-authoring"
+        ]
       },
       "runtime": {
         "file": "apps/play/public/assets/christmas-shell/gallery/gallery-evergreen-hero-v2.svg",
@@ -1178,7 +1234,9 @@
       },
       "processing": {
         "recipe": "gallery-native-v2-svg",
-        "tools": ["vector-svg-authoring"]
+        "tools": [
+          "vector-svg-authoring"
+        ]
       },
       "runtime": {
         "file": "apps/play/public/assets/christmas-shell/gallery/gallery-header-glow-v1.svg",
@@ -1219,7 +1277,9 @@
       },
       "processing": {
         "recipe": "gallery-native-v2-svg",
-        "tools": ["vector-svg-authoring"]
+        "tools": [
+          "vector-svg-authoring"
+        ]
       },
       "runtime": {
         "file": "apps/play/public/assets/christmas-shell/gallery/gallery-badge-photo-count-v1.svg",
@@ -1260,7 +1320,9 @@
       },
       "processing": {
         "recipe": "gallery-native-v2-svg",
-        "tools": ["vector-svg-authoring"]
+        "tools": [
+          "vector-svg-authoring"
+        ]
       },
       "runtime": {
         "file": "apps/play/public/assets/christmas-shell/gallery/gallery-divider-starlight-v2.svg",
@@ -1301,7 +1363,9 @@
       },
       "processing": {
         "recipe": "gallery-native-v2-svg",
-        "tools": ["vector-svg-authoring"]
+        "tools": [
+          "vector-svg-authoring"
+        ]
       },
       "runtime": {
         "file": "apps/play/public/assets/christmas-shell/gallery/cta-open-album-ribbon-v1.svg",
@@ -1342,7 +1406,9 @@
       },
       "processing": {
         "recipe": "gallery-native-v2-svg",
-        "tools": ["vector-svg-authoring"]
+        "tools": [
+          "vector-svg-authoring"
+        ]
       },
       "runtime": {
         "file": "apps/play/public/assets/christmas-shell/gallery/cta-album-icon-v1.svg",
@@ -1354,6 +1420,50 @@
           "height": 24
         },
         "textureKey": "cta-album-icon-v1",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        }
+      }
+    },
+    {
+      "id": "gallery-ai-evergreen-v1",
+      "kind": "ui",
+      "format": "webp",
+      "source": {
+        "provider": "OpenAI image generation",
+        "origin": "project-created",
+        "identifier": "gallery-ai-evergreen-v1",
+        "license": "project-owned",
+        "reviewedOn": "2026-10-08",
+        "reviewedBy": "forensic-visual-prep",
+        "record": "GALLERY_PROVENANCE.md#gallery-ai-v3"
+      },
+      "art": {
+        "family": "christmas-photo-first",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Decoração raster de pinheiro, laço e luzes, sem pessoas, texto, imagens privadas ou controles; ocupa apenas faixa superior do Hero. Aprovação física de iPhone/Android pendente."
+      },
+      "processing": {
+        "recipe": "gallery-ai-evergreen-v1-webp-quality30",
+        "tools": [
+          "OpenAI image generation",
+          "Pillow (crop + WebP)"
+        ]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/christmas-shell/gallery/gallery-ai-evergreen-v1.webp",
+        "publicPath": "/assets/christmas-shell/gallery/gallery-ai-evergreen-v1.webp",
+        "bytes": 3316,
+        "sha256": "f4291ed8fc1333c7f92b59cbfc49a6c449d7a67de35d2389a65875e57c346f57",
+        "dimensions": {
+          "width": 392,
+          "height": 64
+        },
+        "textureKey": "gallery-ai-evergreen-v1",
         "quality": {
           "low": "keep",
           "reducedMotion": "keep"

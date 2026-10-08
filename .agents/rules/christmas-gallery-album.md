@@ -108,3 +108,9 @@ Leia também:
 A galeria fotográfica fica em coluna unica inclusive tablet/desktop. Nao instalar um motor de masonry apenas para trocar este layout. A proposta anterior de A2 no mesmo pedido fica substituida por varias revisoes da mesma galeria principal. As bibliotecas de zoom continuam candidatas de benchmark, nao requisito imediato.
 
 Manual atualizado e ordem de execucao: `docs/integrations/photo-sessions/GALERIA_NATIVE_MOBILE_HANDOFF_2026-10-08.md`.
+
+## Fluxo canonico Lightbox -> Hub (v3)
+
+Ao escolher `Jogar com esta foto`, atualizar `selectedPhotoId` e navegar a `/s/:token`, com o Hub exibindo a foto escolhida. **Nao escolher `puzzle-swap` automaticamente.** O usuario toca no card do jogo que preferir. Browser Back pode voltar a galeria mantendo `scrollY`, foto e lotes. Os testes E2E devem cobrir essa jornada, inclusive a foto 11.
+
+Hero raster: `gallery-ai-evergreen-v1.webp` foi gerado com IA e incorporado ao manifesto de `christmas-shell`; preserve fallback SVG, texto sem rasterizacao e reduced-motion. Rejeitar arte que contenha rostos, mockups, captions ou controls falsos.

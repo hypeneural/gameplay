@@ -80,3 +80,13 @@ Windows / pasta tratada (somente arquivos elegíveis na raiz, sem varredura recu
 - O budget de 700 KB inicial do laboratório exige instrumentação e revisão em aparelho; não alegar atingimento sem trace.
 - Variantes 480/800/1600 são do lado **maior**. Em retratos, a largura é menor; candidato 1200 px só entra após benchmark de nitidez e custo real.
 - Não instalar virtualizador nem motor de partículas para álbuns típicos; primeiro medir decode/transferência/layout.
+
+## Adendo v3 — auditoria das capturas (2026-10-08)
+
+**Problema observado:** a primeira imagem e o lightbox de staging mostram `MEMÓRIA DE NATAL` sobre um cartão vermelho. Isso é a fixture **sintética** utilizada nos testes, não uma fotografia enviada pelo CRM. Validar pipeline real de fotografias em Gallery Lab, sem colocar dados de cliente no Git.
+
+**Implementado:** `Jogar com esta foto` passa a selecionar o ID da fotografia e abrir `/s/:token` (Hub). A familia escolhe depois Puzzle/Memória/outro jogo nos cards. Os botões de topo, zoom e setas usam `ShellIcon` com dourado, foco de teclado e elementos de 44px+. Testes E2E passam a verificar seleção foto 6 e 11, volta ao Hub e escolha explícita do Puzzle.
+
+**Novo asset:** `gallery-ai-evergreen-v1.webp`, recorte do ornamento de um conceito gráfico gerado com IA, registrado no manifesto + proveniência (3316 B, hash confirmado e WebP quality30). É complemento decorativo realista e leve, não uma captura da UI. CSS `image-set()` escolhe o WebP para navegadores modernos e mantém SVG como fallback. Testar legibilidade no display 390/412/430/768px.
+
+**Próximo passo Antigravity:** conferir PR #7 HEAD, `pnpm check`, `pnpm asset:validate:all`, `pnpm test:e2e:gallery`, `pnpm test:e2e:gallery-multi`, `pnpm build`, screenshots antes/depois e aparelhos físicos. Auditar `navigator.share` sob HTTPS + user activation, fecho nativo do `<dialog>`, contraste, zoom por pinça, 30/92 fotos com mistura retrato/paisagem. Não habilitar piloto, não prometer download de foto sem autorização.

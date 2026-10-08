@@ -106,6 +106,7 @@
 │       │   │   │   └── gallery
 │       │   │   │       ├── cta-album-icon-v1.svg
 │       │   │   │       ├── cta-open-album-ribbon-v1.svg
+│       │   │   │       ├── gallery-ai-evergreen-v1.webp
 │       │   │   │       ├── gallery-badge-photo-count-v1.svg
 │       │   │   │       ├── gallery-divider-starlight-v2.svg
 │       │   │   │       ├── gallery-evergreen-header-v1.svg
