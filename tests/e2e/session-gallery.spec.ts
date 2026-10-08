@@ -9,7 +9,7 @@ test('gallery is a bounded mobile album and stays engine-free before gameplay', 
   await page.goto('/s/local-demo-token/fotos');
 
   await expect(page.getByTestId('session-gallery')).toBeVisible();
-  await expect(page.getByRole('heading', { name: 'Álbum de Natal' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: /Álbum de Natal/i })).toBeVisible();
   await expect(page.locator('.gallery-card')).toHaveCount(8);
   await expect(page.locator('canvas')).toHaveCount(0);
 

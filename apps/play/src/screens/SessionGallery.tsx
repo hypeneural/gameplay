@@ -123,10 +123,7 @@ export function SessionGallery({
         >
           <span aria-hidden="true">‹</span>
         </button>
-        <div className="gallery-title-group">
-          <p className="eyebrow">ESTÚDIO EVYDÊNCIA • NATAL EM FAMÍLIA</p>
-          <h1>Álbum de Natal</h1>
-        </div>
+        <span className="gallery-topbar-label">Álbum de Natal</span>
         <button
           className="gallery-icon-button"
           type="button"
@@ -137,19 +134,23 @@ export function SessionGallery({
         </button>
       </header>
 
-      <section className="gallery-intro" aria-labelledby="gallery-heading">
-        <div className="gallery-pine gallery-pine--left" aria-hidden="true" />
-        <div className="gallery-pine gallery-pine--right" aria-hidden="true" />
-        <p className="gallery-intro-kicker">UM PRESENTE FEITO DE MEMÓRIAS</p>
-        <h2 id="gallery-heading">Nosso Natal em família</h2>
-        <p>Toque em uma lembrança para ampliar ou brincar com a sua foto.</p>
-        <p className="gallery-intro-count">{session.photos.length} fotos para reviver</p>
-        <div className="gallery-lights" aria-hidden="true">
-          <i />
-          <i />
-          <i />
-          <i />
-          <i />
+      <section className="gallery-hero" aria-labelledby="gallery-hero-title">
+        <div className="gallery-hero-glow" aria-hidden="true" />
+        <div className="gallery-hero-garland" aria-hidden="true" />
+        <div className="gallery-hero-content">
+          <div className="gallery-hero-meta">
+            <p className="eyebrow">ESTÚDIO EVYDÊNCIA • NATAL EM FAMÍLIA</p>
+            <span
+              className="gallery-photo-badge"
+              aria-label={`${session.photos.length} fotos no álbum`}
+            >
+              {session.photos.length} fotos
+            </span>
+          </div>
+          <h1 id="gallery-hero-title">Seu Álbum de Natal</h1>
+          <p className="gallery-hero-subtitle">Reviva cada lembrança com carinho</p>
+          <div className="gallery-hero-divider" aria-hidden="true" />
+          <p className="gallery-hero-instruction">Toque para ampliar ou brincar com sua foto</p>
         </div>
       </section>
 

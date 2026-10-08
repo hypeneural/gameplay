@@ -115,7 +115,24 @@ export function SessionPhotoAlbum({
           </div>
         </>
       ) : null}
-      <div className="album-actions">
+      {onOpenGallery && !compact ? (
+        <button
+          className="album-cta-primary"
+          data-testid="open-full-gallery"
+          type="button"
+          onClick={() => {
+            playInterfaceTap('open');
+            onOpenGallery();
+          }}
+        >
+          <span className="album-cta-icon" aria-hidden="true" />
+          <span className="album-cta-text">Abrir álbum completo</span>
+          <span className="album-cta-sparkle" aria-hidden="true">
+            ✦
+          </span>
+        </button>
+      ) : null}
+      <div className="album-actions album-actions--secondary">
         <button
           ref={triggerRef}
           className="album-open crystal-control"
@@ -130,19 +147,6 @@ export function SessionPhotoAlbum({
         </button>
         {onSnow ? <SnowGlobeButton burst={snowBurst} onSnow={onSnow} /> : null}
       </div>
-      {onOpenGallery && !compact ? (
-        <button
-          className="album-open crystal-control"
-          data-testid="open-full-gallery"
-          type="button"
-          onClick={() => {
-            playInterfaceTap('open');
-            onOpenGallery();
-          }}
-        >
-          <ShellIcon name="photos" /> <span>Abrir álbum completo</span>
-        </button>
-      ) : null}
       {open ? (
         <PhotoPicker
           key={session.id}

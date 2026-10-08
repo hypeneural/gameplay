@@ -2,9 +2,9 @@
   "version": 2,
   "gameId": "christmas-shell",
   "budget": {
-    "publicBytesMax": 289861,
-    "runtimeBytesMax": 179861,
-    "visualBytesMax": 29861
+    "publicBytesMax": 315000,
+    "runtimeBytesMax": 205000,
+    "visualBytesMax": 36000
   },
   "assets": [
     {
@@ -1108,6 +1108,252 @@
           "height": 100
         },
         "textureKey": "gallery-snowflake-seal-v1",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        }
+      }
+    },
+    {
+      "id": "gallery-evergreen-hero-v2",
+      "kind": "ui",
+      "format": "svg",
+      "source": {
+        "provider": "Estudio Evydencia",
+        "origin": "project-created",
+        "identifier": "gallery-evergreen-hero-v2",
+        "license": "project-owned",
+        "reviewedOn": "2026-10-08",
+        "reviewedBy": "visual-gallery-prep",
+        "record": "ASSET_PROVENANCE.md#gallery-native-v2"
+      },
+      "art": {
+        "family": "christmas-photo-first",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Hero compacto em SVG de alto contraste, ramos refinados e luzes quentes para o topo do album."
+      },
+      "processing": {
+        "recipe": "gallery-native-v2-svg",
+        "tools": ["vector-svg-authoring"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/christmas-shell/gallery/gallery-evergreen-hero-v2.svg",
+        "publicPath": "/assets/christmas-shell/gallery/gallery-evergreen-hero-v2.svg",
+        "bytes": 6765,
+        "sha256": "c41ab0882ca5485e700c64eac109dd9155e1592e46f43bf5aa27187b0210b14a",
+        "dimensions": {
+          "width": 760,
+          "height": 140
+        },
+        "textureKey": "gallery-evergreen-hero-v2",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        }
+      }
+    },
+    {
+      "id": "gallery-header-glow-v1",
+      "kind": "ui",
+      "format": "svg",
+      "source": {
+        "provider": "Estudio Evydencia",
+        "origin": "project-created",
+        "identifier": "gallery-header-glow-v1",
+        "license": "project-owned",
+        "reviewedOn": "2026-10-08",
+        "reviewedBy": "visual-gallery-prep",
+        "record": "ASSET_PROVENANCE.md#gallery-native-v2"
+      },
+      "art": {
+        "family": "christmas-photo-first",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Glow radial suave para ambientacao do hero natalino sem comprometer contraste."
+      },
+      "processing": {
+        "recipe": "gallery-native-v2-svg",
+        "tools": ["vector-svg-authoring"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/christmas-shell/gallery/gallery-header-glow-v1.svg",
+        "publicPath": "/assets/christmas-shell/gallery/gallery-header-glow-v1.svg",
+        "bytes": 950,
+        "sha256": "30a4465037924e541490ad43554eb1276041367508e1f4c05b52f582f6e51b6f",
+        "dimensions": {
+          "width": 760,
+          "height": 140
+        },
+        "textureKey": "gallery-header-glow-v1",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        }
+      }
+    },
+    {
+      "id": "gallery-badge-photo-count-v1",
+      "kind": "ui",
+      "format": "svg",
+      "source": {
+        "provider": "Estudio Evydencia",
+        "origin": "project-created",
+        "identifier": "gallery-badge-photo-count-v1",
+        "license": "project-owned",
+        "reviewedOn": "2026-10-08",
+        "reviewedBy": "visual-gallery-prep",
+        "record": "ASSET_PROVENANCE.md#gallery-native-v2"
+      },
+      "art": {
+        "family": "christmas-photo-first",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Medalhao dourado e rubi em vetor para o contador de fotografias da sessao."
+      },
+      "processing": {
+        "recipe": "gallery-native-v2-svg",
+        "tools": ["vector-svg-authoring"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/christmas-shell/gallery/gallery-badge-photo-count-v1.svg",
+        "publicPath": "/assets/christmas-shell/gallery/gallery-badge-photo-count-v1.svg",
+        "bytes": 1538,
+        "sha256": "8a40a7158408b1c7a490ded07f88aa6ff6eeb208bba6cccbe90842aa97bad973",
+        "dimensions": {
+          "width": 120,
+          "height": 34
+        },
+        "textureKey": "gallery-badge-photo-count-v1",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        }
+      }
+    },
+    {
+      "id": "gallery-divider-starlight-v2",
+      "kind": "ui",
+      "format": "svg",
+      "source": {
+        "provider": "Estudio Evydencia",
+        "origin": "project-created",
+        "identifier": "gallery-divider-starlight-v2",
+        "license": "project-owned",
+        "reviewedOn": "2026-10-08",
+        "reviewedBy": "visual-gallery-prep",
+        "record": "ASSET_PROVENANCE.md#gallery-native-v2"
+      },
+      "art": {
+        "family": "christmas-photo-first",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Divisor estelar refinado com estrela central e pontos de luz decrescentes."
+      },
+      "processing": {
+        "recipe": "gallery-native-v2-svg",
+        "tools": ["vector-svg-authoring"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/christmas-shell/gallery/gallery-divider-starlight-v2.svg",
+        "publicPath": "/assets/christmas-shell/gallery/gallery-divider-starlight-v2.svg",
+        "bytes": 1086,
+        "sha256": "dc90062debb69410ba4b5b86342503dd0874cc0e6b33e36a7bf40e71baf613ff",
+        "dimensions": {
+          "width": 420,
+          "height": 16
+        },
+        "textureKey": "gallery-divider-starlight-v2",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        }
+      }
+    },
+    {
+      "id": "cta-open-album-ribbon-v1",
+      "kind": "ui",
+      "format": "svg",
+      "source": {
+        "provider": "Estudio Evydencia",
+        "origin": "project-created",
+        "identifier": "cta-open-album-ribbon-v1",
+        "license": "project-owned",
+        "reviewedOn": "2026-10-08",
+        "reviewedBy": "visual-gallery-prep",
+        "record": "ASSET_PROVENANCE.md#gallery-native-v2"
+      },
+      "art": {
+        "family": "christmas-photo-first",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Fita acetinada rubi com bordas e pesponto em ouro para o CTA principal full-width."
+      },
+      "processing": {
+        "recipe": "gallery-native-v2-svg",
+        "tools": ["vector-svg-authoring"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/christmas-shell/gallery/cta-open-album-ribbon-v1.svg",
+        "publicPath": "/assets/christmas-shell/gallery/cta-open-album-ribbon-v1.svg",
+        "bytes": 1677,
+        "sha256": "70b312e9f794624fcd560cf87b3b8d6808eae3c9eb703d348bacfc491d3a5c12",
+        "dimensions": {
+          "width": 340,
+          "height": 54
+        },
+        "textureKey": "cta-open-album-ribbon-v1",
+        "quality": {
+          "low": "keep",
+          "reducedMotion": "keep"
+        }
+      }
+    },
+    {
+      "id": "cta-album-icon-v1",
+      "kind": "ui",
+      "format": "svg",
+      "source": {
+        "provider": "Estudio Evydencia",
+        "origin": "project-created",
+        "identifier": "cta-album-icon-v1",
+        "license": "project-owned",
+        "reviewedOn": "2026-10-08",
+        "reviewedBy": "visual-gallery-prep",
+        "record": "ASSET_PROVENANCE.md#gallery-native-v2"
+      },
+      "art": {
+        "family": "christmas-photo-first",
+        "christmasFit": "approved",
+        "photoSafety": "approved",
+        "mobileLegibility": "approved",
+        "state": "PRONTO_PARA_RUNTIME",
+        "justification": "Icone de album fotografico natalino com estrela central em vetor leve."
+      },
+      "processing": {
+        "recipe": "gallery-native-v2-svg",
+        "tools": ["vector-svg-authoring"]
+      },
+      "runtime": {
+        "file": "apps/play/public/assets/christmas-shell/gallery/cta-album-icon-v1.svg",
+        "publicPath": "/assets/christmas-shell/gallery/cta-album-icon-v1.svg",
+        "bytes": 1111,
+        "sha256": "3370ea581f1fae5a073a4e2974c34754a067b8ee53c88f3f64783155b915c402",
+        "dimensions": {
+          "width": 24,
+          "height": 24
+        },
+        "textureKey": "cta-album-icon-v1",
         "quality": {
           "low": "keep",
           "reducedMotion": "keep"

@@ -104,7 +104,13 @@
 │       │   │   │   │   ├── toggle-v1.m4a
 │       │   │   │   │   └── toggle-v1.mp3
 │       │   │   │   └── gallery
+│       │   │   │       ├── cta-album-icon-v1.svg
+│       │   │   │       ├── cta-open-album-ribbon-v1.svg
+│       │   │   │       ├── gallery-badge-photo-count-v1.svg
+│       │   │   │       ├── gallery-divider-starlight-v2.svg
 │       │   │   │       ├── gallery-evergreen-header-v1.svg
+│       │   │   │       ├── gallery-evergreen-hero-v2.svg
+│       │   │   │       ├── gallery-header-glow-v1.svg
 │       │   │   │       ├── gallery-snowflake-seal-v1.svg
 │       │   │   │       └── gallery-starlight-footer-v1.svg
 │       │   │   ├── estilingue-das-lembrancas

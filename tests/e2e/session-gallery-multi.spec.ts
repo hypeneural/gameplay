@@ -48,7 +48,7 @@ test.describe('Multi-Client Gallery & Game Navigation Isolation', () => {
     await page.goto(`/s/${tokenA}/fotos?test-media=local`);
 
     await expect(page.getByTestId('session-gallery')).toBeVisible();
-    await expect(page.getByRole('heading', { name: 'Álbum de Natal' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: /Álbum de Natal/i })).toBeVisible();
 
     // 1. Zero Canvas and Zero Phaser before entering gameplay
     await expect(page.locator('canvas')).toHaveCount(0);
