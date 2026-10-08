@@ -57,14 +57,11 @@ export function SessionGallery({
   }, [restoreScrollY, session.id]);
 
   useEffect(() => {
-    setVisibleCount(
-      Math.min(
-        session.photos.length,
-        Math.max(GALLERY_INITIAL_PHOTO_COUNT, initialVisibleCount ?? GALLERY_INITIAL_PHOTO_COUNT),
-      ),
-    );
+    // initialVisibleCount is a mount-only seed. The parent updates that seed as
+    // batches expand, but it must never reset an already-open photo lightbox.
+    setVisibleCount((current) => Math.min(current, session.photos.length));
     setLightboxIndex(undefined);
-  }, [session.id, session.photos.length, initialVisibleCount]);
+  }, [session.id, session.photos.length]);
 
   useEffect(() => {
     onVisibleCountChange?.(visibleCount);

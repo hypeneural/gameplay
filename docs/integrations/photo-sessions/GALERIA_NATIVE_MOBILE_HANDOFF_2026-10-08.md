@@ -41,6 +41,7 @@ Windows / pasta tratada (somente arquivos elegíveis na raiz, sem varredura recu
 4. **P1 - docs contraditórias**: retirar referências ao masonry obrigatório e subgalerias por pedido nos contratos atuais. Documentos históricos são evidências, não instruções de implementação.
 5. **P1 - segurança**: CI verde não prova grants, revogação, persistence nem publicação real. Não habilitar piloto, upload público, Z-API, FTP ou WhatsApp.
 6. **P2 - assets**: conferir hashes/bytes/proveniência dos 3 SVGs e linha final LF em Windows; preservar saída estática sem loops decorativos na variante LOW.
+7. **P1 - lightbox após expansão**: o efeito dependia de `initialVisibleCount`, que se alterava após o lote 8+8 e fechava o diálogo ao selecionar a foto 11. Agora o valor é somente inicial; o efeito só reage à identidade/tamanho da sessão. Novo E2E reproduz essa regressão.
 
 ## Critérios determinísticos de aceite
 
