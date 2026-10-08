@@ -6,6 +6,8 @@ Build a safe, local-VPS, mobile-first factory for personalized photo minigames. 
 
 ## Start here
 
+For Contabo VPS deployment and private photo upload design, read `docs/ops/CONTABO_JOGOS_STAGING_2026-10-08.md` and `docs/integrations/photo-sessions/SESSION_MEDIA_PUBLICATION_CONTRACT_V1.md`. These are proposals; do not mistake the DNS record or CI staging green for a real-client pilot. Caddy is the reported public edge, whereas the existing systemd/Nginx example targets a different topology.
+
 1. Run `pnpm agent:doctor`. If it does not return `status=ok`, stop and fix the reported repository contradiction before product work.
 2. Read `.agents/current-state.json`, `deploy/readiness.json`, `docs/index.md`, the active execution plan and the relevant owner `AGENTS.md`/`SPEC.md` before editing. Treat the two JSON files as machine-readable stage/priority gates; long audit documents never override them.
 3. For photo-session/gallery work, read `docs/integrations/photo-sessions/AUDITORIA_NODE_FIRST_GALLERY_LAB_2026-10-06.md` before the active plan; use the Node-first Gallery Lab to prove media + Hub + Gallery + games before involving EvydFlow/Python whenever the task can be validated locally. For GalleryRoute/album work also read `.agents/rules/christmas-gallery-album.md` and `.agents/skills/christmas-gallery-album/SKILL.md`.
