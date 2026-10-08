@@ -1,12 +1,12 @@
-import { createHash, randomUUID } from 'node:crypto';
-import { mkdir, readFile, readdir, rename, rm, stat, writeFile } from 'node:fs/promises';
-import { dirname, extname, join } from 'node:path';
+import { randomUUID } from 'node:crypto';
+import { mkdir, readFile, rename, rm, writeFile } from 'node:fs/promises';
+import { dirname, join } from 'node:path';
 import { processMediaJobs, writeManifest } from './index.js';
 import { mediaRecipeKey, mediaWorkerFingerprint } from './recipe.js';
+import { filterSourceDirectory } from './sourceFilter.js';
 import type { MediaManifestEntry } from './index.js';
 import type { MediaVariant, MediaVariantMetric } from './recipe.js';
 
-const supportedExtensions = new Set(['.jpg', '.jpeg', '.png', '.webp']);
 const defaultPublicToken = 'local-private-test';
 const defaultDisplayName = 'Galeria Natalina - laboratório local';
 
@@ -123,7 +123,7 @@ export async function prepareLocalMedia(
   };
 }
 
-function toLocalTestPhoto(entry: MediaManifestEntry): LocalTestPhotoConfig {
+export function toLocalTestPhoto(entry: MediaManifestEntry): LocalTestPhotoConfig {
   if (
     entry.state !== 'ready' ||
     !entry.contentHash ||
@@ -148,34 +148,8 @@ function toLocalTestPhoto(entry: MediaManifestEntry): LocalTestPhotoConfig {
 }
 
 async function supportedFiles(sourceDirectory: string): Promise<readonly SupportedSource[]> {
-  const entries = (await readdir(sourceDirectory, { withFileTypes: true }))
-    .filter((entry) => entry.isFile() && supportedExtensions.has(extname(entry.name).toLowerCase()))
-    .sort((left, right) => left.name.localeCompare(right.name));
-
-  const files = entries.map((entry) => ({
-    sourcePath: join(sourceDirectory, entry.name),
-    // Stable across re-ordering and pixel edits that keep the photographer's
-    // source name. The private name never leaves this process.
-    photoId: opaquePhotoIdFromSourceName(entry.name),
-  }));
-  if (new Set(files.map((file) => file.photoId)).size !== files.length) {
-    throw new Error('Opaque local photo id collision; rename one source before retrying.');
-  }
-
-  await Promise.all(
-    files.map(async ({ sourcePath }) => {
-      if (!(await stat(sourcePath)).isFile()) {
-        throw new Error('Local test media source must be a regular file.');
-      }
-    }),
-  );
-  return files;
-}
-
-function opaquePhotoIdFromSourceName(name: string): string {
-  const normalized = name.normalize('NFC').toLowerCase();
-  const digest = createHash('sha256').update(normalized, 'utf8').digest('hex');
-  return `photo-${digest.slice(0, 20)}`;
+  const result = await filterSourceDirectory(sourceDirectory);
+  return result.eligible.map(({ sourcePath, photoId }) => ({ sourcePath, photoId }));
 }
 
 async function existingSessionUuid(storageRoot: string): Promise<string | undefined> {

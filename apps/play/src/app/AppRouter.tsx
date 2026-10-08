@@ -155,12 +155,36 @@ export function AppRouter(): React.JSX.Element {
     else if (route.kind === 'game-cover' && !playing) window.scrollTo(0, 0);
   }, [route, playing]);
 
+  const currentToken = 'token' in route ? route.token : undefined;
+  const previousTokenRef = useRef(currentToken);
+
+  useEffect(() => {
+    if (currentToken && previousTokenRef.current && previousTokenRef.current !== currentToken) {
+      hubScrollRef.current = 0;
+      galleryScrollRef.current = 0;
+      setPlaying(false);
+      setGameAttempt(0);
+      setGameView(initialGameView);
+    }
+    previousTokenRef.current = currentToken;
+  }, [currentToken]);
+
   useEffect(() => {
     if (!usesLocalTestMedia) return;
     let active = true;
-    void fetchLocalTestSession().then(
+    setLocalSession(undefined);
+    setLocalSessionError(undefined);
+    void fetchLocalTestSession(currentToken).then(
       (nextSession) => {
-        if (active) setLocalSession(nextSession);
+        if (active) {
+          setLocalSession(nextSession);
+          if (
+            nextSession.photos.length > 0 &&
+            !nextSession.photos.some((photo) => photo.id === selectedPhotoId)
+          ) {
+            setSelectedPhotoId(nextSession.photos[0]!.id);
+          }
+        }
       },
       (error: unknown) => {
         if (active) {
@@ -175,7 +199,7 @@ export function AppRouter(): React.JSX.Element {
     return () => {
       active = false;
     };
-  }, [usesLocalTestMedia]);
+  }, [usesLocalTestMedia, currentToken]);
 
   const writeRoute = useCallback(
     (nextRoute: PublicRoute, mode: Exclude<HistoryMode, 'none'>) => {

@@ -7,7 +7,8 @@
     "process": "tsx src/index.ts",
     "inspect": "tsx src/inspect.ts",
     "prepare-local": "tsx src/prepareLocal.ts",
-    "gallery-lab": "tsx src/galleryLab.ts"
+    "gallery-lab": "tsx src/galleryLab.ts",
+    "gallery-lab-multi": "tsx src/galleryLabMulti.ts"
   },
   "dependencies": {
     "sharp": "0.35.3",

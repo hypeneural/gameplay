@@ -1,0 +1,124 @@
+import { expect, test } from '@playwright/test';
+
+test.describe('Multi-Client Gallery & Game Navigation Isolation', () => {
+  const tokenA = 'token-cliente-a-test';
+  const tokenB = 'token-cliente-b-test';
+
+  test('maintains strict engine-free mobile gallery and responsive layout across viewports', async ({
+    page,
+  }) => {
+    const requestedUrls: string[] = [];
+    page.on('request', (req) => requestedUrls.push(req.url()));
+
+    // Navigate to Client A gallery
+    await page.goto(`/s/${tokenA}/fotos`);
+
+    await expect(page.getByTestId('session-gallery')).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Álbum de Natal' })).toBeVisible();
+
+    // 1. Zero Canvas and Zero Phaser before entering gameplay
+    await expect(page.locator('canvas')).toHaveCount(0);
+    expect(
+      requestedUrls.some((url) => /node_modules\/\.vite\/deps\/phaser(?:\.js|_)/i.test(url)),
+    ).toBe(false);
+
+    // 2. No horizontal viewport overflow
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
+      true,
+    );
+
+    // 3. Responsive column policy check
+    const viewportWidth = page.viewportSize()!.width;
+    const columnCount = await page
+      .locator('.gallery-grid')
+      .evaluate(
+        (element) =>
+          getComputedStyle(element).gridTemplateColumns.split(' ').filter(Boolean).length,
+      );
+    expect(columnCount).toBe(viewportWidth < 600 ? 1 : viewportWidth < 900 ? 2 : 3);
+
+    // 4. Initial batch is 8 photos
+    await expect(page.locator('.gallery-card')).toHaveCount(8);
+  });
+
+  test('completes full flow: Hub -> Gallery -> Lightbox -> Puzzle -> Return with scroll & photo preserved', async ({
+    page,
+  }) => {
+    // 1. Client A: Start at Hub
+    await page.goto(`/s/${tokenA}`);
+    await expect(page.getByTestId('open-full-gallery')).toBeVisible();
+
+    // 2. Open Full Gallery
+    await page.getByTestId('open-full-gallery').click();
+    await expect(page).toHaveURL(new RegExp(`/s/${tokenA}/fotos$`));
+    await expect(page.locator('.gallery-card')).toHaveCount(8);
+
+    // 3. Select 6th photo, record scroll and open Lightbox
+    const targetCard = page.locator('.gallery-card').nth(5);
+    await targetCard.scrollIntoViewIfNeeded();
+    const scrollBefore = await page.evaluate(() => window.scrollY);
+    await targetCard.click();
+
+    await expect(page.locator('.gallery-lightbox')).toBeVisible();
+    await expect(page.locator('canvas')).toHaveCount(0);
+
+    // 4. Click "Jogar com esta foto" -> Navigates to Puzzle-Swap
+    const playButton = page.getByRole('button', { name: 'Jogar com esta foto' });
+    await expect(playButton).toBeVisible();
+    await playButton.click();
+
+    await expect(page).toHaveURL(new RegExp(`/s/${tokenA}/game/puzzle-swap$`));
+
+    // 5. Return to Gallery from Game Cover
+    await page.getByRole('button', { name: 'Voltar aos jogos' }).click();
+    await expect(page).toHaveURL(new RegExp(`/s/${tokenA}/fotos$`));
+    await expect(page.getByTestId('session-gallery')).toBeVisible();
+
+    // 6. Verify selected photo is maintained and scroll position restored
+    await expect(page.locator('.gallery-card').nth(5)).toHaveAttribute('aria-current', 'true');
+    await expect
+      .poll(async () => Math.abs((await page.evaluate(() => window.scrollY)) - scrollBefore))
+      .toBeLessThan(24);
+  });
+
+  test('clears previous session state when switching between Client A and Client B', async ({
+    page,
+  }) => {
+    // Open Client A gallery, scroll down and select a photo
+    await page.goto(`/s/${tokenA}/fotos`);
+    const cardA = page.locator('.gallery-card').nth(4);
+    await cardA.scrollIntoViewIfNeeded();
+    await cardA.click();
+    await expect(page.locator('.gallery-lightbox')).toBeVisible();
+
+    // Navigate to Client B gallery directly
+    await page.goto(`/s/${tokenB}/fotos`);
+    await expect(page.getByTestId('session-gallery')).toBeVisible();
+
+    // Lightbox must NOT be open on the new session
+    await expect(page.locator('.gallery-lightbox')).toHaveCount(0);
+
+    // Canvas must still be zero
+    await expect(page.locator('canvas')).toHaveCount(0);
+  });
+
+  test('fails closed with 404 on invalid tokens and cross-session media access attempts', async ({
+    request,
+  }) => {
+    // 1. Unknown / invalid session token
+    const invalidSession = await request.get('/__local-test/sessions/unknown-invalid-token');
+    expect(invalidSession.status()).toBe(404);
+
+    // 2. Unknown / cross-access media request
+    const invalidMedia = await request.get(
+      `/__local-test/media/${tokenA}/cross-session-photo-id/card`,
+    );
+    expect(invalidMedia.status()).toBe(404);
+
+    // 3. Invalid variant request
+    const invalidVariant = await request.get(
+      `/__local-test/media/${tokenA}/ph_001/invalid-variant`,
+    );
+    expect(invalidVariant.status()).toBe(404);
+  });
+});

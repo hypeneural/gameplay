@@ -13,8 +13,11 @@ export function shouldUseLocalTestMedia(search: string): boolean {
  * before it reaches the game; original names and file system paths are not part
  * of this browser contract.
  */
-export async function fetchLocalTestSession(): Promise<Session> {
-  const response = await fetch('/__local-test/session', { cache: 'no-store' });
+export async function fetchLocalTestSession(token?: string): Promise<Session> {
+  const endpoint = token
+    ? `/__local-test/sessions/${encodeURIComponent(token)}`
+    : '/__local-test/session';
+  const response = await fetch(endpoint, { cache: 'no-store' });
   if (!response.ok) throw new Error('A sessão local de teste ainda não está preparada.');
   const value: unknown = await response.json();
   if (!isSession(value)) throw new Error('A sessão local de teste retornou um contrato inválido.');

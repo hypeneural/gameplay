@@ -1170,6 +1170,7 @@
 │   │   ├── magic-photo.spec.ts
 │   │   ├── rena-das-lembrancas-input.spec.ts
 │   │   ├── rena-das-lembrancas.spec.ts
+│   │   ├── session-gallery-multi.spec.ts
 │   │   └── session-gallery.spec.ts
 │   └── fixtures
 │       ├── session-12-mixed
@@ -1251,13 +1252,17 @@
 │   │   ├── package.json
 │   │   ├── src
 │   │   │   ├── galleryLab.ts
+│   │   │   ├── galleryLabMulti.ts
 │   │   │   ├── index.ts
 │   │   │   ├── inspect.ts
 │   │   │   ├── prepareLocal.ts
-│   │   │   └── recipe.ts
+│   │   │   ├── prepareMultiLocal.ts
+│   │   │   ├── recipe.ts
+│   │   │   └── sourceFilter.ts
 │   │   └── tests
 │   │       ├── inspect.test.ts
-│   │       └── media-pipeline.test.ts
+│   │       ├── media-pipeline.test.ts
+│   │       └── multi-client-pipeline.test.ts
 │   └── repo-map.mjs
 ├── tsconfig.base.json
 ├── tsconfig.json

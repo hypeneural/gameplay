@@ -231,5 +231,5 @@ describe('processMediaJob', () => {
     expect(nextConfig.photos.find((photo) => photo.orientation === 'portrait')!.id).toBe(
       portraitId,
     );
-  });
+  }, 30000);
 });

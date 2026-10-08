@@ -4,7 +4,7 @@ import { access, copyFile, mkdir, readFile, rename, rm, stat, writeFile } from '
 import { dirname, join, resolve } from 'node:path';
 import sharp, { type Sharp } from 'sharp';
 
-function toLongPath(p: string): string {
+export function toLongPath(p: string): string {
   if (process.platform === 'win32' && !p.startsWith('\\\\?\\')) {
     return `\\\\?\\${resolve(p)}`;
   }
@@ -324,7 +324,11 @@ async function ensureDerivatives(
   const stagingDirectory = `${derivedDirectory}.staging-${randomUUID()}`;
   await mkdir(toLongPath(stagingDirectory), { recursive: true });
   try {
-    const oriented = image.clone().autoOrient().toColourspace('srgb');
+    const oriented = image
+      .clone()
+      .autoOrient()
+      .withIccProfile('srgb', { attach: false })
+      .toColourspace('srgb');
     const generated = await Promise.all(
       mediaVariants.map(async ([variant, maxSize]) => {
         const output = await oriented
