@@ -10,8 +10,7 @@ export const GALLERY_LIGHTBOX_VARIANTS = [
   'game',
 ] as const satisfies readonly PhotoVariant[];
 
-export const GALLERY_FEED_SIZES =
-  '(max-width: 768px) calc(100vw - 24px), 704px';
+export const GALLERY_FEED_SIZES = '(max-width: 768px) calc(100vw - 24px), 704px';
 export const GALLERY_LIGHTBOX_SIZES = '100vw';
 
 export function nextGalleryVisibleCount(current: number, total: number): number {

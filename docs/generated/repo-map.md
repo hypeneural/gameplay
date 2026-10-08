@@ -71,37 +71,42 @@
 │       ├── assets
 │       │   └── christmas-shell
 │       │       ├── ASSET_PROVENANCE.md
+│       │       ├── GALLERY_PROVENANCE.md
 │       │       └── manifest.json
 │       ├── index.html
 │       ├── package.json
 │       ├── public
 │       │   ├── assets
 │       │   │   ├── christmas-shell
-│       │   │   │   └── audio
-│       │   │   │       ├── back-v1.m4a
-│       │   │   │       ├── back-v1.mp3
-│       │   │   │       ├── bells-a-v1.m4a
-│       │   │   │       ├── bells-a-v1.mp3
-│       │   │   │       ├── bells-b-v1.m4a
-│       │   │   │       ├── bells-b-v1.mp3
-│       │   │   │       ├── magic-v1.m4a
-│       │   │   │       ├── magic-v1.mp3
-│       │   │   │       ├── open-v1.m4a
-│       │   │   │       ├── open-v1.mp3
-│       │   │   │       ├── paper-a-v1.m4a
-│       │   │   │       ├── paper-a-v1.mp3
-│       │   │   │       ├── paper-b-v1.m4a
-│       │   │   │       ├── paper-b-v1.mp3
-│       │   │   │       ├── reveal-v1.m4a
-│       │   │   │       ├── reveal-v1.mp3
-│       │   │   │       ├── snow-v1.m4a
-│       │   │   │       ├── snow-v1.mp3
-│       │   │   │       ├── start-v1.m4a
-│       │   │   │       ├── start-v1.mp3
-│       │   │   │       ├── tap-v1.m4a
-│       │   │   │       ├── tap-v1.mp3
-│       │   │   │       ├── toggle-v1.m4a
-│       │   │   │       └── toggle-v1.mp3
+│       │   │   │   ├── audio
+│       │   │   │   │   ├── back-v1.m4a
+│       │   │   │   │   ├── back-v1.mp3
+│       │   │   │   │   ├── bells-a-v1.m4a
+│       │   │   │   │   ├── bells-a-v1.mp3
+│       │   │   │   │   ├── bells-b-v1.m4a
+│       │   │   │   │   ├── bells-b-v1.mp3
+│       │   │   │   │   ├── magic-v1.m4a
+│       │   │   │   │   ├── magic-v1.mp3
+│       │   │   │   │   ├── open-v1.m4a
+│       │   │   │   │   ├── open-v1.mp3
+│       │   │   │   │   ├── paper-a-v1.m4a
+│       │   │   │   │   ├── paper-a-v1.mp3
+│       │   │   │   │   ├── paper-b-v1.m4a
+│       │   │   │   │   ├── paper-b-v1.mp3
+│       │   │   │   │   ├── reveal-v1.m4a
+│       │   │   │   │   ├── reveal-v1.mp3
+│       │   │   │   │   ├── snow-v1.m4a
+│       │   │   │   │   ├── snow-v1.mp3
+│       │   │   │   │   ├── start-v1.m4a
+│       │   │   │   │   ├── start-v1.mp3
+│       │   │   │   │   ├── tap-v1.m4a
+│       │   │   │   │   ├── tap-v1.mp3
+│       │   │   │   │   ├── toggle-v1.m4a
+│       │   │   │   │   └── toggle-v1.mp3
+│       │   │   │   └── gallery
+│       │   │   │       ├── gallery-evergreen-header-v1.svg
+│       │   │   │       ├── gallery-snowflake-seal-v1.svg
+│       │   │   │       └── gallery-starlight-footer-v1.svg
 │       │   │   ├── estilingue-das-lembrancas
 │       │   │   │   ├── art
 │       │   │   │   │   ├── alvo-bola-natal-v1.webp

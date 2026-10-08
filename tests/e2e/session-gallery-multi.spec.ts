@@ -136,7 +136,9 @@ test.describe('Multi-Client Gallery & Game Navigation Isolation', () => {
       'data-photo-id',
       `${tokenB}-photo-1`,
     );
-    await expect(page.locator('.gallery-card[data-photo-id^="token-cliente-a-test"]')).toHaveCount(0);
+    await expect(page.locator('.gallery-card[data-photo-id^="token-cliente-a-test"]')).toHaveCount(
+      0,
+    );
     // Lightbox must NOT be open on the new session
     await expect(page.locator('.gallery-lightbox')).toHaveCount(0);
 

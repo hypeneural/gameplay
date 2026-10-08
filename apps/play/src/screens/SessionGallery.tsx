@@ -20,6 +20,8 @@ interface SessionGalleryProps {
   selectedPhotoId: string;
   calm: boolean;
   lowQuality: boolean;
+  initialVisibleCount?: number;
+  onVisibleCountChange?(count: number): void;
   onSelectPhoto(photoId: string): void;
   onBack(): void;
   onPlayPhoto(photoId: string): void;
@@ -30,21 +32,35 @@ export function SessionGallery({
   selectedPhotoId,
   calm,
   lowQuality,
+  initialVisibleCount,
+  onVisibleCountChange,
   onSelectPhoto,
   onBack,
   onPlayPhoto,
 }: SessionGalleryProps): React.JSX.Element {
   const [visibleCount, setVisibleCount] = useState(() =>
-    Math.min(GALLERY_INITIAL_PHOTO_COUNT, session.photos.length),
+    Math.min(
+      session.photos.length,
+      Math.max(GALLERY_INITIAL_PHOTO_COUNT, initialVisibleCount ?? GALLERY_INITIAL_PHOTO_COUNT),
+    ),
   );
   const [lightboxIndex, setLightboxIndex] = useState<number>();
   const [shareStatus, setShareStatus] = useState('');
   const sentinelRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    setVisibleCount(Math.min(GALLERY_INITIAL_PHOTO_COUNT, session.photos.length));
+    setVisibleCount(
+      Math.min(
+        session.photos.length,
+        Math.max(GALLERY_INITIAL_PHOTO_COUNT, initialVisibleCount ?? GALLERY_INITIAL_PHOTO_COUNT),
+      ),
+    );
     setLightboxIndex(undefined);
-  }, [session.id, session.photos.length]);
+  }, [session.id, session.photos.length, initialVisibleCount]);
+
+  useEffect(() => {
+    onVisibleCountChange?.(visibleCount);
+  }, [visibleCount, onVisibleCountChange]);
 
   useEffect(() => {
     const sentinel = sentinelRef.current;
@@ -103,7 +119,7 @@ export function SessionGallery({
           <span aria-hidden="true">‹</span>
         </button>
         <div className="gallery-title-group">
-          <p className="eyebrow">SEU NATAL EM FAMÍLIA</p>
+          <p className="eyebrow">ESTÚDIO EVYDÊNCIA • NATAL EM FAMÍLIA</p>
           <h1>Álbum de Natal</h1>
         </div>
         <button

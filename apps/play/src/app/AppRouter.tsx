@@ -76,7 +76,7 @@ export function AppRouter(): React.JSX.Element {
   const [route, setRoute] = useState<AppRoute>(initialRoute);
   const [fixtureCount, setFixtureCount] = useState<FixtureCount>(12);
   const [selectedPhotoId, setSelectedPhotoId] = useState('ph_001');
-  const [localSession, setLocalSession] = useState<{ token?: string; value: Session }>();
+  const [localSession, setLocalSession] = useState<{ token: string; value: Session }>();
   const [localSessionError, setLocalSessionError] = useState<string>();
   const [playing, setPlaying] = useState(false);
   const [soundEnabled, setSoundEnabled] = useState(true);
@@ -94,7 +94,10 @@ export function AppRouter(): React.JSX.Element {
   const [exitRequest, setExitRequest] = useState(0);
 
   const currentToken = 'token' in route ? route.token : undefined;
-  const validLocalSession = localSession?.token === currentToken ? localSession.value : undefined;
+  const validLocalSession =
+    localSession && (currentToken ? localSession.token === currentToken : localSession.token === '')
+      ? localSession.value
+      : undefined;
   const fixtureSession = useMemo(() => createFixtureSession(fixtureCount), [fixtureCount]);
   const session = usesLocalTestMedia && validLocalSession ? validLocalSession : fixtureSession;
   const selectedPhoto =
@@ -181,7 +184,7 @@ export function AppRouter(): React.JSX.Element {
     void fetchLocalTestSession(currentToken).then(
       (nextSession) => {
         if (active) {
-          setLocalSession({ token: currentToken, value: nextSession });
+          setLocalSession({ token: currentToken ?? '', value: nextSession });
           if (nextSession.photos.length > 0) {
             setSelectedPhotoId(nextSession.photos[0]!.id);
           }
@@ -414,7 +417,7 @@ export function AppRouter(): React.JSX.Element {
           lowQuality={quality === 'LOW'}
           onSelectPhoto={setSelectedPhotoId}
           initialVisibleCount={galleryVisibleCountRef.current}
-          onVisibleCountChange={(count) => {
+          onVisibleCountChange={(count: number) => {
             galleryVisibleCountRef.current = count;
           }}
           onBack={() => goToSession(route.token)}
