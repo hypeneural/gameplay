@@ -422,6 +422,8 @@
 │       │   │   ├── GamePreview.tsx
 │       │   │   ├── GameScreen.tsx
 │       │   │   ├── Hub.tsx
+│       │   │   ├── hubGameOrder.test.ts
+│       │   │   ├── hubGameOrder.ts
 │       │   │   ├── LoadingState.tsx
 │       │   │   ├── PerformanceLab.tsx
 │       │   │   ├── SessionGallery.tsx

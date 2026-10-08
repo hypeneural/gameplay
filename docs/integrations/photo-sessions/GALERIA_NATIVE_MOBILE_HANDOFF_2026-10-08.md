@@ -135,3 +135,11 @@ Windows / pasta tratada (somente arquivos elegíveis na raiz, sem varredura recu
 - `pnpm check`: 0 violações depcruise, 0 knip deadcode, prettier e repo-map limpos.
 - `pnpm build`: 100% de compilação sem warnings ou erros.
 - `deploy/readiness.json`: `pilotReady=false`, `customerDataAllowed=false` mantidos. Zero dados confidenciais ou fotos de clientes no Git.
+
+## Adendo V5 (08/10/2026): rodapé fixo de marca e ordem canônica do Hub
+
+- A Galeria usa dock fixo com coração e assinatura "por EVYDÊNCIA" + CTA HTTPS estático para `https://fotosdenatal.com/`. O dock respeita a safe-area inferior e reserva espaço em `christmas-gallery-shell`, sem encobrir a última foto. Link externo tem `target=_blank` e `rel=noopener noreferrer` para não transmitir a URL da sessão ao site externo pelo cabeçalho Referer.
+- O Hub agora ordena cinco jogos em `screens/hubGameOrder.ts`: `puzzle-swap`, `memory`, `tic-tac-toe` (Trinca de Natal), `expresso-das-fotos`, `mosaico-em-queda`. Demais seguem estáveis. Não alterar `gameRegistry` nem as restrições `minPhotos`.
+- O topo da Galeria foi simplificado: rótulo "Suas fotos", hero compacto com uma única instrução. Cada foto perdeu a faixa inferior/selo repetidos: moldura champagne discreta e proporção natural intacta.
+- A guirlanda V4 **continua pixelizada** na captura porque o arquivo fotorealista mede só 392 x 77px (refletido em manifest); a correção profissional requer gerar arte independente com maior resolução e renegociar o limite visual de 36KB por benchmark, não interpolar artificialmente. Não marcar como visualmente homologada sem screenshot novo em iPhone/Android.
+- Testar com `pnpm check`, `pnpm test:e2e:gallery`, `pnpm test:e2e:gallery-multi`, `pnpm asset:validate:all` e dispositivos reais. E2E cobre ordem e footer em 4 viewports.

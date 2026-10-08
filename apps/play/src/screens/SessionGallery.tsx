@@ -124,7 +124,7 @@ export function SessionGallery({
         >
           <ShellIcon name="back" />
         </button>
-        <span className="gallery-topbar-label">Álbum de Natal</span>
+        <span className="gallery-topbar-label">Suas fotos</span>
         <button
           className="gallery-icon-button"
           type="button"
@@ -150,8 +150,7 @@ export function SessionGallery({
           </div>
           <h1 id="gallery-hero-title">Seu Álbum de Natal</h1>
           <p className="gallery-hero-subtitle">Reviva cada lembrança com carinho</p>
-          <div className="gallery-hero-divider" aria-hidden="true" />
-          <p className="gallery-hero-instruction">Toque para ampliar ou brincar com sua foto</p>
+          <p className="gallery-hero-instruction">Toque em uma foto para ver de perto</p>
         </div>
       </section>
 
@@ -185,9 +184,6 @@ export function SessionGallery({
                 srcSetVariants={GALLERY_FEED_VARIANTS}
                 alt={`Lembrança de Natal ${index + 1}`}
               />
-            </span>
-            <span className="gallery-card-mark" aria-hidden="true">
-              ✦
             </span>
           </button>
         ))}
@@ -233,6 +229,30 @@ export function SessionGallery({
           <p className="gallery-finale-signature">Com carinho, Estúdio Evydência</p>
         </footer>
       ) : null}
+
+      <footer className="gallery-brand-dock" data-testid="gallery-brand-dock">
+        <a
+          className="gallery-brand-link"
+          href="https://fotosdenatal.com/"
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Conheça o Natal do Estúdio Evydência em fotosdenatal.com (abre em nova aba)"
+          onClick={() => playInterfaceTap('open')}
+        >
+          <span className="gallery-brand-heart" aria-hidden="true">
+            <ShellIcon name="heart" />
+          </span>
+          <span className="gallery-brand-signature">
+            <small>FEITO COM CARINHO</small>
+            <strong>por EVYDÊNCIA</strong>
+          </span>
+          <span className="gallery-brand-destination">
+            <small>CONHEÇA NOSSO NATAL</small>
+            <strong>fotosdenatal.com</strong>
+          </span>
+          <ShellIcon name="next" />
+        </a>
+      </footer>
 
       {typeof lightboxIndex === 'number' ? (
         <Suspense

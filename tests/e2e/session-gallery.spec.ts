@@ -109,3 +109,44 @@ test('restores gallery scroll after a later batch and keeps the natural image sh
     .poll(async () => Math.abs((await page.evaluate(() => window.scrollY)) - before))
     .toBeLessThan(24);
 });
+
+test('gallery fixed Evydência CTA stays visible and Hub follows the commercial game order', async ({
+  page,
+}) => {
+  await page.goto('/s/local-demo-token');
+  const gameButtons = page.locator('.games-section .game-card-button');
+  const firstFive = await gameButtons.evaluateAll((nodes) =>
+    nodes.slice(0, 5).map((node) => node.getAttribute('data-testid')),
+  );
+  expect(firstFive).toEqual([
+    'open-game-puzzle-swap',
+    'open-game-memory',
+    'open-game-tic-tac-toe',
+    'open-game-expresso-das-fotos',
+    'open-game-mosaico-em-queda',
+  ]);
+
+  await page.getByTestId('open-game-tic-tac-toe').click();
+  await expect(page).toHaveURL(/\/s\/local-demo-token\/game\/tic-tac-toe$/);
+  await page.goBack();
+
+  await page.getByTestId('open-full-gallery').click();
+  await expect(page.getByTestId('session-gallery')).toBeVisible();
+  const dock = page.getByTestId('gallery-brand-dock');
+  const cta = dock.getByRole('link', { name: /fotosdenatal\.com/ });
+  await expect(dock).toBeVisible();
+  await expect(cta).toHaveAttribute('href', 'https://fotosdenatal.com/');
+  await expect(cta).toHaveAttribute('target', '_blank');
+  await expect(cta).toHaveAttribute('rel', /noreferrer/);
+  expect(await dock.evaluate((element) => getComputedStyle(element).position)).toBe('fixed');
+
+  const rect = await dock.boundingBox();
+  expect(rect).not.toBeNull();
+  expect(rect!.x).toBeGreaterThanOrEqual(0);
+  expect(rect!.x + rect!.width).toBeLessThanOrEqual(page.viewportSize()!.width);
+  expect(rect!.y + rect!.height).toBeLessThanOrEqual(page.viewportSize()!.height);
+
+  await page.getByTestId('gallery-sentinel').scrollIntoViewIfNeeded();
+  await expect(dock).toBeVisible();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+});
