@@ -81,7 +81,7 @@ test.describe('Multi-Client Gallery & Game Navigation Isolation', () => {
   test('selects photo in Lightbox, chooses game on Hub and returns to the Gallery', async ({
     page,
   }) => {
-    await page.goto("/s/token-cliente-a-test?test-media=local");
+    await page.goto('/s/token-cliente-a-test?test-media=local');
     await expect(page.getByTestId('open-full-gallery')).toBeVisible();
 
     await page.getByTestId('open-full-gallery').click();

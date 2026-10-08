@@ -52,7 +52,10 @@ test('gallery lightbox selects photo, returns to Hub, and keeps the chosen memor
 
   await page.getByRole('button', { name: /Jogar com esta foto/ }).click();
   await expect(page).toHaveURL(/\/s\/local-demo-token$/);
-  await expect(page.getByTestId('photo-selection')).toHaveAttribute('data-selected-photo-id', 'ph_006');
+  await expect(page.getByTestId('photo-selection')).toHaveAttribute(
+    'data-selected-photo-id',
+    'ph_006',
+  );
   await expect(page.locator('canvas')).toHaveCount(0);
 
   // A game is chosen separately after returning to the Hub.
@@ -95,7 +98,10 @@ test('restores gallery scroll after a later batch and keeps the natural image sh
 
   await page.getByRole('button', { name: /Jogar com esta foto/ }).click();
   await expect(page).toHaveURL(/\/s\/local-demo-token$/);
-  await expect(page.getByTestId('photo-selection')).toHaveAttribute('data-selected-photo-id', 'ph_011');
+  await expect(page.getByTestId('photo-selection')).toHaveAttribute(
+    'data-selected-photo-id',
+    'ph_011',
+  );
   await page.getByTestId('open-full-gallery').click();
   await expect(page.locator('.gallery-card')).toHaveCount(12);
   await expect(page.locator('.gallery-card').nth(10)).toHaveAttribute('aria-current', 'true');

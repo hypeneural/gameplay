@@ -1449,10 +1449,7 @@
       },
       "processing": {
         "recipe": "gallery-ai-evergreen-v1-webp-quality30",
-        "tools": [
-          "OpenAI image generation",
-          "Pillow (crop + WebP)"
-        ]
+        "tools": ["OpenAI image generation", "Pillow (crop + WebP)"]
       },
       "runtime": {
         "file": "apps/play/public/assets/christmas-shell/gallery/gallery-ai-evergreen-v1.webp",
