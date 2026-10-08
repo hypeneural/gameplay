@@ -2,6 +2,7 @@ import { Suspense, lazy, useEffect, useLayoutEffect, useRef, useState } from 're
 import type { Session } from '@christmas-games/platform';
 import { playInterfaceTap } from '../audio/playInterfaceTap.js';
 import { PhotoPrint } from '../components/PhotoPrint.js';
+import { ShellIcon } from '../components/ShellIcon.js';
 import {
   GALLERY_AUTOLOAD_ROOT_MARGIN,
   GALLERY_FEED_SIZES,
@@ -121,7 +122,7 @@ export function SessionGallery({
             onBack();
           }}
         >
-          <span aria-hidden="true">‹</span>
+          <ShellIcon name="back" />
         </button>
         <span className="gallery-topbar-label">Álbum de Natal</span>
         <button
@@ -130,7 +131,7 @@ export function SessionGallery({
           aria-label="Compartilhar álbum"
           onClick={() => void share()}
         >
-          <span aria-hidden="true">↗</span>
+          <ShellIcon name="share" />
         </button>
       </header>
 

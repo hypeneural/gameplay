@@ -54,6 +54,7 @@ export function SessionPhotoAlbum({
     <section
       className={`session-album ${compact ? 'session-album--compact' : ''}`}
       aria-label="Sua foto escolhida"
+      data-selected-photo-id={photo.id}
       data-testid="photo-selection"
     >
       {!compact ? (

@@ -99,15 +99,341 @@ test.describe('Multi-Client Gallery & Game Navigation Isolation', () => {
     await expect(page.locator('.gallery-lightbox')).toBeVisible();
     await expect(page.locator('canvas')).toHaveCount(0);
 
-    // 4. Click "Jogar com esta foto" -> Navigates to Puzzle-Swap
-    const playButton = page.getByRole('button', { name: 'Jogar com esta foto' });
+    // 4. Choosing this memory returns to the Hub, never silently starts Puzzle.
+    const playButton = page.getByRole('button', { name: /Jogar com esta foto/ });
     await expect(playButton).toBeVisible();
     await playButton.click();
 
-    await expect(page).toHaveURL(new RegExp(`/s/${tokenA}/game/puzzle-swap\\?test-media=local$`));
+    await expect(page).toHaveURL(new RegExp(`/s/${tokenA}\\?test-media=localimport { expect, test } from '@playwright/test';
 
-    // 5. Return to Gallery from Game Cover
-    await page.getByRole('button', { name: 'Voltar aos jogos' }).click();
+test.describe('Multi-Client Gallery & Game Navigation Isolation', () => {
+  const tokenA = 'token-cliente-a-test';
+  const tokenB = 'token-cliente-b-test';
+
+  test.beforeEach(async ({ page }) => {
+    await page.route('**/__local-test/sessions/*', async (route) => {
+      const token = new URL(route.request().url()).pathname.split('/').at(-1);
+      if (token !== tokenA && token !== tokenB) {
+        await route.fulfill({ status: 404, body: 'Not found' });
+        return;
+      }
+      const photos = Array.from({ length: 12 }, (_, index) => {
+        const portrait = index % 2 === 0;
+        const url = portrait ? '/fixtures/portrait.svg' : '/fixtures/landscape.svg';
+        const width = portrait ? 500 : 700;
+        const height = portrait ? 700 : 500;
+        return {
+          id: `${token}-photo-${index + 1}`,
+          width,
+          height,
+          aspectRatio: width / height,
+          orientation: portrait ? 'portrait' : 'landscape',
+          variants: { thumb: url, card: url, game: url },
+        };
+      });
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          id: `session-${token}`,
+          publicToken: token,
+          displayName: 'Sessão sintética',
+          photos,
+        }),
+      });
+    });
+  });
+
+  test('maintains strict engine-free mobile gallery and responsive layout across viewports', async ({
+    page,
+  }) => {
+    const requestedUrls: string[] = [];
+    page.on('request', (req) => requestedUrls.push(req.url()));
+
+    // Navigate to Client A gallery
+    await page.goto(`/s/${tokenA}/fotos?test-media=local`);
+
+    await expect(page.getByTestId('session-gallery')).toBeVisible();
+    await expect(page.getByRole('heading', { name: /Álbum de Natal/i })).toBeVisible();
+
+    // 1. Zero Canvas and Zero Phaser before entering gameplay
+    await expect(page.locator('canvas')).toHaveCount(0);
+    expect(
+      requestedUrls.some((url) => /node_modules\/\.vite\/deps\/phaser(?:\.js|_)/i.test(url)),
+    ).toBe(false);
+
+    // 2. No horizontal viewport overflow
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
+      true,
+    );
+
+    // 3. Responsive column policy check
+    const columnCount = await page
+      .locator('.gallery-grid')
+      .evaluate(
+        (element) =>
+          getComputedStyle(element).gridTemplateColumns.split(' ').filter(Boolean).length,
+      );
+    expect(columnCount).toBe(1);
+
+    // First photo must belong to client A, not a global fixture.
+    await expect(page.locator('.gallery-card')).toHaveCount(8);
+    await expect(page.locator('.gallery-card').first()).toHaveAttribute(
+      'data-photo-id',
+      `${tokenA}-photo-1`,
+    );
+  });
+
+  test('completes full flow: Hub -> Gallery -> Lightbox -> Puzzle -> Return with scroll & photo preserved', async ({
+    page,
+  }) => {
+    // 1. Client A: Start at Hub
+    await page.goto(`/s/${tokenA}?test-media=local`);
+    await expect(page.getByTestId('open-full-gallery')).toBeVisible();
+
+    // 2. Open Full Gallery
+    await page.getByTestId('open-full-gallery').click();
+    await expect(page).toHaveURL(new RegExp(`/s/${tokenA}/fotos\\?test-media=local$`));
+    await expect(page.locator('.gallery-card')).toHaveCount(8);
+
+    // 3. Select 6th photo, record scroll and open Lightbox
+    const targetCard = page.locator('.gallery-card').nth(5);
+    await targetCard.scrollIntoViewIfNeeded();
+    const scrollBefore = await page.evaluate(() => window.scrollY);
+    await targetCard.click();
+
+    await expect(page.locator('.gallery-lightbox')).toBeVisible();
+    await expect(page.locator('canvas')).toHaveCount(0);
+
+    // 4. Choosing this memory returns to the Hub, never silently starts Puzzle.
+    const playButton = page.getByRole('button', { name: /Jogar com esta foto/ });
+    await expect(playButton).toBeVisible();
+    await playButton.click();
+
+));
+    await expect(page.getByTestId('photo-selection')).toHaveAttribute(
+      'data-selected-photo-id',
+      `${tokenA}-photo-6`,
+    );
+
+    // 5. Explicitly choose Puzzle from the Hub, then return to gallery
+    await page.getByTestId('open-game-puzzle-swap').click();
+    await expect(page).toHaveURL(new RegExp(`/s/${tokenA}/game/puzzle-swap\\?test-media=localimport { expect, test } from '@playwright/test';
+
+test.describe('Multi-Client Gallery & Game Navigation Isolation', () => {
+  const tokenA = 'token-cliente-a-test';
+  const tokenB = 'token-cliente-b-test';
+
+  test.beforeEach(async ({ page }) => {
+    await page.route('**/__local-test/sessions/*', async (route) => {
+      const token = new URL(route.request().url()).pathname.split('/').at(-1);
+      if (token !== tokenA && token !== tokenB) {
+        await route.fulfill({ status: 404, body: 'Not found' });
+        return;
+      }
+      const photos = Array.from({ length: 12 }, (_, index) => {
+        const portrait = index % 2 === 0;
+        const url = portrait ? '/fixtures/portrait.svg' : '/fixtures/landscape.svg';
+        const width = portrait ? 500 : 700;
+        const height = portrait ? 700 : 500;
+        return {
+          id: `${token}-photo-${index + 1}`,
+          width,
+          height,
+          aspectRatio: width / height,
+          orientation: portrait ? 'portrait' : 'landscape',
+          variants: { thumb: url, card: url, game: url },
+        };
+      });
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          id: `session-${token}`,
+          publicToken: token,
+          displayName: 'Sessão sintética',
+          photos,
+        }),
+      });
+    });
+  });
+
+  test('maintains strict engine-free mobile gallery and responsive layout across viewports', async ({
+    page,
+  }) => {
+    const requestedUrls: string[] = [];
+    page.on('request', (req) => requestedUrls.push(req.url()));
+
+    // Navigate to Client A gallery
+    await page.goto(`/s/${tokenA}/fotos?test-media=local`);
+
+    await expect(page.getByTestId('session-gallery')).toBeVisible();
+    await expect(page.getByRole('heading', { name: /Álbum de Natal/i })).toBeVisible();
+
+    // 1. Zero Canvas and Zero Phaser before entering gameplay
+    await expect(page.locator('canvas')).toHaveCount(0);
+    expect(
+      requestedUrls.some((url) => /node_modules\/\.vite\/deps\/phaser(?:\.js|_)/i.test(url)),
+    ).toBe(false);
+
+    // 2. No horizontal viewport overflow
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
+      true,
+    );
+
+    // 3. Responsive column policy check
+    const columnCount = await page
+      .locator('.gallery-grid')
+      .evaluate(
+        (element) =>
+          getComputedStyle(element).gridTemplateColumns.split(' ').filter(Boolean).length,
+      );
+    expect(columnCount).toBe(1);
+
+    // First photo must belong to client A, not a global fixture.
+    await expect(page.locator('.gallery-card')).toHaveCount(8);
+    await expect(page.locator('.gallery-card').first()).toHaveAttribute(
+      'data-photo-id',
+      `${tokenA}-photo-1`,
+    );
+  });
+
+  test('completes full flow: Hub -> Gallery -> Lightbox -> Puzzle -> Return with scroll & photo preserved', async ({
+    page,
+  }) => {
+    // 1. Client A: Start at Hub
+    await page.goto(`/s/${tokenA}?test-media=local`);
+    await expect(page.getByTestId('open-full-gallery')).toBeVisible();
+
+    // 2. Open Full Gallery
+    await page.getByTestId('open-full-gallery').click();
+    await expect(page).toHaveURL(new RegExp(`/s/${tokenA}/fotos\\?test-media=local$`));
+    await expect(page.locator('.gallery-card')).toHaveCount(8);
+
+    // 3. Select 6th photo, record scroll and open Lightbox
+    const targetCard = page.locator('.gallery-card').nth(5);
+    await targetCard.scrollIntoViewIfNeeded();
+    const scrollBefore = await page.evaluate(() => window.scrollY);
+    await targetCard.click();
+
+    await expect(page.locator('.gallery-lightbox')).toBeVisible();
+    await expect(page.locator('canvas')).toHaveCount(0);
+
+    // 4. Choosing this memory returns to the Hub, never silently starts Puzzle.
+    const playButton = page.getByRole('button', { name: /Jogar com esta foto/ });
+    await expect(playButton).toBeVisible();
+    await playButton.click();
+
+));
+    await page.goBack();
+    await expect(page).toHaveURL(new RegExp(`/s/${tokenA}\\?test-media=localimport { expect, test } from '@playwright/test';
+
+test.describe('Multi-Client Gallery & Game Navigation Isolation', () => {
+  const tokenA = 'token-cliente-a-test';
+  const tokenB = 'token-cliente-b-test';
+
+  test.beforeEach(async ({ page }) => {
+    await page.route('**/__local-test/sessions/*', async (route) => {
+      const token = new URL(route.request().url()).pathname.split('/').at(-1);
+      if (token !== tokenA && token !== tokenB) {
+        await route.fulfill({ status: 404, body: 'Not found' });
+        return;
+      }
+      const photos = Array.from({ length: 12 }, (_, index) => {
+        const portrait = index % 2 === 0;
+        const url = portrait ? '/fixtures/portrait.svg' : '/fixtures/landscape.svg';
+        const width = portrait ? 500 : 700;
+        const height = portrait ? 700 : 500;
+        return {
+          id: `${token}-photo-${index + 1}`,
+          width,
+          height,
+          aspectRatio: width / height,
+          orientation: portrait ? 'portrait' : 'landscape',
+          variants: { thumb: url, card: url, game: url },
+        };
+      });
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          id: `session-${token}`,
+          publicToken: token,
+          displayName: 'Sessão sintética',
+          photos,
+        }),
+      });
+    });
+  });
+
+  test('maintains strict engine-free mobile gallery and responsive layout across viewports', async ({
+    page,
+  }) => {
+    const requestedUrls: string[] = [];
+    page.on('request', (req) => requestedUrls.push(req.url()));
+
+    // Navigate to Client A gallery
+    await page.goto(`/s/${tokenA}/fotos?test-media=local`);
+
+    await expect(page.getByTestId('session-gallery')).toBeVisible();
+    await expect(page.getByRole('heading', { name: /Álbum de Natal/i })).toBeVisible();
+
+    // 1. Zero Canvas and Zero Phaser before entering gameplay
+    await expect(page.locator('canvas')).toHaveCount(0);
+    expect(
+      requestedUrls.some((url) => /node_modules\/\.vite\/deps\/phaser(?:\.js|_)/i.test(url)),
+    ).toBe(false);
+
+    // 2. No horizontal viewport overflow
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
+      true,
+    );
+
+    // 3. Responsive column policy check
+    const columnCount = await page
+      .locator('.gallery-grid')
+      .evaluate(
+        (element) =>
+          getComputedStyle(element).gridTemplateColumns.split(' ').filter(Boolean).length,
+      );
+    expect(columnCount).toBe(1);
+
+    // First photo must belong to client A, not a global fixture.
+    await expect(page.locator('.gallery-card')).toHaveCount(8);
+    await expect(page.locator('.gallery-card').first()).toHaveAttribute(
+      'data-photo-id',
+      `${tokenA}-photo-1`,
+    );
+  });
+
+  test('completes full flow: Hub -> Gallery -> Lightbox -> Puzzle -> Return with scroll & photo preserved', async ({
+    page,
+  }) => {
+    // 1. Client A: Start at Hub
+    await page.goto(`/s/${tokenA}?test-media=local`);
+    await expect(page.getByTestId('open-full-gallery')).toBeVisible();
+
+    // 2. Open Full Gallery
+    await page.getByTestId('open-full-gallery').click();
+    await expect(page).toHaveURL(new RegExp(`/s/${tokenA}/fotos\\?test-media=local$`));
+    await expect(page.locator('.gallery-card')).toHaveCount(8);
+
+    // 3. Select 6th photo, record scroll and open Lightbox
+    const targetCard = page.locator('.gallery-card').nth(5);
+    await targetCard.scrollIntoViewIfNeeded();
+    const scrollBefore = await page.evaluate(() => window.scrollY);
+    await targetCard.click();
+
+    await expect(page.locator('.gallery-lightbox')).toBeVisible();
+    await expect(page.locator('canvas')).toHaveCount(0);
+
+    // 4. Choosing this memory returns to the Hub, never silently starts Puzzle.
+    const playButton = page.getByRole('button', { name: /Jogar com esta foto/ });
+    await expect(playButton).toBeVisible();
+    await playButton.click();
+
+));
+    await page.getByTestId('open-full-gallery').click();
     await expect(page).toHaveURL(new RegExp(`/s/${tokenA}/fotos\\?test-media=local$`));
     await expect(page.getByTestId('session-gallery')).toBeVisible();
 

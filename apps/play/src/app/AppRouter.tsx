@@ -424,8 +424,12 @@ export function AppRouter(): React.JSX.Element {
           }}
           onBack={() => goToSession(route.token)}
           onPlayPhoto={(photoId) => {
+            // Selecting a memory does not choose a game. Return to the Hub with
+            // the photo selected so the family can choose any available game.
             setSelectedPhotoId(photoId);
-            openGame('puzzle-swap');
+            galleryScrollRef.current = window.scrollY;
+            hubScrollRef.current = 0;
+            writeRoute({ kind: 'session', token: route.token }, 'push');
           }}
         />
       </Suspense>

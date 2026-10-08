@@ -33,7 +33,7 @@ test('gallery is a bounded mobile album and stays engine-free before gameplay', 
   }
 });
 
-test('gallery lightbox stays DOM-only and returns from Puzzle to the same photo and scroll', async ({
+test('gallery lightbox selects photo, returns to Hub, and keeps the chosen memory', async ({
   page,
 }) => {
   await page.goto('/s/local-demo-token');
@@ -50,11 +50,17 @@ test('gallery lightbox stays DOM-only and returns from Puzzle to the same photo 
   await expect(page.locator('canvas')).toHaveCount(0);
   await expect(page.getByRole('button', { name: 'Jogar com esta foto' })).toBeVisible();
 
-  await page.getByRole('button', { name: 'Jogar com esta foto' }).click();
-  await expect(page).toHaveURL(/\/s\/local-demo-token\/game\/puzzle-swap$/);
+  await page.getByRole('button', { name: /Jogar com esta foto/ }).click();
+  await expect(page).toHaveURL(/\/s\/local-demo-token$/);
+  await expect(page.getByTestId('photo-selection')).toHaveAttribute('data-selected-photo-id', 'ph_006');
   await expect(page.locator('canvas')).toHaveCount(0);
 
-  await page.getByRole('button', { name: 'Voltar aos jogos' }).click();
+  // A game is chosen separately after returning to the Hub.
+  await page.getByTestId('open-game-puzzle-swap').click();
+  await expect(page).toHaveURL(/\/s\/local-demo-token\/game\/puzzle-swap$/);
+  await page.goBack();
+  await expect(page).toHaveURL(/\/s\/local-demo-token$/);
+  await page.getByTestId('open-full-gallery').click();
   await expect(page).toHaveURL(/\/s\/local-demo-token\/fotos$/);
   await expect(page.getByTestId('session-gallery')).toBeVisible();
   await expect(page.locator('.gallery-card').nth(5)).toHaveAttribute('aria-current', 'true');
@@ -87,9 +93,10 @@ test('restores gallery scroll after a later batch and keeps the natural image sh
   await target.click();
   await expect(page.locator('.gallery-lightbox')).toBeVisible();
 
-  await page.getByRole('button', { name: 'Jogar com esta foto' }).click();
-  await expect(page).toHaveURL(/\/s\/local-demo-token\/game\/puzzle-swap$/);
-  await page.getByRole('button', { name: 'Voltar aos jogos' }).click();
+  await page.getByRole('button', { name: /Jogar com esta foto/ }).click();
+  await expect(page).toHaveURL(/\/s\/local-demo-token$/);
+  await expect(page.getByTestId('photo-selection')).toHaveAttribute('data-selected-photo-id', 'ph_011');
+  await page.getByTestId('open-full-gallery').click();
   await expect(page.locator('.gallery-card')).toHaveCount(12);
   await expect(page.locator('.gallery-card').nth(10)).toHaveAttribute('aria-current', 'true');
   await expect

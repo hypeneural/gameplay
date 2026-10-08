@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import type { Photo } from '@christmas-games/platform';
 import { playInterfaceTap } from '../audio/playInterfaceTap.js';
 import { PhotoPrint } from './PhotoPrint.js';
+import { ShellIcon } from './ShellIcon.js';
 import { GALLERY_LIGHTBOX_SIZES, GALLERY_LIGHTBOX_VARIANTS } from '../gallery/galleryPolicy.js';
 
 interface SessionGalleryLightboxProps {
@@ -77,7 +78,7 @@ export function SessionGalleryLightbox({
             onClose();
           }}
         >
-          <span aria-hidden="true">×</span>
+          <ShellIcon name="close" />
         </button>
         <span aria-live="polite">
           {index + 1} de {photos.length}
@@ -92,7 +93,7 @@ export function SessionGalleryLightbox({
             setZoomed((value) => !value);
           }}
         >
-          <span aria-hidden="true">{zoomed ? '−' : '+'}</span>
+          <ShellIcon name={zoomed ? 'zoom-out' : 'zoom-in'} />
         </button>
       </header>
 
@@ -136,7 +137,7 @@ export function SessionGalleryLightbox({
           disabled={photos.length < 2}
           onClick={() => move(-1)}
         >
-          ‹
+          <ShellIcon name="back" />
         </button>
         <button
           className="gallery-play-photo"
@@ -146,8 +147,12 @@ export function SessionGalleryLightbox({
             onPlayPhoto(photo.id);
           }}
         >
-          <span aria-hidden="true">✦</span>
-          Jogar com esta foto
+          <ShellIcon name="gamepad" />
+          <span className="gallery-play-photo-copy">
+            <strong>Jogar com esta foto</strong>
+            <small>Escolher o jogo no painel</small>
+          </span>
+          <ShellIcon name="next" />
         </button>
         <button
           className="gallery-lightbox-arrow"
@@ -156,7 +161,7 @@ export function SessionGalleryLightbox({
           disabled={photos.length < 2}
           onClick={() => move(1)}
         >
-          ›
+          <ShellIcon name="next" />
         </button>
       </footer>
     </dialog>
