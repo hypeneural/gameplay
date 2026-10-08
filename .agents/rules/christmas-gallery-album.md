@@ -18,19 +18,18 @@ Estas regras especializam a integração de photo sessions para o álbum fotogr�
 ## Modelo de galeria
 
 - No MVP, `photoSessionId` é também a identidade canônica de uma galeria pública.
-- O sistema deve suportar muitas galerias simultâneas e também mais de uma galeria vinculada ao mesmo pedido/CRM sem compartilhar revisão, token, seleção ou estado de browser.
-- Use `galleryKey` estável dentro do contexto CRM para diferenciar galerias do mesmo pedido. A constraint recomendada é `(crm_order_uuid, gallery_key)`, não `crm_order_uuid` isolado.
+- Uma galeria principal por pedido/CRM; todas as fotos pertencem a mesma lista vertical. Muitos pedidos podem coexistir, mas nao ha subgalerias por pedido.
+- Se um contrato legado exigir `galleryKey`, usar valor fixo `principal` ate auditoria de persistencia; nao introduzir mais de uma galeria por pedido.
 - Não crie uma segunda tabela/autoridade chamada `gallery` apenas para servir a UI. A galeria é uma projeção da sessão + revisão ativa.
 - Cada access token resolve uma única `photoSessionId`/galeria. Grants nunca autorizam "galeria atual" global.
 - Hub, Galeria Natalina e jogos usam a mesma `photoSessionId + activeRevisionId`.
 
 ## Layout mobile
 
-- Abaixo de 600 CSS px, use uma coluna e proporção natural: uma fotografia abaixo da outra.
+- Em todos os viewports, use uma coluna e proporcao natural: uma fotografia abaixo da outra.
 - Não force `aspect-ratio: 4/5` nem `object-fit: cover` no álbum.
 - A fotografia ocupa quase toda a largura útil, com margem pequena e estável.
-- Entre 600 e 899 CSS px, comece com duas colunas.
-- Em 900 CSS px ou mais, duas ou três colunas são aceitáveis conforme o container.
+- Em tablet e desktop, manter a coluna unica com largura maxima confortavel.
 - Browser Back/Forward e retorno do jogo devem restaurar a posição exata da galeria.
 - Preserve orientação natural de retratos e paisagens; `contain` é obrigatório em hero/lightbox.
 
@@ -103,3 +102,7 @@ Leia também:
 - `docs/integrations/photo-sessions/GALERIA_NATALINA_MULTI_GALERIAS.md`;
 - `docs/quality/GALLERY_MOBILE_PERFORMANCE_CONTRACT.md`;
 - `.agents/skills/christmas-gallery-album/SKILL.md`.
+
+## Decisao atual — 08/10/2026
+
+A galeria fotogra fica em coluna unica inclusive tablet/desktop. Nao instalar um motor de masonry apenas para trocar este layout. A proposta anterior de A2 no mesmo pedido fica substituida por varias revisoes da mesma galeria principal. As bibliotecas de zoom continuam candidatas de benchmark, nao requisito imediato.

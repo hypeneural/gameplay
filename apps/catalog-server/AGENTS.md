@@ -37,7 +37,7 @@ HTTP handlers do not contain SQL. Repository adapters do not render HTML. React 
 ## Session authority invariants
 
 - `photoSessionId` is the technical gallery identity.
-- `(crmOrderUuid, galleryKey)` is the business idempotency key when CRM identity exists.
+- One gallery per CRM order is the business rule; if a legacy interface needs `galleryKey`, keep it fixed to `principal`.
 - revisions are immutable after VALIDATED;
 - STAGED or FAILED revisions are never public;
 - `activeRevisionId` changes only with compare-and-swap using the expected previous value;
@@ -84,9 +84,9 @@ EvydFlow comes after the manual Node publisher is green.
 
 At minimum prove:
 
-- create/replay of the same `(crmOrderUuid, galleryKey)`;
-- A and A2 share an order but remain isolated;
-- B remains isolated;
+- create/replay of the same CRM order resolves the same photo session;
+- A and its next revision keep one album with atomic activation;
+- B (a different order) remains isolated;
 - photo from B cannot be resolved using A;
 - incomplete revision cannot activate;
 - activation fails on stale `expectedActiveRevisionId`;

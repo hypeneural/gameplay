@@ -76,7 +76,7 @@ export function AppRouter(): React.JSX.Element {
   const [route, setRoute] = useState<AppRoute>(initialRoute);
   const [fixtureCount, setFixtureCount] = useState<FixtureCount>(12);
   const [selectedPhotoId, setSelectedPhotoId] = useState('ph_001');
-  const [localSession, setLocalSession] = useState<Session>();
+  const [localSession, setLocalSession] = useState<{ token?: string; value: Session }>();
   const [localSessionError, setLocalSessionError] = useState<string>();
   const [playing, setPlaying] = useState(false);
   const [soundEnabled, setSoundEnabled] = useState(true);
@@ -84,6 +84,7 @@ export function AppRouter(): React.JSX.Element {
   const [calm, setCalm] = useState(false);
   const hubScrollRef = useRef(0);
   const galleryScrollRef = useRef(0);
+  const galleryVisibleCountRef = useRef(8);
   const [gameAttempt, setGameAttempt] = useState(0);
   const [difficulty, setDifficulty] = useState<GameDifficulty>('normal');
   const [gameView, setGameView] = useState(initialGameView);
@@ -92,8 +93,10 @@ export function AppRouter(): React.JSX.Element {
   const pendingNavigationRef = useRef<PendingNavigation | undefined>(undefined);
   const [exitRequest, setExitRequest] = useState(0);
 
+  const currentToken = 'token' in route ? route.token : undefined;
+  const validLocalSession = localSession?.token === currentToken ? localSession.value : undefined;
   const fixtureSession = useMemo(() => createFixtureSession(fixtureCount), [fixtureCount]);
-  const session = usesLocalTestMedia && localSession ? localSession : fixtureSession;
+  const session = usesLocalTestMedia && validLocalSession ? validLocalSession : fixtureSession;
   const selectedPhoto =
     session.photos.find((photo) => photo.id === selectedPhotoId) ?? session.photos[0]!;
   const context = useMemo<GameContextSeed>(
@@ -155,13 +158,14 @@ export function AppRouter(): React.JSX.Element {
     else if (route.kind === 'game-cover' && !playing) window.scrollTo(0, 0);
   }, [route, playing]);
 
-  const currentToken = 'token' in route ? route.token : undefined;
   const previousTokenRef = useRef(currentToken);
 
   useEffect(() => {
     if (currentToken && previousTokenRef.current && previousTokenRef.current !== currentToken) {
       hubScrollRef.current = 0;
       galleryScrollRef.current = 0;
+      galleryVisibleCountRef.current = 8;
+      setSelectedPhotoId('');
       setPlaying(false);
       setGameAttempt(0);
       setGameView(initialGameView);
@@ -177,11 +181,8 @@ export function AppRouter(): React.JSX.Element {
     void fetchLocalTestSession(currentToken).then(
       (nextSession) => {
         if (active) {
-          setLocalSession(nextSession);
-          if (
-            nextSession.photos.length > 0 &&
-            !nextSession.photos.some((photo) => photo.id === selectedPhotoId)
-          ) {
+          setLocalSession({ token: currentToken, value: nextSession });
+          if (nextSession.photos.length > 0) {
             setSelectedPhotoId(nextSession.photos[0]!.id);
           }
         }
@@ -385,7 +386,7 @@ export function AppRouter(): React.JSX.Element {
     );
   }
 
-  if (usesLocalTestMedia && !localSession) {
+  if (usesLocalTestMedia && !validLocalSession) {
     return (
       <main className="shell unavailable-game" role="status">
         <p className="eyebrow">TESTE LOCAL</p>
@@ -412,6 +413,10 @@ export function AppRouter(): React.JSX.Element {
           calm={calm}
           lowQuality={quality === 'LOW'}
           onSelectPhoto={setSelectedPhotoId}
+          initialVisibleCount={galleryVisibleCountRef.current}
+          onVisibleCountChange={(count) => {
+            galleryVisibleCountRef.current = count;
+          }}
           onBack={() => goToSession(route.token)}
           onPlayPhoto={(photoId) => {
             setSelectedPhotoId(photoId);

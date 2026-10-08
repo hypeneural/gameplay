@@ -85,3 +85,7 @@ Filtro reproduzível: `[0:a]aformat=sample_rates=44100:channel_layouts=mono,aspl
 Fonte: Audio/confirmation_004.ogg. SHA-256 original: `568967a3d9f8a8f6af54ea01729c4882284308f2a27d78c07ffd7ee0d6951661`.
 Duração de desenho: 0.56 s. Volume no runtime: 0.24.
 Filtro reproduzível: `[0:a]aformat=sample_rates=44100:channel_layouts=mono,silenceremove=start_periods=1:start_threshold=-55dB,highpass=f=90,lowpass=f=7000,apad=pad_dur=0.56,atrim=end_sample=24696,asetpts=N/SR/TB,afade=t=in:d=0.005,afade=t=out:st=0.44000000000000006:d=0.12[out]`. Pico medido antes do ajuste: -0.9 dBFS; alvo de preparação: -6 dBFS.
+
+## gallery-native-v2
+
+Os SVGs da galeria (evergreen-header, starlight-footer e snowflake-seal) sao criacoes originais do projeto, em 2026-10-08, sem imagem de cliente ou componente de terceiros. Origem: `project-created`, licenca `project-owned`. Referencia de design e limites de uso em `GALLERY_PROVENANCE.md`. Os SVGs estaticos ficam fora da fotografia e nao exigem animacao. Validacao visual em aparelhos fisicos permanece pendente.

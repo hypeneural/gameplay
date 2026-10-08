@@ -139,6 +139,7 @@ export function SessionGallery({
         {visiblePhotos.map((photo, index) => (
           <button
             className="gallery-card"
+            data-photo-id={photo.id}
             type="button"
             key={photo.id}
             aria-label={`Abrir foto ${index + 1} de ${session.photos.length}`}

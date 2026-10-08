@@ -48,7 +48,6 @@
     "puzzle:source-reader": "node tools/export-puzzle-source-reader.mjs",
     "clean:reports": "node tools/clean.mjs",
     "agent:doctor": "node tools/agent-doctor.mjs",
-    "test:e2e:gallery": "playwright test tests/e2e/session-gallery.spec.ts",
     "release:verify": "node tools/deploy/verify-vps-release.mjs",
     "deploy:smoke": "node tools/deploy/smoke-staging.mjs",
     "validate:staging": "pnpm agent:doctor && pnpm check && pnpm asset:validate:all && pnpm test:e2e:gallery && pnpm release:staging && pnpm release:verify && pnpm release:smoke-runtime",

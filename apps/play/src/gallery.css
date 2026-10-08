@@ -1,11 +1,12 @@
 .christmas-gallery-shell {
   width: 100%;
-  max-width: 1040px;
+  max-width: 760px;
+  margin-inline: auto;
   min-height: 100svh;
   padding: max(12px, env(safe-area-inset-top)) 12px max(34px, env(safe-area-inset-bottom));
   background:
-    radial-gradient(circle at 50% -80px, rgb(205 165 88 / 18%), transparent 280px),
-    linear-gradient(180deg, #071f27 0%, #0b302c 42%, #071f22 100%);
+    radial-gradient(ellipse at 50% -70px, rgb(205 165 88 / 16%), transparent 270px),
+    linear-gradient(180deg, #031b19 0%, #0b342b 44%, #061a1c 100%);
   color: #fff4dd;
   overflow-x: clip;
 }
@@ -90,14 +91,16 @@
 .gallery-intro {
   position: relative;
   isolation: isolate;
-  margin: 12px 0 16px;
-  padding: 18px 42px 22px;
+  margin: 12px 0 22px;
+  min-height: 232px;
+  padding: 91px 18px 23px;
   overflow: hidden;
   border: 1px solid rgb(224 194 137 / 24%);
-  border-radius: 23px;
+  border-radius: 22px;
   background:
-    radial-gradient(circle at 50% 0, rgb(243 201 112 / 15%), transparent 60%),
-    linear-gradient(145deg, rgb(21 66 53 / 88%), rgb(9 43 39 / 92%));
+    url('/assets/christmas-shell/gallery/gallery-evergreen-header-v1.svg') center top / 100% auto no-repeat,
+    radial-gradient(circle at 50% 0, rgb(243 201 112 / 13%), transparent 63%),
+    linear-gradient(145deg, #124a3b, #052920);
   box-shadow: inset 0 1px rgb(255 247 220 / 7%);
   text-align: center;
 }
@@ -186,7 +189,7 @@
 .gallery-grid {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  gap: 14px;
+  gap: 18px;
   align-items: start;
 }
 
@@ -196,11 +199,11 @@
   width: 100%;
   min-width: 0;
   margin: 0;
-  padding: 7px 7px 19px;
+  padding: 6px 6px 28px;
   overflow: hidden;
   border: 1px solid rgb(222 203 165 / 44%);
-  border-radius: 8px;
-  background: linear-gradient(165deg, #f2ead7, #e4d6b8);
+  border-radius: 13px;
+  background: linear-gradient(155deg, #f8f0de, #e8d9bb);
   box-shadow:
     0 8px 22px rgb(0 14 15 / 28%),
     0 2px 0 rgb(109 79 47 / 25%);
@@ -230,7 +233,7 @@
   width: 100%;
   min-height: 0;
   overflow: hidden;
-  border-radius: 3px;
+  border-radius: 8px;
   background: #173d34;
 }
 
@@ -246,10 +249,12 @@
 .gallery-card-mark {
   position: absolute;
   right: 10px;
-  bottom: 3px;
-  color: #9c3550;
-  font-size: 0.88rem;
-  text-shadow: 0 1px #fff8e9;
+  bottom: 1px;
+  width: 27px;
+  height: 27px;
+  color: transparent;
+  font-size: 0;
+  background: url('/assets/christmas-shell/gallery/gallery-snowflake-seal-v1.svg') center / contain no-repeat;
 }
 
 .gallery-sentinel {
@@ -458,15 +463,15 @@
   }
 
   .gallery-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 18px;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 22px;
   }
 }
 
 @media (min-width: 900px) {
   .gallery-grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 20px;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 22px;
   }
 
   .gallery-intro {
@@ -491,4 +496,115 @@
 .christmas-gallery-shell[data-calm='true'] *::after {
   animation: none !important;
   transition: none !important;
+}
+
+/* Native-like Christmas gallery: the photography, not a grid, is the hero. */
+.gallery-intro-kicker,
+.gallery-finale-kicker {
+  color: #edcb83 !important;
+  font-size: 0.62rem !important;
+  font-weight: 800;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+
+.gallery-intro h2 {
+  position: relative;
+  z-index: 2;
+  margin: 6px 0 8px;
+  color: #fff1ca;
+  font-family: Georgia, serif;
+  font-size: clamp(1.5rem, 6.5vw, 2.1rem);
+  font-weight: 500;
+  line-height: 1.08;
+  text-shadow: 0 2px 10px rgb(0 0 0 / 36%);
+}
+
+.gallery-intro .gallery-intro-count {
+  display: inline-block;
+  margin-top: 12px;
+  padding: 7px 13px;
+  border: 1px solid rgb(232 195 127 / 40%);
+  border-radius: 999px;
+  background: rgb(3 25 22 / 58%);
+  color: #f7e1b2;
+  font-size: 0.72rem;
+  font-weight: 750;
+}
+
+.gallery-pine {
+  display: none;
+}
+
+.gallery-photo-frame {
+  isolation: isolate;
+}
+
+.gallery-card:focus-visible {
+  outline: 3px solid #ffe3a2;
+  outline-offset: 4px;
+}
+
+.gallery-finale {
+  position: relative;
+  isolation: isolate;
+  margin-top: 24px;
+  padding: 33px 19px 105px;
+  overflow: hidden;
+  border: 1px solid rgb(225 190 121 / 30%);
+  border-radius: 22px;
+  background:
+    url('/assets/christmas-shell/gallery/gallery-starlight-footer-v1.svg') center bottom / 100% auto no-repeat,
+    radial-gradient(circle at 50% 0, rgb(194 149 68 / 19%), transparent 55%),
+    linear-gradient(160deg, #0d4135 0%, #05221d 100%);
+  box-shadow: inset 0 1px rgb(255 250 220 / 9%);
+  text-align: center;
+}
+
+.gallery-finale h2 {
+  position: relative;
+  z-index: 1;
+  margin: 8px 0;
+  color: #fff1c9;
+  font-family: Georgia, serif;
+  font-size: clamp(1.45rem, 5vw, 1.95rem);
+  font-weight: 500;
+}
+
+.gallery-finale > p:not(.gallery-finale-kicker) {
+  position: relative;
+  z-index: 1;
+  max-width: 480px;
+  margin: 9px auto 15px;
+  color: #ebdfc2;
+  font-size: 0.82rem;
+  line-height: 1.5;
+}
+
+.gallery-finale .gallery-return-games {
+  position: relative;
+  z-index: 1;
+  width: min(100%, 345px);
+  padding: 11px 16px;
+}
+
+.gallery-return-games span {
+  margin-left: 8px;
+}
+
+.gallery-finale .gallery-finale-signature {
+  margin-top: 15px !important;
+  color: #e4c58b !important;
+  font-size: 0.72rem !important;
+}
+
+@media (max-width: 380px) {
+  .gallery-intro {
+    min-height: 218px;
+    padding-top: 75px;
+  }
+
+  .gallery-title-group .eyebrow {
+    font-size: 0.49rem;
+  }
 }

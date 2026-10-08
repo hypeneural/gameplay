@@ -24,7 +24,7 @@ test('gallery is a bounded mobile album and stays engine-free before gameplay', 
     .evaluate(
       (element) => getComputedStyle(element).gridTemplateColumns.split(' ').filter(Boolean).length,
     );
-  expect(columnCount).toBe(viewportWidth < 600 ? 1 : viewportWidth < 900 ? 2 : 3);
+  expect(columnCount).toBe(1);
 
   if (viewportWidth < 600) {
     const firstBox = await page.locator('.gallery-card').first().boundingBox();
