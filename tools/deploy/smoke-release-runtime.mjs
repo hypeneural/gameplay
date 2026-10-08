@@ -96,15 +96,14 @@ try {
   );
 } catch (error) {
   const detail =
-    child.exitCode === null
-      ? ''
-      : ` Catalog process exited with code ${String(child.exitCode)}.`;
+    child.exitCode === null ? '' : ` Catalog process exited with code ${String(child.exitCode)}.`;
   const safeDiagnostic = stderr
     .replaceAll(previewPath, '<private-preview-config>')
     .replaceAll(token, '<redacted-token>')
     .slice(-1_000);
   throw new Error(
     `${error instanceof Error ? error.message : 'Release runtime smoke failed.'}${detail}${safeDiagnostic ? ` Diagnostic: ${safeDiagnostic}` : ''}`,
+    { cause: error },
   );
 } finally {
   await stopChild(child);

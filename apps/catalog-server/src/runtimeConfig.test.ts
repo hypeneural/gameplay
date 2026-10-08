@@ -1,7 +1,8 @@
+import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { resolveCatalogRuntimeConfig } from './runtimeConfig.js';
 
-const shell = '/srv/christmas-games/current/web/index.html';
+const shell = resolve('/srv/christmas-games/current/web/index.html');
 
 describe('resolveCatalogRuntimeConfig', () => {
   it('allows explicit staging-demo production configuration', () => {
@@ -71,6 +72,6 @@ describe('resolveCatalogRuntimeConfig', () => {
 
     expect(config.releaseStage).toBe('development');
     expect(config.publicOrigin.href).toBe('http://127.0.0.1:4180/');
-    expect(config.applicationShellPath).toBe('/repo/apps/play/dist/index.html');
+    expect(config.applicationShellPath).toBe(resolve('/repo/apps/play/dist/index.html'));
   });
 });

@@ -92,10 +92,13 @@ export default tseslint.config(
     files: ['**/*.cjs', '**/*.mjs'],
     languageOptions: {
       globals: {
+        AbortSignal: 'readonly',
         console: 'readonly',
+        fetch: 'readonly',
         module: 'writable',
         process: 'readonly',
         require: 'readonly',
+        setTimeout: 'readonly',
       },
     },
   },

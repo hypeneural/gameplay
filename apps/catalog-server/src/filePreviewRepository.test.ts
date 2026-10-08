@@ -75,7 +75,9 @@ describe('parsePreviewConfiguration', () => {
         'utf8',
       );
       const repository = createFilePreviewRepository(path, { rejectExampleTokens: true });
-      await expect(repository.getByPublicToken('safe-staging-token-1234567890')).resolves.toMatchObject({
+      await expect(
+        repository.getByPublicToken('safe-staging-token-1234567890'),
+      ).resolves.toMatchObject({
         status: 'active',
       });
 

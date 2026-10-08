@@ -32,9 +32,7 @@ const forbiddenTrackedFiles = (trackedFiles ?? []).filter((path) => {
   return forbiddenTrackedPatterns.some((pattern) => pattern.test(path));
 });
 if (forbiddenTrackedFiles.length > 0) {
-  failures.push(
-    `Sensitive/runtime files are tracked by Git: ${forbiddenTrackedFiles.join(', ')}.`,
-  );
+  failures.push(`Sensitive/runtime files are tracked by Git: ${forbiddenTrackedFiles.join(', ')}.`);
 }
 
 const secretMarkerFiles = scanTrackedSecretMarkers();
@@ -67,12 +65,15 @@ if (
   failures.push('staging-demo must be the only explicitly allowed release stage.');
 }
 
-if (agentState.schemaVersion !== 1) failures.push('.agents/current-state.json schemaVersion must be 1.');
+if (agentState.schemaVersion !== 1)
+  failures.push('.agents/current-state.json schemaVersion must be 1.');
 if (agentState.releaseStage !== readiness.currentStage) {
   failures.push('Agent current state releaseStage must match deploy/readiness.json currentStage.');
 }
 if (agentState.nextMilestone?.id !== readiness.nextMilestone) {
-  failures.push('Agent current state nextMilestone must match deploy/readiness.json nextMilestone.');
+  failures.push(
+    'Agent current state nextMilestone must match deploy/readiness.json nextMilestone.',
+  );
 }
 if (!Array.isArray(agentState.forbiddenUntilPilot) || agentState.forbiddenUntilPilot.length === 0) {
   failures.push('Agent current state must declare explicit forbiddenUntilPilot actions.');
@@ -110,10 +111,15 @@ for (const [index, source] of workflowSources.entries()) {
   for (const match of source.matchAll(/^\s*uses:\s*([^\s#]+)(?:\s+#.*)?$/gm)) {
     const reference = match[1] ?? '';
     if (!/@[0-9a-f]{40}$/.test(reference)) {
-      failures.push(`Workflow ${index + 1} action is not pinned to a full commit SHA: ${reference}.`);
+      failures.push(
+        `Workflow ${index + 1} action is not pinned to a full commit SHA: ${reference}.`,
+      );
     }
   }
-  if (/actions\/checkout@[0-9a-f]{40}/.test(source) && !/persist-credentials:\s*false/.test(source)) {
+  if (
+    /actions\/checkout@[0-9a-f]{40}/.test(source) &&
+    !/persist-credentials:\s*false/.test(source)
+  ) {
     failures.push(`Workflow ${index + 1} checkout must set persist-credentials: false.`);
   }
 }
@@ -132,9 +138,7 @@ if (!workflowSources[0]?.includes('actions/cache@55cc8345863c7cc4c66a329aec7e433
   failures.push('CI cache action pin is not the verified v6.1.0 commit.');
 }
 if (
-  !workflowSources[1]?.includes(
-    'actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a',
-  )
+  !workflowSources[1]?.includes('actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a')
 ) {
   failures.push('Staging artifact action pin is not the verified v7.0.1 commit.');
 }
@@ -184,22 +188,13 @@ function scanTrackedSecretMarkers() {
       'AIza[0-9A-Za-z_-]{30,}',
       'xox[baprs]-[0-9A-Za-z-]{20,}',
     ].join('|');
-    const output = execFileSync(
-      'git',
-      ['grep', '-I', '-l', '-E', pattern, '--', '.'],
-      {
-        encoding: 'utf8',
-        stdio: ['ignore', 'pipe', 'ignore'],
-      },
-    );
+    const output = execFileSync('git', ['grep', '-I', '-l', '-E', '-e', pattern, '--', '.'], {
+      encoding: 'utf8',
+      stdio: ['ignore', 'pipe', 'ignore'],
+    });
     return output.split(/\r?\n/).filter(Boolean);
   } catch (error) {
-    if (
-      error &&
-      typeof error === 'object' &&
-      'status' in error &&
-      error.status === 1
-    ) {
+    if (error && typeof error === 'object' && 'status' in error && error.status === 1) {
       return [];
     }
     return undefined;

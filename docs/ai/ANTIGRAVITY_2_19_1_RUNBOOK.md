@@ -92,20 +92,20 @@ Não pule diretamente para E2E ou deploy quando typecheck/unit ainda falham.
 
 ## 3. Comandos canônicos
 
-| Intenção                                  | Comando                                   |
-| ----------------------------------------- | ----------------------------------------- |
-| iniciar frontend local                    | `pnpm dev`                                |
-| preparar fotos reais sem iniciar servidor | `pnpm gallery:prepare --source "<pasta>"` |
-| preparar fotos + abrir Gallery Lab        | `pnpm gallery:lab --source "<pasta>"`     |
-| prova rápida de código                    | `pnpm check:fast`
-| validar todos os assets/proveniência       | `pnpm asset:validate:all`                         |
-| gate estático completo                    | `pnpm check`                              |
-| build normal fail-closed                  | `pnpm build`                              |
-| conferir release permitido                | `pnpm deploy:readiness`                   |
-| gerar config/token sintético privado       | `pnpm deploy:staging-config --output "<fora-do-repo>"` |
-| montar artefato VPS sintético             | `pnpm release:staging`                    |
-| E2E completo                              | `pnpm test:e2e`                           |
-| pré-handoff máximo                        | `pnpm validate`                           |
+| Intenção                                  | Comando                                                |
+| ----------------------------------------- | ------------------------------------------------------ |
+| iniciar frontend local                    | `pnpm dev`                                             |
+| preparar fotos reais sem iniciar servidor | `pnpm gallery:prepare --source "<pasta>"`              |
+| preparar fotos + abrir Gallery Lab        | `pnpm gallery:lab --source "<pasta>"`                  |
+| prova rápida de código                    | `pnpm check:fast`                                      |
+| validar todos os assets/proveniência      | `pnpm asset:validate:all`                              |
+| gate estático completo                    | `pnpm check`                                           |
+| build normal fail-closed                  | `pnpm build`                                           |
+| conferir release permitido                | `pnpm deploy:readiness`                                |
+| gerar config/token sintético privado      | `pnpm deploy:staging-config --output "<fora-do-repo>"` |
+| montar artefato VPS sintético             | `pnpm release:staging`                                 |
+| E2E completo                              | `pnpm test:e2e`                                        |
+| pré-handoff máximo                        | `pnpm validate`                                        |
 
 Não invente variantes desses comandos quando a intenção já está coberta.
 
@@ -182,7 +182,7 @@ Quando um gate falhar, classifique antes de corrigir:
 | build Vite         | trate import/chunk/config; não mude target sem justificativa   |
 | catalog build      | preserve NodeNext/ESM e imports `.js`                          |
 | release packager   | leia o erro; não copie manualmente arquivo bloqueado           |
-| agent:doctor       | corrija a contradição de estado/workflow; não contorne o gate   |
+| agent:doctor       | corrija a contradição de estado/workflow; não contorne o gate  |
 | Nginx health       | cheque systemd → `127.0.0.1:4180/healthz` → Nginx, nessa ordem |
 
 ## 9. Regras de Git para agente

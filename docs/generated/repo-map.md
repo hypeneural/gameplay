@@ -1221,14 +1221,17 @@
 │   │   ├── src
 │   │   │   ├── contracts.ts
 │   │   │   ├── index.ts
-│   │   │   └── manifest.ts
+│   │   │   ├── manifest.ts
+│   │   │   └── validateAll.ts
 │   │   └── tests
 │   │       └── asset-factory.test.ts
 │   ├── clean.mjs
 │   ├── deploy
+│   │   ├── create-staging-preview-config.mjs
 │   │   ├── prepare-vps-release.mjs
 │   │   ├── release-utils.mjs
 │   │   ├── release-utils.test.mjs
+│   │   ├── smoke-release-runtime.mjs
 │   │   ├── smoke-staging.mjs
 │   │   └── verify-vps-release.mjs
 │   ├── export-puzzle-source-reader.mjs

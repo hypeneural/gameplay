@@ -56,9 +56,7 @@ function parseOutput(argv) {
     else throw new Error(`Unknown staging config option: ${flag}.`);
   }
   if (!outputPath) {
-    throw new Error(
-      'Usage: pnpm deploy:staging-config --output <private-path-outside-repository>',
-    );
+    throw new Error('Usage: pnpm deploy:staging-config --output <private-path-outside-repository>');
   }
   return outputPath;
 }

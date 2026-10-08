@@ -1,8 +1,15 @@
 import { createHash, randomUUID } from 'node:crypto';
 import { createReadStream } from 'node:fs';
 import { access, copyFile, mkdir, readFile, rename, rm, stat, writeFile } from 'node:fs/promises';
-import { dirname, join } from 'node:path';
+import { dirname, join, resolve } from 'node:path';
 import sharp, { type Sharp } from 'sharp';
+
+function toLongPath(p: string): string {
+  if (process.platform === 'win32' && !p.startsWith('\\\\?\\')) {
+    return `\\\\?\\${resolve(p)}`;
+  }
+  return p;
+}
 import { z } from 'zod';
 import {
   mediaRecipeKey,
@@ -132,7 +139,7 @@ export async function processMediaJob(input: MediaJob): Promise<MediaManifestEnt
   const contentHash = await hashFile(job.sourcePath);
   const { originalDirectory, derivedDirectory } = mediaPaths(job, contentHash);
   await ensureOriginal(job.sourcePath, originalDirectory, contentHash);
-  const image = sharp(join(originalDirectory, 'source'), {
+  const image = sharp(toLongPath(join(originalDirectory, 'source')), {
     // Warn-level metadata is tolerated; decode and safety failures still fail.
     failOn: 'warning',
     limitInputPixels: MAX_INPUT_PIXELS,
@@ -315,7 +322,7 @@ async function ensureDerivatives(
   }
 
   const stagingDirectory = `${derivedDirectory}.staging-${randomUUID()}`;
-  await mkdir(stagingDirectory, { recursive: true });
+  await mkdir(toLongPath(stagingDirectory), { recursive: true });
   try {
     const oriented = image.clone().autoOrient().toColourspace('srgb');
     const generated = await Promise.all(
@@ -324,7 +331,7 @@ async function ensureDerivatives(
           .clone()
           .resize({ width: maxSize, height: maxSize, fit: 'inside', withoutEnlargement: true })
           .webp({ quality: mediaRecipeQuality })
-          .toFile(join(stagingDirectory, `${variant}.webp`));
+          .toFile(toLongPath(join(stagingDirectory, `${variant}.webp`)));
         if (!output.width || !output.height || !output.size) {
           throw new Error(`Derivative ${variant} did not report complete output metrics.`);
         }
@@ -350,13 +357,13 @@ async function ensureDerivatives(
       throw new Error('Derivative staging did not produce every valid WebP variant.');
     }
     try {
-      await rename(stagingDirectory, derivedDirectory);
+      await rename(toLongPath(stagingDirectory), toLongPath(derivedDirectory));
     } catch (error) {
       if (!(await allDerivativesAreValid(derivedDirectory))) throw error;
     }
     return inspectDerivativeMetrics(derivedDirectory);
   } finally {
-    await rm(stagingDirectory, { recursive: true, force: true });
+    await rm(toLongPath(stagingDirectory), { recursive: true, force: true });
   }
 }
 
@@ -366,9 +373,10 @@ async function inspectDerivativeMetrics(
   const metrics = await Promise.all(
     mediaVariants.map(async ([variant]) => {
       const path = join(directory, `${variant}.webp`);
+      const longPath = toLongPath(path);
       const [metadata, file] = await Promise.all([
-        sharp(path, { failOn: 'warning' }).metadata(),
-        stat(path),
+        sharp(longPath, { failOn: 'warning' }).metadata(),
+        stat(longPath),
       ]);
       if (!metadata.width || !metadata.height || file.size <= 0) {
         throw new Error(`Derivative ${variant} is missing intrinsic metrics.`);
@@ -385,7 +393,7 @@ async function inspectDerivativeMetrics(
 async function allDerivativesAreValid(directory: string): Promise<boolean> {
   const checks = await Promise.all(
     mediaVariants.map(async ([variant, maxSize]) => {
-      const path = join(directory, `${variant}.webp`);
+      const path = toLongPath(join(directory, `${variant}.webp`));
       if (!(await exists(path))) return false;
       try {
         const metadata = await sharp(path, { failOn: 'warning' }).metadata();
@@ -411,13 +419,13 @@ async function allDerivativeFilesExist(directory: string): Promise<boolean> {
 
 async function hashFile(path: string): Promise<string> {
   const hash = createHash('sha256');
-  for await (const chunk of createReadStream(path)) hash.update(chunk);
+  for await (const chunk of createReadStream(toLongPath(path))) hash.update(chunk);
   return hash.digest('hex');
 }
 
 async function exists(path: string): Promise<boolean> {
   try {
-    await access(path);
+    await access(toLongPath(path));
     return true;
   } catch {
     return false;

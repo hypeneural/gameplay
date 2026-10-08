@@ -18,7 +18,9 @@ assertReleaseAllowed(readiness, options.stage);
 
 const gitState = readGitState();
 if (gitState.dirty) {
-  throw new Error('Refusing VPS release readiness from a dirty Git worktree. Commit the intended source first.');
+  throw new Error(
+    'Refusing VPS release readiness from a dirty Git worktree. Commit the intended source first.',
+  );
 }
 if (gitState.sha === 'unknown') {
   throw new Error('Refusing VPS release readiness without a resolvable Git HEAD.');
@@ -154,15 +156,11 @@ function readGitState() {
       encoding: 'utf8',
       stdio: ['ignore', 'pipe', 'ignore'],
     }).trim();
-    const status = execFileSync(
-      'git',
-      ['status', '--porcelain=v1', '--untracked-files=all'],
-      {
-        cwd: repositoryRoot,
-        encoding: 'utf8',
-        stdio: ['ignore', 'pipe', 'ignore'],
-      },
-    ).trim();
+    const status = execFileSync('git', ['status', '--porcelain=v1', '--untracked-files=all'], {
+      cwd: repositoryRoot,
+      encoding: 'utf8',
+      stdio: ['ignore', 'pipe', 'ignore'],
+    }).trim();
     return { sha, dirty: status.length > 0 };
   } catch {
     return { sha: 'unknown', dirty: true };

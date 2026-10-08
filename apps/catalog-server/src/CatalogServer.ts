@@ -21,6 +21,7 @@ export interface CatalogServerDependencies {
   readonly runtime?: {
     readonly releaseStage: string;
   };
+  readonly readiness?: () => Promise<void>;
 }
 
 /**
