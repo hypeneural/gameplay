@@ -88,11 +88,23 @@ export async function prepareMultiLocalMedia(
     throw new Error('Config file must declare a non-empty "clients" array.');
   }
 
-  // Validate aliases are unique
+  // An operator-supplied alias becomes a directory segment. Reject slashes,
+  // dot segments and mixed-case surprises before creating any storage path.
+  const safeAlias = /^[a-z0-9][a-z0-9-]{0,63}$/;
   const aliases = new Set<string>();
   for (const client of parsed.clients) {
-    if (!client.alias || !client.displayName || !client.sourceDirectory) {
+    if (
+      !client ||
+      typeof client.alias !== 'string' ||
+      typeof client.displayName !== 'string' ||
+      typeof client.sourceDirectory !== 'string' ||
+      !client.displayName.trim() ||
+      !client.sourceDirectory.trim()
+    ) {
       throw new Error('Each client must declare "alias", "displayName", and "sourceDirectory".');
+    }
+    if (!safeAlias.test(client.alias)) {
+      throw new Error('Client alias must be a safe lowercase slug.');
     }
     if (aliases.has(client.alias)) {
       throw new Error(`Duplicate client alias in configuration: ${client.alias}`);
