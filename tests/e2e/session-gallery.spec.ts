@@ -48,7 +48,7 @@ test('gallery lightbox selects photo, returns to Hub, and keeps the chosen memor
 
   await expect(page.locator('.gallery-lightbox')).toBeVisible();
   await expect(page.locator('canvas')).toHaveCount(0);
-  await expect(page.getByRole('button', { name: 'Jogar com esta foto' })).toBeVisible();
+  await expect(page.getByRole('button', { name: /Jogar com esta foto/ })).toBeVisible();
 
   await page.getByRole('button', { name: /Jogar com esta foto/ }).click();
   await expect(page).toHaveURL(/\/s\/local-demo-token$/);
