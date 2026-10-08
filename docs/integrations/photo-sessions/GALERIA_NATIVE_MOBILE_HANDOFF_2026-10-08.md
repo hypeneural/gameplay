@@ -90,3 +90,48 @@ Windows / pasta tratada (somente arquivos elegíveis na raiz, sem varredura recu
 **Novo asset:** `gallery-ai-evergreen-v1.webp`, recorte do ornamento de um conceito gráfico gerado com IA, registrado no manifesto + proveniência (3316 B, hash confirmado e WebP quality30). É complemento decorativo realista e leve, não uma captura da UI. CSS `image-set()` escolhe o WebP para navegadores modernos e mantém SVG como fallback. Testar legibilidade no display 390/412/430/768px.
 
 **Próximo passo Antigravity:** conferir PR #7 HEAD, `pnpm check`, `pnpm asset:validate:all`, `pnpm test:e2e:gallery`, `pnpm test:e2e:gallery-multi`, `pnpm build`, screenshots antes/depois e aparelhos físicos. Auditar `navigator.share` sob HTTPS + user activation, fecho nativo do `<dialog>`, contraste, zoom por pinça, 30/92 fotos com mistura retrato/paisagem. Não habilitar piloto, não prometer download de foto sem autorização.
+
+## Adendo v4 — auditoria e homologação visual e gestual (2026-10-08)
+
+**Objetivo:** Elevar o acabamento da Galeria Natalina para padrão ultra-premium de estúdio, garantindo gestos nativos de toque no Lightbox e preservando integridade estrita de orçamentos e segurança.
+
+### 1. Direção Artística e Guirlanda Fotorealista V4
+
+- Substituição do asset intermediário pelo definitivo `gallery-evergreen-hero-photoreal-v4.webp` (392×77, 4.908 B, SHA-256 `6a4497f3b249800ff0bf02abc5c2a10e17f676e775f3847e3457d99b2c0d830a`).
+- Render fotorealista: ramos de abeto denso verde-floresta profundo, agulhas detalhadas, laço central de veludo vermelho rubi com reflexos acetinados, luzes quentes douradas (bokeh sutil) e mini-pinhas naturais.
+- Processamento Sharp com canal alfa suave na base, integrando com o fundo `#0e3d31` sem bordas brancas ou halos artificiais.
+- Orçamento estrito respeitado: total de bytes visuais do shell fixado em **35.896 B** (dentro do limite máximo de 36.000 B). 12/12 manifestos validados via `pnpm asset:validate:all`.
+
+### 2. Gestos Native-Like no Lightbox (`SessionGalleryLightbox.tsx`)
+
+- **Double-tap zoom:** Toque duplo rápido (<300ms, <28px de tolerância) alterna suavemente entre 1x e 2x.
+- **Pinch-to-zoom (2 dedos):** Gesto de pinça contínuo com detecção de distância euclidiana via `Math.hypot`, escalando entre 1x e 3x com transição contínua.
+- **Pan / Arraste livre:** Quando a imagem está com zoom (>1x), o container de palco habilita scroll e pan bidirecionais suaves (`touch-action: pan-x pan-y pinch-zoom`).
+- **Swipe horizontal calibrado:** Mantido em escala 1x para navegação rápida e natural entre fotos vizinhas sem conflito de gestos.
+- **Acessibilidade & Foco:** Foco anterior no botão que acionou a abertura é confiavelmente restaurado ao fechar o diálogo modal (`previouslyFocusedRef`).
+
+### 3. Evidências Visuais e Responsividade
+
+- Homologação visual completa nos viewports 390px, 412px, 430px e 768px:
+  - Hub inicial com CTA de destaque para o álbum fotográfico.
+  - Hero da galeria com guirlanda fotorealista e tipografia refinada.
+  - Feed fotográfico em coluna única com proporções reais preservadas sem cortes (`object-fit: contain`).
+  - Lightbox modal limpo com controles dourados 44px+ (`ShellIcon`).
+  - Hub com foto escolhida selecionada ("Foto escolhida para os jogos") e cards de jogos prontos para escolha livre da família.
+
+### 4. Validação Multicliente no Gallery Lab
+
+- Testado com sessões reais de fotos tratadas:
+  - Cliente A (30 fotos, 300 MB originais -> 6.31 MB derivados, 97.9% de economia).
+  - Cliente B (12 fotos, 111 MB originais -> 2.88 MB derivados, 97.4% de economia).
+- Isolamento absoluto: troca de tokens comprova que nenhuma foto ou estado cruza sessões.
+
+### 5. Gates de Qualidade
+
+- `pnpm agent:doctor`: status ok.
+- `pnpm check:fast`: 455/455 testes unitários passando.
+- `pnpm test:e2e:gallery`: 12/12 testes E2E passando em todos os viewports.
+- `pnpm test:e2e:gallery-multi`: 16/16 testes E2E passando.
+- `pnpm check`: 0 violações depcruise, 0 knip deadcode, prettier e repo-map limpos.
+- `pnpm build`: 100% de compilação sem warnings ou erros.
+- `deploy/readiness.json`: `pilotReady=false`, `customerDataAllowed=false` mantidos. Zero dados confidenciais ou fotos de clientes no Git.

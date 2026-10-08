@@ -1361,17 +1361,17 @@
       }
     },
     {
-      "id": "gallery-ai-evergreen-v1",
+      "id": "gallery-evergreen-hero-photoreal-v4",
       "kind": "ui",
       "format": "webp",
       "source": {
-        "provider": "OpenAI image generation",
+        "provider": "Google Antigravity AI generation",
         "origin": "project-created",
-        "identifier": "gallery-ai-evergreen-v1",
+        "identifier": "gallery-evergreen-hero-photoreal-v4",
         "license": "project-owned",
         "reviewedOn": "2026-10-08",
-        "reviewedBy": "forensic-visual-prep",
-        "record": "ASSET_PROVENANCE.md#gallery-ai-v3"
+        "reviewedBy": "forensic-visual-prep-v4",
+        "record": "ASSET_PROVENANCE.md#gallery-photoreal-v4"
       },
       "art": {
         "family": "christmas-photo-first",
@@ -1379,22 +1379,22 @@
         "photoSafety": "approved",
         "mobileLegibility": "approved",
         "state": "PRONTO_PARA_RUNTIME",
-        "justification": "Decoração raster de pinheiro, laço e luzes, sem pessoas, texto, imagens privadas ou controles; ocupa apenas faixa superior do Hero. Aprovação física de iPhone/Android pendente."
+        "justification": "Guirlanda fotorrealista de pinheiro e abeto com laco central de veludo rubi, bolas de vidro e luzes douradas com canal alfa suave. Ocupa topo do Hero sem cobrir texto ou fotos. Aprovacao fisica pendente."
       },
       "processing": {
-        "recipe": "gallery-ai-evergreen-v1-webp-quality30",
-        "tools": ["OpenAI image generation", "Pillow WebP crop"]
+        "recipe": "gallery-evergreen-hero-photoreal-v4-webp-alpha",
+        "tools": ["Google Antigravity AI generation", "Sharp WebP alpha crop"]
       },
       "runtime": {
-        "file": "apps/play/public/assets/christmas-shell/gallery/gallery-ai-evergreen-v1.webp",
-        "publicPath": "/assets/christmas-shell/gallery/gallery-ai-evergreen-v1.webp",
-        "bytes": 3316,
-        "sha256": "f4291ed8fc1333c7f92b59cbfc49a6c449d7a67de35d2389a65875e57c346f57",
+        "file": "apps/play/public/assets/christmas-shell/gallery/gallery-evergreen-hero-photoreal-v4.webp",
+        "publicPath": "/assets/christmas-shell/gallery/gallery-evergreen-hero-photoreal-v4.webp",
+        "bytes": 4908,
+        "sha256": "6a4497f3b249800ff0bf02abc5c2a10e17f676e775f3847e3457d99b2c0d830a",
         "dimensions": {
           "width": 392,
-          "height": 64
+          "height": 77
         },
-        "textureKey": "gallery-ai-evergreen-v1",
+        "textureKey": "gallery-evergreen-hero-photoreal-v4",
         "quality": {
           "low": "keep",
           "reducedMotion": "keep"

@@ -16,10 +16,8 @@ Original lightweight SVG vectors created for the Estudio Evydencia Christmas gal
 
 These assets are owned by the project, static, responsive, accessible as decorative CSS backgrounds or semantic buttons and disabled as interactive media. The review state indicates structurally ready assets, not physical iPhone/Safari visual approval. Runtime policy preserves reduced motion (static SVGs have no animations).
 
-## gallery-ai-v3 (2026-10-08)
+## gallery-photoreal-v4 (2026-10-08)
 
-- `gallery-ai-evergreen-v1.webp`: **AI-generated raster ornament**, cropped from a generated Christmas UI art direction sheet. Photo-style dense natural pine needles, red velvet bow, glass ornaments and warm lights. Original generation by OpenAI image generation, manually cropped from the ornament-only strip, compressed via Pillow to WebP Q30 (392x64, 3316 B) to fit the existing mobile design budget.
+- `gallery-evergreen-hero-photoreal-v4.webp`: **AI-generated photorealistic evergreen garland**, cropped from high-resolution studio garland banner. Dense natural spruce/fir pine needles, deep ruby red velvet bow, real pinecones, glossy ruby baubles and warm fairy lights. Derived via Sharp alpha-masked crop (392x77, 4908 B, SHA-256 `6a4497f3b249800ff0bf02abc5c2a10e17f676e775f3847e3457d99b2c0d830a`). Fits strictly within the 36.000 B visual shell budget (35.896 B total).
 - The artwork is decorative **only**: no photographs, personal names, customer data, text or fake UI controls. The image remains below React-owned headings, buttons, photo count and actions.
-- SHA-256: `f4291ed8fc1333c7f92b59cbfc49a6c449d7a67de35d2389a65875e57c346f57`. Git blob SHA: `86a51a57c56f25acbd400a73dd9ff143d3e3cd6b`.
-- Because the ornament originates from a cropped 392 px reference, it is deliberately a **soft atmospheric accent** rather than a source of tiny sharp details. Review on DPR2/3 iPhone/Android before using a larger independent AI generation. Preserve the existing SVG fallback.
-- The generated concept sheets are not final product screenshots and must not enter public customer media.
+- Preserves the existing SVG fallback `gallery-evergreen-hero-v2.svg` via CSS `image-set()`. Review on DPR2/3 iPhone/Android remains pending.
