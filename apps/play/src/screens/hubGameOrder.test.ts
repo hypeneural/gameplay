@@ -15,10 +15,7 @@ describe('mobile Hub game catalog', () => {
 
     const actual = orderHubGames(source);
     expect(actual.slice(0, 5).map((game) => game.id)).toEqual([...HUB_GAME_PRIORITY]);
-    expect(actual.slice(5).map((game) => game.id)).toEqual([
-      'magic-photo',
-      'globo-das-lembrancas',
-    ]);
+    expect(actual.slice(5).map((game) => game.id)).toEqual(['magic-photo', 'globo-das-lembrancas']);
     expect(source[0]?.id).toBe('magic-photo');
     expect(actual.find((game) => game.id === 'puzzle-swap')).toBe(source[2]);
   });

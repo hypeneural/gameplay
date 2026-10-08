@@ -10,9 +10,7 @@ export const HUB_GAME_PRIORITY = [
   'mosaico-em-queda',
 ] as const;
 
-const priorityIndex = new Map<string, number>(
-  HUB_GAME_PRIORITY.map((id, index) => [id, index]),
-);
+const priorityIndex = new Map<string, number>(HUB_GAME_PRIORITY.map((id, index) => [id, index]));
 
 /** Preserve original relative order for all other games, including future additions. */
 export function orderHubGames<T extends { id: string }>(games: readonly T[]): T[] {
