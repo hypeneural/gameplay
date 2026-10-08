@@ -3,9 +3,10 @@
   max-width: 760px;
   margin-inline: auto;
   min-height: 100svh;
-  padding: max(12px, env(safe-area-inset-top)) max(12px, env(safe-area-inset-right))
-    max(116px, calc(env(safe-area-inset-bottom) + 102px))
-    max(12px, env(safe-area-inset-left));
+  padding-top: max(12px, env(safe-area-inset-top));
+  padding-right: max(12px, env(safe-area-inset-right));
+  padding-bottom: max(116px, calc(env(safe-area-inset-bottom) + 102px));
+  padding-left: max(12px, env(safe-area-inset-left));
   background:
     radial-gradient(ellipse at 50% -70px, rgb(205 165 88 / 16%), transparent 270px),
     linear-gradient(180deg, #031b19 0%, #0b342b 44%, #061a1c 100%);
