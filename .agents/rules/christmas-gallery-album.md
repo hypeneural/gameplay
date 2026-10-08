@@ -70,7 +70,7 @@ Para álbum de uma coluna no mobile:
 
 ## Stack externa aprovada
 
-- Use `react-photo-album` para layout/responsive images e `yet-another-react-lightbox` + Zoom, lazy, como viewer primário quando o DTO de produção estiver fechado e o benchmark justificar a troca do fallback atual.
+- Manter `SessionGallery`/`PhotoPrint` em coluna única. Não instalar `react-photo-album` (masonry) somente para recriar esta coluna; YARL+Zoom só entra após comparação de gestos/performance com o viewer DOM atual em iPhone/Safari.
 - `PhotoSwipe` + wrapper React é challenger de benchmark somente se YARL falhar ou ficar marginal em aparelho físico.
 - Não mantenha dois viewers, dois engines de masonry ou dois virtualizers no produto.
 - Virtualização só entra após profiling; `lightGallery` e particle engines Canvas/WebGL ficam fora do primeiro corte.
@@ -105,4 +105,6 @@ Leia também:
 
 ## Decisao atual — 08/10/2026
 
-A galeria fotogra fica em coluna unica inclusive tablet/desktop. Nao instalar um motor de masonry apenas para trocar este layout. A proposta anterior de A2 no mesmo pedido fica substituida por varias revisoes da mesma galeria principal. As bibliotecas de zoom continuam candidatas de benchmark, nao requisito imediato.
+A galeria fotográfica fica em coluna unica inclusive tablet/desktop. Nao instalar um motor de masonry apenas para trocar este layout. A proposta anterior de A2 no mesmo pedido fica substituida por varias revisoes da mesma galeria principal. As bibliotecas de zoom continuam candidatas de benchmark, nao requisito imediato.
+
+Manual atualizado e ordem de execucao: `docs/integrations/photo-sessions/GALERIA_NATIVE_MOBILE_HANDOFF_2026-10-08.md`.

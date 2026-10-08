@@ -9,7 +9,7 @@ metas de campo.
 Aplica-se a:
 
 - `GalleryRoute`;
-- álbum de uma coluna no mobile e masonry responsivo acima de 600 px;
+- álbum de uma coluna em todos os viewports, com largura máxima de leitura;
 - `PhotoPrint` quando usado na galeria;
 - lightbox;
 - restauração de scroll;
@@ -74,7 +74,7 @@ Somente o recurso realmente candidato a LCP pode usar `eager` e prioridade alta.
 
 Primeiro corte mobile:
 
-- abaixo de 600 CSS px usar uma coluna, largura quase total e proporção natural;
+- em todos os viewports usar uma coluna, largura quase total no celular, proporção natural;
 - montar 6 a 8 fotos;
 - buscar/renderizar lote seguinte de forma limitada;
 - manter botão "Ver mais" como fallback;
@@ -88,20 +88,7 @@ número de requests/bytes, não apenas `visibleCount`.
 
 ## 5. Bibliotecas
 
-Primeiro corte aprovado:
-
-```text
-react-photo-album
-  -> MasonryPhotoAlbum
-  -> masonry.css
-  -> layout + srcset/sizes
-
-yet-another-react-lightbox
-  -> lazy SessionLightbox
-  -> core + Zoom
-```
-
-Não importar lightbox estaticamente no módulo da GalleryRoute.
+Contrato atual aprovado: feed próprio `SessionGallery` e `PhotoPrint` com dimensões intrínsecas e um único lightbox DOM carregado por `lazy()`. Não instalar `react-photo-album`/masonry apenas para organizar uma coluna. YARL+Zoom é um candidato **condicional**, com benchmark e Safari físico, não implementação já validada. Não importar viewer estaticamente na GalleryRoute.
 
 Não introduzir virtualização no primeiro corte. Se perfis de sessões grandes
 mostrarem DOM/layout como gargalo, avaliar `@virtuoso.dev/masonry` numa PR
@@ -150,7 +137,7 @@ Criar cenários dedicados para:
 7. três ciclos Gallery -> Puzzle -> Gallery;
 8. token inválido;
 9. token revogado durante uso;
-10. galeria A seguida de A2 e B na mesma aba;
+10. galeria A com nova revisão atômica e galeria B (outro pedido) na mesma aba;
 11. duas abas com galerias distintas;
 12. portrait/landscape misturados sem crop no álbum mobile;
 13. coleção de 30 fotos;

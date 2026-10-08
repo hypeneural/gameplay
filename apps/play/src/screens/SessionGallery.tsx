@@ -1,4 +1,4 @@
-import { Suspense, lazy, useEffect, useRef, useState } from 'react';
+import { Suspense, lazy, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import type { Session } from '@christmas-games/platform';
 import { playInterfaceTap } from '../audio/playInterfaceTap.js';
 import { PhotoPrint } from '../components/PhotoPrint.js';
@@ -21,6 +21,7 @@ interface SessionGalleryProps {
   calm: boolean;
   lowQuality: boolean;
   initialVisibleCount?: number;
+  restoreScrollY?: number;
   onVisibleCountChange?(count: number): void;
   onSelectPhoto(photoId: string): void;
   onBack(): void;
@@ -33,6 +34,7 @@ export function SessionGallery({
   calm,
   lowQuality,
   initialVisibleCount,
+  restoreScrollY = 0,
   onVisibleCountChange,
   onSelectPhoto,
   onBack,
@@ -47,6 +49,12 @@ export function SessionGallery({
   const [lightboxIndex, setLightboxIndex] = useState<number>();
   const [shareStatus, setShareStatus] = useState('');
   const sentinelRef = useRef<HTMLDivElement>(null);
+
+  // Restore after Suspense has mounted the actual cards, avoiding fallback clamping.
+  // Known aspect ratios reserve space before image decoding completes.
+  useLayoutEffect(() => {
+    if (restoreScrollY > 0) window.scrollTo(0, restoreScrollY);
+  }, [restoreScrollY, session.id]);
 
   useEffect(() => {
     setVisibleCount(
@@ -135,7 +143,10 @@ export function SessionGallery({
       <section className="gallery-intro" aria-labelledby="gallery-heading">
         <div className="gallery-pine gallery-pine--left" aria-hidden="true" />
         <div className="gallery-pine gallery-pine--right" aria-hidden="true" />
-        <p id="gallery-heading">Toque em uma lembrança para ver de perto ou brincar com ela.</p>
+        <p className="gallery-intro-kicker">UM PRESENTE FEITO DE MEMÓRIAS</p>
+        <h2 id="gallery-heading">Nosso Natal em família</h2>
+        <p>Toque em uma lembrança para ampliar ou brincar com a sua foto.</p>
+        <p className="gallery-intro-count">{session.photos.length} fotos para reviver</p>
         <div className="gallery-lights" aria-hidden="true">
           <i />
           <i />
@@ -204,6 +215,25 @@ export function SessionGallery({
           </span>
         )}
       </div>
+
+      {!stillHasPhotos ? (
+        <footer className="gallery-finale">
+          <p className="gallery-finale-kicker">UM NATAL QUE FICA PARA SEMPRE</p>
+          <h2>As lembranças continuam</h2>
+          <p>Reviva seus momentos e transforme suas fotografias em brincadeiras de Natal.</p>
+          <button
+            className="gallery-play-photo gallery-return-games"
+            type="button"
+            onClick={() => {
+              playInterfaceTap('back');
+              onBack();
+            }}
+          >
+            Voltar aos jogos de Natal <span aria-hidden="true">→</span>
+          </button>
+          <p className="gallery-finale-signature">Com carinho, Estúdio Evydência</p>
+        </footer>
+      ) : null}
 
       {typeof lightboxIndex === 'number' ? (
         <Suspense

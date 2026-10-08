@@ -62,3 +62,38 @@ test('gallery lightbox stays DOM-only and returns from Puzzle to the same photo 
     .poll(async () => Math.abs((await page.evaluate(() => window.scrollY)) - before))
     .toBeLessThan(24);
 });
+
+
+test('restores gallery scroll after a later batch and keeps the natural image shape', async ({
+  page,
+}) => {
+  await page.goto('/s/local-demo-token/fotos');
+  await expect(page.getByRole('heading', { name: 'Nosso Natal em família' })).toBeVisible();
+
+  const first = page.locator('.gallery-card').first();
+  const ratio = await first.locator('.gallery-photo-frame').evaluate((frame) => {
+    const bounds = frame.getBoundingClientRect();
+    return bounds.width / bounds.height;
+  });
+  expect(Math.abs(ratio - 500 / 700)).toBeLessThan(0.02);
+  await expect(first.locator('img')).toHaveCSS('object-fit', 'contain');
+
+  // Force the next eight-photo batch, then select a photo beyond the initial eight.
+  await page.getByTestId('gallery-sentinel').scrollIntoViewIfNeeded();
+  await expect(page.locator('.gallery-card')).toHaveCount(12);
+  const target = page.locator('.gallery-card').nth(10);
+  await target.scrollIntoViewIfNeeded();
+  const before = await page.evaluate(() => window.scrollY);
+  expect(before).toBeGreaterThan(0);
+  await target.click();
+  await expect(page.locator('.gallery-lightbox')).toBeVisible();
+
+  await page.getByRole('button', { name: 'Jogar com esta foto' }).click();
+  await expect(page).toHaveURL(/\/s\/local-demo-token\/game\/puzzle-swap$/);
+  await page.getByRole('button', { name: 'Voltar aos jogos' }).click();
+  await expect(page.locator('.gallery-card')).toHaveCount(12);
+  await expect(page.locator('.gallery-card').nth(10)).toHaveAttribute('aria-current', 'true');
+  await expect
+    .poll(async () => Math.abs((await page.evaluate(() => window.scrollY)) - before))
+    .toBeLessThan(24);
+});

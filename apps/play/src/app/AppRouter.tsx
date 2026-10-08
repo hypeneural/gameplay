@@ -157,7 +157,8 @@ export function AppRouter(): React.JSX.Element {
 
   useEffect(() => {
     if (route.kind === 'session') window.scrollTo(0, hubScrollRef.current);
-    else if (route.kind === 'gallery') window.scrollTo(0, galleryScrollRef.current);
+    // Gallery is lazy-loaded: restoring in the parent races its short Suspense fallback.
+    // SessionGallery restores after the photo elements exist in the DOM.
     else if (route.kind === 'game-cover' && !playing) window.scrollTo(0, 0);
   }, [route, playing]);
 
@@ -417,6 +418,7 @@ export function AppRouter(): React.JSX.Element {
           lowQuality={quality === 'LOW'}
           onSelectPhoto={setSelectedPhotoId}
           initialVisibleCount={galleryVisibleCountRef.current}
+          restoreScrollY={galleryScrollRef.current}
           onVisibleCountChange={(count: number) => {
             galleryVisibleCountRef.current = count;
           }}
