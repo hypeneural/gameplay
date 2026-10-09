@@ -11,6 +11,10 @@ export interface CatalogRuntimeConfig {
   readonly previewConfigPath: string;
   readonly port: number;
   readonly host: string;
+  readonly databasePath?: string;
+  readonly storageDir?: string;
+  readonly publisherApiSecret?: string;
+  readonly serverSecret?: string;
 }
 
 export function resolveCatalogRuntimeConfig(
@@ -43,6 +47,18 @@ export function resolveCatalogRuntimeConfig(
     previewConfigPath: resolve(previewConfigPath),
     port: parsePort(environment.PORT ?? '4180'),
     host: environment.HOST ?? '127.0.0.1',
+    ...(environment.CATALOG_DATABASE_PATH
+      ? { databasePath: resolve(environment.CATALOG_DATABASE_PATH) }
+      : {}),
+    ...(environment.CATALOG_STORAGE_DIR
+      ? { storageDir: resolve(environment.CATALOG_STORAGE_DIR) }
+      : {}),
+    ...(environment.PUBLISHER_API_SECRET
+      ? { publisherApiSecret: environment.PUBLISHER_API_SECRET }
+      : {}),
+    ...(environment.CATALOG_SERVER_SECRET
+      ? { serverSecret: environment.CATALOG_SERVER_SECRET }
+      : {}),
   };
 }
 

@@ -68,10 +68,13 @@
 │   │   │   ├── filePreviewRepository.ts
 │   │   │   ├── main.ts
 │   │   │   ├── publication
+│   │   │   │   ├── PublicationService.ts
 │   │   │   │   ├── SessionRepository.ts
+│   │   │   │   ├── corte2Http.test.ts
 │   │   │   │   ├── hardeningRegression.test.ts
 │   │   │   │   ├── mvpContract.test.ts
 │   │   │   │   ├── mvpSqliteSchema.test.ts
+│   │   │   │   ├── publicationLogger.ts
 │   │   │   │   ├── publicationManifest.test.ts
 │   │   │   │   ├── publicationManifest.ts
 │   │   │   │   ├── sessionRepository.test.ts
@@ -79,7 +82,10 @@
 │   │   │   │   └── tokenSecurity.ts
 │   │   │   ├── runtimeConfig.test.ts
 │   │   │   ├── runtimeConfig.ts
-│   │   │   └── socialPreview.ts
+│   │   │   ├── socialPreview.ts
+│   │   │   └── storage
+│   │   │       ├── FileSystemStorageService.test.ts
+│   │   │       └── FileSystemStorageService.ts
 │   │   └── tsconfig.build.json
 │   └── play
 │       ├── AGENTS.md
