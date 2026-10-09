@@ -2,7 +2,10 @@ import { readFile } from 'node:fs/promises';
 import { describe, expect, it } from 'vitest';
 import { parsePublicationManifestV1 } from './publicationManifest.js';
 
-const openapiUrl = new URL('../../../../docs/contracts/mvp-photo-publication-v1.openapi.json', import.meta.url);
+const openapiUrl = new URL(
+  '../../../../docs/contracts/mvp-photo-publication-v1.openapi.json',
+  import.meta.url,
+);
 const paths = [
   '/internal/v1/sessions/resolve',
   '/internal/v1/publications',
@@ -16,11 +19,17 @@ const paths = [
 async function readSpec() {
   return JSON.parse(await readFile(openapiUrl, 'utf8')) as {
     openapi: string;
-    paths: Record<string, Record<string, {
-      security?: unknown;
-      requestBody?: { content?: Record<string, { example?: unknown }> };
-      responses?: Record<string, unknown>;
-    }>>;
+    paths: Record<
+      string,
+      Record<
+        string,
+        {
+          security?: unknown;
+          requestBody?: { content?: Record<string, { example?: unknown }> };
+          responses?: Record<string, unknown>;
+        }
+      >
+    >;
   };
 }
 
@@ -47,7 +56,9 @@ describe('MVP OpenAPI contract is only a planned interface', () => {
 
   it('keeps the sample upload manifesto compatible with existing strict parser', async () => {
     const api = await readSpec();
-    const example = api.paths['/internal/v1/publications']?.post?.requestBody?.content?.['application/json']?.example;
+    const example =
+      api.paths['/internal/v1/publications']?.post?.requestBody?.content?.['application/json']
+        ?.example;
     expect(parsePublicationManifestV1(example).photos).toHaveLength(1);
   });
 });
