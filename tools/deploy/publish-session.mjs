@@ -1,6 +1,6 @@
 import { createHash, randomUUID } from 'node:crypto';
 import { existsSync } from 'node:fs';
-import { appendFile, readFile, rename, unlink, writeFile } from 'node:fs/promises';
+import { appendFile, open, readFile, rename, unlink, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { URL } from 'node:url';
 
@@ -191,6 +191,30 @@ export async function buildManifestFromLocalConfig(
  * Executes full publication flow against the catalog-server internal API.
  */
 export async function publishSession(options) {
+  // Lock the whole transaction, not only checkpoint creation.
+  if (!UUID_PATTERN.test(options.crmOrderUuid ?? '')) {
+    throw new Error('PUBLISHER_ORDER_UUID_INVALID');
+  }
+  const privateRoot = options.storageRoot ?? options.blobsDir;
+  if (!privateRoot) throw new Error('PUBLISHER_PRIVATE_STORAGE_REQUIRED');
+  const lockPath = join(privateRoot, '.publication-running.lock');
+  let lock;
+  try {
+    lock = await open(lockPath, 'wx', 0o600);
+  } catch (error) {
+    if (error?.code === 'EEXIST') throw new Error('PUBLISHER_ALREADY_RUNNING');
+    throw new Error('PUBLISHER_LOCK_UNAVAILABLE');
+  }
+  try {
+    await lock.writeFile(JSON.stringify({ pid: process.pid, startedAt: new Date().toISOString() }));
+    return await publishSessionUnlocked(options);
+  } finally {
+    await lock.close();
+    await unlink(lockPath).catch(() => undefined);
+  }
+}
+
+async function publishSessionUnlocked(options) {
   const startTime = Date.now();
   const { apiOrigin, apiSecret, crmOrderUuid, logFile } = options;
 
@@ -383,6 +407,8 @@ export async function publishSession(options) {
     revisionId,
     publicToken: receiptData.publicToken,
     accessUrl: accessUrl.href,
+    hubUrl: accessUrl.href,
+    galleryUrl: `${accessUrl.href}/fotos`,
     photosCount: manifest.photos.length,
     blobsCount: finalStatus.readyBlobs,
     totalBytes: totalBytesUploaded,
