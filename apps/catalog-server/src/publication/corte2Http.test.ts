@@ -681,3 +681,31 @@ describe('Corte 2 HTTP Endpoints & Storage Flow', () => {
     expect(body.code).toBe('SESSION_NOT_FOUND');
   });
 });
+
+describe('Publication logger capability privacy regression', () => {
+  it('never logs the bearer link, query string, CRM IDs or untrusted details', () => {
+    const entries: PublicationLogEntry[] = [];
+    const logger = new StructuredPublicationLogger({
+      sink: (line) => entries.push(JSON.parse(line) as PublicationLogEntry),
+    });
+    const token = 'a'.repeat(43);
+    logger.log('session_data_served', {
+      requestId: randomUUID(),
+      method: 'GET',
+      path: `/s/${token}/data?unexpected=secret-value`,
+      status: 200,
+      details: {
+        sessionId: randomUUID(),
+        accessUrl: `https://jogos.fotosdenatal.com/s/${token}`,
+        photosCount: 4,
+      },
+    });
+    const serialized = JSON.stringify(entries);
+    expect(entries[0]?.path).toBe('/s/:token/data');
+    expect(serialized).not.toContain(token);
+    expect(serialized).not.toContain('secret-value');
+    expect(serialized).not.toContain('accessUrl');
+    expect(serialized).not.toContain('sessionId');
+    expect(entries[0]?.details).toEqual({ photosCount: 4 });
+  });
+});
