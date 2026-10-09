@@ -70,8 +70,10 @@ export async function buildManifestFromLocalConfig(
       const fileBytes = await readFile(variantFilePath);
       const sha256 = createHash('sha256').update(fileBytes).digest('hex');
       const byteLength = fileBytes.byteLength;
-      if ((metric.sha256 && metric.sha256.toLowerCase() !== sha256) ||
-          (metric.byteLength !== undefined && metric.byteLength !== byteLength)) {
+      if (
+        (metric.sha256 && metric.sha256.toLowerCase() !== sha256) ||
+        (metric.byteLength !== undefined && metric.byteLength !== byteLength)
+      ) {
         throw new Error('DERIVATIVE_INTEGRITY_MISMATCH');
       }
 
@@ -123,8 +125,7 @@ export async function publishSession(options) {
 
   const normalizedOrigin = apiOrigin.replace(/\/+$/, '');
   const headers = {
-    Authorization: `Bearer ${apiSecret}`,
-    'Content-Type': 'application/json',
+    Authorization: `***    'Content-Type': 'application/json',
   };
 
   await appendStructuredLog(logFile, {
@@ -224,8 +225,7 @@ export async function publishSession(options) {
       {
         method: 'PUT',
         headers: {
-          Authorization: `Bearer ${apiSecret}`,
-          'Content-Type': 'image/webp',
+          Authorization: `***          'Content-Type': 'image/webp',
           'X-Content-SHA256': sha256,
         },
         body: new Uint8Array(fileBytes),
@@ -274,9 +274,11 @@ export async function publishSession(options) {
   }
 
   const receiptData = await activateRes.json();
-  if ((receiptData.state ?? receiptData.status) !== 'ACTIVE' ||
-      receiptData.revisionId !== revisionId ||
-      (receiptData.sessionId && receiptData.sessionId !== sessionId)) {
+  if (
+    (receiptData.state ?? receiptData.status) !== 'ACTIVE' ||
+    receiptData.revisionId !== revisionId ||
+    (receiptData.sessionId && receiptData.sessionId !== sessionId)
+  ) {
     throw new Error('PUBLICATION_ACTIVATION_RECEIPT_INVALID');
   }
   let accessUrl;
@@ -285,10 +287,14 @@ export async function publishSession(options) {
   } catch {
     throw new Error('PUBLICATION_ACCESS_URL_INVALID');
   }
-  if (accessUrl.protocol !== 'https:' ||
-      accessUrl.hostname !== 'jogos.fotosdenatal.com' ||
-      accessUrl.port || accessUrl.search || accessUrl.hash ||
-      !new RegExp('^[/]s[/][A-Za-z0-9_-]{16,128}$').test(accessUrl.pathname)) {
+  if (
+    accessUrl.protocol !== 'https:' ||
+    accessUrl.hostname !== 'jogos.fotosdenatal.com' ||
+    accessUrl.port ||
+    accessUrl.search ||
+    accessUrl.hash ||
+    !new RegExp('^[/]s[/][A-Za-z0-9_-]{16,128}$').test(accessUrl.pathname)
+  ) {
     throw new Error('PUBLICATION_ACCESS_URL_INVALID');
   }
   const durationMs = Date.now() - startTime;
