@@ -96,7 +96,8 @@ export function parsePublicationManifestV1(input: unknown): PublicationManifestV
     !Array.isArray(input.photos) ||
     input.photos.length < 1 ||
     input.photos.length > publicationLimits.maxPhotos
-  ) invalid();
+  )
+    invalid();
 
   const seenPhotos = new Set<string>();
   const seenBlobs = new Set<string>();
@@ -121,7 +122,8 @@ export function parsePublicationManifestV1(input: unknown): PublicationManifestV
       !positiveInteger(item.height, publicationLimits.maxDimension) ||
       !isRecord(item.variants) ||
       !exactKeys(item.variants, publicationVariantNames)
-    ) invalid();
+    )
+      invalid();
 
     seenPhotos.add(item.photoId);
     seenSortIndices.add(item.sortIndex);
@@ -139,7 +141,8 @@ export function parsePublicationManifestV1(input: unknown): PublicationManifestV
         !positiveInteger(variant.height, publicationLimits.maxDimension) ||
         variant.width > item.width ||
         variant.height > item.height
-      ) invalid();
+      )
+        invalid();
 
       seenBlobs.add(variant.blobId);
       bytes += variant.byteLength;
