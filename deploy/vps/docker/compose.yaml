@@ -7,12 +7,12 @@ services:
       - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
       - ${RELEASE_DIR:-/srv/runtime/christmas-games/current}/web:/var/www/html/web:ro
       - ${RELEASE_DIR:-/srv/runtime/christmas-games/current}/public/social:/var/www/html/public/social:ro
-      - ${MEDIA_DIR:-/srv/runtime/christmas-games/media}:/srv/christmas-private/derived:ro
     networks:
       - edge
       - internal
     depends_on:
-      - catalog
+      catalog:
+        condition: service_healthy
     healthcheck:
       test: ['CMD', 'wget', '-q', '--spider', 'http://127.0.0.1:80/healthz']
       interval: 15s
@@ -23,6 +23,12 @@ services:
     image: node:24-alpine
     container_name: christmas-games-catalog
     restart: unless-stopped
+    # Staging is read-only. Re-enable persistent media only after pilot approval.
+    read_only: true
+    security_opt:
+      - no-new-privileges:true
+    tmpfs:
+      - /tmp:size=16m,noexec,nosuid
     working_dir: /app
     environment:
       NODE_ENV: production
@@ -37,7 +43,6 @@ services:
       - ${RELEASE_DIR:-/srv/runtime/christmas-games/current}/package.json:/app/package.json:ro
       - ${RELEASE_DIR:-/srv/runtime/christmas-games/current}/web:/var/www/html/web:ro
       - /srv/secrets/christmas-games/social-preview.json:/srv/secrets/christmas-games/social-preview.json:ro
-      - ${DATA_DIR:-/srv/runtime/christmas-games/data}:/var/lib/christmas-games:rw
     command: ['node', 'server/main.js']
     networks:
       - internal
