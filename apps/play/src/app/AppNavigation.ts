@@ -1,17 +1,21 @@
 export interface SessionRoute {
   kind: 'session';
   token: string;
+  /** Only explicit public demo paths can set this flag. */
+  demo?: true;
 }
 
 interface GalleryRoute {
   kind: 'gallery';
   token: string;
+  demo?: true;
 }
 
 export interface GameCoverRoute {
   kind: 'game-cover';
   token: string;
   gameId: string;
+  demo?: true;
 }
 
 interface ThemeLabRoute {
@@ -42,9 +46,21 @@ export type AppRoute =
 export type PublicRoute = SessionRoute | GalleryRoute | GameCoverRoute;
 
 const fallbackSessionRoute: SessionRoute = { kind: 'session', token: 'local-demo-token' };
+const publicDemoToken = 'public-demo';
 
 /** Parses only public route identifiers; run ids and photo paths never enter the URL. */
 export function parseAppRoute(pathname: string): AppRoute {
+  // Public demo is an explicit route, never a fallback for real /s/:token sessions.
+  if (pathname === '/' || pathname === '/demo' || pathname === '/demo/') {
+    return { kind: 'session', token: publicDemoToken, demo: true };
+  }
+  if (pathname === '/demo/fotos') {
+    return { kind: 'gallery', token: publicDemoToken, demo: true };
+  }
+  const demoGame = /^\/demo\/game\/([a-z0-9-]{1,64})$/.exec(pathname);
+  if (demoGame) {
+    return { kind: 'game-cover', token: publicDemoToken, gameId: demoGame[1]!, demo: true };
+  }
   const segments = pathname.split('/').filter(Boolean);
   if (segments[0] === '__dev' && segments[1] === 'theme') return { kind: 'theme-lab' };
   if (segments[0] === '__dev' && segments[1] === 'experience') return { kind: 'experience-lab' };
@@ -61,6 +77,11 @@ export function parseAppRoute(pathname: string): AppRoute {
 }
 
 export function routePath(route: PublicRoute): string {
+  if (route.demo) {
+    if (route.kind === 'session') return '/';
+    if (route.kind === 'gallery') return '/demo/fotos';
+    return `/demo/game/${encodeURIComponent(route.gameId)}`;
+  }
   const token = encodeURIComponent(route.token);
   if (route.kind === 'session') return `/s/${token}`;
   if (route.kind === 'gallery') return `/s/${token}/fotos`;
@@ -81,7 +102,7 @@ export function sameRoute(first: AppRoute, second: AppRoute): boolean {
   ) {
     return true;
   }
-  if (first.token !== second.token) return false;
+  if (first.token !== second.token || Boolean(first.demo) !== Boolean(second.demo)) return false;
   if (first.kind === 'game-cover' && second.kind === 'game-cover') {
     return first.gameId === second.gameId;
   }
