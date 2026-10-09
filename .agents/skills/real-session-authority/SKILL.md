@@ -27,11 +27,7 @@ Minimum model:
 ```text
 photo_sessions
 photo_revisions
-photos
-revision_photos
-media_assets
-idempotency_records
-audit_events
+revision_blobs
 ```
 
 Do not add browser grants or WhatsApp in this first cut.
