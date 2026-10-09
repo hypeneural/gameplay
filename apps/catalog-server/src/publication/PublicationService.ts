@@ -333,7 +333,12 @@ export class PublicationService {
 
     // Idempotent retry: already READY and confirmed on disk
     if (expected.state === 'READY') {
-      const exists = await this.storage.hasBlob(revisionId, blobId, expected.sha256, expected.byteLength);
+      const exists = await this.storage.hasBlob(
+        revisionId,
+        blobId,
+        expected.sha256,
+        expected.byteLength,
+      );
       if (exists) {
         this.sendJson(response, 200, {
           blobId,
@@ -616,13 +621,7 @@ export class PublicationService {
       return;
     }
 
-    this.sendError(
-      response,
-      500,
-      'INTERNAL_ERROR',
-      'Internal server error',
-      requestId,
-    );
+    this.sendError(response, 500, 'INTERNAL_ERROR', 'Internal server error', requestId);
   }
 
   private sendError(
