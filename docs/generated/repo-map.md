@@ -65,10 +65,14 @@
 │   │   │   ├── filePreviewRepository.ts
 │   │   │   ├── main.ts
 │   │   │   ├── publication
+│   │   │   │   ├── SessionRepository.ts
 │   │   │   │   ├── mvpContract.test.ts
 │   │   │   │   ├── mvpSqliteSchema.test.ts
 │   │   │   │   ├── publicationManifest.test.ts
-│   │   │   │   └── publicationManifest.ts
+│   │   │   │   ├── publicationManifest.ts
+│   │   │   │   ├── sessionRepository.test.ts
+│   │   │   │   ├── sqliteDatabase.ts
+│   │   │   │   └── tokenSecurity.ts
 │   │   │   ├── runtimeConfig.test.ts
 │   │   │   ├── runtimeConfig.ts
 │   │   │   └── socialPreview.ts
