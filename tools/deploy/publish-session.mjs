@@ -30,7 +30,7 @@ async function checkpointPublication(options, built) {
   try {
     state = JSON.parse(await readFile(file, 'utf8'));
   } catch (error) {
-    if (error?.code !== 'ENOENT') throw new Error('PUBLISHER_CHECKPOINT_INVALID');
+    if (error?.code !== 'ENOENT') throw new Error('PUBLISHER_CHECKPOINT_INVALID', { cause: error });
   }
   if (!state) {
     const tempFile = `${file}.tmp-${randomUUID()}`;
