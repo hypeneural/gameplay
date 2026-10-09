@@ -10,19 +10,14 @@ const TEST_SECRET = 'super-secret-key-for-test-publisher-32chars!';
 const CRM_ORDER_A = '11111111-1111-4111-8111-111111111111';
 const CRM_ORDER_B = '22222222-2222-4222-8222-222222222222';
 
-interface TestManifestResult {
-  readonly manifest: PublicationManifestV1;
-  readonly rawJson: string;
-}
-
 function createManifest(
   sessionId: string,
   requestId: string,
   expectedActiveRevisionId: string | null = null,
   photoId: string = 'photo-01',
   blobPrefix: string = '33333333-3333-4333-8333-33333333333',
-): TestManifestResult {
-  const manifest: PublicationManifestV1 = {
+): PublicationManifestV1 {
+  return {
     schemaVersion: 1,
     requestId,
     sessionId,
@@ -61,8 +56,24 @@ function createManifest(
       },
     ],
   };
+}
 
-  return { manifest, rawJson: JSON.stringify(manifest) };
+function confirmBlob(
+  repo: SqliteSessionRepository,
+  revisionId: string,
+  variant: { blobId: string; sha256: string; byteLength: number; width: number; height: number },
+  override?: Partial<Parameters<SqliteSessionRepository['recordVerifiedBlob']>[0]>,
+) {
+  return repo.recordVerifiedBlob({
+    revisionId,
+    blobId: variant.blobId,
+    sha256: variant.sha256,
+    byteLength: variant.byteLength,
+    width: variant.width,
+    height: variant.height,
+    storageConfirmed: true,
+    ...override,
+  });
 }
 
 describe('SessionRepository with SQLite, CAS and A1/A2/B isolation', () => {
@@ -97,16 +108,16 @@ describe('SessionRepository with SQLite, CAS and A1/A2/B isolation', () => {
 
     const sessionA = await repo.resolveOrCreateSession(CRM_ORDER_A);
     const requestId = '44444444-4444-4444-8444-444444444444';
-    const { manifest, rawJson } = createManifest(sessionA.sessionId, requestId, null);
+    const manifest = createManifest(sessionA.sessionId, requestId, null);
 
-    const staged = await repo.beginPublication(manifest, rawJson);
+    const staged = await repo.beginPublication(manifest);
     expect(staged.state).toBe('STAGED');
     expect(staged.expectedBlobs).toBe(3);
     expect(staged.readyBlobs).toBe(0);
     expect(staged.pendingBlobIds).toHaveLength(3);
 
     // Replay with identical payload returns the same revision
-    const replay = await repo.beginPublication(manifest, rawJson);
+    const replay = await repo.beginPublication(manifest);
     expect(replay.revisionId).toBe(staged.revisionId);
 
     // Replay with different manifest content throws IDEMPOTENCY_CONFLICT
@@ -114,8 +125,7 @@ describe('SessionRepository with SQLite, CAS and A1/A2/B isolation', () => {
       ...manifest,
       recipeKey: 'recipe-different',
     };
-    const conflictingJson = JSON.stringify(conflictingManifest);
-    await expect(repo.beginPublication(conflictingManifest, conflictingJson)).rejects.toThrowError(
+    await expect(repo.beginPublication(conflictingManifest)).rejects.toThrowError(
       PublicationDomainError,
     );
 
@@ -128,39 +138,26 @@ describe('SessionRepository with SQLite, CAS and A1/A2/B isolation', () => {
     const repo = new SqliteSessionRepository({ db, serverSecret: TEST_SECRET });
 
     const sessionA = await repo.resolveOrCreateSession(CRM_ORDER_A);
-    const { manifest, rawJson } = createManifest(
+    const manifest = createManifest(
       sessionA.sessionId,
       '55555555-5555-4555-8555-555555555555',
       null,
     );
-    const staged = await repo.beginPublication(manifest, rawJson);
+    const staged = await repo.beginPublication(manifest);
 
     const firstPhoto = manifest.photos[0]!;
     const thumb = firstPhoto.variants.thumb;
-    const recorded = await repo.recordVerifiedBlob(staged.revisionId, thumb.blobId, {
-      sha256: thumb.sha256,
-      byteLength: thumb.byteLength,
-      width: thumb.width,
-      height: thumb.height,
-    });
+    const recorded = await confirmBlob(repo, staged.revisionId, thumb);
     expect(recorded.state).toBe('READY');
 
     // Duplicate call is idempotent
-    const duplicate = await repo.recordVerifiedBlob(staged.revisionId, thumb.blobId, {
-      sha256: thumb.sha256,
-      byteLength: thumb.byteLength,
-      width: thumb.width,
-      height: thumb.height,
-    });
+    const duplicate = await confirmBlob(repo, staged.revisionId, thumb);
     expect(duplicate.state).toBe('READY');
 
     // Mismatched hash rejected with INVALID_MEDIA
     await expect(
-      repo.recordVerifiedBlob(staged.revisionId, firstPhoto.variants.card.blobId, {
+      confirmBlob(repo, staged.revisionId, firstPhoto.variants.card, {
         sha256: '0000000000000000000000000000000000000000000000000000000000000000',
-        byteLength: 120000,
-        width: 800,
-        height: 600,
       }),
     ).rejects.toThrowError(PublicationDomainError);
 
@@ -173,18 +170,18 @@ describe('SessionRepository with SQLite, CAS and A1/A2/B isolation', () => {
     const repo = new SqliteSessionRepository({ db, serverSecret: TEST_SECRET });
 
     const sessionA = await repo.resolveOrCreateSession(CRM_ORDER_A);
-    const { manifest, rawJson } = createManifest(
+    const manifest = createManifest(
       sessionA.sessionId,
       '66666666-6666-4666-8666-666666666666',
       null,
     );
-    const staged = await repo.beginPublication(manifest, rawJson);
+    const staged = await repo.beginPublication(manifest);
 
     // Only 2 of 3 blobs verified
     const firstPhoto = manifest.photos[0]!;
     const p = firstPhoto.variants;
-    await repo.recordVerifiedBlob(staged.revisionId, p.thumb.blobId, p.thumb);
-    await repo.recordVerifiedBlob(staged.revisionId, p.card.blobId, p.card);
+    await confirmBlob(repo, staged.revisionId, p.thumb);
+    await confirmBlob(repo, staged.revisionId, p.card);
 
     // Activation fails with UPLOAD_INCOMPLETE
     await expect(repo.activatePublication(staged.revisionId, null)).rejects.toThrowError(
@@ -192,7 +189,7 @@ describe('SessionRepository with SQLite, CAS and A1/A2/B isolation', () => {
     );
 
     // Verify third blob
-    await repo.recordVerifiedBlob(staged.revisionId, p.game.blobId, p.game);
+    await confirmBlob(repo, staged.revisionId, p.game);
 
     // Activation succeeds
     const receipt = await repo.activatePublication(staged.revisionId, null);
@@ -224,10 +221,10 @@ describe('SessionRepository with SQLite, CAS and A1/A2/B isolation', () => {
       'photo-A1',
       '33333333-3333-4333-8333-33333333333',
     );
-    const stagedA1 = await repo.beginPublication(revA1.manifest, revA1.rawJson);
-    const photoA1 = revA1.manifest.photos[0]!;
+    const stagedA1 = await repo.beginPublication(revA1);
+    const photoA1 = revA1.photos[0]!;
     for (const variant of Object.values(photoA1.variants)) {
-      await repo.recordVerifiedBlob(stagedA1.revisionId, variant.blobId, variant);
+      await confirmBlob(repo, stagedA1.revisionId, variant);
     }
     await repo.activatePublication(stagedA1.revisionId, null);
 
@@ -243,15 +240,15 @@ describe('SessionRepository with SQLite, CAS and A1/A2/B isolation', () => {
       'photo-A2',
       '88888888-8888-4888-8888-88888888888',
     );
-    const stagedA2 = await repo.beginPublication(revA2.manifest, revA2.rawJson);
+    const stagedA2 = await repo.beginPublication(revA2);
 
     // While A2 is staged, A1 is still active
     const activeWhileStaged = await repo.getActiveSession(sessionA.publicToken!);
     expect(activeWhileStaged!.photos[0]!.id).toBe('photo-A1');
 
-    const photoA2 = revA2.manifest.photos[0]!;
+    const photoA2 = revA2.photos[0]!;
     for (const variant of Object.values(photoA2.variants)) {
-      await repo.recordVerifiedBlob(stagedA2.revisionId, variant.blobId, variant);
+      await confirmBlob(repo, stagedA2.revisionId, variant);
     }
 
     // Stale CAS attempt (passing null instead of stagedA1.revisionId) fails
@@ -266,6 +263,12 @@ describe('SessionRepository with SQLite, CAS and A1/A2/B isolation', () => {
     // Now A2 is active!
     const active2 = await repo.getActiveSession(sessionA.publicToken!);
     expect(active2!.photos[0]!.id).toBe('photo-A2');
+
+    // And A1 has transitioned to SUPERSEDED
+    const a1Row = db
+      .prepare('SELECT state FROM photo_revisions WHERE id = ?')
+      .get(stagedA1.revisionId) as { state: string };
+    expect(a1Row.state).toBe('SUPERSEDED');
 
     db.close();
   });
@@ -286,10 +289,10 @@ describe('SessionRepository with SQLite, CAS and A1/A2/B isolation', () => {
       'photo-A',
       '33333333-3333-4333-8333-33333333333',
     );
-    const stagedA = await repo.beginPublication(revA.manifest, revA.rawJson);
-    const photoA = revA.manifest.photos[0]!;
+    const stagedA = await repo.beginPublication(revA);
+    const photoA = revA.photos[0]!;
     for (const v of Object.values(photoA.variants)) {
-      await repo.recordVerifiedBlob(stagedA.revisionId, v.blobId, v);
+      await confirmBlob(repo, stagedA.revisionId, v);
     }
     await repo.activatePublication(stagedA.revisionId, null);
 
@@ -301,10 +304,10 @@ describe('SessionRepository with SQLite, CAS and A1/A2/B isolation', () => {
       'photo-B',
       'aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeee',
     );
-    const stagedB = await repo.beginPublication(revB.manifest, revB.rawJson);
-    const photoB = revB.manifest.photos[0]!;
+    const stagedB = await repo.beginPublication(revB);
+    const photoB = revB.photos[0]!;
     for (const v of Object.values(photoB.variants)) {
-      await repo.recordVerifiedBlob(stagedB.revisionId, v.blobId, v);
+      await confirmBlob(repo, stagedB.revisionId, v);
     }
     await repo.activatePublication(stagedB.revisionId, null);
 
@@ -339,10 +342,10 @@ describe('SessionRepository with SQLite, CAS and A1/A2/B isolation', () => {
         'persisted-photo',
         '77777777-7777-4777-8777-77777777777',
       );
-      const staged = await repo1.beginPublication(rev.manifest, rev.rawJson);
-      const photo = rev.manifest.photos[0]!;
+      const staged = await repo1.beginPublication(rev);
+      const photo = rev.photos[0]!;
       for (const v of Object.values(photo.variants)) {
-        await repo1.recordVerifiedBlob(staged.revisionId, v.blobId, v);
+        await confirmBlob(repo1, staged.revisionId, v);
       }
       await repo1.activatePublication(staged.revisionId, null);
 
@@ -392,10 +395,10 @@ describe('SessionRepository with SQLite, CAS and A1/A2/B isolation', () => {
       'revokable-photo',
       '66666666-6666-4666-8666-66666666666',
     );
-    const staged = await repo.beginPublication(rev.manifest, rev.rawJson);
-    const photo = rev.manifest.photos[0]!;
+    const staged = await repo.beginPublication(rev);
+    const photo = rev.photos[0]!;
     for (const v of Object.values(photo.variants)) {
-      await repo.recordVerifiedBlob(staged.revisionId, v.blobId, v);
+      await confirmBlob(repo, staged.revisionId, v);
     }
     await repo.activatePublication(staged.revisionId, null);
 

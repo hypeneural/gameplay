@@ -3,6 +3,16 @@ import { createHash, createHmac } from 'node:crypto';
 const TOKEN_PATTERN = /^[A-Za-z0-9_-]{16,128}$/;
 
 /**
+ * Asserts that the provided server secret meets strict entropy requirements.
+ * Must be a non-empty string of at least 32 characters.
+ */
+export function assertValidServerSecret(serverSecret: unknown): asserts serverSecret is string {
+  if (typeof serverSecret !== 'string' || serverSecret.trim().length < 32) {
+    throw new Error('server_secret_must_be_at_least_32_characters');
+  }
+}
+
+/**
  * Derives a customer capability token deterministically using HMAC-SHA256
  * over the session ID and access version.
  *
@@ -14,9 +24,7 @@ export function derivePublicToken(
   sessionId: string,
   accessVersion: number,
 ): string {
-  if (!serverSecret || serverSecret.length < 16) {
-    throw new Error('server_secret_too_short');
-  }
+  assertValidServerSecret(serverSecret);
   const payload = `${sessionId}:${accessVersion}`;
   return createHmac('sha256', serverSecret).update(payload).digest('base64url');
 }

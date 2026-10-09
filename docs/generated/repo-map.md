@@ -51,13 +51,16 @@
 │   │   ├── config
 │   │   │   └── social-preview.example.json
 │   │   ├── migrations
-│   │   │   └── 001_mvp_photo_sessions.sql
+│   │   │   ├── 001_mvp_photo_sessions.sql
+│   │   │   └── 002_photo_revisions_superseded_state.sql
 │   │   ├── nginx
 │   │   │   └── catalog-social-preview.conf.example
 │   │   ├── package.json
 │   │   ├── public
 │   │   │   └── social
 │   │   │       └── evydencia-christmas-v1.webp
+│   │   ├── scripts
+│   │   │   └── copy-migrations.mjs
 │   │   ├── src
 │   │   │   ├── CatalogServer.test.ts
 │   │   │   ├── CatalogServer.ts
@@ -66,6 +69,7 @@
 │   │   │   ├── main.ts
 │   │   │   ├── publication
 │   │   │   │   ├── SessionRepository.ts
+│   │   │   │   ├── hardeningRegression.test.ts
 │   │   │   │   ├── mvpContract.test.ts
 │   │   │   │   ├── mvpSqliteSchema.test.ts
 │   │   │   │   ├── publicationManifest.test.ts

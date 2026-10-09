@@ -1,8 +1,16 @@
 import { createHash, randomUUID } from 'node:crypto';
 import type { DatabaseSync } from 'node:sqlite';
-import { parsePublicationManifestV1 } from './publicationManifest.js';
+import {
+  canonicalizePublicationManifest,
+  parsePublicationManifestV1,
+} from './publicationManifest.js';
 import type { PublicationManifestV1 } from './publicationManifest.js';
-import { computeTokenHash, derivePublicToken, isValidTokenFormat } from './tokenSecurity.js';
+import {
+  assertValidServerSecret,
+  computeTokenHash,
+  derivePublicToken,
+  isValidTokenFormat,
+} from './tokenSecurity.js';
 
 export type PublicationErrorCode =
   | 'INVALID_MANIFEST'
@@ -38,17 +46,20 @@ export interface ResolvedSession {
 export interface PublicationState {
   readonly revisionId: string;
   readonly sessionId: string;
-  readonly state: 'STAGED' | 'ACTIVE' | 'FAILED';
+  readonly state: 'STAGED' | 'ACTIVE' | 'SUPERSEDED' | 'FAILED';
   readonly expectedBlobs: number;
   readonly readyBlobs: number;
   readonly pendingBlobIds: readonly string[];
 }
 
-export interface VerifiedBlobInput {
+export interface VerifiedBlobConfirmation {
+  readonly revisionId: string;
+  readonly blobId: string;
   readonly sha256: string;
   readonly byteLength: number;
   readonly width: number;
   readonly height: number;
+  readonly storageConfirmed: true;
 }
 
 export interface RecordBlobResult {
@@ -97,15 +108,8 @@ const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3
 
 interface SessionRepository {
   resolveOrCreateSession(crmOrderUuid: string): Promise<ResolvedSession>;
-  beginPublication(
-    manifest: PublicationManifestV1,
-    manifestRawJson: string,
-  ): Promise<PublicationState>;
-  recordVerifiedBlob(
-    revisionId: string,
-    blobId: string,
-    verified: VerifiedBlobInput,
-  ): Promise<RecordBlobResult>;
+  beginPublication(manifestInput: unknown): Promise<PublicationState>;
+  recordVerifiedBlob(confirmation: VerifiedBlobConfirmation): Promise<RecordBlobResult>;
   getPublicationStatus(revisionId: string): Promise<PublicationState>;
   activatePublication(
     revisionId: string,
@@ -122,6 +126,7 @@ export class SqliteSessionRepository implements SessionRepository {
   private readonly defaultPublicBaseUrl: string;
 
   constructor(dependencies: SessionRepositoryDependencies) {
+    assertValidServerSecret(dependencies.serverSecret);
     this.db = dependencies.db;
     this.serverSecret = dependencies.serverSecret;
     this.defaultPublicBaseUrl = (
@@ -138,136 +143,140 @@ export class SqliteSessionRepository implements SessionRepository {
       'SELECT id, crm_order_uuid, active_revision_id, access_version, status FROM photo_sessions WHERE crm_order_uuid = ? LIMIT 1',
     );
 
-    const existing = selectSession.get(crmOrderUuid) as
-      | {
-          id: string;
-          crm_order_uuid: string;
-          active_revision_id: string | null;
-          access_version: number;
-          status: 'ACTIVE' | 'REVOKED';
-        }
-      | undefined;
-
-    if (existing) {
-      const publicToken =
-        existing.status === 'ACTIVE'
-          ? derivePublicToken(this.serverSecret, existing.id, existing.access_version)
-          : undefined;
-
-      return {
-        sessionId: existing.id,
-        activeRevisionId: existing.active_revision_id,
-        status: existing.status,
-        publicToken,
-      };
-    }
-
-    const sessionId = randomUUID();
-    const accessVersion = 1;
-    const publicToken = derivePublicToken(this.serverSecret, sessionId, accessVersion);
-    const tokenHash = computeTokenHash(publicToken);
-
-    const insertSession = this.db.prepare(
-      `INSERT INTO photo_sessions (
-        id, crm_order_uuid, active_revision_id, public_token_hash, access_version, status
-      ) VALUES (?, ?, NULL, ?, ?, 'ACTIVE')`,
-    );
-
+    this.db.exec('BEGIN IMMEDIATE;');
     try {
-      insertSession.run(sessionId, crmOrderUuid, tokenHash, accessVersion);
-    } catch {
-      // Re-query if concurrent insertion succeeded
-      const raced = selectSession.get(crmOrderUuid) as
+      const existing = selectSession.get(crmOrderUuid) as
         | {
             id: string;
+            crm_order_uuid: string;
             active_revision_id: string | null;
             access_version: number;
             status: 'ACTIVE' | 'REVOKED';
           }
         | undefined;
-      if (raced) {
+
+      if (existing) {
+        this.db.exec('COMMIT;');
+        const publicToken =
+          existing.status === 'ACTIVE'
+            ? derivePublicToken(this.serverSecret, existing.id, existing.access_version)
+            : undefined;
+
         return {
-          sessionId: raced.id,
-          activeRevisionId: raced.active_revision_id,
-          status: raced.status,
-          publicToken: derivePublicToken(this.serverSecret, raced.id, raced.access_version),
+          sessionId: existing.id,
+          activeRevisionId: existing.active_revision_id,
+          status: existing.status,
+          publicToken,
         };
       }
-      throw new PublicationDomainError('INTERNAL_ERROR', 'Failed to resolve or create session');
-    }
 
-    return {
-      sessionId,
-      activeRevisionId: null,
-      status: 'ACTIVE',
-      publicToken,
-    };
+      const sessionId = randomUUID();
+      const accessVersion = 1;
+      const publicToken = derivePublicToken(this.serverSecret, sessionId, accessVersion);
+      const tokenHash = computeTokenHash(publicToken);
+
+      const insertSession = this.db.prepare(
+        `INSERT INTO photo_sessions (
+          id, crm_order_uuid, active_revision_id, public_token_hash, access_version, status
+        ) VALUES (?, ?, NULL, ?, ?, 'ACTIVE')`,
+      );
+
+      insertSession.run(sessionId, crmOrderUuid, tokenHash, accessVersion);
+      this.db.exec('COMMIT;');
+
+      return {
+        sessionId,
+        activeRevisionId: null,
+        status: 'ACTIVE',
+        publicToken,
+      };
+    } catch (error) {
+      try {
+        this.db.exec('ROLLBACK;');
+      } catch {
+        // preserve original error
+      }
+      throw error;
+    }
   }
 
-  async beginPublication(
-    manifest: PublicationManifestV1,
-    manifestRawJson: string,
-  ): Promise<PublicationState> {
-    const parsed = parsePublicationManifestV1(manifest);
-    const manifestSha256 = createHash('sha256').update(manifestRawJson).digest('hex');
+  async beginPublication(manifestInput: unknown): Promise<PublicationState> {
+    let parsed: PublicationManifestV1;
+    try {
+      parsed = parsePublicationManifestV1(manifestInput);
+    } catch (error) {
+      throw new PublicationDomainError(
+        'INVALID_MANIFEST',
+        `Manifest validation failed: ${error instanceof Error ? error.message : String(error)}`,
+      );
+    }
+    const canonicalJson = canonicalizePublicationManifest(parsed);
+    const manifestSha256 = createHash('sha256').update(canonicalJson).digest('hex');
 
     const selectSession = this.db.prepare(
       'SELECT id, active_revision_id, status FROM photo_sessions WHERE id = ? LIMIT 1',
     );
-    const session = selectSession.get(parsed.sessionId) as
-      { id: string; active_revision_id: string | null; status: 'ACTIVE' | 'REVOKED' } | undefined;
-
-    if (!session || session.status === 'REVOKED') {
-      throw new PublicationDomainError('SESSION_NOT_FOUND', 'Target session not found or revoked');
-    }
-
-    // Check for idempotent replay by (sessionId, requestId)
     const selectRevisionByRequest = this.db.prepare(
       'SELECT id, manifest_sha256, state FROM photo_revisions WHERE session_id = ? AND request_id = ? LIMIT 1',
     );
-    const existingRev = selectRevisionByRequest.get(parsed.sessionId, parsed.requestId) as
-      { id: string; manifest_sha256: string; state: 'STAGED' | 'ACTIVE' | 'FAILED' } | undefined;
-
-    if (existingRev) {
-      if (existingRev.manifest_sha256 !== manifestSha256) {
-        throw new PublicationDomainError(
-          'IDEMPOTENCY_CONFLICT',
-          'requestId reused with conflicting manifest content',
-        );
-      }
-      return this.getPublicationStatus(existingRev.id);
-    }
-
-    // Validate expectedActiveRevisionId
-    if (session.active_revision_id !== parsed.expectedActiveRevisionId) {
-      throw new PublicationDomainError(
-        'STALE_REVISION',
-        `expectedActiveRevisionId does not match current session activeRevisionId (${session.active_revision_id})`,
-      );
-    }
-
-    const revisionId = randomUUID();
     const selectMaxSeq = this.db.prepare(
       'SELECT COALESCE(MAX(sequence), 0) + 1 AS next_seq FROM photo_revisions WHERE session_id = ?',
     );
-
     const insertRevision = this.db.prepare(
       `INSERT INTO photo_revisions (
         id, session_id, sequence, request_id, manifest_sha256, manifest_json,
         expected_active_revision_id, state
       ) VALUES (?, ?, ?, ?, ?, ?, ?, 'STAGED')`,
     );
-
     const insertBlob = this.db.prepare(
       `INSERT INTO revision_blobs (
         blob_id, revision_id, sha256, byte_length, width, height, state, received_at
       ) VALUES (?, ?, ?, ?, ?, ?, 'EXPECTED', NULL)`,
     );
 
+    const revisionId = randomUUID();
     const pendingBlobIds: string[] = [];
 
     this.db.exec('BEGIN IMMEDIATE;');
     try {
+      const session = selectSession.get(parsed.sessionId) as
+        { id: string; active_revision_id: string | null; status: 'ACTIVE' | 'REVOKED' } | undefined;
+
+      if (!session || session.status === 'REVOKED') {
+        throw new PublicationDomainError(
+          'SESSION_NOT_FOUND',
+          'Target session not found or revoked',
+        );
+      }
+
+      // Check for idempotent replay by (sessionId, requestId)
+      const existingRev = selectRevisionByRequest.get(parsed.sessionId, parsed.requestId) as
+        | {
+            id: string;
+            manifest_sha256: string;
+            state: 'STAGED' | 'ACTIVE' | 'SUPERSEDED' | 'FAILED';
+          }
+        | undefined;
+
+      if (existingRev) {
+        if (existingRev.manifest_sha256 !== manifestSha256) {
+          throw new PublicationDomainError(
+            'IDEMPOTENCY_CONFLICT',
+            'requestId reused with conflicting manifest content',
+          );
+        }
+        this.db.exec('COMMIT;');
+        return this.getPublicationStatus(existingRev.id);
+      }
+
+      // Validate expectedActiveRevisionId against active revision
+      if (session.active_revision_id !== parsed.expectedActiveRevisionId) {
+        throw new PublicationDomainError(
+          'STALE_REVISION',
+          `expectedActiveRevisionId does not match current session activeRevisionId (${session.active_revision_id})`,
+        );
+      }
+
       const seqRow = selectMaxSeq.get(parsed.sessionId) as { next_seq: number };
       const nextSequence = seqRow.next_seq;
 
@@ -277,7 +286,7 @@ export class SqliteSessionRepository implements SessionRepository {
         nextSequence,
         parsed.requestId,
         manifestSha256,
-        manifestRawJson,
+        canonicalJson,
         parsed.expectedActiveRevisionId,
       );
 
@@ -297,7 +306,11 @@ export class SqliteSessionRepository implements SessionRepository {
 
       this.db.exec('COMMIT;');
     } catch (error) {
-      this.db.exec('ROLLBACK;');
+      try {
+        this.db.exec('ROLLBACK;');
+      } catch {
+        // preserve original error
+      }
       throw error;
     }
 
@@ -311,62 +324,88 @@ export class SqliteSessionRepository implements SessionRepository {
     };
   }
 
-  async recordVerifiedBlob(
-    revisionId: string,
-    blobId: string,
-    verified: VerifiedBlobInput,
-  ): Promise<RecordBlobResult> {
-    const selectBlob = this.db.prepare(
-      `SELECT b.blob_id, b.revision_id, b.sha256, b.byte_length, b.width, b.height, b.state, r.state AS rev_state
-       FROM revision_blobs b
-       JOIN photo_revisions r ON r.id = b.revision_id
-       WHERE b.blob_id = ? AND b.revision_id = ? LIMIT 1`,
-    );
-
-    const blob = selectBlob.get(blobId, revisionId) as
-      | {
-          blob_id: string;
-          revision_id: string;
-          sha256: string;
-          byte_length: number;
-          width: number;
-          height: number;
-          state: 'EXPECTED' | 'READY';
-          rev_state: 'STAGED' | 'ACTIVE' | 'FAILED';
-        }
-      | undefined;
-
-    if (!blob) {
-      throw new PublicationDomainError('REVISION_NOT_FOUND', 'Blob or revision not found');
-    }
-
-    if (blob.rev_state === 'FAILED') {
-      throw new PublicationDomainError('REVISION_NOT_FOUND', 'Revision marked as failed');
-    }
-
-    const matches =
-      blob.sha256.toLowerCase() === verified.sha256.toLowerCase() &&
-      blob.byte_length === verified.byteLength &&
-      blob.width === verified.width &&
-      blob.height === verified.height;
-
-    if (!matches) {
+  async recordVerifiedBlob(confirmation: VerifiedBlobConfirmation): Promise<RecordBlobResult> {
+    if (!confirmation.storageConfirmed) {
       throw new PublicationDomainError(
         'INVALID_MEDIA',
-        'Verified blob attributes do not match manifest expectations',
+        'Blob must be confirmed by verified storage before recording READY state',
       );
     }
 
-    if (blob.state === 'READY') {
-      return { blobId, revisionId, state: 'READY' };
-    }
-
-    const updateBlob = this.db.prepare(
-      `UPDATE revision_blobs SET state = 'READY', received_at = CURRENT_TIMESTAMP WHERE blob_id = ? AND revision_id = ?`,
+    const selectBlob = this.db.prepare(
+      `SELECT b.blob_id, b.revision_id, b.sha256, b.byte_length, b.width, b.height, b.state AS blob_state,
+              r.session_id, r.state AS rev_state, s.status AS session_status
+       FROM revision_blobs b
+       JOIN photo_revisions r ON r.id = b.revision_id
+       JOIN photo_sessions s ON s.id = r.session_id
+       WHERE b.blob_id = ? AND b.revision_id = ? LIMIT 1`,
     );
-    updateBlob.run(blobId, revisionId);
 
-    return { blobId, revisionId, state: 'READY' };
+    this.db.exec('BEGIN IMMEDIATE;');
+    try {
+      const row = selectBlob.get(confirmation.blobId, confirmation.revisionId) as
+        | {
+            blob_id: string;
+            revision_id: string;
+            sha256: string;
+            byte_length: number;
+            width: number;
+            height: number;
+            blob_state: 'EXPECTED' | 'READY';
+            session_id: string;
+            rev_state: 'STAGED' | 'ACTIVE' | 'SUPERSEDED' | 'FAILED';
+            session_status: 'ACTIVE' | 'REVOKED';
+          }
+        | undefined;
+
+      if (!row) {
+        throw new PublicationDomainError('REVISION_NOT_FOUND', 'Blob or revision not found');
+      }
+
+      if (row.session_status === 'REVOKED') {
+        throw new PublicationDomainError('SESSION_NOT_FOUND', 'Session is revoked');
+      }
+
+      if (row.rev_state !== 'STAGED') {
+        throw new PublicationDomainError(
+          'STALE_REVISION',
+          `Cannot record blobs for revision in state '${row.rev_state}' (must be STAGED)`,
+        );
+      }
+
+      const matches =
+        row.sha256.toLowerCase() === confirmation.sha256.toLowerCase() &&
+        row.byte_length === confirmation.byteLength &&
+        row.width === confirmation.width &&
+        row.height === confirmation.height;
+
+      if (!matches) {
+        throw new PublicationDomainError(
+          'INVALID_MEDIA',
+          'Verified blob attributes do not match manifest expectations',
+        );
+      }
+
+      if (row.blob_state === 'READY') {
+        this.db.exec('COMMIT;');
+        return { blobId: confirmation.blobId, revisionId: confirmation.revisionId, state: 'READY' };
+      }
+
+      const updateBlob = this.db.prepare(
+        `UPDATE revision_blobs SET state = 'READY', received_at = CURRENT_TIMESTAMP WHERE blob_id = ? AND revision_id = ?`,
+      );
+      updateBlob.run(confirmation.blobId, confirmation.revisionId);
+      this.db.exec('COMMIT;');
+
+      return { blobId: confirmation.blobId, revisionId: confirmation.revisionId, state: 'READY' };
+    } catch (error) {
+      try {
+        this.db.exec('ROLLBACK;');
+      } catch {
+        // preserve original error
+      }
+      throw error;
+    }
   }
 
   async getPublicationStatus(revisionId: string): Promise<PublicationState> {
@@ -374,7 +413,8 @@ export class SqliteSessionRepository implements SessionRepository {
       'SELECT id, session_id, state FROM photo_revisions WHERE id = ? LIMIT 1',
     );
     const rev = selectRev.get(revisionId) as
-      { id: string; session_id: string; state: 'STAGED' | 'ACTIVE' | 'FAILED' } | undefined;
+      | { id: string; session_id: string; state: 'STAGED' | 'ACTIVE' | 'SUPERSEDED' | 'FAILED' }
+      | undefined;
 
     if (!rev) {
       throw new PublicationDomainError('REVISION_NOT_FOUND', `Revision ${revisionId} not found`);
@@ -424,7 +464,7 @@ export class SqliteSessionRepository implements SessionRepository {
             session_id: string;
             expected_active_revision_id: string | null;
             manifest_json: string;
-            state: 'STAGED' | 'ACTIVE' | 'FAILED';
+            state: 'STAGED' | 'ACTIVE' | 'SUPERSEDED' | 'FAILED';
           }
         | undefined;
 
@@ -460,6 +500,37 @@ export class SqliteSessionRepository implements SessionRepository {
           photoCount: manifest.photos.length,
           accessUrl: `${baseUrl}/s/${token}`,
         };
+      }
+
+      // Check revision state: cannot activate if already superseded or failed
+      if (rev.state === 'SUPERSEDED') {
+        throw new PublicationDomainError(
+          'STALE_REVISION',
+          'Cannot reactivate a superseded revision',
+        );
+      }
+      if (rev.state === 'FAILED') {
+        throw new PublicationDomainError('STALE_REVISION', 'Cannot activate a failed revision');
+      }
+      if (rev.state !== 'STAGED') {
+        throw new PublicationDomainError(
+          'STALE_REVISION',
+          `Revision is in state '${rev.state}' (must be STAGED)`,
+        );
+      }
+
+      // Expected active revision must match BOTH what the revision expected AND what the session holds
+      if (expectedActiveRevisionId !== rev.expected_active_revision_id) {
+        throw new PublicationDomainError(
+          'STALE_REVISION',
+          `expectedActiveRevisionId does not match revision expected_active_revision_id (${rev.expected_active_revision_id})`,
+        );
+      }
+      if (expectedActiveRevisionId !== session.active_revision_id) {
+        throw new PublicationDomainError(
+          'STALE_REVISION',
+          `expectedActiveRevisionId does not match current session activeRevisionId (${session.active_revision_id})`,
+        );
       }
 
       // Ensure all blobs are READY
@@ -500,8 +571,15 @@ export class SqliteSessionRepository implements SessionRepository {
         );
       }
 
+      // Mark previously active revision as SUPERSEDED
+      const supersedePrevious = this.db.prepare(
+        "UPDATE photo_revisions SET state = 'SUPERSEDED' WHERE session_id = ? AND state = 'ACTIVE' AND id != ?",
+      );
+      supersedePrevious.run(session.id, rev.id);
+
+      // Mark newly activated revision as ACTIVE
       const updateRev = this.db.prepare(
-        "UPDATE photo_revisions SET state = 'ACTIVE', activated_at = CURRENT_TIMESTAMP WHERE id = ?",
+        "UPDATE photo_revisions SET state = 'ACTIVE', activated_at = CURRENT_TIMESTAMP WHERE id = ? AND state = 'STAGED'",
       );
       updateRev.run(rev.id);
 
@@ -517,7 +595,11 @@ export class SqliteSessionRepository implements SessionRepository {
         accessUrl: `${baseUrl}/s/${token}`,
       };
     } catch (error) {
-      this.db.exec('ROLLBACK;');
+      try {
+        this.db.exec('ROLLBACK;');
+      } catch {
+        // preserve original error
+      }
       throw error;
     }
   }
@@ -529,7 +611,7 @@ export class SqliteSessionRepository implements SessionRepository {
 
     const tokenHash = computeTokenHash(token);
     const selectSession = this.db.prepare(
-      `SELECT s.id, s.active_revision_id, s.status, r.manifest_json
+      `SELECT s.id, s.active_revision_id, s.status, r.manifest_json, r.state AS rev_state
        FROM photo_sessions s
        LEFT JOIN photo_revisions r ON r.id = s.active_revision_id AND r.session_id = s.id
        WHERE s.public_token_hash = ? AND s.status = 'ACTIVE' LIMIT 1`,
@@ -541,18 +623,22 @@ export class SqliteSessionRepository implements SessionRepository {
           active_revision_id: string | null;
           status: 'ACTIVE' | 'REVOKED';
           manifest_json: string | null;
+          rev_state: 'STAGED' | 'ACTIVE' | 'SUPERSEDED' | 'FAILED' | null;
         }
       | undefined;
 
-    if (!row || !row.active_revision_id || !row.manifest_json) {
+    if (!row || !row.active_revision_id || !row.manifest_json || row.rev_state !== 'ACTIVE') {
       return null;
     }
 
     let manifest: PublicationManifestV1;
     try {
-      manifest = JSON.parse(row.manifest_json) as PublicationManifestV1;
-    } catch {
-      return null;
+      manifest = parsePublicationManifestV1(JSON.parse(row.manifest_json));
+    } catch (error) {
+      throw new PublicationDomainError(
+        'INVALID_MANIFEST',
+        `Active revision ${row.active_revision_id} contains corrupt manifest JSON: ${error instanceof Error ? error.message : String(error)}`,
+      );
     }
 
     const activeRevisionId = row.active_revision_id;
@@ -587,19 +673,33 @@ export class SqliteSessionRepository implements SessionRepository {
     const selectSession = this.db.prepare(
       'SELECT id, access_version FROM photo_sessions WHERE id = ? LIMIT 1',
     );
-    const session = selectSession.get(sessionId) as
-      { id: string; access_version: number } | undefined;
-    if (!session) return;
 
-    const nextAccessVersion = session.access_version + 1;
-    // Overwrite token hash with unreachable garbage hash to invalidate lookups immediately
-    const invalidTokenHash = computeTokenHash(`revoked:${randomUUID()}`);
+    this.db.exec('BEGIN IMMEDIATE;');
+    try {
+      const session = selectSession.get(sessionId) as
+        { id: string; access_version: number } | undefined;
+      if (!session) {
+        this.db.exec('COMMIT;');
+        return;
+      }
 
-    const updateRevoked = this.db.prepare(
-      `UPDATE photo_sessions
-       SET access_version = ?, public_token_hash = ?, status = 'REVOKED', updated_at = CURRENT_TIMESTAMP
-       WHERE id = ?`,
-    );
-    updateRevoked.run(nextAccessVersion, invalidTokenHash, sessionId);
+      const nextAccessVersion = session.access_version + 1;
+      const invalidTokenHash = computeTokenHash(`revoked:${randomUUID()}`);
+
+      const updateRevoked = this.db.prepare(
+        `UPDATE photo_sessions
+         SET access_version = ?, public_token_hash = ?, status = 'REVOKED', updated_at = CURRENT_TIMESTAMP
+         WHERE id = ?`,
+      );
+      updateRevoked.run(nextAccessVersion, invalidTokenHash, sessionId);
+      this.db.exec('COMMIT;');
+    } catch (error) {
+      try {
+        this.db.exec('ROLLBACK;');
+      } catch {
+        // preserve original error
+      }
+      throw error;
+    }
   }
 }
