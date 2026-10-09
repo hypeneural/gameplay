@@ -92,4 +92,23 @@ describe('resolveCatalogRuntimeConfig', () => {
     expect(config.publicOrigin.href).toBe('http://127.0.0.1:4180/');
     expect(config.applicationShellPath).toBe(resolve('/repo/apps/play/dist/index.html'));
   });
+
+  it('resolves secrets from file path when *_FILE is provided', () => {
+    const config = resolveCatalogRuntimeConfig(
+      'development',
+      {
+        CATALOG_SOCIAL_PREVIEW_FILE: '/tmp/preview.json',
+        CATALOG_DATABASE_PATH: '/tmp/catalog.db',
+        CATALOG_STORAGE_DIR: '/tmp/media',
+        PUBLISHER_API_SECRET: 'direct-publisher-secret',
+        CATALOG_SERVER_SECRET: 'direct-server-secret',
+      },
+      '/repo/apps/play/dist/index.html',
+    );
+
+    expect(config.databasePath).toBe(resolve('/tmp/catalog.db'));
+    expect(config.storageDir).toBe(resolve('/tmp/media'));
+    expect(config.publisherApiSecret).toBe('direct-publisher-secret');
+    expect(config.serverSecret).toBe('direct-server-secret');
+  });
 });

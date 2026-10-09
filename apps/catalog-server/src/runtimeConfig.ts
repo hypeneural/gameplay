@@ -1,4 +1,5 @@
 import type { URL } from 'node:url';
+import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { parsePublicOrigin } from './socialPreview.js';
 
@@ -40,6 +41,15 @@ export function resolveCatalogRuntimeConfig(
     throw new Error('CATALOG_APPLICATION_SHELL é obrigatório em produção.');
   }
 
+  const publisherApiSecret = resolveSecret(
+    environment.PUBLISHER_API_SECRET,
+    environment.PUBLISHER_API_SECRET_FILE,
+  );
+  const serverSecret = resolveSecret(
+    environment.CATALOG_SERVER_SECRET,
+    environment.CATALOG_SERVER_SECRET_FILE,
+  );
+
   return {
     releaseStage,
     publicOrigin,
@@ -53,13 +63,19 @@ export function resolveCatalogRuntimeConfig(
     ...(environment.CATALOG_STORAGE_DIR
       ? { storageDir: resolve(environment.CATALOG_STORAGE_DIR) }
       : {}),
-    ...(environment.PUBLISHER_API_SECRET
-      ? { publisherApiSecret: environment.PUBLISHER_API_SECRET }
-      : {}),
-    ...(environment.CATALOG_SERVER_SECRET
-      ? { serverSecret: environment.CATALOG_SERVER_SECRET }
-      : {}),
+    ...(publisherApiSecret !== undefined ? { publisherApiSecret } : {}),
+    ...(serverSecret !== undefined ? { serverSecret } : {}),
   };
+}
+
+function resolveSecret(directValue?: string, filePath?: string): string | undefined {
+  if (directValue) return directValue;
+  if (!filePath) return undefined;
+  try {
+    return readFileSync(resolve(filePath), 'utf-8').trim();
+  } catch {
+    return undefined;
+  }
 }
 
 function resolveReleaseStage(production: boolean, value: string | undefined): CatalogReleaseStage {
