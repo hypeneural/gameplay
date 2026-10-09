@@ -59,13 +59,15 @@ describe('publicationManifestV1 (untrusted Node / Python boundary)', () => {
     expect(() =>
       parsePublicationManifestV1({
         ...manifest,
-        photos: [{
-          ...manifest.photos[0],
-          variants: {
-            ...manifest.photos[0]!.variants,
-            thumb: { ...manifest.photos[0]!.variants.thumb, publicUrl: 'https://example.test' },
+        photos: [
+          {
+            ...manifest.photos[0],
+            variants: {
+              ...manifest.photos[0]!.variants,
+              thumb: { ...manifest.photos[0]!.variants.thumb, publicUrl: 'https://example.test' },
+            },
           },
-        }],
+        ],
       }),
     ).toThrow('publication_manifest_invalid');
   });
@@ -99,7 +101,9 @@ describe('publicationManifestV1 (untrusted Node / Python boundary)', () => {
     expect(() =>
       parsePublicationManifestV1({
         ...manifest,
-        photos: [{ ...manifest.photos[0], variants: { thumb: manifest.photos[0]!.variants.thumb } }],
+        photos: [
+          { ...manifest.photos[0], variants: { thumb: manifest.photos[0]!.variants.thumb } },
+        ],
       }),
     ).toThrow('publication_manifest_invalid');
     manifest.photos[0]!.variants.game.width = 9999;
