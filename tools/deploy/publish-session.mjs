@@ -21,6 +21,58 @@ function fingerprintPreparedManifest(manifest) {
     .digest('hex');
 }
 
+async function checkpointPublication(options, built) {
+  const storage = options.storageRoot ?? options.blobsDir;
+  if (!storage) throw new Error('PUBLISHER_PRIVATE_STORAGE_REQUIRED');
+  const file = join(storage, '.publication-checkpoint.json');
+  const sourceHash = fingerprintPreparedManifest(built.manifest);
+  let state;
+  try {
+    state = JSON.parse(await readFile(file, 'utf8'));
+  } catch (error) {
+    if (error?.code !== 'ENOENT') throw new Error('PUBLISHER_CHECKPOINT_INVALID');
+  }
+  if (!state) {
+    const tempFile = `${file}.tmp-${randomUUID()}`;
+    try {
+      await writeFile(
+        tempFile,
+        JSON.stringify({ version: 1, orderUuid: options.crmOrderUuid, sourceHash, manifest: built.manifest }),
+        { mode: 0o600, flag: 'wx' },
+      );
+      await rename(tempFile, file);
+    } finally {
+      await unlink(tempFile).catch(() => undefined);
+    }
+    return built;
+  }
+  const saved = state.manifest;
+  if (
+    state.version !== 1 ||
+    state.orderUuid !== options.crmOrderUuid ||
+    state.sourceHash !== sourceHash ||
+    !saved ||
+    !UUID_PATTERN.test(saved.requestId ?? '') ||
+    fingerprintPreparedManifest(saved) !== sourceHash
+  ) throw new Error('PUBLISHER_CHECKPOINT_CONFLICT');
+  const blobFileMap = new Map();
+  for (let i = 0; i < built.manifest.photos.length; i++) {
+    const current = built.manifest.photos[i];
+    const previous = saved.photos[i];
+    if (!previous || previous.photoId !== current.photoId)
+      throw new Error('PUBLISHER_CHECKPOINT_CONFLICT');
+    for (const name of ['thumb', 'card', 'game']) {
+      const from = current.variants[name].blobId;
+      const to = previous.variants?.[name]?.blobId;
+      const localFile = built.blobFileMap.get(from);
+      if (!to || !UUID_PATTERN.test(to) || !localFile)
+        throw new Error('PUBLISHER_CHECKPOINT_CONFLICT');
+      blobFileMap.set(to, localFile);
+    }
+  }
+  return { manifest: saved, blobFileMap };
+}
+
 function findVariantFile(storageRoot, parsed, photo, variantName) {
   const directPath = join(storageRoot, 'derived', photo.id, `${variantName}.webp`);
   if (existsSync(directPath)) return directPath;
