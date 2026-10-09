@@ -98,7 +98,12 @@ export interface StoreBlobParams {
 
 export interface StorageService {
   storeBlob(data: Readable | Buffer, params: StoreBlobParams): Promise<VerifiedBlobConfirmation>;
-  hasBlob(revisionId: string, blobId: string, expectedSha256?: string, expectedBytes?: number): Promise<boolean>;
+  hasBlob(
+    revisionId: string,
+    blobId: string,
+    expectedSha256?: string,
+    expectedBytes?: number,
+  ): Promise<boolean>;
   getBlobPath(revisionId: string, blobId: string): string;
   getBlobStream(
     revisionId: string,
