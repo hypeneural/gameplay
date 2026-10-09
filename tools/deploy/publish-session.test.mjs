@@ -5,7 +5,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { URL } from 'node:url';
 import { describe, expect, it } from 'vitest';
-import { publishSession } from './publish-session.mjs';
+import { isPidAlive, publishSession } from './publish-session.mjs';
 
 function createMockCatalogServer() {
   const blobsReceived = new Map();
@@ -211,5 +211,199 @@ describe('publish-session CLI', () => {
         crmOrderUuid: 'invalid-not-a-uuid',
       }),
     ).rejects.toThrow('PUBLISHER_ORDER_UUID_INVALID');
+  });
+
+  describe('concurrency and lock lifecycle', () => {
+    it('isPidAlive correctly identifies active vs inactive pids', () => {
+      expect(isPidAlive(process.pid)).toBe(true);
+      expect(isPidAlive(99999999)).toBe(false);
+      expect(isPidAlive(0)).toBe(false);
+      expect(isPidAlive(-1)).toBe(false);
+      expect(isPidAlive('not-a-pid')).toBe(false);
+    });
+
+    it('rejects publication when another active process holds the lock and does not delete it', async () => {
+      const tempDir = await mkdtemp(join(tmpdir(), 'publish-lock-test-'));
+      const lockPath = join(tempDir, '.publication-running.lock');
+
+      try {
+        // Simulate active process holding the lock
+        await writeFile(
+          lockPath,
+          JSON.stringify({ pid: process.pid, startedAt: new Date().toISOString() }),
+        );
+
+        await expect(
+          publishSession({
+            storageRoot: tempDir,
+            apiOrigin: 'http://127.0.0.1:4180',
+            apiSecret: 'secret',
+            crmOrderUuid: '33333333-3333-4333-8333-333333333333',
+          }),
+        ).rejects.toThrow('PUBLISHER_ALREADY_RUNNING');
+
+        // Verify the lock file was NOT deleted
+        const lockContent = await readFile(lockPath, 'utf8');
+        expect(JSON.parse(lockContent).pid).toBe(process.pid);
+      } finally {
+        await rm(tempDir, { recursive: true, force: true });
+      }
+    });
+
+    it('detects stale lock from terminated process and refuses removal without recover flag', async () => {
+      const tempDir = await mkdtemp(join(tmpdir(), 'publish-stale-test-'));
+      const lockPath = join(tempDir, '.publication-running.lock');
+
+      try {
+        // Nonexistent dead PID
+        await writeFile(
+          lockPath,
+          JSON.stringify({ pid: 99999999, startedAt: new Date(Date.now() - 60000).toISOString() }),
+        );
+
+        await expect(
+          publishSession({
+            storageRoot: tempDir,
+            apiOrigin: 'http://127.0.0.1:4180',
+            apiSecret: 'secret',
+            crmOrderUuid: '33333333-3333-4333-8333-333333333333',
+          }),
+        ).rejects.toThrow('PUBLISHER_STALE_LOCK_DETECTED');
+
+        // Lock file must still be present for inspection
+        const lockContent = await readFile(lockPath, 'utf8');
+        expect(JSON.parse(lockContent).pid).toBe(99999999);
+      } finally {
+        await rm(tempDir, { recursive: true, force: true });
+      }
+    });
+
+    it('safely recovers stale lock when recoverStaleLock is explicitly enabled', async () => {
+      const { server } = createMockCatalogServer();
+      await new Promise((resolve) => server.listen(0, '127.0.0.1', resolve));
+      const port = server.address().port;
+      const apiOrigin = `http://127.0.0.1:${port}`;
+
+      const tempDir = await mkdtemp(join(tmpdir(), 'publish-recover-test-'));
+      const lockPath = join(tempDir, '.publication-running.lock');
+
+      try {
+        const derivedDir = join(tempDir, 'derived', 'photo-1');
+        await mkdir(derivedDir, { recursive: true });
+        await writeFile(join(derivedDir, 'thumb.webp'), Buffer.from('RIFF....WEBPTHUMB'));
+        await writeFile(join(derivedDir, 'card.webp'), Buffer.from('RIFF....WEBPCARD'));
+        await writeFile(join(derivedDir, 'game.webp'), Buffer.from('RIFF....WEBPGAME'));
+
+        const config = {
+          version: 2,
+          worker: 'test-worker',
+          session: { id: 'test-session', publicToken: 'test-token', displayName: 'Test Session' },
+          photos: [
+            {
+              id: 'photo-1',
+              contentHash: 'b'.repeat(64),
+              width: 800,
+              height: 600,
+              aspectRatio: 1.333,
+              orientation: 'landscape',
+              variantMetrics: {
+                thumb: { width: 360, height: 480, byteLength: 17 },
+                card: { width: 600, height: 800, byteLength: 16 },
+                game: { width: 800, height: 600, byteLength: 16 },
+              },
+            },
+          ],
+        };
+        await writeFile(join(tempDir, 'local-test-session.json'), JSON.stringify(config, null, 2));
+
+        // Create stale lock with dead PID
+        await writeFile(
+          lockPath,
+          JSON.stringify({ pid: 99999999, startedAt: new Date(Date.now() - 120000).toISOString() }),
+        );
+
+        const receipt = await publishSession({
+          storageRoot: tempDir,
+          apiOrigin,
+          apiSecret: 'test-secret-token',
+          crmOrderUuid: '44444444-4444-4444-8444-444444444444',
+          recoverStaleLock: true,
+        });
+
+        expect(receipt.status).toBe('ACTIVE');
+      } finally {
+        await new Promise((resolve) => server.close(resolve));
+        await rm(tempDir, { recursive: true, force: true });
+      }
+    });
+
+    it('resumes interrupted publication using existing checkpoint without conflict', async () => {
+      const { server } = createMockCatalogServer();
+      await new Promise((resolve) => server.listen(0, '127.0.0.1', resolve));
+      const port = server.address().port;
+      const apiOrigin = `http://127.0.0.1:${port}`;
+
+      const tempDir = await mkdtemp(join(tmpdir(), 'publish-resume-test-'));
+
+      try {
+        const derivedDir = join(tempDir, 'derived', 'photo-1');
+        await mkdir(derivedDir, { recursive: true });
+        await writeFile(join(derivedDir, 'thumb.webp'), Buffer.from('RIFF....WEBPTHUMB'));
+        await writeFile(join(derivedDir, 'card.webp'), Buffer.from('RIFF....WEBPCARD'));
+        await writeFile(join(derivedDir, 'game.webp'), Buffer.from('RIFF....WEBPGAME'));
+
+        const config = {
+          version: 2,
+          worker: 'test-worker',
+          session: { id: 'test-session', publicToken: 'test-token', displayName: 'Test Session' },
+          photos: [
+            {
+              id: 'photo-1',
+              contentHash: 'c'.repeat(64),
+              width: 800,
+              height: 600,
+              aspectRatio: 1.333,
+              orientation: 'landscape',
+              variantMetrics: {
+                thumb: { width: 360, height: 480, byteLength: 17 },
+                card: { width: 600, height: 800, byteLength: 16 },
+                game: { width: 800, height: 600, byteLength: 16 },
+              },
+            },
+          ],
+        };
+        await writeFile(join(tempDir, 'local-test-session.json'), JSON.stringify(config, null, 2));
+
+        // First run succeeds and writes checkpoint
+        const receipt1 = await publishSession({
+          storageRoot: tempDir,
+          apiOrigin,
+          apiSecret: 'test-secret-token',
+          crmOrderUuid: '55555555-5555-4555-8555-555555555555',
+        });
+        expect(receipt1.status).toBe('ACTIVE');
+
+        const checkpoint1 = JSON.parse(
+          await readFile(join(tempDir, '.publication-checkpoint.json'), 'utf8'),
+        );
+
+        // Second run with the same storage resumes using the exact same requestId
+        const receipt2 = await publishSession({
+          storageRoot: tempDir,
+          apiOrigin,
+          apiSecret: 'test-secret-token',
+          crmOrderUuid: '55555555-5555-4555-8555-555555555555',
+        });
+        expect(receipt2.status).toBe('ACTIVE');
+
+        const checkpoint2 = JSON.parse(
+          await readFile(join(tempDir, '.publication-checkpoint.json'), 'utf8'),
+        );
+        expect(checkpoint2.manifest.requestId).toBe(checkpoint1.manifest.requestId);
+      } finally {
+        await new Promise((resolve) => server.close(resolve));
+        await rm(tempDir, { recursive: true, force: true });
+      }
+    });
   });
 });

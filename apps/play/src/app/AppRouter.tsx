@@ -24,6 +24,7 @@ import {
 } from '../audio/playInterfaceTap.js';
 import type { AppRoute, GameCoverRoute, PublicRoute, SessionRoute } from './AppNavigation.js';
 import { fetchLocalTestSession, shouldUseLocalTestMedia } from './LocalTestSession.js';
+import { fetchSessionData, SessionLoadError } from './SessionDataLoader.js';
 import type { Session } from '@christmas-games/platform';
 
 type FixtureCount = 4 | 12 | 120 | 172;
@@ -78,6 +79,17 @@ export function AppRouter(): React.JSX.Element {
   const [selectedPhotoId, setSelectedPhotoId] = useState('ph_001');
   const [localSession, setLocalSession] = useState<{ token: string; value: Session }>();
   const [localSessionError, setLocalSessionError] = useState<string>();
+  const [remoteSession, setRemoteSession] = useState<{ token: string; value: Session }>();
+  const [remoteSessionStatus, setRemoteSessionStatus] = useState<
+    'idle' | 'loading' | 'success' | 'error'
+  >('idle');
+  const [remoteSessionError, setRemoteSessionError] = useState<{
+    code: string;
+    title: string;
+    message: string;
+    canRetry: boolean;
+  }>();
+  const [remoteSessionReloadTrigger, setRemoteSessionReloadTrigger] = useState(0);
   const [playing, setPlaying] = useState(false);
   const [soundEnabled, setSoundEnabled] = useState(true);
   const soundPreferenceRef = useRef(true);
@@ -94,16 +106,41 @@ export function AppRouter(): React.JSX.Element {
   const [exitRequest, setExitRequest] = useState(0);
 
   const currentToken = 'token' in route ? route.token : undefined;
+  const isDevelopmentRoute =
+    route.kind === 'theme-lab' ||
+    route.kind === 'experience-lab' ||
+    route.kind === 'asset-lab' ||
+    route.kind === 'performance-lab';
+
+  const requiresRemoteSession =
+    Boolean(currentToken) &&
+    !usesLocalTestMedia &&
+    !(releaseMode === 'development' && (currentToken === 'local-demo-token' || isDevelopmentRoute));
+
   const validLocalSession =
     localSession && (currentToken ? localSession.token === currentToken : localSession.token === '')
       ? localSession.value
       : undefined;
-  const fixtureSession = useMemo(() => createFixtureSession(fixtureCount), [fixtureCount]);
-  const session = usesLocalTestMedia && validLocalSession ? validLocalSession : fixtureSession;
-  const selectedPhoto =
-    session.photos.find((photo) => photo.id === selectedPhotoId) ?? session.photos[0]!;
-  const context = useMemo<GameContextSeed>(
-    () => ({
+  const validRemoteSession =
+    remoteSession && remoteSession.token === currentToken ? remoteSession.value : undefined;
+  const fixtureSession = useMemo(
+    () => (requiresRemoteSession ? undefined : createFixtureSession(fixtureCount)),
+    [fixtureCount, requiresRemoteSession],
+  );
+
+  const session = usesLocalTestMedia
+    ? validLocalSession
+    : requiresRemoteSession
+      ? validRemoteSession
+      : fixtureSession;
+
+  const selectedPhoto = session
+    ? (session.photos.find((photo) => photo.id === selectedPhotoId) ?? session.photos[0])
+    : undefined;
+
+  const context = useMemo<GameContextSeed | undefined>(() => {
+    if (!session || !selectedPhoto) return undefined;
+    return {
       session,
       selectedPhoto,
       clock: { now: () => performance.now() },
@@ -122,9 +159,17 @@ export function AppRouter(): React.JSX.Element {
       ...(developmentScenario && gameAttempt === 0
         ? { development: { scenario: developmentScenario } }
         : {}),
-    }),
-    [calm, developmentScenario, difficulty, gameAttempt, quality, selectedPhoto, services, session],
-  );
+    };
+  }, [
+    calm,
+    developmentScenario,
+    difficulty,
+    gameAttempt,
+    quality,
+    selectedPhoto,
+    services,
+    session,
+  ]);
 
   const shellControls = {
     soundEnabled,
@@ -206,6 +251,60 @@ export function AppRouter(): React.JSX.Element {
     };
   }, [usesLocalTestMedia, currentToken]);
 
+  useEffect(() => {
+    if (!requiresRemoteSession || !currentToken) {
+      setRemoteSessionStatus('idle');
+      setRemoteSession(undefined);
+      setRemoteSessionError(undefined);
+      return;
+    }
+
+    const controller = new AbortController();
+    setRemoteSessionStatus('loading');
+    setRemoteSessionError(undefined);
+
+    void fetchSessionData(currentToken, controller.signal).then(
+      (loadedSession) => {
+        setRemoteSession({ token: currentToken, value: loadedSession });
+        setRemoteSessionStatus('success');
+        if (loadedSession.photos.length > 0) {
+          setSelectedPhotoId((current) =>
+            loadedSession.photos.some((p) => p.id === current)
+              ? current
+              : loadedSession.photos[0]!.id,
+          );
+        }
+      },
+      (error: unknown) => {
+        if (controller.signal.aborted) return;
+        const loadError =
+          error instanceof SessionLoadError
+            ? error
+            : new SessionLoadError('SESSION_SERVER_ERROR', 'Falha ao carregar o álbum.');
+        let title = 'Álbum indisponível';
+        if (loadError.code === 'SESSION_NOT_FOUND') {
+          title = 'Álbum não encontrado';
+        } else if (loadError.code === 'SESSION_UNAUTHORIZED') {
+          title = 'Acesso não autorizado';
+        } else if (loadError.code === 'SESSION_NETWORK_ERROR') {
+          title = 'Falha na conexão';
+        }
+        setRemoteSessionError({
+          code: loadError.code,
+          title,
+          message: loadError.message,
+          canRetry:
+            loadError.code === 'SESSION_NETWORK_ERROR' || loadError.code === 'SESSION_SERVER_ERROR',
+        });
+        setRemoteSessionStatus('error');
+      },
+    );
+
+    return () => {
+      controller.abort();
+    };
+  }, [requiresRemoteSession, currentToken, remoteSessionReloadTrigger]);
+
   const writeRoute = useCallback(
     (nextRoute: PublicRoute, mode: Exclude<HistoryMode, 'none'>) => {
       const nextIndex =
@@ -272,6 +371,7 @@ export function AppRouter(): React.JSX.Element {
     const game = getInstalledGame(gameId);
     if (
       !game ||
+      !session ||
       session.photos.length < game.definition.minPhotos ||
       (route.kind !== 'session' && route.kind !== 'gallery' && route.kind !== 'game-cover')
     )
@@ -342,12 +442,6 @@ export function AppRouter(): React.JSX.Element {
     setRoute(pending.route);
   };
 
-  const isDevelopmentRoute =
-    route.kind === 'theme-lab' ||
-    route.kind === 'experience-lab' ||
-    route.kind === 'asset-lab' ||
-    route.kind === 'performance-lab';
-
   if (isDevelopmentRoute && releaseMode !== 'development') {
     return (
       <main className="shell unavailable-game" role="alert">
@@ -396,6 +490,45 @@ export function AppRouter(): React.JSX.Element {
         <p className="eyebrow">TESTE LOCAL</p>
         <h1>{localSessionError ? 'Sessão local indisponível' : 'Preparando fotos para o jogo…'}</h1>
         {localSessionError ? <p>{localSessionError}</p> : null}
+      </main>
+    );
+  }
+
+  if (requiresRemoteSession) {
+    if (remoteSessionStatus === 'loading') {
+      return (
+        <main className="shell unavailable-game" role="status">
+          <p className="eyebrow">SEU ÁLBUM DE NATAL</p>
+          <h1>Carregando suas lembranças de Natal…</h1>
+        </main>
+      );
+    }
+    if (remoteSessionStatus === 'error' || !session) {
+      return (
+        <main className="shell unavailable-game" role="alert">
+          <p className="eyebrow">ÁLBUM DE NATAL</p>
+          <h1>{remoteSessionError?.title ?? 'Álbum indisponível'}</h1>
+          <p>{remoteSessionError?.message ?? 'Não foi possível carregar as fotos deste álbum.'}</p>
+          {remoteSessionError?.canRetry ? (
+            <button
+              className="button"
+              type="button"
+              onClick={() => setRemoteSessionReloadTrigger((c) => c + 1)}
+            >
+              Tentar novamente
+            </button>
+          ) : null}
+        </main>
+      );
+    }
+  }
+
+  if (!session || !selectedPhoto || !context) {
+    return (
+      <main className="shell unavailable-game" role="alert">
+        <p className="eyebrow">ÁLBUM DE NATAL</p>
+        <h1>Sessão indisponível</h1>
+        <p>Não foi possível carregar a experiência solicitada.</p>
       </main>
     );
   }

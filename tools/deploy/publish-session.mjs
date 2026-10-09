@@ -187,6 +187,71 @@ export async function buildManifestFromLocalConfig(
   return { manifest, blobFileMap };
 }
 
+export function isPidAlive(pid) {
+  if (typeof pid !== 'number' || !Number.isInteger(pid) || pid <= 0) return false;
+  try {
+    process.kill(pid, 0);
+    return true;
+  } catch (err) {
+    return err?.code === 'EPERM';
+  }
+}
+
+async function acquirePublicationLock(privateRoot, options) {
+  const lockPath = join(privateRoot, '.publication-running.lock');
+  let lock;
+  try {
+    lock = await open(lockPath, 'wx', 0o600);
+  } catch (error) {
+    if (error?.code === 'EEXIST') {
+      let lockInfo;
+      try {
+        const content = await readFile(lockPath, 'utf8');
+        lockInfo = JSON.parse(content);
+      } catch {
+        // Lock file is unreadable or malformed
+      }
+
+      const activePid = typeof lockInfo?.pid === 'number' ? lockInfo.pid : undefined;
+      const processAlive = activePid !== undefined && isPidAlive(activePid);
+
+      if (processAlive) {
+        throw new Error('PUBLISHER_ALREADY_RUNNING', { cause: error });
+      }
+
+      // Process is NOT alive -> Stale lock detected
+      if (!options.recoverStaleLock) {
+        throw new Error('PUBLISHER_STALE_LOCK_DETECTED', { cause: error });
+      }
+
+      // Supervised recovery requested: unlink dead lock and retry open
+      await unlink(lockPath).catch(() => undefined);
+      try {
+        lock = await open(lockPath, 'wx', 0o600);
+      } catch (retryError) {
+        if (retryError?.code === 'EEXIST') {
+          throw new Error('PUBLISHER_ALREADY_RUNNING', { cause: retryError });
+        }
+        throw new Error('PUBLISHER_LOCK_UNAVAILABLE', { cause: retryError });
+      }
+    } else {
+      throw new Error('PUBLISHER_LOCK_UNAVAILABLE', { cause: error });
+    }
+  }
+
+  await lock.writeFile(JSON.stringify({ pid: process.pid, startedAt: new Date().toISOString() }));
+  return {
+    release: async () => {
+      try {
+        await lock.close();
+      } catch {
+        // Ignore close errors
+      }
+      await unlink(lockPath).catch(() => undefined);
+    },
+  };
+}
+
 /**
  * Executes full publication flow against the catalog-server internal API.
  */
@@ -197,20 +262,11 @@ export async function publishSession(options) {
   }
   const privateRoot = options.storageRoot ?? options.blobsDir;
   if (!privateRoot) throw new Error('PUBLISHER_PRIVATE_STORAGE_REQUIRED');
-  const lockPath = join(privateRoot, '.publication-running.lock');
-  let lock;
+  const lockHandle = await acquirePublicationLock(privateRoot, options);
   try {
-    lock = await open(lockPath, 'wx', 0o600);
-  } catch (error) {
-    if (error?.code === 'EEXIST') throw new Error('PUBLISHER_ALREADY_RUNNING');
-    throw new Error('PUBLISHER_LOCK_UNAVAILABLE');
-  }
-  try {
-    await lock.writeFile(JSON.stringify({ pid: process.pid, startedAt: new Date().toISOString() }));
     return await publishSessionUnlocked(options);
   } finally {
-    await lock.close();
-    await unlink(lockPath).catch(() => undefined);
+    await lockHandle.release();
   }
 }
 
@@ -436,6 +492,7 @@ function parseCliArgs(argv) {
   let apiSecret = process.env.PUBLISHER_API_SECRET ?? '';
   let crmOrderUuid = process.env.CRM_ORDER_UUID ?? '';
   let logFile;
+  let recoverStaleLock = false;
 
   for (let i = 0; i < argv.length; i++) {
     const arg = argv[i];
@@ -461,6 +518,8 @@ function parseCliArgs(argv) {
     } else if (arg === '--log-file' && next) {
       logFile = next;
       i++;
+    } else if (arg === '--recover-stale-lock') {
+      recoverStaleLock = true;
     }
   }
 
@@ -486,6 +545,7 @@ function parseCliArgs(argv) {
     apiSecret,
     crmOrderUuid,
     logFile,
+    recoverStaleLock,
   };
 }
 
