@@ -206,6 +206,6 @@ describe('publish-session CLI', () => {
         apiSecret: 'secret',
         crmOrderUuid: 'invalid-not-a-uuid',
       }),
-    ).rejects.toThrow(/Invalid CRM order UUID/);
+    ).rejects.toThrow('PUBLISHER_ORDER_UUID_INVALID');
   });
 });
