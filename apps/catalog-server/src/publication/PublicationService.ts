@@ -333,7 +333,7 @@ export class PublicationService {
 
     // Idempotent retry: already READY and confirmed on disk
     if (expected.state === 'READY') {
-      const exists = await this.storage.hasBlob(revisionId, blobId);
+      const exists = await this.storage.hasBlob(revisionId, blobId, expected.sha256, expected.byteLength);
       if (exists) {
         this.sendJson(response, 200, {
           blobId,
