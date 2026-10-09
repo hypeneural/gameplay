@@ -49,7 +49,7 @@ If a legacy integration still supplies `galleryKey`, accept only the constant `p
 Required states:
 
 ```text
-STAGED -> VALIDATED -> ACTIVE
+STAGED -> ACTIVE -> SUPERSEDED
    \-> FAILED
 ```
 
