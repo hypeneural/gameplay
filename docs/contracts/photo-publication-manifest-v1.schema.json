@@ -47,14 +47,7 @@
       "items": {
         "type": "object",
         "additionalProperties": false,
-        "required": [
-          "photoId",
-          "contentHash",
-          "sortIndex",
-          "width",
-          "height",
-          "variants"
-        ],
+        "required": ["photoId", "contentHash", "sortIndex", "width", "height", "variants"],
         "properties": {
           "photoId": {
             "type": "string",
@@ -82,22 +75,12 @@
           "variants": {
             "type": "object",
             "additionalProperties": false,
-            "required": [
-              "thumb",
-              "card",
-              "game"
-            ],
+            "required": ["thumb", "card", "game"],
             "properties": {
               "thumb": {
                 "type": "object",
                 "additionalProperties": false,
-                "required": [
-                  "blobId",
-                  "sha256",
-                  "byteLength",
-                  "width",
-                  "height"
-                ],
+                "required": ["blobId", "sha256", "byteLength", "width", "height"],
                 "properties": {
                   "blobId": {
                     "type": "string",
@@ -127,13 +110,7 @@
               "card": {
                 "type": "object",
                 "additionalProperties": false,
-                "required": [
-                  "blobId",
-                  "sha256",
-                  "byteLength",
-                  "width",
-                  "height"
-                ],
+                "required": ["blobId", "sha256", "byteLength", "width", "height"],
                 "properties": {
                   "blobId": {
                     "type": "string",
@@ -163,13 +140,7 @@
               "game": {
                 "type": "object",
                 "additionalProperties": false,
-                "required": [
-                  "blobId",
-                  "sha256",
-                  "byteLength",
-                  "width",
-                  "height"
-                ],
+                "required": ["blobId", "sha256", "byteLength", "width", "height"],
                 "properties": {
                   "blobId": {
                     "type": "string",
