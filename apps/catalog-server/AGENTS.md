@@ -36,7 +36,7 @@ HTTP handlers do not contain SQL. Repository adapters do not render HTML. React 
 
 ## Session authority invariants
 
-**MVP cut prioritário:** leia `docs/integrations/photo-sessions/MVP_POINT_GRAPH_APIS_DB_2026-10-08.md` ANTES do antigo contrato expandido. O candidato `migrations/001_mvp_photo_sessions.sql` tem exatamente 3 tabelas (sessão, revisão, blobs) e teste local sem implantação; o OpenAPI em `docs/contracts/mvp-photo-publication-v1.openapi.json` descreve 5 endpoints internos + 2 de leitura ainda não implementados. Não criar as tabelas extras do plano expandido sem necessidade comprovada.
+**MVP cut prioritário:** leia `docs/integrations/photo-sessions/MVP_POINT_GRAPH_APIS_DB_2026-10-08.md` ANTES do antigo contrato expandido. O candidato `migrations/001_mvp_photo_sessions.sql` tem exatamente 3 tabelas (sessão, revisão, blobs) e teste local sem implantação; o OpenAPI em `docs/contracts/mvp-photo-publication-v1.openapi.json` descreve 5 endpoints internos + 2 de leitura implementados no Corte 2 (PR #15). Não criar as tabelas extras do plano expandido sem necessidade comprovada.
 
 O parser puro `src/publication/publicationManifest.ts` e `docs/contracts/photo-publication-manifest-v1.schema.json` servem para validar apenas metadados futuros; não armazenam fotografias, não ativam revisões e não habilitam cliente real. Antes de integrar Python, ler `docs/integrations/photo-sessions/PUBLISHER_EVYDFLOW_HANDOFF_V1.md`.
 
