@@ -253,6 +253,11 @@ export async function publishSession(options) {
     throw new Error('Either storageRoot or (manifestPath and blobsDir) must be provided.');
   }
 
+  // Freeze requestId/blobIds before staging, so retries keep the same revision.
+  const stable = await checkpointPublication(options, { manifest, blobFileMap });
+  manifest = stable.manifest;
+  blobFileMap = stable.blobFileMap;
+
   // Step 3: Begin publication
   const publishRes = await fetch(`${normalizedOrigin}/internal/v1/publications`, {
     method: 'POST',
