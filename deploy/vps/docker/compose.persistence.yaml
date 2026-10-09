@@ -1,3 +1,5 @@
+# Persistence and Tailscale overlay for VPS Contabo Corte 2 publication testing.
+# Used on the VPS at /srv/platform/stacks/christmas-games/compose.yaml
 services:
   gateway:
     image: nginx:alpine
@@ -7,9 +9,10 @@ services:
       - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
       - ${RELEASE_DIR:-/srv/runtime/christmas-games/current}/web:/var/www/html/web:ro
       - ${RELEASE_DIR:-/srv/runtime/christmas-games/current}/public/social:/var/www/html/public/social:ro
+      - ${MEDIA_DIR:-/srv/runtime/christmas-games/data/media}:/srv/christmas-private/derived:ro
     networks:
       - edge
-      - internal
+      - backend
     depends_on:
       catalog:
         condition: service_healthy
@@ -23,12 +26,9 @@ services:
     image: node:24-alpine
     container_name: christmas-games-catalog
     restart: unless-stopped
-    # Staging is read-only. Re-enable persistent media only after pilot approval.
-    read_only: true
-    security_opt:
-      - no-new-privileges:true
-    tmpfs:
-      - /tmp:size=16m,noexec,nosuid
+    ports:
+      # Private upload endpoint exposed strictly on Tailscale VPN interface
+      - '100.116.8.109:4180:4180'
     working_dir: /app
     environment:
       NODE_ENV: production
@@ -36,16 +36,23 @@ services:
       CATALOG_PUBLIC_ORIGIN: https://jogos.fotosdenatal.com
       CATALOG_SOCIAL_PREVIEW_FILE: /srv/secrets/christmas-games/social-preview.json
       CATALOG_APPLICATION_SHELL: /var/www/html/web/index.html
+      CATALOG_DATABASE_PATH: /var/lib/christmas-games/sqlite/catalog.db
+      CATALOG_STORAGE_DIR: /var/lib/christmas-games/media
+      PUBLISHER_API_SECRET_FILE: /srv/secrets/christmas-games/publisher.secret
+      CATALOG_SERVER_SECRET_FILE: /srv/secrets/christmas-games/server.secret
       PORT: 4180
       HOST: 0.0.0.0
     volumes:
       - ${RELEASE_DIR:-/srv/runtime/christmas-games/current}/server:/app/server:ro
       - ${RELEASE_DIR:-/srv/runtime/christmas-games/current}/package.json:/app/package.json:ro
       - ${RELEASE_DIR:-/srv/runtime/christmas-games/current}/web:/var/www/html/web:ro
-      - /srv/secrets/christmas-games/social-preview.json:/srv/secrets/christmas-games/social-preview.json:ro
+      - /srv/secrets/christmas-games:/srv/secrets/christmas-games:ro
+      - ${DATA_DIR:-/srv/runtime/christmas-games/data}:/var/lib/christmas-games:rw
     command: ['node', 'server/main.js']
     networks:
-      - internal
+      backend:
+        aliases:
+          - catalog
     healthcheck:
       test: ['CMD', 'wget', '-q', '--spider', 'http://127.0.0.1:4180/healthz']
       interval: 15s
@@ -55,5 +62,5 @@ services:
 networks:
   edge:
     external: true
-  internal:
-    internal: true
+  backend:
+    driver: bridge

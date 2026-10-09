@@ -165,9 +165,9 @@ describe('publish-session CLI', () => {
             aspectRatio: 1.333,
             orientation: 'landscape',
             variantMetrics: {
-              thumb: { width: 360, height: 480, byteLength: 17, sha256: 'b'.repeat(64) },
-              card: { width: 600, height: 800, byteLength: 16, sha256: 'c'.repeat(64) },
-              game: { width: 800, height: 600, byteLength: 16, sha256: 'd'.repeat(64) },
+              thumb: { width: 360, height: 480, byteLength: 17 },
+              card: { width: 600, height: 800, byteLength: 16 },
+              game: { width: 800, height: 600, byteLength: 16 },
             },
           },
         ],

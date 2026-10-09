@@ -1,8 +1,31 @@
 import { createHash, randomUUID } from 'node:crypto';
+import { existsSync } from 'node:fs';
 import { appendFile, readFile } from 'node:fs/promises';
 import { join } from 'node:path';
 
 const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
+function findVariantFile(storageRoot, parsed, photo, variantName) {
+  const directPath = join(storageRoot, 'derived', photo.id, `${variantName}.webp`);
+  if (existsSync(directPath)) return directPath;
+
+  const recipeKey = parsed.worker?.recipeKey ?? '';
+  const sessionId = parsed.session?.id ?? '';
+  const fullPipelinePath = join(
+    storageRoot,
+    'derived',
+    sessionId,
+    photo.id,
+    photo.contentHash,
+    recipeKey,
+    `${variantName}.webp`,
+  );
+  if (existsSync(fullPipelinePath)) return fullPipelinePath;
+
+  throw new Error(
+    `Cannot find variant file for photo ${photo.id} (${variantName}). Checked ${directPath} and ${fullPipelinePath}`,
+  );
+}
 
 export async function appendStructuredLog(logFile, event) {
   if (!logFile) return;
@@ -42,13 +65,16 @@ export async function buildManifestFromLocalConfig(
         throw new Error(`Photo ${photoId} is missing variant metric for ${variantName}.`);
       }
       const blobId = randomUUID();
-      const variantFilePath = join(storageRoot, 'derived', photoId, `${variantName}.webp`);
+      const variantFilePath = findVariantFile(storageRoot, parsed, photo, variantName);
+      const fileBytes = await readFile(variantFilePath);
+      const sha256 = metric.sha256 ?? createHash('sha256').update(fileBytes).digest('hex');
+      const byteLength = metric.byteLength ?? fileBytes.byteLength;
 
       blobFileMap.set(blobId, variantFilePath);
       variants[variantName] = {
         blobId,
-        sha256: metric.sha256,
-        byteLength: metric.byteLength,
+        sha256,
+        byteLength,
         width: metric.width,
         height: metric.height,
       };
@@ -64,12 +90,15 @@ export async function buildManifestFromLocalConfig(
     });
   }
 
+  const recipeKey =
+    typeof parsed.worker?.recipeKey === 'string' ? parsed.worker.recipeKey : 'christmas-2026-v1';
+
   const manifest = {
     schemaVersion: 1,
     requestId: randomUUID(),
     sessionId,
-    expectedActiveRevisionId,
-    recipeKey: 'christmas-2026-v1',
+    expectedActiveRevisionId: expectedActiveRevisionId ?? null,
+    recipeKey,
     photos,
   };
 
@@ -139,7 +168,7 @@ export async function publishSession(options) {
     manifest = {
       ...JSON.parse(content),
       sessionId,
-      expectedActiveRevisionId: activeRevisionId,
+      expectedActiveRevisionId: activeRevisionId ?? null,
       requestId: randomUUID(),
     };
     for (const photo of manifest.photos) {

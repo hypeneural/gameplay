@@ -511,6 +511,7 @@
 │       ├── christmas-games-catalog.service.example
 │       ├── docker
 │       │   ├── Caddyfile.fragment
+│       │   ├── compose.persistence.yaml
 │       │   ├── compose.yaml
 │       │   ├── nginx.conf
 │       │   └── stack.yaml
