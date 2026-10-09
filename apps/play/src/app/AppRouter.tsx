@@ -24,6 +24,7 @@ import {
 } from '../audio/playInterfaceTap.js';
 import type { AppRoute, GameCoverRoute, PublicRoute, SessionRoute } from './AppNavigation.js';
 import { fetchLocalTestSession, shouldUseLocalTestMedia } from './LocalTestSession.js';
+import { publicDemoPhotos } from './publicDemoPhotos.js';
 import { fetchSessionData, SessionLoadError } from './SessionDataLoader.js';
 import type { Session } from '@christmas-games/platform';
 
@@ -130,15 +131,24 @@ export function AppRouter(): React.JSX.Element {
     remoteSession && remoteSession.token === currentToken ? remoteSession.value : undefined;
   const fixtureSession = useMemo(() => {
     if (requiresRemoteSession) return undefined;
-    const fixture = createFixtureSession(isPublicDemo ? 12 : fixtureCount);
-    return isPublicDemo
-      ? {
-          ...fixture,
+    if (isPublicDemo) {
+      if (publicDemoPhotos.length > 0) {
+        return {
           id: 'public-demo',
           publicToken: 'public-demo',
           displayName: 'Demonstração de Natal',
-        }
-      : fixture;
+          photos: [...publicDemoPhotos],
+        };
+      }
+      const fixture = createFixtureSession(12);
+      return {
+        ...fixture,
+        id: 'public-demo',
+        publicToken: 'public-demo',
+        displayName: 'Demonstração de Natal',
+      };
+    }
+    return createFixtureSession(fixtureCount);
   }, [fixtureCount, isPublicDemo, requiresRemoteSession]);
 
   const session = usesLocalTestMedia

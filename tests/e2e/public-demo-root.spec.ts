@@ -1,7 +1,9 @@
 import { expect, test } from '@playwright/test';
 
 // Synthetic public demo must work at root without a CRM token or remote session API.
-test('homepage demo opens gallery and a game without customer session requests', async ({ page }) => {
+test('homepage demo opens gallery and a game without customer session requests', async ({
+  page,
+}) => {
   const requests: string[] = [];
   page.on('request', (request) => requests.push(new URL(request.url()).pathname));
 
@@ -13,7 +15,10 @@ test('homepage demo opens gallery and a game without customer session requests',
   await expect(page).toHaveURL(/\/demo\/fotos$/);
   await expect(page.getByTestId('session-gallery')).toBeVisible();
 
-  await page.getByRole('button', { name: /Voltar/i }).first().click();
+  await page
+    .getByRole('button', { name: /Voltar/i })
+    .first()
+    .click();
   await expect(page).toHaveURL(/\/$/);
   await page.getByTestId('open-game-memory').click();
   await expect(page).toHaveURL(/\/demo\/game\/memory$/);

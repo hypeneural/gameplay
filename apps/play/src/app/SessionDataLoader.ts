@@ -29,15 +29,15 @@ const photoVariants: readonly PhotoVariant[] = ['thumb', 'card', 'game'];
 export function isSessionPayload(value: unknown): value is Session {
   if (!value || typeof value !== 'object') return false;
   const session = value as Partial<Session>;
+  const publicToken = session.publicToken;
+  if (typeof publicToken !== 'string' || publicToken.length === 0) return false;
   return (
     typeof session.id === 'string' &&
     session.id.length > 0 &&
-    typeof session.publicToken === 'string' &&
-    session.publicToken.length > 0 &&
     typeof session.displayName === 'string' &&
     Array.isArray(session.photos) &&
     session.photos.length > 0 &&
-    session.photos.every((photo) => isPhotoPayload(photo, session.publicToken))
+    session.photos.every((photo) => isPhotoPayload(photo, publicToken))
   );
 }
 

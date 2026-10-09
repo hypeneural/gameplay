@@ -376,6 +376,115 @@
 │       │   │           └── cordao-luzes-v1.webp
 │       │   ├── favicon.svg
 │       │   └── fixtures
+│       │       ├── demo
+│       │       │   ├── demo_001
+│       │       │   │   ├── card.webp
+│       │       │   │   ├── game.webp
+│       │       │   │   └── thumb.webp
+│       │       │   ├── demo_002
+│       │       │   │   ├── card.webp
+│       │       │   │   ├── game.webp
+│       │       │   │   └── thumb.webp
+│       │       │   ├── demo_003
+│       │       │   │   ├── card.webp
+│       │       │   │   ├── game.webp
+│       │       │   │   └── thumb.webp
+│       │       │   ├── demo_004
+│       │       │   │   ├── card.webp
+│       │       │   │   ├── game.webp
+│       │       │   │   └── thumb.webp
+│       │       │   ├── demo_005
+│       │       │   │   ├── card.webp
+│       │       │   │   ├── game.webp
+│       │       │   │   └── thumb.webp
+│       │       │   ├── demo_006
+│       │       │   │   ├── card.webp
+│       │       │   │   ├── game.webp
+│       │       │   │   └── thumb.webp
+│       │       │   ├── demo_007
+│       │       │   │   ├── card.webp
+│       │       │   │   ├── game.webp
+│       │       │   │   └── thumb.webp
+│       │       │   ├── demo_008
+│       │       │   │   ├── card.webp
+│       │       │   │   ├── game.webp
+│       │       │   │   └── thumb.webp
+│       │       │   ├── demo_009
+│       │       │   │   ├── card.webp
+│       │       │   │   ├── game.webp
+│       │       │   │   └── thumb.webp
+│       │       │   ├── demo_010
+│       │       │   │   ├── card.webp
+│       │       │   │   ├── game.webp
+│       │       │   │   └── thumb.webp
+│       │       │   ├── demo_011
+│       │       │   │   ├── card.webp
+│       │       │   │   ├── game.webp
+│       │       │   │   └── thumb.webp
+│       │       │   ├── demo_012
+│       │       │   │   ├── card.webp
+│       │       │   │   ├── game.webp
+│       │       │   │   └── thumb.webp
+│       │       │   ├── demo_013
+│       │       │   │   ├── card.webp
+│       │       │   │   ├── game.webp
+│       │       │   │   └── thumb.webp
+│       │       │   ├── demo_014
+│       │       │   │   ├── card.webp
+│       │       │   │   ├── game.webp
+│       │       │   │   └── thumb.webp
+│       │       │   ├── demo_015
+│       │       │   │   ├── card.webp
+│       │       │   │   ├── game.webp
+│       │       │   │   └── thumb.webp
+│       │       │   ├── demo_016
+│       │       │   │   ├── card.webp
+│       │       │   │   ├── game.webp
+│       │       │   │   └── thumb.webp
+│       │       │   ├── demo_017
+│       │       │   │   ├── card.webp
+│       │       │   │   ├── game.webp
+│       │       │   │   └── thumb.webp
+│       │       │   ├── demo_018
+│       │       │   │   ├── card.webp
+│       │       │   │   ├── game.webp
+│       │       │   │   └── thumb.webp
+│       │       │   ├── demo_019
+│       │       │   │   ├── card.webp
+│       │       │   │   ├── game.webp
+│       │       │   │   └── thumb.webp
+│       │       │   ├── demo_020
+│       │       │   │   ├── card.webp
+│       │       │   │   ├── game.webp
+│       │       │   │   └── thumb.webp
+│       │       │   ├── demo_021
+│       │       │   │   ├── card.webp
+│       │       │   │   ├── game.webp
+│       │       │   │   └── thumb.webp
+│       │       │   ├── demo_022
+│       │       │   │   ├── card.webp
+│       │       │   │   ├── game.webp
+│       │       │   │   └── thumb.webp
+│       │       │   ├── demo_023
+│       │       │   │   ├── card.webp
+│       │       │   │   ├── game.webp
+│       │       │   │   └── thumb.webp
+│       │       │   ├── demo_024
+│       │       │   │   ├── card.webp
+│       │       │   │   ├── game.webp
+│       │       │   │   └── thumb.webp
+│       │       │   ├── demo_025
+│       │       │   │   ├── card.webp
+│       │       │   │   ├── game.webp
+│       │       │   │   └── thumb.webp
+│       │       │   ├── demo_026
+│       │       │   │   ├── card.webp
+│       │       │   │   ├── game.webp
+│       │       │   │   └── thumb.webp
+│       │       │   └── demo_027
+│       │       │       ├── card.webp
+│       │       │       ├── game.webp
+│       │       │       └── thumb.webp
 │       │       ├── landscape.svg
 │       │       └── portrait.svg
 │       ├── src
@@ -395,7 +504,8 @@
 │       │   │   ├── ReleaseMode.test.ts
 │       │   │   ├── ReleaseMode.ts
 │       │   │   ├── SessionDataLoader.test.ts
-│       │   │   └── SessionDataLoader.ts
+│       │   │   ├── SessionDataLoader.ts
+│       │   │   └── publicDemoPhotos.ts
 │       │   ├── audio
 │       │   │   ├── playInterfaceTap.test.ts
 │       │   │   ├── playInterfaceTap.ts
@@ -1318,6 +1428,7 @@
 │   │   │   ├── galleryLabMulti.ts
 │   │   │   ├── index.ts
 │   │   │   ├── inspect.ts
+│   │   │   ├── prepareDemo.ts
 │   │   │   ├── prepareLocal.ts
 │   │   │   ├── prepareMultiLocal.ts
 │   │   │   ├── recipe.ts
