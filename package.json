@@ -28,6 +28,7 @@
     "fixtures:generate": "pnpm --filter @christmas-games/fixture-generator generate",
     "media:process": "pnpm --filter @christmas-games/media-pipeline process",
     "media:inspect": "pnpm --filter @christmas-games/media-pipeline inspect",
+    "media:preflight": "node tools/deploy/photo-session-preflight.mjs",
     "media:prepare-local": "pnpm --filter @christmas-games/media-pipeline prepare-local",
     "gallery:prepare": "pnpm --filter @christmas-games/media-pipeline gallery-lab --prepare-only",
     "gallery:prepare:multi": "pnpm --filter @christmas-games/media-pipeline gallery-lab-multi --prepare-only",
