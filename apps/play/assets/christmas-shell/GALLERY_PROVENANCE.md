@@ -18,6 +18,10 @@ These assets are owned by the project, static, responsive, accessible as decorat
 
 ## gallery-photoreal-v4 (2026-10-08)
 
-- `gallery-evergreen-hero-photoreal-v4.webp`: **AI-generated photorealistic evergreen garland**, cropped from high-resolution studio garland banner. Dense natural spruce/fir pine needles, deep ruby red velvet bow, real pinecones, glossy ruby baubles and warm fairy lights. Derived via Sharp alpha-masked crop (392x77, 4908 B, SHA-256 `6a4497f3b249800ff0bf02abc5c2a10e17f676e775f3847e3457d99b2c0d830a`). Fits strictly within the 36.000 B visual shell budget (35.896 B total).
-- The artwork is decorative **only**: no photographs, personal names, customer data, text or fake UI controls. The image remains below React-owned headings, buttons, photo count and actions.
-- Preserves the existing SVG fallback `gallery-evergreen-hero-v2.svg` via CSS `image-set()`. Review on DPR2/3 iPhone/Android remains pending.
+- `gallery-evergreen-hero-photoreal-v4.webp`: Substituído na Missão V6 pela variante Retina `gallery-evergreen-hero-retina-v6.webp`.
+
+## gallery-retina-v6 (2026-10-08)
+
+- `gallery-evergreen-hero-retina-v6.webp`: **Guirlanda fotorrealista Retina de alta resolução (640x126 px, 13672 B, SHA-256 `620f1197cc8c46ef4025b44e03d59833014881a65bdb9572f8ccbb3d75bb6cfa`)**, master de IA de 1376x768 em fundo preto sólido, processado via Sharp com máscara alfa suave e fade gradiente nos 30% inferiores. Densidade visual perfeita para telas mobile Retina 2x/3x (390px-430px viewports).
+- Substituiu os assets legados não utilizados `gallery-evergreen-header-v1.svg` (9095 B) e `gallery-snowflake-seal-v1.svg` (1176 B), liberando 10271 B de orçamento e mantendo o shell rigorosamente em 34389 B (dentro do teto máximo de 36000 B).
+- A arte é decorativa apenas: sem fotos, rostos, textos ou mockups incorporados. Mantém o fallback vetorial `gallery-evergreen-hero-v2.svg` via `image-set()`. Validação em aparelhos físicos mobile pendente.

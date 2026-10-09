@@ -143,3 +143,24 @@ Windows / pasta tratada (somente arquivos elegíveis na raiz, sem varredura recu
 - O topo da Galeria foi simplificado: rótulo "Suas fotos", hero compacto com uma única instrução. Cada foto perdeu a faixa inferior/selo repetidos: moldura champagne discreta e proporção natural intacta.
 - A guirlanda V4 **continua pixelizada** na captura porque o arquivo fotorealista mede só 392 x 77px (refletido em manifest); a correção profissional requer gerar arte independente com maior resolução e renegociar o limite visual de 36KB por benchmark, não interpolar artificialmente. Não marcar como visualmente homologada sem screenshot novo em iPhone/Android.
 - Testar com `pnpm check`, `pnpm test:e2e:gallery`, `pnpm test:e2e:gallery-multi`, `pnpm asset:validate:all` e dispositivos reais. E2E cobre ordem e footer em 4 viewports.
+
+## Adendo V6 (08/10/2026): guirlanda Retina de alta resolução, saneamento de assets legados e consolidação de estilos
+
+- **Guirlanda Retina V6 de Alta Resolução (`gallery-evergreen-hero-retina-v6.webp`):**
+  - Resolução ampliada de 392×77 px para **640×126 px** (mais de 2.6x o total de pixels da v4), eliminando a pixelização em telas Retina mobile 2x/3x (viewports 320px a 430px).
+  - Gerada a partir de master de IA de estúdio de 1376×768 com ramos naturais densos de abeto e espruce verde-floresta profundo, agulhas nítidas, pinhas texturizadas, bolas de vidro rubi com reflexos luminosos, laço central de veludo bordô e micro-luzes douradas com degradê alfa suave na base.
+  - Peso final: **13.672 bytes** (SHA-256: `620f1197cc8c46ef4025b44e03d59833014881a65bdb9572f8ccbb3d75bb6cfa`).
+- **Saneamento e Liberação de Orçamento de Assets (`visualBytesMax: 36000`):**
+  - Removidos 2 assets legados não utilizados do cabeçalho antigo: `gallery-evergreen-header-v1.svg` (9.095 B) e `gallery-snowflake-seal-v1.svg` (1.176 B), liberando **10.271 bytes de orçamento real**.
+  - O total visual do shell ficou em **34.389 B** (rigorosamente dentro do teto estrito de **36.000 B**, com folga de 1.611 bytes). 12/12 manifestos válidos via `pnpm asset:validate:all`.
+- **Consolidação de CSS em `gallery.css`:**
+  - Unificadas as definições duplicadas de `.gallery-hero`, `.gallery-hero-garland` e `.gallery-icon-button`.
+  - Removidos seletores órfãos (`.gallery-pine`).
+  - Incorporado o divisor estelar sutil `.gallery-hero-divider` no JSX entre subtítulo e instrução.
+- **Refinamento do Catálogo no Hub (`shell.css`):**
+  - Estilização refinada para `:disabled` no `GameCard` com tonalidade bordô nobre, sem quebras de layout.
+- **Homologação Completa em 6 Viewports Reais:**
+  - Evidências capturadas nos viewports 320px, 359px, 390px, 412px, 430px e 768px no Gallery Lab.
+  - 32/32 testes E2E aprovados (16 gallery + 16 gallery-multi).
+  - 457/457 testes unitários passando.
+  - `pnpm check`, `pnpm build` e `pnpm deploy:readiness` 100% verdes. Zero dados confidenciais ou fotos de clientes no Git.

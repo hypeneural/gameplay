@@ -108,11 +108,9 @@
 │       │   │   │       ├── cta-open-album-ribbon-v1.svg
 │       │   │   │       ├── gallery-badge-photo-count-v1.svg
 │       │   │   │       ├── gallery-divider-starlight-v2.svg
-│       │   │   │       ├── gallery-evergreen-header-v1.svg
-│       │   │   │       ├── gallery-evergreen-hero-photoreal-v4.webp
+│       │   │   │       ├── gallery-evergreen-hero-retina-v6.webp
 │       │   │   │       ├── gallery-evergreen-hero-v2.svg
 │       │   │   │       ├── gallery-header-glow-v1.svg
-│       │   │   │       ├── gallery-snowflake-seal-v1.svg
 │       │   │   │       └── gallery-starlight-footer-v1.svg
 │       │   │   ├── estilingue-das-lembrancas
 │       │   │   │   ├── art
