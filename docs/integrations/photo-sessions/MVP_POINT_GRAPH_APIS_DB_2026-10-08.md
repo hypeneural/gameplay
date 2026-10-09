@@ -94,7 +94,7 @@ Por que não ter tabelas `photos`, `session_grants`, `audit_events` agora? O man
 
 ## 4. Cinco endpoints internos mínimos (ainda não implementados)
 
-**Host:** HTTPS privado e acessível somente pelo Tailscale/allowlist autenticada. **Headers comuns:** `Authorization: *** `Content-Type: application/json` (salvo PUT). O Caddy público bloqueia `/internal/*`; não habilitar CORS nessa API. Segredo separado da capability da família. Cada erro é JSON `{ "code": "...", "message": "...", "requestId": "UUID" }` sem caminho local, telefone, cliente ou token.
+**Host:** HTTPS privado e acessível somente pelo Tailscale/allowlist autenticada. **Headers comuns:** `Authorization: *** `Content-Type: application/json`(salvo PUT). O Caddy público bloqueia`/internal/*`; não habilitar CORS nessa API. Segredo separado da capability da família. Cada erro é JSON `{ "code": "...", "message": "...", "requestId": "UUID" }` sem caminho local, telefone, cliente ou token.
 
 ### 01. POST /internal/v1/sessions/resolve
 
