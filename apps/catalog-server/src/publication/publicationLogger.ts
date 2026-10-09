@@ -47,28 +47,28 @@ export class StructuredPublicationLogger implements PublicationLogger {
   private sanitize(
     params: Omit<PublicationLogEntry, 'timestamp' | 'runId' | 'event'>,
   ): Omit<PublicationLogEntry, 'timestamp' | 'runId' | 'event'> {
-    // Ensure no token or credential accidentally leaks in details
-    if (!params.details) return params;
-    const sanitizedDetails: Record<string, unknown> = {};
-
-    for (const [key, val] of Object.entries(params.details)) {
-      const lower = key.toLowerCase();
-      if (
-        lower.includes('token') ||
-        lower.includes('secret') ||
-        lower.includes('auth') ||
-        lower.includes('bearer') ||
-        lower.includes('password')
-      ) {
-        sanitizedDetails[key] = '[REDACTED]';
-      } else {
-        sanitizedDetails[key] = val;
+    // URLs under /s/ contain bearer capability tokens: log the route template,
+    // NEVER the real URL. Only explicitly approved numeric/status details survive.
+    const path = typeof params.path === 'string'
+      ? params.path.split('?')[0]!
+          .replace(/\\/g, '/')
+          .replace(/\\/s\\/[A-Za-z0-9_-]{16,128}(?=\\/|$)/g, '/s/:token')
+          .replace(/\\/[0-9a-f]{8}-[0-9a-f-]{27,}(?=\\/|$)/gi, '/:id')
+      : undefined;
+    const allowed = new Set(['status', 'expectedBlobs', 'readyBlobs', 'photosCount', 'photoCount']);
+    const details: Record<string, unknown> = {};
+    for (const [key, value] of Object.entries(params.details ?? {})) {
+      if (allowed.has(key) && (
+        typeof value === 'number' || typeof value === 'boolean' ||
+        (typeof value === 'string' && /^[A-Z_]{1,32}$/.test(value))
+      )) {
+        details[key] = value;
       }
     }
-
     return {
       ...params,
-      details: sanitizedDetails,
+      ...(path === undefined ? {} : { path }),
+      ...(params.details === undefined ? {} : { details }),
     };
   }
 }
