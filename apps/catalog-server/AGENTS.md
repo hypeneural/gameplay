@@ -42,7 +42,7 @@ O parser puro `src/publication/publicationManifest.ts` e `docs/contracts/photo-p
 
 - `photoSessionId` is the technical gallery identity.
 - One gallery per CRM order is the business rule; if a legacy interface needs `galleryKey`, keep it fixed to `principal`.
-- revisions are immutable after VALIDATED;
+- revisions become immutable once staged; ACTIVE and SUPERSEDED revisions are not edited;
 - STAGED or FAILED revisions are never public;
 - `activeRevisionId` changes only with compare-and-swap using the expected previous value;
 - a grant for A never resolves unpublished revisions or media belonging to a different order B;
@@ -111,4 +111,4 @@ Do not run `tsx` in the VPS service.
 
 The existing host-systemd deployment example binds to `127.0.0.1` and expects Nginx as HTTPS edge. **This is not yet reconciled with the operator-reported Contabo Caddy/Docker edge.** For that host, read `docs/ops/CONTABO_JOGOS_STAGING_2026-10-08.md` and preserve single Caddy :443 termination; Nginx should be internal only if containerized. Do not deploy both edge topologies.
 
-For future customer publication follow `docs/integrations/photo-sessions/SESSION_MEDIA_PUBLICATION_CONTRACT_V1.md`: revisions STAGED→VALIDATED→ACTIVE, upload/authorization not yet implemented, manual Node publisher before EvydFlow, one CRM order=one gallery.
+For future customer publication follow `docs/integrations/photo-sessions/SESSION_MEDIA_PUBLICATION_CONTRACT_V1.md`: revisions STAGED→ACTIVE→SUPERSEDED (or FAILED); the HTTP publisher/storage already exist but pilot authorization and browser verification remain pending, manual Node publisher before EvydFlow, one CRM order=one gallery.
