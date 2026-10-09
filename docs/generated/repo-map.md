@@ -18,6 +18,8 @@
 │       │   └── SKILL.md
 │       ├── photo-sessions-integration
 │       │   └── SKILL.md
+│       ├── public-demo-root
+│       │   └── SKILL.md
 │       ├── real-session-authority
 │       │   └── SKILL.md
 │       ├── revisao-visual-mobile
@@ -629,6 +631,7 @@
 │   ├── ops
 │   │   ├── CONTABO_JOGOS_STAGING_2026-10-08.md
 │   │   ├── EVYDFLOW_GAMEPLAY_P0_HANDOFF_2026-10-09.md
+│   │   ├── GAMEPLAY_PUBLIC_DEMO_AND_CRM_EVYDFLOW_FORENSIC_2026-10-09.md
 │   │   ├── MVP_LOCAL_PHOTO_PREFLIGHT_2026-10-09.md
 │   │   └── VPS_STAGING_DEMO_RUNBOOK.md
 │   ├── plan
@@ -1219,6 +1222,7 @@
 │   │   ├── guirlanda-das-lembrancas.spec.ts
 │   │   ├── lifecycle.spec.ts
 │   │   ├── magic-photo.spec.ts
+│   │   ├── public-demo-root.spec.ts
 │   │   ├── rena-das-lembrancas-input.spec.ts
 │   │   ├── rena-das-lembrancas.spec.ts
 │   │   ├── session-gallery-multi.spec.ts
@@ -1285,6 +1289,7 @@
 │   │   ├── photo-session-preflight.mjs
 │   │   ├── photo-session-preflight.test.mjs
 │   │   ├── prepare-vps-release.mjs
+│   │   ├── public-demo-root.test.mjs
 │   │   ├── publish-session.mjs
 │   │   ├── publish-session.test.mjs
 │   │   ├── release-utils.mjs
