@@ -192,6 +192,8 @@ describe('publish-session CLI', () => {
       expect(stats.publicationCreated).toBe(true);
       expect(stats.revisionActivated).toBe(true);
       expect(stats.blobsCount).toBe(3);
+      const snapshot = JSON.parse(await readFile(join(tempDir, '.publication-checkpoint.json'), 'utf8'));
+      expect(snapshot.manifest.requestId).toMatch(/^[0-9a-f-]{36}$/);
     } finally {
       await new Promise((resolve) => server.close(resolve));
       await rm(tempDir, { recursive: true, force: true });
