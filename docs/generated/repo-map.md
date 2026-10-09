@@ -391,7 +391,9 @@
 │       │   │   ├── LocalTestSession.test.ts
 │       │   │   ├── LocalTestSession.ts
 │       │   │   ├── ReleaseMode.test.ts
-│       │   │   └── ReleaseMode.ts
+│       │   │   ├── ReleaseMode.ts
+│       │   │   ├── SessionDataLoader.test.ts
+│       │   │   └── SessionDataLoader.ts
 │       │   ├── audio
 │       │   │   ├── playInterfaceTap.test.ts
 │       │   │   ├── playInterfaceTap.ts
@@ -626,6 +628,7 @@
 │   │   └── PHOTO_CORPUS_BASELINE.md
 │   ├── ops
 │   │   ├── CONTABO_JOGOS_STAGING_2026-10-08.md
+│   │   ├── EVYDFLOW_GAMEPLAY_P0_HANDOFF_2026-10-09.md
 │   │   ├── MVP_LOCAL_PHOTO_PREFLIGHT_2026-10-09.md
 │   │   └── VPS_STAGING_DEMO_RUNBOOK.md
 │   ├── plan
@@ -1276,6 +1279,8 @@
 │   │       └── asset-factory.test.ts
 │   ├── clean.mjs
 │   ├── deploy
+│   │   ├── backup-restore-catalog.mjs
+│   │   ├── backup-restore-catalog.test.mjs
 │   │   ├── create-staging-preview-config.mjs
 │   │   ├── photo-session-preflight.mjs
 │   │   ├── photo-session-preflight.test.mjs

@@ -1,6 +1,6 @@
 import { createHash, randomUUID } from 'node:crypto';
 import { existsSync } from 'node:fs';
-import { appendFile, readFile, rename, unlink, writeFile } from 'node:fs/promises';
+import { appendFile, open, readFile, rename, unlink, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { URL } from 'node:url';
 
@@ -187,10 +187,90 @@ export async function buildManifestFromLocalConfig(
   return { manifest, blobFileMap };
 }
 
+export function isPidAlive(pid) {
+  if (typeof pid !== 'number' || !Number.isInteger(pid) || pid <= 0) return false;
+  try {
+    process.kill(pid, 0);
+    return true;
+  } catch (err) {
+    return err?.code === 'EPERM';
+  }
+}
+
+async function acquirePublicationLock(privateRoot, options) {
+  const lockPath = join(privateRoot, '.publication-running.lock');
+  let lock;
+  try {
+    lock = await open(lockPath, 'wx', 0o600);
+  } catch (error) {
+    if (error?.code === 'EEXIST') {
+      let lockInfo;
+      try {
+        const content = await readFile(lockPath, 'utf8');
+        lockInfo = JSON.parse(content);
+      } catch {
+        // Lock file is unreadable or malformed
+      }
+
+      const activePid = typeof lockInfo?.pid === 'number' ? lockInfo.pid : undefined;
+      const processAlive = activePid !== undefined && isPidAlive(activePid);
+
+      if (processAlive) {
+        throw new Error('PUBLISHER_ALREADY_RUNNING', { cause: error });
+      }
+
+      // Process is NOT alive -> Stale lock detected
+      if (!options.recoverStaleLock) {
+        throw new Error('PUBLISHER_STALE_LOCK_DETECTED', { cause: error });
+      }
+
+      // Supervised recovery requested: unlink dead lock and retry open
+      await unlink(lockPath).catch(() => undefined);
+      try {
+        lock = await open(lockPath, 'wx', 0o600);
+      } catch (retryError) {
+        if (retryError?.code === 'EEXIST') {
+          throw new Error('PUBLISHER_ALREADY_RUNNING', { cause: retryError });
+        }
+        throw new Error('PUBLISHER_LOCK_UNAVAILABLE', { cause: retryError });
+      }
+    } else {
+      throw new Error('PUBLISHER_LOCK_UNAVAILABLE', { cause: error });
+    }
+  }
+
+  await lock.writeFile(JSON.stringify({ pid: process.pid, startedAt: new Date().toISOString() }));
+  return {
+    release: async () => {
+      try {
+        await lock.close();
+      } catch {
+        // Ignore close errors
+      }
+      await unlink(lockPath).catch(() => undefined);
+    },
+  };
+}
+
 /**
  * Executes full publication flow against the catalog-server internal API.
  */
 export async function publishSession(options) {
+  // Lock the whole transaction, not only checkpoint creation.
+  if (!UUID_PATTERN.test(options.crmOrderUuid ?? '')) {
+    throw new Error('PUBLISHER_ORDER_UUID_INVALID');
+  }
+  const privateRoot = options.storageRoot ?? options.blobsDir;
+  if (!privateRoot) throw new Error('PUBLISHER_PRIVATE_STORAGE_REQUIRED');
+  const lockHandle = await acquirePublicationLock(privateRoot, options);
+  try {
+    return await publishSessionUnlocked(options);
+  } finally {
+    await lockHandle.release();
+  }
+}
+
+async function publishSessionUnlocked(options) {
   const startTime = Date.now();
   const { apiOrigin, apiSecret, crmOrderUuid, logFile } = options;
 
@@ -383,6 +463,8 @@ export async function publishSession(options) {
     revisionId,
     publicToken: receiptData.publicToken,
     accessUrl: accessUrl.href,
+    hubUrl: accessUrl.href,
+    galleryUrl: `${accessUrl.href}/fotos`,
     photosCount: manifest.photos.length,
     blobsCount: finalStatus.readyBlobs,
     totalBytes: totalBytesUploaded,
@@ -410,6 +492,7 @@ function parseCliArgs(argv) {
   let apiSecret = process.env.PUBLISHER_API_SECRET ?? '';
   let crmOrderUuid = process.env.CRM_ORDER_UUID ?? '';
   let logFile;
+  let recoverStaleLock = false;
 
   for (let i = 0; i < argv.length; i++) {
     const arg = argv[i];
@@ -435,6 +518,8 @@ function parseCliArgs(argv) {
     } else if (arg === '--log-file' && next) {
       logFile = next;
       i++;
+    } else if (arg === '--recover-stale-lock') {
+      recoverStaleLock = true;
     }
   }
 
@@ -460,6 +545,7 @@ function parseCliArgs(argv) {
     apiSecret,
     crmOrderUuid,
     logFile,
+    recoverStaleLock,
   };
 }
 
