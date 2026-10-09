@@ -113,4 +113,4 @@ Manual atualizado e ordem de execucao: `docs/integrations/photo-sessions/GALERIA
 
 Ao escolher `Jogar com esta foto`, atualizar `selectedPhotoId` e navegar a `/s/:token`, com o Hub exibindo a foto escolhida. **Nao escolher `puzzle-swap` automaticamente.** O usuario toca no card do jogo que preferir. Browser Back pode voltar a galeria mantendo `scrollY`, foto e lotes. Os testes E2E devem cobrir essa jornada, inclusive a foto 11.
 
-Hero raster: `gallery-evergreen-hero-photoreal-v4.webp` foi gerado com IA e incorporado ao manifesto de `christmas-shell` com canal alfa suave; preserve fallback SVG, texto sem rasterizacao e reduced-motion. Rejeitar arte que contenha rostos, mockups, captions ou controls falsos.
+Hero raster: `gallery-evergreen-hero-retina-v6.webp` (640x126 px) foi gerado com IA e incorporado ao manifesto de `christmas-shell` com canal alfa suave e densidade Retina 2x/3x; preserve fallback SVG, texto sem rasterizacao e reduced-motion. Rejeitar arte que contenha rostos, mockups, captions ou controls falsos.

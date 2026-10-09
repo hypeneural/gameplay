@@ -443,6 +443,19 @@
 .game-card-button:active {
   transform: scale(0.97) translateY(2px);
 }
+.game-card-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.72;
+  filter: grayscale(20%);
+}
+.game-card-button:disabled:active {
+  transform: none;
+}
+.game-card-button:disabled .game-card-cta {
+  background: linear-gradient(130deg, #442a32, #2d1822);
+  color: #d1b49e;
+  box-shadow: inset 0 1px #6b435242;
+}
 .christmas-shell .game-card-copy {
   display: flex;
   flex-direction: column;

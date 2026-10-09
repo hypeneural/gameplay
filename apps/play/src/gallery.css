@@ -56,18 +56,23 @@
 }
 
 .gallery-icon-button {
+  position: relative;
   display: grid;
   place-items: center;
   width: 46px;
   height: 46px;
   padding: 0;
-  border: 1px solid rgb(234 205 153 / 28%);
+  border: 1px solid rgb(247 208 130 / 56%);
   border-radius: 15px;
   color: #fff0cd;
-  background: rgb(9 37 37 / 82%);
+  background:
+    radial-gradient(circle at 28% 0%, rgb(242 212 151 / 22%), transparent 55%),
+    linear-gradient(150deg, #19433b 0%, #052521 80%);
   box-shadow:
-    inset 0 1px rgb(255 255 255 / 10%),
-    0 6px 14px rgb(0 12 13 / 24%);
+    inset 0 1px rgb(255 249 224 / 24%),
+    inset 0 -2px rgb(0 0 0 / 24%),
+    0 5px 14px rgb(0 12 10 / 45%),
+    0 0 0 2px rgb(195 135 58 / 8%);
   cursor: pointer;
   touch-action: manipulation;
   transition:
@@ -75,9 +80,11 @@
     background 120ms ease;
 }
 
-.gallery-icon-button > span {
-  font-size: 1.72rem;
-  line-height: 1;
+.gallery-icon-button .shell-glyph {
+  display: block;
+  width: 27px;
+  height: 27px;
+  filter: drop-shadow(0 1px 2px rgb(255 185 78 / 30%));
 }
 
 .gallery-icon-button:active {
@@ -89,12 +96,12 @@
   position: relative;
   isolation: isolate;
   margin: 9px 0 13px;
-  padding: 12px 14px 12px;
+  padding: 58px 14px 13px;
   border: 1px solid rgba(238, 203, 142, 0.32);
   border-radius: 20px;
   background:
-    radial-gradient(circle at 50% -20px, rgba(246, 219, 160, 0.16), transparent 70%),
-    linear-gradient(155deg, #0e3d31 0%, #06261f 100%);
+    radial-gradient(ellipse at 50% 8%, rgb(172 115 53 / 20%), transparent 62%),
+    linear-gradient(155deg, #0b372e 0%, #05221e 100%);
   box-shadow:
     inset 0 1px 1px rgba(255, 255, 255, 0.12),
     0 6px 20px rgba(0, 15, 12, 0.35);
@@ -116,12 +123,12 @@
   top: 0;
   left: 0;
   right: 0;
-  height: 64px;
+  height: 77px;
+  z-index: 2;
   pointer-events: none;
   background-image: url('/assets/christmas-shell/gallery/gallery-evergreen-hero-v2.svg');
   background-image: image-set(
-    url('/assets/christmas-shell/gallery/gallery-evergreen-hero-photoreal-v4.webp')
-      type('image/webp'),
+    url('/assets/christmas-shell/gallery/gallery-evergreen-hero-retina-v6.webp') type('image/webp'),
     url('/assets/christmas-shell/gallery/gallery-evergreen-hero-v2.svg') type('image/svg+xml')
   );
   background-position: center top;
@@ -530,10 +537,6 @@
   text-transform: uppercase;
 }
 
-.gallery-pine {
-  display: none;
-}
-
 .gallery-photo-frame {
   isolation: isolate;
 }
@@ -610,20 +613,6 @@
 }
 
 /* Premium gold interaction system: actual icons, not font glyph approximations. */
-.gallery-icon-button {
-  position: relative;
-  border: 1px solid rgb(247 208 130 / 56%);
-  background:
-    radial-gradient(circle at 28% 0%, rgb(242 212 151 / 22%), transparent 55%),
-    linear-gradient(150deg, #19433b 0%, #052521 80%);
-  box-shadow:
-    inset 0 1px rgb(255 249 224 / 24%),
-    inset 0 -2px rgb(0 0 0 / 24%),
-    0 5px 14px rgb(0 12 10 / 45%),
-    0 0 0 2px rgb(195 135 58 / 8%);
-}
-
-.gallery-icon-button .shell-glyph,
 .gallery-lightbox-arrow .shell-glyph {
   display: block;
   width: 27px;
@@ -711,35 +700,6 @@
 .gallery-lightbox-arrow {
   width: 45px;
   height: 49px;
-}
-
-.gallery-hero {
-  min-height: 0;
-  padding-top: 59px;
-  background:
-    radial-gradient(ellipse at 50% 8%, rgb(172 115 53 / 20%), transparent 62%),
-    linear-gradient(155deg, #0b372e, #05221e);
-}
-
-.gallery-hero-garland {
-  height: 77px;
-  z-index: 2;
-}
-
-.gallery-hero-content {
-  padding-top: 4px;
-}
-
-.gallery-hero-meta {
-  margin: 0 0 4px;
-}
-
-.gallery-hero-content h1 {
-  font-size: clamp(1.36rem, 5.2vw, 1.78rem);
-}
-
-.gallery-hero-instruction {
-  padding-top: 5px;
 }
 
 @media (max-width: 380px) {

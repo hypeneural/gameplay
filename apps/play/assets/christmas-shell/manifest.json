@@ -992,47 +992,6 @@
       }
     },
     {
-      "id": "gallery-evergreen-header-v1",
-      "kind": "ui",
-      "format": "svg",
-      "source": {
-        "provider": "Estudio Evydencia",
-        "origin": "project-created",
-        "identifier": "gallery-evergreen-header-v1",
-        "license": "project-owned",
-        "reviewedOn": "2026-10-08",
-        "reviewedBy": "visual-gallery-prep",
-        "record": "ASSET_PROVENANCE.md#gallery-native-v2"
-      },
-      "art": {
-        "family": "christmas-photo-first",
-        "christmasFit": "approved",
-        "photoSafety": "approved",
-        "mobileLegibility": "approved",
-        "state": "PRONTO_PARA_RUNTIME",
-        "justification": "SVG decorativo de baixo peso, sem fotografia e fora da area facial; revisao fisica do mobile continua pendente."
-      },
-      "processing": {
-        "recipe": "gallery-native-v2-svg",
-        "tools": ["vector-svg-authoring"]
-      },
-      "runtime": {
-        "file": "apps/play/public/assets/christmas-shell/gallery/gallery-evergreen-header-v1.svg",
-        "publicPath": "/assets/christmas-shell/gallery/gallery-evergreen-header-v1.svg",
-        "bytes": 9095,
-        "sha256": "3b07d7240d0dc6f3bfa7f1485cdea947dcb55bd4e6ce1902ec783a9b6685dbe5",
-        "dimensions": {
-          "width": 760,
-          "height": 175
-        },
-        "textureKey": "gallery-evergreen-header-v1",
-        "quality": {
-          "low": "keep",
-          "reducedMotion": "keep"
-        }
-      }
-    },
-    {
       "id": "gallery-starlight-footer-v1",
       "kind": "ui",
       "format": "svg",
@@ -1067,47 +1026,6 @@
           "height": 158
         },
         "textureKey": "gallery-starlight-footer-v1",
-        "quality": {
-          "low": "keep",
-          "reducedMotion": "keep"
-        }
-      }
-    },
-    {
-      "id": "gallery-snowflake-seal-v1",
-      "kind": "ui",
-      "format": "svg",
-      "source": {
-        "provider": "Estudio Evydencia",
-        "origin": "project-created",
-        "identifier": "gallery-snowflake-seal-v1",
-        "license": "project-owned",
-        "reviewedOn": "2026-10-08",
-        "reviewedBy": "visual-gallery-prep",
-        "record": "ASSET_PROVENANCE.md#gallery-native-v2"
-      },
-      "art": {
-        "family": "christmas-photo-first",
-        "christmasFit": "approved",
-        "photoSafety": "approved",
-        "mobileLegibility": "approved",
-        "state": "PRONTO_PARA_RUNTIME",
-        "justification": "SVG decorativo de baixo peso, sem fotografia e fora da area facial; revisao fisica do mobile continua pendente."
-      },
-      "processing": {
-        "recipe": "gallery-native-v2-svg",
-        "tools": ["vector-svg-authoring"]
-      },
-      "runtime": {
-        "file": "apps/play/public/assets/christmas-shell/gallery/gallery-snowflake-seal-v1.svg",
-        "publicPath": "/assets/christmas-shell/gallery/gallery-snowflake-seal-v1.svg",
-        "bytes": 1176,
-        "sha256": "a427b6b6c4246fd76668baa4a953c9d921b4c6eaca99230e42a00d4a75545c56",
-        "dimensions": {
-          "width": 100,
-          "height": 100
-        },
-        "textureKey": "gallery-snowflake-seal-v1",
         "quality": {
           "low": "keep",
           "reducedMotion": "keep"
@@ -1361,17 +1279,17 @@
       }
     },
     {
-      "id": "gallery-evergreen-hero-photoreal-v4",
+      "id": "gallery-evergreen-hero-retina-v6",
       "kind": "ui",
       "format": "webp",
       "source": {
         "provider": "Google Antigravity AI generation",
         "origin": "project-created",
-        "identifier": "gallery-evergreen-hero-photoreal-v4",
+        "identifier": "gallery-evergreen-hero-retina-v6",
         "license": "project-owned",
         "reviewedOn": "2026-10-08",
-        "reviewedBy": "forensic-visual-prep-v4",
-        "record": "ASSET_PROVENANCE.md#gallery-photoreal-v4"
+        "reviewedBy": "forensic-visual-prep-v6",
+        "record": "ASSET_PROVENANCE.md#gallery-retina-v6"
       },
       "art": {
         "family": "christmas-photo-first",
@@ -1379,22 +1297,22 @@
         "photoSafety": "approved",
         "mobileLegibility": "approved",
         "state": "PRONTO_PARA_RUNTIME",
-        "justification": "Guirlanda fotorrealista de pinheiro e abeto com laco central de veludo rubi, bolas de vidro e luzes douradas com canal alfa suave. Ocupa topo do Hero sem cobrir texto ou fotos. Aprovacao fisica pendente."
+        "justification": "Guirlanda fotorealista Retina de alta resolucao (640x126) com ramos densos de abeto e espruce, agulhas nitidas, pinhas texturizadas, bolas de vidro rubi, laco central de veludo e luzes quentes douradas com degradê alfa suave na base. Ocupa topo do Hero sem cobrir texto ou fotos."
       },
       "processing": {
-        "recipe": "gallery-evergreen-hero-photoreal-v4-webp-alpha",
+        "recipe": "gallery-evergreen-hero-retina-v6-webp-alpha",
         "tools": ["Google Antigravity AI generation", "Sharp WebP alpha crop"]
       },
       "runtime": {
-        "file": "apps/play/public/assets/christmas-shell/gallery/gallery-evergreen-hero-photoreal-v4.webp",
-        "publicPath": "/assets/christmas-shell/gallery/gallery-evergreen-hero-photoreal-v4.webp",
-        "bytes": 4908,
-        "sha256": "6a4497f3b249800ff0bf02abc5c2a10e17f676e775f3847e3457d99b2c0d830a",
+        "file": "apps/play/public/assets/christmas-shell/gallery/gallery-evergreen-hero-retina-v6.webp",
+        "publicPath": "/assets/christmas-shell/gallery/gallery-evergreen-hero-retina-v6.webp",
+        "bytes": 13672,
+        "sha256": "620f1197cc8c46ef4025b44e03d59833014881a65bdb9572f8ccbb3d75bb6cfa",
         "dimensions": {
-          "width": 392,
-          "height": 77
+          "width": 640,
+          "height": 126
         },
-        "textureKey": "gallery-evergreen-hero-photoreal-v4",
+        "textureKey": "gallery-evergreen-hero-retina-v6",
         "quality": {
           "low": "keep",
           "reducedMotion": "keep"

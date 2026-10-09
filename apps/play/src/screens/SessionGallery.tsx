@@ -150,6 +150,7 @@ export function SessionGallery({
           </div>
           <h1 id="gallery-hero-title">Seu Álbum de Natal</h1>
           <p className="gallery-hero-subtitle">Reviva cada lembrança com carinho</p>
+          <div className="gallery-hero-divider" aria-hidden="true" />
           <p className="gallery-hero-instruction">Toque em uma foto para ver de perto</p>
         </div>
       </section>
