@@ -3,6 +3,11 @@ import { fileURLToPath } from 'node:url';
 import { createCatalogServer } from './CatalogServer.js';
 import { createFilePreviewRepository, parsePreviewConfiguration } from './filePreviewRepository.js';
 import { resolveCatalogRuntimeConfig } from './runtimeConfig.js';
+import { PublicationService } from './publication/PublicationService.js';
+import { SqliteSessionRepository } from './publication/SessionRepository.js';
+import { applyMigrations, openSqliteDatabase } from './publication/sqliteDatabase.js';
+import { StructuredPublicationLogger } from './publication/publicationLogger.js';
+import { FileSystemStorageService } from './storage/FileSystemStorageService.js';
 
 const environment = process.env.NODE_ENV ?? 'development';
 const defaultApplicationShellPath = fileURLToPath(
@@ -17,6 +22,29 @@ const [applicationShell, previewSource] = await Promise.all([
 parsePreviewConfiguration(JSON.parse(previewSource), {
   rejectExampleTokens: environment === 'production',
 });
+
+let publicationService: PublicationService | undefined;
+
+if (runtime.databasePath && runtime.publisherApiSecret) {
+  const db = openSqliteDatabase(runtime.databasePath);
+  applyMigrations(db);
+  const sessionRepository = new SqliteSessionRepository({
+    db,
+    serverSecret: runtime.serverSecret ?? 'default-server-secret-change-in-production',
+    publicBaseUrl: runtime.publicOrigin.origin,
+  });
+  const storageService = new FileSystemStorageService({
+    storageDir: runtime.storageDir ?? './data/media',
+  });
+  const logger = new StructuredPublicationLogger();
+  publicationService = new PublicationService({
+    sessionRepository,
+    storageService,
+    publisherSecret: runtime.publisherApiSecret,
+    logger,
+    publicBaseUrl: runtime.publicOrigin.origin,
+  });
+}
 
 const server = createCatalogServer({
   publicOrigin: runtime.publicOrigin,
@@ -39,6 +67,7 @@ const server = createCatalogServer({
       rejectExampleTokens: environment === 'production',
     });
   },
+  ...(publicationService ? { publicationService } : {}),
 });
 
 server.listen(runtime.port, runtime.host, () => {

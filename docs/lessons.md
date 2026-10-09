@@ -1040,3 +1040,16 @@ requisito antes de habilitar envio automático. Distinguir esse recorte proposto
 do plano completo e da integração realmente implementada. Os 6,62 MB medidos
 para 90 derivados são o peso de toda a coleção; não comprovam carga inicial,
 memória decodificada nem performance em Android/iOS.
+
+## LESSON-116 — Inspeção binária de WebP em Node puro e integridade do upload físico
+
+No serviço de armazenamento do backend (`apps/catalog-server`) em VPS compartilhada:
+
+1. **Parser puro de WebP sem dependências C++ (libvips/Sharp)**:
+   A validação em tempo de ingestão na VPS deve inspecionar dimensões e magic bytes sem depender de compilação ou binários nativos no servidor. O formato WebP (`RIFF....WEBP`) distribui metadados em chunks distintos: `VP8 ` (lossy, leitura do frame tag e offsets 6-9), `VP8L` (lossless, decodificação dos 4 bytes com bitwise shift para 14 bits de width/height) e `VP8X` (extended, leitura dos bytes 24-29 com soma +1). Extrair metadados diretamente do buffer em poucos microssegundos evita falhas de compilação cruzada na VPS.
+
+2. **Gravação Atômica em Disco com Validação de Quota e Integridade**:
+   Upload de derivados deve usar streaming com cálculo de hash SHA-256 simultâneo, gravando inicialmente em arquivo temporário (`.tmp.<random>`). Se o hash divergir do cabeçalho `X-Content-SHA256` ou do manifesto, se os magic bytes forem corrompidos ou se o tamanho exceder a cota (12 MiB), o arquivo temporário é sumariamente excluído com erro 422 ou 413, impedindo poluição do diretório de armazenamento antes da confirmação.
+
+3. **Idempotência HTTP RFC e Replays**:
+   Replays com hash e payload idênticos devem retornar 200 OK preservando o estado existente, enquanto novos recursos retornam 201 Created. Alterações concorrentes em revisões `STAGED` devem respeitar CAS estrito na transação de ativação (`expectedActiveRevisionId`), falhando com 409 caso a base tenha sido ativada por outra requisição.

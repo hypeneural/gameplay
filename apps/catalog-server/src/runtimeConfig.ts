@@ -1,4 +1,5 @@
 import type { URL } from 'node:url';
+import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { parsePublicOrigin } from './socialPreview.js';
 
@@ -11,6 +12,10 @@ export interface CatalogRuntimeConfig {
   readonly previewConfigPath: string;
   readonly port: number;
   readonly host: string;
+  readonly databasePath?: string;
+  readonly storageDir?: string;
+  readonly publisherApiSecret?: string;
+  readonly serverSecret?: string;
 }
 
 export function resolveCatalogRuntimeConfig(
@@ -36,6 +41,15 @@ export function resolveCatalogRuntimeConfig(
     throw new Error('CATALOG_APPLICATION_SHELL é obrigatório em produção.');
   }
 
+  const publisherApiSecret = resolveSecret(
+    environment.PUBLISHER_API_SECRET,
+    environment.PUBLISHER_API_SECRET_FILE,
+  );
+  const serverSecret = resolveSecret(
+    environment.CATALOG_SERVER_SECRET,
+    environment.CATALOG_SERVER_SECRET_FILE,
+  );
+
   return {
     releaseStage,
     publicOrigin,
@@ -43,7 +57,25 @@ export function resolveCatalogRuntimeConfig(
     previewConfigPath: resolve(previewConfigPath),
     port: parsePort(environment.PORT ?? '4180'),
     host: environment.HOST ?? '127.0.0.1',
+    ...(environment.CATALOG_DATABASE_PATH
+      ? { databasePath: resolve(environment.CATALOG_DATABASE_PATH) }
+      : {}),
+    ...(environment.CATALOG_STORAGE_DIR
+      ? { storageDir: resolve(environment.CATALOG_STORAGE_DIR) }
+      : {}),
+    ...(publisherApiSecret !== undefined ? { publisherApiSecret } : {}),
+    ...(serverSecret !== undefined ? { serverSecret } : {}),
   };
+}
+
+function resolveSecret(directValue?: string, filePath?: string): string | undefined {
+  if (directValue) return directValue;
+  if (!filePath) return undefined;
+  try {
+    return readFileSync(resolve(filePath), 'utf-8').trim();
+  } catch {
+    return undefined;
+  }
 }
 
 function resolveReleaseStage(production: boolean, value: string | undefined): CatalogReleaseStage {

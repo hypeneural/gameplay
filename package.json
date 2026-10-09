@@ -54,6 +54,7 @@
     "validate:staging": "pnpm agent:doctor && pnpm check && pnpm asset:validate:all && pnpm test:e2e:gallery && pnpm release:staging && pnpm release:verify && pnpm release:smoke-runtime",
     "deploy:staging-config": "node tools/deploy/create-staging-preview-config.mjs",
     "asset:validate:all": "pnpm --filter @christmas-games/asset-factory run validate-all",
+    "session:publish": "node tools/deploy/publish-session.mjs",
     "release:smoke-runtime": "node tools/deploy/smoke-release-runtime.mjs"
   },
   "devDependencies": {

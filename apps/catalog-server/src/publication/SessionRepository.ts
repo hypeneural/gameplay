@@ -41,6 +41,7 @@ export interface ResolvedSession {
   readonly activeRevisionId: string | null;
   readonly status: 'ACTIVE' | 'REVOKED';
   readonly publicToken?: string | undefined;
+  readonly isNew?: boolean;
 }
 
 export interface PublicationState {
@@ -50,6 +51,7 @@ export interface PublicationState {
   readonly expectedBlobs: number;
   readonly readyBlobs: number;
   readonly pendingBlobIds: readonly string[];
+  readonly isReplay?: boolean;
 }
 
 export interface VerifiedBlobConfirmation {
@@ -104,21 +106,40 @@ export interface SessionRepositoryDependencies {
   readonly publicBaseUrl?: string;
 }
 
-const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
-
-interface SessionRepository {
+export interface SessionRepository {
   resolveOrCreateSession(crmOrderUuid: string): Promise<ResolvedSession>;
   beginPublication(manifestInput: unknown): Promise<PublicationState>;
   recordVerifiedBlob(confirmation: VerifiedBlobConfirmation): Promise<RecordBlobResult>;
   getPublicationStatus(revisionId: string): Promise<PublicationState>;
+  getExpectedBlob(revisionId: string, blobId: string): Promise<ExpectedBlobInfo | null>;
   activatePublication(
     revisionId: string,
     expectedActiveRevisionId: string | null,
     publicBaseUrl?: string,
   ): Promise<ActivationReceipt>;
   getActiveSession(token: string): Promise<GallerySession | null>;
+  getBlobIdForPhotoVariant(
+    token: string,
+    revisionId: string,
+    photoId: string,
+    variant: 'thumb' | 'card' | 'game',
+  ): Promise<string | null>;
   revokeSession(sessionId: string): Promise<void>;
 }
+
+export interface ExpectedBlobInfo {
+  readonly blobId: string;
+  readonly revisionId: string;
+  readonly sha256: string;
+  readonly byteLength: number;
+  readonly width: number;
+  readonly height: number;
+  readonly state: 'EXPECTED' | 'READY';
+  readonly revisionState: 'STAGED' | 'ACTIVE' | 'SUPERSEDED' | 'FAILED';
+  readonly sessionStatus: 'ACTIVE' | 'REVOKED';
+}
+
+const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
 export class SqliteSessionRepository implements SessionRepository {
   private readonly db: DatabaseSync;
@@ -167,6 +188,7 @@ export class SqliteSessionRepository implements SessionRepository {
           activeRevisionId: existing.active_revision_id,
           status: existing.status,
           publicToken,
+          isNew: false,
         };
       }
 
@@ -189,6 +211,7 @@ export class SqliteSessionRepository implements SessionRepository {
         activeRevisionId: null,
         status: 'ACTIVE',
         publicToken,
+        isNew: true,
       };
     } catch (error) {
       try {
@@ -266,7 +289,8 @@ export class SqliteSessionRepository implements SessionRepository {
           );
         }
         this.db.exec('COMMIT;');
-        return this.getPublicationStatus(existingRev.id);
+        const status = await this.getPublicationStatus(existingRev.id);
+        return { ...status, isReplay: true };
       }
 
       // Validate expectedActiveRevisionId against active revision
@@ -321,6 +345,7 @@ export class SqliteSessionRepository implements SessionRepository {
       expectedBlobs: pendingBlobIds.length,
       readyBlobs: 0,
       pendingBlobIds,
+      isReplay: false,
     };
   }
 
@@ -700,6 +725,88 @@ export class SqliteSessionRepository implements SessionRepository {
         // preserve original error
       }
       throw error;
+    }
+  }
+
+  async getExpectedBlob(revisionId: string, blobId: string): Promise<ExpectedBlobInfo | null> {
+    if (!UUID_PATTERN.test(revisionId) || !UUID_PATTERN.test(blobId)) {
+      return null;
+    }
+    const stmt = this.db.prepare(
+      `SELECT b.blob_id, b.revision_id, b.sha256, b.byte_length, b.width, b.height, b.state AS blob_state,
+              r.state AS rev_state, s.status AS session_status
+       FROM revision_blobs b
+       JOIN photo_revisions r ON r.id = b.revision_id
+       JOIN photo_sessions s ON s.id = r.session_id
+       WHERE b.blob_id = ? AND b.revision_id = ? LIMIT 1`,
+    );
+    const row = stmt.get(blobId, revisionId) as
+      | {
+          blob_id: string;
+          revision_id: string;
+          sha256: string;
+          byte_length: number;
+          width: number;
+          height: number;
+          blob_state: 'EXPECTED' | 'READY';
+          rev_state: 'STAGED' | 'ACTIVE' | 'SUPERSEDED' | 'FAILED';
+          session_status: 'ACTIVE' | 'REVOKED';
+        }
+      | undefined;
+    if (!row) return null;
+    return {
+      blobId: row.blob_id,
+      revisionId: row.revision_id,
+      sha256: row.sha256,
+      byteLength: row.byte_length,
+      width: row.width,
+      height: row.height,
+      state: row.blob_state,
+      revisionState: row.rev_state,
+      sessionStatus: row.session_status,
+    };
+  }
+
+  async getBlobIdForPhotoVariant(
+    token: string,
+    revisionId: string,
+    photoId: string,
+    variant: 'thumb' | 'card' | 'game',
+  ): Promise<string | null> {
+    if (!isValidTokenFormat(token) || !UUID_PATTERN.test(revisionId)) {
+      return null;
+    }
+    const tokenHash = computeTokenHash(token);
+    const selectSession = this.db.prepare(
+      `SELECT s.id, s.active_revision_id, s.status, r.manifest_json, r.state AS rev_state
+       FROM photo_sessions s
+       LEFT JOIN photo_revisions r ON r.id = s.active_revision_id AND r.session_id = s.id
+       WHERE s.public_token_hash = ? AND s.status = 'ACTIVE' LIMIT 1`,
+    );
+    const row = selectSession.get(tokenHash) as
+      | {
+          id: string;
+          active_revision_id: string | null;
+          status: 'ACTIVE' | 'REVOKED';
+          manifest_json: string | null;
+          rev_state: 'STAGED' | 'ACTIVE' | 'SUPERSEDED' | 'FAILED' | null;
+        }
+      | undefined;
+    if (
+      !row ||
+      row.active_revision_id !== revisionId ||
+      !row.manifest_json ||
+      row.rev_state !== 'ACTIVE'
+    ) {
+      return null;
+    }
+    try {
+      const manifest = parsePublicationManifestV1(JSON.parse(row.manifest_json));
+      const photo = manifest.photos.find((p) => p.photoId === photoId);
+      if (!photo) return null;
+      return photo.variants[variant]?.blobId ?? null;
+    } catch {
+      return null;
     }
   }
 }

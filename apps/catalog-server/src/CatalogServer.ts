@@ -12,6 +12,8 @@ import type {
   SocialPreviewRepository,
 } from './socialPreview.js';
 
+import type { PublicationService } from './publication/PublicationService.js';
+
 export interface CatalogServerDependencies {
   readonly publicOrigin: URL;
   readonly loadApplicationShell: () => Promise<string>;
@@ -22,6 +24,7 @@ export interface CatalogServerDependencies {
     readonly releaseStage: string;
   };
   readonly readiness?: () => Promise<void>;
+  readonly publicationService?: PublicationService;
 }
 
 /**
@@ -43,12 +46,6 @@ async function handleRequest(
   response: ServerResponse,
   dependencies: CatalogServerDependencies,
 ): Promise<void> {
-  if (request.method !== 'GET' && request.method !== 'HEAD') {
-    response.setHeader('Allow', 'GET, HEAD');
-    send(response, 405, 'Método não permitido.');
-    return;
-  }
-
   const requestUrl = new URL(request.url ?? '/', 'http://catalog.invalid');
   if (requestUrl.pathname === '/healthz') {
     let status = 'ok';
@@ -67,6 +64,17 @@ async function handleRequest(
     response.setHeader('Content-Type', 'application/json; charset=utf-8');
     response.setHeader('Referrer-Policy', 'no-referrer');
     send(response, statusCode, body, request.method === 'HEAD');
+    return;
+  }
+
+  if (dependencies.publicationService) {
+    const handled = await dependencies.publicationService.handleHttpRequest(request, response);
+    if (handled) return;
+  }
+
+  if (request.method !== 'GET' && request.method !== 'HEAD') {
+    response.setHeader('Allow', 'GET, HEAD');
+    send(response, 405, 'Método não permitido.');
     return;
   }
 

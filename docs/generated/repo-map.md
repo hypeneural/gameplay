@@ -68,10 +68,13 @@
 │   │   │   ├── filePreviewRepository.ts
 │   │   │   ├── main.ts
 │   │   │   ├── publication
+│   │   │   │   ├── PublicationService.ts
 │   │   │   │   ├── SessionRepository.ts
+│   │   │   │   ├── corte2Http.test.ts
 │   │   │   │   ├── hardeningRegression.test.ts
 │   │   │   │   ├── mvpContract.test.ts
 │   │   │   │   ├── mvpSqliteSchema.test.ts
+│   │   │   │   ├── publicationLogger.ts
 │   │   │   │   ├── publicationManifest.test.ts
 │   │   │   │   ├── publicationManifest.ts
 │   │   │   │   ├── sessionRepository.test.ts
@@ -79,7 +82,10 @@
 │   │   │   │   └── tokenSecurity.ts
 │   │   │   ├── runtimeConfig.test.ts
 │   │   │   ├── runtimeConfig.ts
-│   │   │   └── socialPreview.ts
+│   │   │   ├── socialPreview.ts
+│   │   │   └── storage
+│   │   │       ├── FileSystemStorageService.test.ts
+│   │   │       └── FileSystemStorageService.ts
 │   │   └── tsconfig.build.json
 │   └── play
 │       ├── AGENTS.md
@@ -505,6 +511,7 @@
 │       ├── christmas-games-catalog.service.example
 │       ├── docker
 │       │   ├── Caddyfile.fragment
+│       │   ├── compose.persistence.yaml
 │       │   ├── compose.yaml
 │       │   ├── nginx.conf
 │       │   └── stack.yaml
@@ -1273,6 +1280,8 @@
 │   │   ├── photo-session-preflight.mjs
 │   │   ├── photo-session-preflight.test.mjs
 │   │   ├── prepare-vps-release.mjs
+│   │   ├── publish-session.mjs
+│   │   ├── publish-session.test.mjs
 │   │   ├── release-utils.mjs
 │   │   ├── release-utils.test.mjs
 │   │   ├── smoke-release-runtime.mjs

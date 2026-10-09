@@ -136,19 +136,35 @@ async function handleRequest(
   // 3. Multi-client session lookup: /__local-test/sessions/:token
   if (pathname.startsWith('/__local-test/sessions/')) {
     const token = decodeURIComponent(pathname.slice('/__local-test/sessions/'.length));
-    if (!token || !registry) {
-      sendJson(response, 404, { code: 'local_test_session_not_found' });
-      return;
-    }
-    const sessionEntry = registry.sessions.find((entry) => entry.publicToken === token);
-    if (!sessionEntry) {
+    if (!token) {
       sendJson(response, 404, { code: 'local_test_session_not_found' });
       return;
     }
 
+    if (registry) {
+      const sessionEntry = registry.sessions.find((entry) => entry.publicToken === token);
+      if (!sessionEntry) {
+        sendJson(response, 404, { code: 'local_test_session_not_found' });
+        return;
+      }
+
+      try {
+        const config = await readConfigFile(sessionEntry.configPath);
+        sendSessionJson(response, config, token);
+        return;
+      } catch {
+        sendJson(response, 404, { code: 'local_test_session_not_prepared' });
+        return;
+      }
+    }
+
     try {
-      const config = await readConfigFile(sessionEntry.configPath);
-      sendSessionJson(response, config, token);
+      const config = await readConfig(storageRoot);
+      if (token === config.session.publicToken || token === 'local-private-test') {
+        sendSessionJson(response, config, config.session.publicToken);
+        return;
+      }
+      sendJson(response, 404, { code: 'local_test_session_not_found' });
       return;
     } catch {
       sendJson(response, 404, { code: 'local_test_session_not_prepared' });
@@ -159,41 +175,65 @@ async function handleRequest(
   // 4. Multi-client media lookup: /__local-test/media/:token/:photoId/:variant
   const multiMediaMatch =
     /^\/__local-test\/media\/([a-z0-9._-]+)\/([a-z0-9-]+)\/(thumb|card|game)$/i.exec(pathname);
-  if (multiMediaMatch && registry) {
+  if (multiMediaMatch) {
     const [, token, photoId, variant] = multiMediaMatch;
     if (!token || !photoId || !variant || !variants.includes(variant as Variant)) {
       sendJson(response, 404, { code: 'local_test_media_not_found' });
       return;
     }
 
-    const sessionEntry = registry.sessions.find((entry) => entry.publicToken === token);
-    if (!sessionEntry) {
-      sendJson(response, 404, { code: 'local_test_media_not_found' });
+    if (registry) {
+      const sessionEntry = registry.sessions.find((entry) => entry.publicToken === token);
+      if (!sessionEntry) {
+        sendJson(response, 404, { code: 'local_test_media_not_found' });
+        return;
+      }
+
+      let config: LocalTestMediaConfig;
+      try {
+        config = await readConfigFile(sessionEntry.configPath);
+      } catch {
+        sendJson(response, 404, { code: 'local_test_media_not_found' });
+        return;
+      }
+
+      // Strict ownership verification: photoId MUST belong to this session
+      const photo = config.photos.find((candidate) => candidate.id === photoId);
+      if (!photo) {
+        sendJson(response, 404, { code: 'local_test_media_not_found' });
+        return;
+      }
+
+      await streamDerivative(
+        sessionEntry.storageDirectory,
+        config,
+        photo,
+        variant as Variant,
+        response,
+      );
       return;
     }
 
     let config: LocalTestMediaConfig;
     try {
-      config = await readConfigFile(sessionEntry.configPath);
+      config = await readConfig(storageRoot);
     } catch {
       sendJson(response, 404, { code: 'local_test_media_not_found' });
       return;
     }
 
-    // Strict ownership verification: photoId MUST belong to this session
+    if (config.session.publicToken !== token) {
+      sendJson(response, 404, { code: 'local_test_media_not_found' });
+      return;
+    }
+
     const photo = config.photos.find((candidate) => candidate.id === photoId);
     if (!photo) {
       sendJson(response, 404, { code: 'local_test_media_not_found' });
       return;
     }
 
-    await streamDerivative(
-      sessionEntry.storageDirectory,
-      config,
-      photo,
-      variant as Variant,
-      response,
-    );
+    await streamDerivative(storageRoot, config, photo, variant as Variant, response);
     return;
   }
 
