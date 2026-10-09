@@ -12,10 +12,10 @@ export const publicationLimits = {
   maxDimension: 12_000,
 } as const;
 
-export const publicationVariantNames = ['thumb', 'card', 'game'] as const;
-export type PublicationVariantName = (typeof publicationVariantNames)[number];
+const publicationVariantNames = ['thumb', 'card', 'game'] as const;
+type PublicationVariantName = (typeof publicationVariantNames)[number];
 
-export interface PublicationVariantV1 {
+interface PublicationVariantV1 {
   readonly blobId: string;
   readonly sha256: string;
   readonly byteLength: number;
@@ -23,7 +23,7 @@ export interface PublicationVariantV1 {
   readonly height: number;
 }
 
-export interface PublicationPhotoV1 {
+interface PublicationPhotoV1 {
   readonly photoId: string;
   readonly contentHash: string;
   readonly sortIndex: number;
