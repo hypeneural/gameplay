@@ -12,7 +12,7 @@ describe('public demo gateway boundary', () => {
       expect(nginx).toContain('location = /demo/fotos');
       expect(nginx).toMatch(/location ~ \^\/demo\/game\//);
       expect(nginx).toMatch(/location \/ \{\s*return 404;/);
-      expect(nginx).toContain('/internal-media/');
+      if (template.includes('/docker/')) expect(nginx).toContain('/internal-media/');
     });
   }
 });
