@@ -20,7 +20,9 @@ describe('MVP candidate SQLite migration (not deployed)', () => {
   it('creates exactly the 3 required tables and foreign-key constraints', async () => {
     const db = await makeDatabase();
     try {
-      const rows = db.prepare("SELECT name FROM sqlite_master WHERE type='table' ORDER BY name").all();
+      const rows = db
+        .prepare("SELECT name FROM sqlite_master WHERE type='table' ORDER BY name")
+        .all();
       expect(rows.map((row) => row.name)).toEqual([
         'photo_revisions',
         'photo_sessions',
@@ -52,11 +54,18 @@ describe('MVP candidate SQLite migration (not deployed)', () => {
       addSession(db, B, '44444444-4444-4444-8444-444444444444');
       addRevision(db, A1, A, 1);
       addRevision(db, B1, B, 1);
-      expect(() => db.prepare('UPDATE photo_sessions SET active_revision_id=? WHERE id=?').run(B1,A)).toThrow();
-      db.prepare("INSERT INTO revision_blobs(blob_id,revision_id,sha256,byte_length,width,height) VALUES(?,?,?,?,?,?)")
-        .run('55555555-5555-4555-8555-555555555555',A1,'a'.repeat(64),1234,800,600);
-      expect(() => db.prepare("UPDATE revision_blobs SET state='READY' WHERE revision_id=?").run(A1)).toThrow();
-      db.prepare("UPDATE revision_blobs SET state='READY',received_at=CURRENT_TIMESTAMP WHERE revision_id=?").run(A1);
+      expect(() =>
+        db.prepare('UPDATE photo_sessions SET active_revision_id=? WHERE id=?').run(B1, A),
+      ).toThrow();
+      db.prepare(
+        'INSERT INTO revision_blobs(blob_id,revision_id,sha256,byte_length,width,height) VALUES(?,?,?,?,?,?)',
+      ).run('55555555-5555-4555-8555-555555555555', A1, 'a'.repeat(64), 1234, 800, 600);
+      expect(() =>
+        db.prepare("UPDATE revision_blobs SET state='READY' WHERE revision_id=?").run(A1),
+      ).toThrow();
+      db.prepare(
+        "UPDATE revision_blobs SET state='READY',received_at=CURRENT_TIMESTAMP WHERE revision_id=?",
+      ).run(A1);
       expect(db.prepare('PRAGMA foreign_key_check').all()).toEqual([]);
     } finally {
       db.close();
@@ -68,15 +77,27 @@ describe('MVP candidate SQLite migration (not deployed)', () => {
     try {
       addSession(db, A, '33333333-3333-4333-8333-333333333333');
       addRevision(db, A1, A, 1);
-      db.prepare("UPDATE photo_revisions SET state='ACTIVE', activated_at=CURRENT_TIMESTAMP WHERE id=?").run(A1);
-      db.prepare('UPDATE photo_sessions SET active_revision_id=? WHERE id=?').run(A1,A);
-      db.prepare("INSERT INTO photo_revisions(id,session_id,sequence,request_id,manifest_sha256,manifest_json,expected_active_revision_id) VALUES(?,?,?,?,?,?,?)")
-        .run(A2,A,2,'66666666-6666-4666-8666-666666666666','b'.repeat(64),'{}',A1);
-      expect(db.prepare('SELECT active_revision_id AS id FROM photo_sessions WHERE id=?').get(A))
-        .toEqual({id:A1});
-      const stale = db.prepare('UPDATE photo_sessions SET active_revision_id=? WHERE id=? AND active_revision_id IS NULL').run(A2,A);
+      db.prepare(
+        "UPDATE photo_revisions SET state='ACTIVE', activated_at=CURRENT_TIMESTAMP WHERE id=?",
+      ).run(A1);
+      db.prepare('UPDATE photo_sessions SET active_revision_id=? WHERE id=?').run(A1, A);
+      db.prepare(
+        'INSERT INTO photo_revisions(id,session_id,sequence,request_id,manifest_sha256,manifest_json,expected_active_revision_id) VALUES(?,?,?,?,?,?,?)',
+      ).run(A2, A, 2, '66666666-6666-4666-8666-666666666666', 'b'.repeat(64), '{}', A1);
+      expect(
+        db.prepare('SELECT active_revision_id AS id FROM photo_sessions WHERE id=?').get(A),
+      ).toEqual({ id: A1 });
+      const stale = db
+        .prepare(
+          'UPDATE photo_sessions SET active_revision_id=? WHERE id=? AND active_revision_id IS NULL',
+        )
+        .run(A2, A);
       expect(stale.changes).toBe(0);
-      const cas = db.prepare('UPDATE photo_sessions SET active_revision_id=? WHERE id=? AND active_revision_id=?').run(A2,A,A1);
+      const cas = db
+        .prepare(
+          'UPDATE photo_sessions SET active_revision_id=? WHERE id=? AND active_revision_id=?',
+        )
+        .run(A2, A, A1);
       expect(cas.changes).toBe(1);
       expect(db.prepare('PRAGMA foreign_key_check').all()).toEqual([]);
     } finally {
@@ -86,11 +107,15 @@ describe('MVP candidate SQLite migration (not deployed)', () => {
 });
 
 function addSession(db: DatabaseSync, id: string, crmOrderUuid: string) {
-  db.prepare('INSERT INTO photo_sessions(id,crm_order_uuid,public_token_hash) VALUES(?,?,?)')
-    .run(id,crmOrderUuid,id);
+  db.prepare('INSERT INTO photo_sessions(id,crm_order_uuid,public_token_hash) VALUES(?,?,?)').run(
+    id,
+    crmOrderUuid,
+    id,
+  );
 }
 
 function addRevision(db: DatabaseSync, id: string, sessionId: string, sequence: number) {
-  db.prepare('INSERT INTO photo_revisions(id,session_id,sequence,request_id,manifest_sha256,manifest_json) VALUES(?,?,?,?,?,?)')
-    .run(id,sessionId,sequence,'77777777-7777-4777-8777-777777777777','a'.repeat(64),'{}');
+  db.prepare(
+    'INSERT INTO photo_revisions(id,session_id,sequence,request_id,manifest_sha256,manifest_json) VALUES(?,?,?,?,?,?)',
+  ).run(id, sessionId, sequence, '77777777-7777-4777-8777-777777777777', 'a'.repeat(64), '{}');
 }
