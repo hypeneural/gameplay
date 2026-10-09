@@ -37,11 +37,7 @@
       "Error": {
         "type": "object",
         "additionalProperties": false,
-        "required": [
-          "code",
-          "message",
-          "requestId"
-        ],
+        "required": ["code", "message", "requestId"],
         "properties": {
           "code": {
             "type": "string",
@@ -71,9 +67,7 @@
       "SessionResolve": {
         "type": "object",
         "additionalProperties": false,
-        "required": [
-          "crmOrderUuid"
-        ],
+        "required": ["crmOrderUuid"],
         "properties": {
           "crmOrderUuid": {
             "type": "string",
@@ -84,11 +78,7 @@
       "ResolvedSession": {
         "type": "object",
         "additionalProperties": false,
-        "required": [
-          "sessionId",
-          "activeRevisionId",
-          "status"
-        ],
+        "required": ["sessionId", "activeRevisionId", "status"],
         "properties": {
           "sessionId": {
             "type": "string",
@@ -107,10 +97,7 @@
           },
           "status": {
             "type": "string",
-            "enum": [
-              "ACTIVE",
-              "REVOKED"
-            ]
+            "enum": ["ACTIVE", "REVOKED"]
           }
         }
       },
@@ -139,11 +126,7 @@
           },
           "state": {
             "type": "string",
-            "enum": [
-              "STAGED",
-              "ACTIVE",
-              "FAILED"
-            ]
+            "enum": ["STAGED", "ACTIVE", "FAILED"]
           },
           "expectedBlobs": {
             "type": "integer",
@@ -165,9 +148,7 @@
       "ActivationRequest": {
         "type": "object",
         "additionalProperties": false,
-        "required": [
-          "expectedActiveRevisionId"
-        ],
+        "required": ["expectedActiveRevisionId"],
         "properties": {
           "expectedActiveRevisionId": {
             "anyOf": [
@@ -185,13 +166,7 @@
       "ActivationReceipt": {
         "type": "object",
         "additionalProperties": false,
-        "required": [
-          "sessionId",
-          "revisionId",
-          "state",
-          "photoCount",
-          "accessUrl"
-        ],
+        "required": ["sessionId", "revisionId", "state", "photoCount", "accessUrl"],
         "properties": {
           "sessionId": {
             "type": "string",
@@ -218,14 +193,7 @@
       "GalleryPhoto": {
         "type": "object",
         "additionalProperties": false,
-        "required": [
-          "id",
-          "width",
-          "height",
-          "aspectRatio",
-          "orientation",
-          "variants"
-        ],
+        "required": ["id", "width", "height", "aspectRatio", "orientation", "variants"],
         "properties": {
           "id": {
             "type": "string"
@@ -244,19 +212,11 @@
           },
           "orientation": {
             "type": "string",
-            "enum": [
-              "portrait",
-              "landscape",
-              "square"
-            ]
+            "enum": ["portrait", "landscape", "square"]
           },
           "variants": {
             "type": "object",
-            "required": [
-              "thumb",
-              "card",
-              "game"
-            ],
+            "required": ["thumb", "card", "game"],
             "additionalProperties": false,
             "properties": {
               "thumb": {
@@ -275,12 +235,7 @@
       "GallerySession": {
         "type": "object",
         "additionalProperties": false,
-        "required": [
-          "id",
-          "publicToken",
-          "displayName",
-          "photos"
-        ],
+        "required": ["id", "publicToken", "displayName", "photos"],
         "properties": {
           "id": {
             "type": "string",
@@ -306,9 +261,7 @@
   "paths": {
     "/internal/v1/sessions/resolve": {
       "post": {
-        "tags": [
-          "Publisher"
-        ],
+        "tags": ["Publisher"],
         "operationId": "resolveSession",
         "summary": "Resolve/create exactly one session for a validated CRM order UUID",
         "security": [
@@ -410,9 +363,7 @@
     },
     "/internal/v1/publications": {
       "post": {
-        "tags": [
-          "Publisher"
-        ],
+        "tags": ["Publisher"],
         "operationId": "beginPublication",
         "summary": "Create/replay immutable staged revision from strict publication manifest",
         "security": [
@@ -530,9 +481,7 @@
     },
     "/internal/v1/publications/{revisionId}/blobs/{blobId}": {
       "put": {
-        "tags": [
-          "Publisher"
-        ],
+        "tags": ["Publisher"],
         "operationId": "uploadBlob",
         "summary": "Upload complete WebP derivative; retry identical blob after interruption",
         "security": [
@@ -590,11 +539,7 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": [
-                    "blobId",
-                    "state",
-                    "byteLength"
-                  ],
+                  "required": ["blobId", "state", "byteLength"],
                   "properties": {
                     "blobId": {
                       "type": "string",
@@ -681,9 +626,7 @@
     },
     "/internal/v1/publications/{revisionId}": {
       "get": {
-        "tags": [
-          "Publisher"
-        ],
+        "tags": ["Publisher"],
         "operationId": "getPublication",
         "summary": "Retrieve progress and pending blob IDs for retry",
         "security": [
@@ -716,9 +659,7 @@
                   "state": "STAGED",
                   "expectedBlobs": 3,
                   "readyBlobs": 2,
-                  "pendingBlobIds": [
-                    "44444444-4444-4444-8444-444444444444"
-                  ]
+                  "pendingBlobIds": ["44444444-4444-4444-8444-444444444444"]
                 }
               }
             }
@@ -743,9 +684,7 @@
     },
     "/internal/v1/publications/{revisionId}/activate": {
       "post": {
-        "tags": [
-          "Publisher"
-        ],
+        "tags": ["Publisher"],
         "operationId": "activatePublication",
         "summary": "Check all blobs then CAS active revision in one transaction",
         "security": [
@@ -830,9 +769,7 @@
     },
     "/s/{token}/data": {
       "get": {
-        "tags": [
-          "Gallery"
-        ],
+        "tags": ["Gallery"],
         "operationId": "getGallerySession",
         "summary": "Authorized current gallery session in existing Session browser shape (no fixtures)",
         "security": [],
@@ -899,9 +836,7 @@
     },
     "/s/{token}/media/{revisionId}/{photoId}/{variant}": {
       "get": {
-        "tags": [
-          "Gallery"
-        ],
+        "tags": ["Gallery"],
         "operationId": "getPrivateMedia",
         "summary": "Authorize token + current revision + photoId + variant then internal Nginx redirect",
         "security": [],
@@ -941,11 +876,7 @@
             "required": true,
             "schema": {
               "type": "string",
-              "enum": [
-                "thumb",
-                "card",
-                "game"
-              ]
+              "enum": ["thumb", "card", "game"]
             }
           }
         ],
