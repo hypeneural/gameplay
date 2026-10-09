@@ -1,3 +1,4 @@
+import { Buffer } from 'node:buffer';
 import { randomUUID } from 'node:crypto';
 import { appendFile, lstat, open, readdir } from 'node:fs/promises';
 import { extname, isAbsolute, join, relative, resolve, sep } from 'node:path';
@@ -74,7 +75,7 @@ export async function scanPhotoSessionDirectory(sourceDirectory, emit = () => {}
     const extension = extname(entry.name).toLowerCase();
     if (!supported.has(extension)) { summary.unsupported++; continue; }
     index++;
-    let valid = false;
+    let valid;
     let fileBytes = 0;
     try {
       const filePath = join(root, entry.name);
