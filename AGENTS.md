@@ -2,7 +2,7 @@
 
 ## Current priority
 
-Finish Corte 2 publisher checkpoint, real browser loading and EvydFlow synthetic smoke before customer publication.
+Finish Corte 2 publisher/CRM authorization and EvydFlow smoke; keep public demo root independent of customer publication. For root/demo, read `docs/ops/GAMEPLAY_PUBLIC_DEMO_AND_CRM_EVYDFLOW_FORENSIC_2026-10-09.md` and `.agents/skills/public-demo-root/SKILL.md`.
 
 ## Mission
 
