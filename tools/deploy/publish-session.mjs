@@ -35,11 +35,8 @@ async function checkpointPublication(options, built) {
   if (!state) {
     const tempFile = `${file}.tmp-${randomUUID()}`;
     try {
-      await writeFile(
-        tempFile,
-        JSON.stringify({ version: 1, orderUuid: options.crmOrderUuid, sourceHash, manifest: built.manifest }),
-        { mode: 0o600, flag: 'wx' },
-      );
+      const checkpoint = { version: 1, orderUuid: options.crmOrderUuid, sourceHash, manifest: built.manifest };
+      await writeFile(tempFile, JSON.stringify(checkpoint), { mode: 0o600, flag: 'wx' });
       await rename(tempFile, file);
     } finally {
       await unlink(tempFile).catch(() => undefined);
