@@ -120,7 +120,7 @@ export async function publishSession(options) {
   const { apiOrigin, apiSecret, crmOrderUuid, logFile } = options;
 
   if (!UUID_PATTERN.test(crmOrderUuid)) {
-    throw new Error(`Invalid CRM order UUID: ${crmOrderUuid}`);
+    throw new Error('PUBLISHER_ORDER_UUID_INVALID');
   }
 
   const normalizedOrigin = apiOrigin.replace(/\/+$/, '');
@@ -142,7 +142,6 @@ export async function publishSession(options) {
   });
 
   if (!resolveRes.ok) {
-    const errorBody = await resolveRes.text();
     throw new Error(`PUBLISHER_RESOLVE_HTTP_${resolveRes.status}`);
   }
 
@@ -195,8 +194,7 @@ export async function publishSession(options) {
   });
 
   if (!publishRes.ok && publishRes.status !== 201) {
-    const errorBody = await publishRes.text();
-    throw new Error(`Failed to begin publication (${publishRes.status}): ${errorBody}`);
+    throw new Error(`PUBLISHER_STAGE_HTTP_${publishRes.status}`);
   }
 
   const pubData = await publishRes.json();
@@ -235,8 +233,7 @@ export async function publishSession(options) {
     );
 
     if (!uploadRes.ok && uploadRes.status !== 201) {
-      const errorBody = await uploadRes.text();
-      throw new Error(`Failed to upload blob ${blobId} (${uploadRes.status}): ${errorBody}`);
+      throw new Error(`PUBLISHER_UPLOAD_HTTP_${uploadRes.status}`);
     }
 
     totalBytesUploaded += fileBytes.byteLength;
@@ -249,8 +246,7 @@ export async function publishSession(options) {
   });
 
   if (!statusRes.ok) {
-    const errorBody = await statusRes.text();
-    throw new Error(`Failed to check publication status: ${errorBody}`);
+    throw new Error(`PUBLISHER_STATUS_HTTP_${statusRes.status}`);
   }
 
   const finalStatus = await statusRes.json();
@@ -271,8 +267,7 @@ export async function publishSession(options) {
   );
 
   if (!activateRes.ok) {
-    const errorBody = await activateRes.text();
-    throw new Error(`Failed to activate revision (${activateRes.status}): ${errorBody}`);
+    throw new Error(`PUBLISHER_ACTIVATE_HTTP_${activateRes.status}`);
   }
 
   const receiptData = await activateRes.json();
