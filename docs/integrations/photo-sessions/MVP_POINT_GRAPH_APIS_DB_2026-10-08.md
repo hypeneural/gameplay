@@ -6,17 +6,17 @@
 
 ## 1. Decisões de redução de escopo
 
-| Decisão | MVP agora | Deixar para depois |
-| --- | --- | --- |
-| Autoridade | `apps/catalog-server` já existente | Microserviço adicional |
-| Persistência | SQLite local, 1 writer, 3 tabelas | ORM/Redis/PostgreSQL, fila distribuída |
-| Modelo | 1 pedido CRM = 1 sessão/galeria; revisões imutáveis | Subgalerias, permissões por múltiplos usuários |
-| Fotos | 3 variantes WebP Node/Sharp no Windows; servidor não redimensiona | Upload de RAW/originais, AVIF, deduplicação global |
-| Upload | PUT do arquivo completo, checksum, replay seguro | Protocolo de chunks, tus, multipart por partes |
-| API privada | **5 endpoints** Tailscale/HTTPS + bearer de publicador | Painel/admin público, webhooks complexos |
-| API de leitura | **2 endpoints** sob capability token + HTML existente | OAuth, refresh token, sessão por cookie |
-| Publicação | Node CLI manual com recibo | EvydFlow/Python automático e WhatsApp |
-| Visibilidade | Mesmo Hub, galeria única, jogos existentes | Redesign adicional da galeria |
+| Decisão        | MVP agora                                                         | Deixar para depois                                 |
+| -------------- | ----------------------------------------------------------------- | -------------------------------------------------- |
+| Autoridade     | `apps/catalog-server` já existente                                | Microserviço adicional                             |
+| Persistência   | SQLite local, 1 writer, 3 tabelas                                 | ORM/Redis/PostgreSQL, fila distribuída             |
+| Modelo         | 1 pedido CRM = 1 sessão/galeria; revisões imutáveis               | Subgalerias, permissões por múltiplos usuários     |
+| Fotos          | 3 variantes WebP Node/Sharp no Windows; servidor não redimensiona | Upload de RAW/originais, AVIF, deduplicação global |
+| Upload         | PUT do arquivo completo, checksum, replay seguro                  | Protocolo de chunks, tus, multipart por partes     |
+| API privada    | **5 endpoints** Tailscale/HTTPS + bearer de publicador            | Painel/admin público, webhooks complexos           |
+| API de leitura | **2 endpoints** sob capability token + HTML existente             | OAuth, refresh token, sessão por cookie            |
+| Publicação     | Node CLI manual com recibo                                        | EvydFlow/Python automático e WhatsApp              |
+| Visibilidade   | Mesmo Hub, galeria única, jogos existentes                        | Redesign adicional da galeria                      |
 
 **Não minimizar os controles essenciais:** upload não pode ser público; validar CRC/SHA, MIME real, dimensões e autorização; CAS da revisão; isolamento A/B; logs sem token; backup/restore testado; rollback. O menor MVP **seguro** continua dependendo de testes de cliente real antes do piloto.
 
@@ -78,11 +78,11 @@ erDiagram
     }
 ```
 
-| Tabela | O que armazena | Unicidade/relacionamento |
-| --- | --- | --- |
-| `photo_sessions` | Um pedido CRM validado, sessão estável, token **somente hash**, revisão ativa, revogação, versão de acesso | `crm_order_uuid UNIQUE`; `active_revision_id` deve pertencer à **mesma sessão** |
-| `photo_revisions` | A1/A2/A3, `request_id` idempotente, SHA do manifesto, manifesto JSON validado, revisão esperada e estado | `(session_id,sequence) UNIQUE`; `(session_id,request_id) UNIQUE` |
-| `revision_blobs` | Uma variante esperada por `blobId`: SHA, bytes, dimensão, EXPECTED/READY | `blob_id PRIMARY KEY`; revisão tem vários blobs |
+| Tabela            | O que armazena                                                                                             | Unicidade/relacionamento                                                        |
+| ----------------- | ---------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------- |
+| `photo_sessions`  | Um pedido CRM validado, sessão estável, token **somente hash**, revisão ativa, revogação, versão de acesso | `crm_order_uuid UNIQUE`; `active_revision_id` deve pertencer à **mesma sessão** |
+| `photo_revisions` | A1/A2/A3, `request_id` idempotente, SHA do manifesto, manifesto JSON validado, revisão esperada e estado   | `(session_id,sequence) UNIQUE`; `(session_id,request_id) UNIQUE`                |
+| `revision_blobs`  | Uma variante esperada por `blobId`: SHA, bytes, dimensão, EXPECTED/READY                                   | `blob_id PRIMARY KEY`; revisão tem vários blobs                                 |
 
 Por que não ter tabelas `photos`, `session_grants`, `audit_events` agora? O manifesto imutável da revisão já contém foto, posição e vínculo com os `blobId`; as consultas do MVP são por **sessão ativa**, não por catálogo histórico. Não há compartilhamento por usuário nem consentimento de foto social (continua prévia genérica). Logs de decisão sem PII atendem à operação inicial. Expanda tabelas quando aparecer necessidade real, com migração versionada.
 
@@ -90,11 +90,11 @@ Por que não ter tabelas `photos`, `session_grants`, `audit_events` agora? O man
 
 **Segurança da leitura:** `publicToken` é capability aleatória derivada por HMAC-SHA256 de segredo do servidor, ID da sessão e `access_version`; guarda apenas `SHA-256(token)` no banco. O backend consegue reconstruir o link sob escopo de publisher. Quando revogado, incrementa `access_version`, atualiza hash e muda status para REVOKED. O segredo HMAC é protegido fora do Git; definir reemissão controlada se mudar a chave. Nunca derivar token só do UUID sem segredo.
 
-**SQLite:** `PRAGMA foreign_keys=ON` por conexão; `journal_mode=WAL` e `busy_timeout` configurados na inicialização (filesystem local, não NFS). Usar `BEGIN IMMEDIATE` durante a ativação e operação CAS. Só um processo escritor na VPS. O candidato SQL é executado **apenas em banco vazio**, depois de revisão de migração e backup. `node:sqlite` 24.21.0 é *release candidate* (API síncrona); usar por trás de SessionRepository, executar somente queries curtas e **não bloquear o loop HTTP com manipulação pesada de imagens**.
+**SQLite:** `PRAGMA foreign_keys=ON` por conexão; `journal_mode=WAL` e `busy_timeout` configurados na inicialização (filesystem local, não NFS). Usar `BEGIN IMMEDIATE` durante a ativação e operação CAS. Só um processo escritor na VPS. O candidato SQL é executado **apenas em banco vazio**, depois de revisão de migração e backup. `node:sqlite` 24.21.0 é _release candidate_ (API síncrona); usar por trás de SessionRepository, executar somente queries curtas e **não bloquear o loop HTTP com manipulação pesada de imagens**.
 
 ## 4. Cinco endpoints internos mínimos (ainda não implementados)
 
-**Host:** HTTPS privado e acessível somente pelo Tailscale/allowlist autenticada. **Headers comuns:** `Authorization: Bearer <PUBLISHER_SECRET>`, `Content-Type: application/json` (salvo PUT). O Caddy público bloqueia `/internal/*`; não habilitar CORS nessa API. Segredo separado da capability da família. Cada erro é JSON `{ "code": "...", "message": "...", "requestId": "UUID" }` sem caminho local, telefone, cliente ou token.
+**Host:** HTTPS privado e acessível somente pelo Tailscale/allowlist autenticada. **Headers comuns:** `Authorization: *** `Content-Type: application/json` (salvo PUT). O Caddy público bloqueia `/internal/*`; não habilitar CORS nessa API. Segredo separado da capability da família. Cada erro é JSON `{ "code": "...", "message": "...", "requestId": "UUID" }` sem caminho local, telefone, cliente ou token.
 
 ### 01. POST /internal/v1/sessions/resolve
 
@@ -103,13 +103,17 @@ Por que não ter tabelas `photos`, `session_grants`, `audit_events` agora? O man
 **Body**
 
 ```json
-{"crmOrderUuid":"33333333-3333-4333-8333-333333333333"}
+{ "crmOrderUuid": "33333333-3333-4333-8333-333333333333" }
 ```
 
 **201 criado / 200 já existe**
 
 ```json
-{"sessionId":"11111111-1111-4111-8111-111111111111","activeRevisionId":null,"status":"ACTIVE"}
+{
+  "sessionId": "11111111-1111-4111-8111-111111111111",
+  "activeRevisionId": null,
+  "status": "ACTIVE"
+}
 ```
 
 Erros: 401 não autorizado; 404 pedido inválido; 503 integração CRM indisponível. O EvydFlow possui `orders.detail`, mas sua URL/UUID devem ser auditados no CRM antes de codificar.
@@ -122,27 +126,61 @@ Erros: 401 não autorizado; 404 pedido inválido; 503 integração CRM indispon�
 
 ```json
 {
-  "schemaVersion":1,
-  "requestId":"33333333-3333-4333-8333-333333333333",
-  "sessionId":"11111111-1111-4111-8111-111111111111",
-  "expectedActiveRevisionId":null,
-  "recipeKey":"recipe-1-webp82-srgb-inside",
-  "photos":[{
-    "photoId":"photo-01","contentHash":"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
-    "sortIndex":0,"width":1600,"height":1200,
-    "variants":{
-      "thumb":{"blobId":"22222222-2222-4222-8222-222222222222","sha256":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","byteLength":123456,"width":480,"height":360},
-      "card":{"blobId":"33333333-3333-4333-8333-333333333333","sha256":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","byteLength":123456,"width":800,"height":600},
-      "game":{"blobId":"44444444-4444-4444-8444-444444444444","sha256":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","byteLength":123456,"width":1600,"height":1200}
+  "schemaVersion": 1,
+  "requestId": "33333333-3333-4333-8333-333333333333",
+  "sessionId": "11111111-1111-4111-8111-111111111111",
+  "expectedActiveRevisionId": null,
+  "recipeKey": "recipe-1-webp82-srgb-inside",
+  "photos": [
+    {
+      "photoId": "photo-01",
+      "contentHash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "sortIndex": 0,
+      "width": 1600,
+      "height": 1200,
+      "variants": {
+        "thumb": {
+          "blobId": "22222222-2222-4222-8222-222222222222",
+          "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "byteLength": 123456,
+          "width": 480,
+          "height": 360
+        },
+        "card": {
+          "blobId": "33333333-3333-4333-8333-333333333333",
+          "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "byteLength": 123456,
+          "width": 800,
+          "height": 600
+        },
+        "game": {
+          "blobId": "44444444-4444-4444-8444-444444444444",
+          "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "byteLength": 123456,
+          "width": 1600,
+          "height": 1200
+        }
+      }
     }
-  }]
+  ]
 }
 ```
 
 **201 criada / 200 replay igual**
 
 ```json
-{"revisionId":"22222222-2222-4222-8222-222222222222","sessionId":"11111111-1111-4111-8111-111111111111","state":"STAGED","expectedBlobs":3,"readyBlobs":0,"pendingBlobIds":["22222222-2222-4222-8222-222222222222","33333333-3333-4333-8333-333333333333","44444444-4444-4444-8444-444444444444"]}
+{
+  "revisionId": "22222222-2222-4222-8222-222222222222",
+  "sessionId": "11111111-1111-4111-8111-111111111111",
+  "state": "STAGED",
+  "expectedBlobs": 3,
+  "readyBlobs": 0,
+  "pendingBlobIds": [
+    "22222222-2222-4222-8222-222222222222",
+    "33333333-3333-4333-8333-333333333333",
+    "44444444-4444-4444-8444-444444444444"
+  ]
+}
 ```
 
 409 para `requestId` reutilizado com payload diferente, sessão/revisão obsoleta; 422 manifesto inválido. O validador `parsePublicationManifestV1` já existe.
@@ -160,7 +198,14 @@ Erros: 401 não autorizado; 404 pedido inválido; 503 integração CRM indispon�
 **200**
 
 ```json
-{"revisionId":"22222222-2222-4222-8222-222222222222","sessionId":"11111111-1111-4111-8111-111111111111","state":"STAGED","expectedBlobs":3,"readyBlobs":2,"pendingBlobIds":["44444444-4444-4444-8444-444444444444"]}
+{
+  "revisionId": "22222222-2222-4222-8222-222222222222",
+  "sessionId": "11111111-1111-4111-8111-111111111111",
+  "state": "STAGED",
+  "expectedBlobs": 3,
+  "readyBlobs": 2,
+  "pendingBlobIds": ["44444444-4444-4444-8444-444444444444"]
+}
 ```
 
 ### 05. POST /internal/v1/publications/{revisionId}/activate
@@ -170,13 +215,19 @@ Erros: 401 não autorizado; 404 pedido inválido; 503 integração CRM indispon�
 **Body**
 
 ```json
-{"expectedActiveRevisionId":null}
+{ "expectedActiveRevisionId": null }
 ```
 
 **200**
 
 ```json
-{"sessionId":"11111111-1111-4111-8111-111111111111","revisionId":"22222222-2222-4222-8222-222222222222","state":"ACTIVE","photoCount":1,"accessUrl":"https://jogos.fotosdenatal.com/s/EXAMPLE_OPAQUE_CAPABILITY_NOT_REAL"}
+{
+  "sessionId": "11111111-1111-4111-8111-111111111111",
+  "revisionId": "22222222-2222-4222-8222-222222222222",
+  "state": "ACTIVE",
+  "photoCount": 1,
+  "accessUrl": "https://jogos.fotosdenatal.com/s/EXAMPLE_OPAQUE_CAPABILITY_NOT_REAL"
+}
 ```
 
 **409** CAS obsoleta; **422** blob faltante; **401** sem auth. `accessUrl` é segredo para distribuição, não deve ir a log. A API não envia WhatsApp: operador copia link após conferir sucesso.
@@ -189,18 +240,23 @@ Retorna **o formato Session já definido em `packages/platform/src/contracts/ind
 
 ```json
 {
-  "id":"11111111-1111-4111-8111-111111111111",
-  "publicToken":"EXAMPLE_OPAQUE_CAPABILITY_NOT_REAL",
-  "displayName":"Seu Álbum de Natal",
-  "photos":[{
-    "id":"photo-01","width":1600,"height":1200,
-    "aspectRatio":1.333333,"orientation":"landscape",
-    "variants":{
-      "thumb":"/s/EXAMPLE_OPAQUE_CAPABILITY_NOT_REAL/media/22222222-2222-4222-8222-222222222222/photo-01/thumb",
-      "card":"/s/EXAMPLE_OPAQUE_CAPABILITY_NOT_REAL/media/22222222-2222-4222-8222-222222222222/photo-01/card",
-      "game":"/s/EXAMPLE_OPAQUE_CAPABILITY_NOT_REAL/media/22222222-2222-4222-8222-222222222222/photo-01/game"
+  "id": "11111111-1111-4111-8111-111111111111",
+  "publicToken": "EXAMPLE_OPAQUE_CAPABILITY_NOT_REAL",
+  "displayName": "Seu Álbum de Natal",
+  "photos": [
+    {
+      "id": "photo-01",
+      "width": 1600,
+      "height": 1200,
+      "aspectRatio": 1.333333,
+      "orientation": "landscape",
+      "variants": {
+        "thumb": "/s/EXAMPLE_OPAQUE_CAPABILITY_NOT_REAL/media/22222222-2222-4222-8222-222222222222/photo-01/thumb",
+        "card": "/s/EXAMPLE_OPAQUE_CAPABILITY_NOT_REAL/media/22222222-2222-4222-8222-222222222222/photo-01/card",
+        "game": "/s/EXAMPLE_OPAQUE_CAPABILITY_NOT_REAL/media/22222222-2222-4222-8222-222222222222/photo-01/game"
+      }
     }
-  }]
+  ]
 }
 ```
 
@@ -214,16 +270,16 @@ Valida token hash e status ACTIVE, revisionId exata da sessão ativa, photoId e 
 
 ## 6. Erros HTTP e regras de retry
 
-| HTTP | Código estável | Ação no Node CLI |
-| --- | --- | --- |
-| 400/422 | `INVALID_MANIFEST`, `INVALID_MEDIA` | STOP; corrigir conteúdo |
-| 401/403 | `PUBLISHER_UNAUTHORIZED` | STOP; renovar credencial pelo operador |
-| 404 | `SESSION_NOT_FOUND`, `REVISION_NOT_FOUND` | STOP; não inventar pedido |
-| 409 | `IDEMPOTENCY_CONFLICT`, `STALE_REVISION` | STOP; verificar revisão ativa antes de nova tentativa |
-| 413 | `QUOTA_EXCEEDED` | STOP; reduzir derivados |
-| 429 | `RATE_LIMITED` | Retry com backoff e `Retry-After` |
-| 500/502/503/504 | `INTERNAL_ERROR` ou indisponibilidade | Consultar status; retry limitada e idempotente |
-| Timeout durante PUT | Sem resposta confiável | GET status; reenvie apenas `pendingBlobIds` |
+| HTTP                | Código estável                            | Ação no Node CLI                                      |
+| ------------------- | ----------------------------------------- | ----------------------------------------------------- |
+| 400/422             | `INVALID_MANIFEST`, `INVALID_MEDIA`       | STOP; corrigir conteúdo                               |
+| 401/403             | `PUBLISHER_UNAUTHORIZED`                  | STOP; renovar credencial pelo operador                |
+| 404                 | `SESSION_NOT_FOUND`, `REVISION_NOT_FOUND` | STOP; não inventar pedido                             |
+| 409                 | `IDEMPOTENCY_CONFLICT`, `STALE_REVISION`  | STOP; verificar revisão ativa antes de nova tentativa |
+| 413                 | `QUOTA_EXCEEDED`                          | STOP; reduzir derivados                               |
+| 429                 | `RATE_LIMITED`                            | Retry com backoff e `Retry-After`                     |
+| 500/502/503/504     | `INTERNAL_ERROR` ou indisponibilidade     | Consultar status; retry limitada e idempotente        |
+| Timeout durante PUT | Sem resposta confiável                    | GET status; reenvie apenas `pendingBlobIds`           |
 
 **Proibido:** gerar um novo `requestId` a cada timeout; isso criaria revisões duplicadas. **Proibido:** considerar `201 STAGED` conclusão do trabalho. O único sucesso de negócio é `ACTIVE`.
 
