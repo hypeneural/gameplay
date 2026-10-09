@@ -143,7 +143,7 @@ export async function publishSession(options) {
 
   if (!resolveRes.ok) {
     const errorBody = await resolveRes.text();
-    throw new Error(`Failed to resolve session (${resolveRes.status}): ${errorBody}`);
+    throw new Error(`PUBLISHER_RESOLVE_HTTP_${resolveRes.status}`);
   }
 
   const sessionData = await resolveRes.json();
