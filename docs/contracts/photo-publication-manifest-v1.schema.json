@@ -1,0 +1,205 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://jogos.fotosdenatal.com/contracts/photo-publication-manifest-v1.schema.json",
+  "title": "Evydencia photo publication manifest v1 (preflight only)",
+  "description": "Strict transport metadata; acceptance never authorizes media or activates revisions. Server checks binary hash and order-scoped permission.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "requestId",
+    "sessionId",
+    "expectedActiveRevisionId",
+    "recipeKey",
+    "photos"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "requestId": {
+      "type": "string",
+      "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$"
+    },
+    "sessionId": {
+      "type": "string",
+      "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$"
+    },
+    "expectedActiveRevisionId": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "string",
+          "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$"
+        }
+      ]
+    },
+    "recipeKey": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,254}$"
+    },
+    "photos": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 200,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "photoId",
+          "contentHash",
+          "sortIndex",
+          "width",
+          "height",
+          "variants"
+        ],
+        "properties": {
+          "photoId": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,127}$"
+          },
+          "contentHash": {
+            "type": "string",
+            "pattern": "^[a-fA-F0-9]{64}$"
+          },
+          "sortIndex": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 199
+          },
+          "width": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 12000
+          },
+          "height": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 12000
+          },
+          "variants": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "thumb",
+              "card",
+              "game"
+            ],
+            "properties": {
+              "thumb": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "blobId",
+                  "sha256",
+                  "byteLength",
+                  "width",
+                  "height"
+                ],
+                "properties": {
+                  "blobId": {
+                    "type": "string",
+                    "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$"
+                  },
+                  "sha256": {
+                    "type": "string",
+                    "pattern": "^[a-fA-F0-9]{64}$"
+                  },
+                  "byteLength": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 12582912
+                  },
+                  "width": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 12000
+                  },
+                  "height": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 12000
+                  }
+                }
+              },
+              "card": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "blobId",
+                  "sha256",
+                  "byteLength",
+                  "width",
+                  "height"
+                ],
+                "properties": {
+                  "blobId": {
+                    "type": "string",
+                    "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$"
+                  },
+                  "sha256": {
+                    "type": "string",
+                    "pattern": "^[a-fA-F0-9]{64}$"
+                  },
+                  "byteLength": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 12582912
+                  },
+                  "width": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 12000
+                  },
+                  "height": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 12000
+                  }
+                }
+              },
+              "game": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "blobId",
+                  "sha256",
+                  "byteLength",
+                  "width",
+                  "height"
+                ],
+                "properties": {
+                  "blobId": {
+                    "type": "string",
+                    "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$"
+                  },
+                  "sha256": {
+                    "type": "string",
+                    "pattern": "^[a-fA-F0-9]{64}$"
+                  },
+                  "byteLength": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 12582912
+                  },
+                  "width": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 12000
+                  },
+                  "height": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 12000
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

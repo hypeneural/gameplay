@@ -62,6 +62,9 @@
 │   │   │   ├── filePreviewRepository.test.ts
 │   │   │   ├── filePreviewRepository.ts
 │   │   │   ├── main.ts
+│   │   │   ├── publication
+│   │   │   │   ├── publicationManifest.test.ts
+│   │   │   │   └── publicationManifest.ts
 │   │   │   ├── runtimeConfig.test.ts
 │   │   │   ├── runtimeConfig.ts
 │   │   │   └── socialPreview.ts
@@ -511,6 +514,8 @@
 │   │   └── SHARING_AND_SOCIAL_PREVIEW.md
 │   ├── assets
 │   │   └── ASSET_MANIFEST_CONTRACT.md
+│   ├── contracts
+│   │   └── photo-publication-manifest-v1.schema.json
 │   ├── design
 │   │   ├── PUZZLE_SWAP_EXPERIENCE_REVIEW.md
 │   │   └── THEME_DIRECTION.md
@@ -581,6 +586,7 @@
 │   │       ├── MVP_RAPIDO.md
 │   │       ├── PLANO_IMPLEMENTACAO_GALERIA_JOGOS_EVYDFLOW.md
 │   │       ├── PROMPT_VALIDACAO_CHATGPT.md
+│   │       ├── PUBLISHER_EVYDFLOW_HANDOFF_V1.md
 │   │       ├── README.md
 │   │       ├── SESSION_MEDIA_PUBLICATION_CONTRACT_V1.md
 │   │       ├── evidence
@@ -1254,6 +1260,7 @@
 │   │   ├── release-utils.test.mjs
 │   │   ├── smoke-release-runtime.mjs
 │   │   ├── smoke-staging.mjs
+│   │   ├── staging-boundaries.test.mjs
 │   │   └── verify-vps-release.mjs
 │   ├── export-puzzle-source-reader.mjs
 │   ├── fixture-generator

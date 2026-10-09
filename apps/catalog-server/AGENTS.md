@@ -36,6 +36,8 @@ HTTP handlers do not contain SQL. Repository adapters do not render HTML. React 
 
 ## Session authority invariants
 
+O parser puro `src/publication/publicationManifest.ts` e `docs/contracts/photo-publication-manifest-v1.schema.json` servem para validar apenas metadados futuros; não armazenam fotografias, não ativam revisões e não habilitam cliente real. Antes de integrar Python, ler `docs/integrations/photo-sessions/PUBLISHER_EVYDFLOW_HANDOFF_V1.md`.
+
 - `photoSessionId` is the technical gallery identity.
 - One gallery per CRM order is the business rule; if a legacy interface needs `galleryKey`, keep it fixed to `principal`.
 - revisions are immutable after VALIDATED;

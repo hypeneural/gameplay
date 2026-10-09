@@ -4,6 +4,8 @@
 - [Runbook — VPS staging-demo rápido e seguro](ops/VPS_STAGING_DEMO_RUNBOOK.md)
 - [Plano Contabo — jogos.fotosdenatal.com e stack Caddy/Docker](ops/CONTABO_JOGOS_STAGING_2026-10-08.md)
 - [Contrato v1 — publicação privada e revisões de álbuns](integrations/photo-sessions/SESSION_MEDIA_PUBLICATION_CONTRACT_V1.md)
+- [Pré-flight publisher Node/Python](integrations/photo-sessions/PUBLISHER_EVYDFLOW_HANDOFF_V1.md)
+- [JSON Schema do manifesto de publicação](contracts/photo-publication-manifest-v1.schema.json)
 - [Runbook — Antigravity 2.19.1](ai/ANTIGRAVITY_2_19_1_RUNBOOK.md)
 - [Auditoria Node-first — Gallery Lab antes do EvydFlow/Python](integrations/photo-sessions/AUDITORIA_NODE_FIRST_GALLERY_LAB_2026-10-06.md)
 - [Auditoria GitHub — donors da Galeria Natalina mobile](integrations/photo-sessions/AUDITORIA_GITHUB_GALERIA_NATALINA_MOBILE_2026-10-06.md)
