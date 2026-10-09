@@ -65,7 +65,10 @@ export function AppRouter(): React.JSX.Element {
     [],
   );
   const usesLocalTestMedia = useMemo(
-    () => releaseMode === 'development' && shouldUseLocalTestMedia(window.location.search),
+    () =>
+      releaseMode === 'development' &&
+      window.location.pathname.startsWith('/s/') &&
+      shouldUseLocalTestMedia(window.location.search),
     [releaseMode],
   );
   const localTestMediaSearch = usesLocalTestMedia ? '?test-media=local' : '';
@@ -106,6 +109,7 @@ export function AppRouter(): React.JSX.Element {
   const [exitRequest, setExitRequest] = useState(0);
 
   const currentToken = 'token' in route ? route.token : undefined;
+  const isPublicDemo = 'demo' in route && route.demo === true;
   const isDevelopmentRoute =
     route.kind === 'theme-lab' ||
     route.kind === 'experience-lab' ||
@@ -114,6 +118,7 @@ export function AppRouter(): React.JSX.Element {
 
   const requiresRemoteSession =
     Boolean(currentToken) &&
+    !isPublicDemo &&
     !usesLocalTestMedia &&
     !(releaseMode === 'development' && (currentToken === 'local-demo-token' || isDevelopmentRoute));
 
@@ -123,10 +128,13 @@ export function AppRouter(): React.JSX.Element {
       : undefined;
   const validRemoteSession =
     remoteSession && remoteSession.token === currentToken ? remoteSession.value : undefined;
-  const fixtureSession = useMemo(
-    () => (requiresRemoteSession ? undefined : createFixtureSession(fixtureCount)),
-    [fixtureCount, requiresRemoteSession],
-  );
+  const fixtureSession = useMemo(() => {
+    if (requiresRemoteSession) return undefined;
+    const fixture = createFixtureSession(isPublicDemo ? 12 : fixtureCount);
+    return isPublicDemo
+      ? { ...fixture, id: 'public-demo', publicToken: 'public-demo', displayName: 'Demonstração de Natal' }
+      : fixture;
+  }, [fixtureCount, isPublicDemo, requiresRemoteSession]);
 
   const session = usesLocalTestMedia
     ? validLocalSession
@@ -378,17 +386,22 @@ export function AppRouter(): React.JSX.Element {
       return;
     if (route.kind === 'session') hubScrollRef.current = window.scrollY;
     if (route.kind === 'gallery') galleryScrollRef.current = window.scrollY;
-    writeRoute({ kind: 'game-cover', token: route.token, gameId }, 'push');
+    writeRoute({ kind: 'game-cover', token: route.token, gameId, ...(route.demo ? { demo: true } : {}) }, 'push');
   };
 
   const openGallery = (): void => {
     if (route.kind !== 'session') return;
     hubScrollRef.current = window.scrollY;
-    writeRoute({ kind: 'gallery', token: route.token }, 'push');
+    writeRoute({ kind: 'gallery', token: route.token, ...(route.demo ? { demo: true } : {}) }, 'push');
   };
 
   const goToSession = (token: string): void => {
-    const sessionRoute: SessionRoute = { kind: 'session', token };
+    const sessionRoute: SessionRoute = {
+      kind: 'session', token,
+      ...(route.kind === 'gallery' || route.kind === 'game-cover' || route.kind === 'session'
+        ? (route.demo ? { demo: true as const } : {})
+        : {}),
+    };
     if (route.kind === 'gallery') galleryScrollRef.current = window.scrollY;
     if (playingRef.current) {
       if (navigationIndexRef.current > 0) {
@@ -562,7 +575,7 @@ export function AppRouter(): React.JSX.Element {
             setSelectedPhotoId(photoId);
             galleryScrollRef.current = window.scrollY;
             hubScrollRef.current = 0;
-            writeRoute({ kind: 'session', token: route.token }, 'push');
+            writeRoute({ kind: 'session', token: route.token, ...(route.demo ? { demo: true } : {}) }, 'push');
           }}
         />
       </Suspense>
@@ -583,7 +596,7 @@ export function AppRouter(): React.JSX.Element {
         onSelectPhoto={setSelectedPhotoId}
         selectedPhotoId={selectedPhoto.id}
         session={session}
-        showFixtureSelector={releaseMode === 'development' && !usesLocalTestMedia}
+        showFixtureSelector={releaseMode === 'development' && !usesLocalTestMedia && !isPublicDemo}
       />
     );
   }
