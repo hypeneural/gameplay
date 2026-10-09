@@ -37,11 +37,11 @@ export function isSessionPayload(value: unknown): value is Session {
     typeof session.displayName === 'string' &&
     Array.isArray(session.photos) &&
     session.photos.length > 0 &&
-    session.photos.every(isPhotoPayload)
+    session.photos.every((photo) => isPhotoPayload(photo, session.publicToken))
   );
 }
 
-function isPhotoPayload(value: unknown): value is Photo {
+function isPhotoPayload(value: unknown, token: string): value is Photo {
   if (!value || typeof value !== 'object') return false;
   const photo = value as Partial<Photo>;
   return (
@@ -62,22 +62,24 @@ function isPhotoPayload(value: unknown): value is Photo {
     !!photo.variants &&
     photoVariants.every((variant) => {
       const url = photo.variants?.[variant];
-      return typeof url === 'string' && isSafeVariantUrl(url);
+      return typeof url === 'string' && isSafeVariantUrl(url, token, variant);
     })
   );
 }
 
-function isSafeVariantUrl(url: string): boolean {
-  if (url.startsWith('/')) {
-    // Prevent protocol-relative URLs like "//attacker.com/malicious"
-    return !url.startsWith('//');
-  }
-  try {
-    const parsed = new URL(url, 'http://localhost');
-    return parsed.protocol === 'http:' || parsed.protocol === 'https:';
-  } catch {
-    return false;
-  }
+function isSafeVariantUrl(url: string, token: string, variant: PhotoVariant): boolean {
+  // The media endpoint is the only valid customer-media origin. Never accept
+  // absolute/protocol-relative URLs, query strings, traversal or another token.
+  const prefix = `/s/${encodeURIComponent(token)}/media/`;
+  if (!url.startsWith(prefix)) return false;
+  const remainder = url.slice(prefix.length);
+  const parts = remainder.split('/');
+  return (
+    parts.length === 3 &&
+    /^[0-9a-z-]{1,64}$/i.test(parts[0] ?? '') &&
+    /^[0-9a-z-]{1,128}$/i.test(parts[1] ?? '') &&
+    parts[2] === variant
+  );
 }
 
 export async function fetchSessionData(token: string, signal?: AbortSignal): Promise<Session> {
@@ -133,7 +135,7 @@ export async function fetchSessionData(token: string, signal?: AbortSignal): Pro
     );
   }
 
-  if (!isSessionPayload(data)) {
+  if (!isSessionPayload(data) || data.publicToken !== token) {
     throw new SessionLoadError(
       'SESSION_INVALID_PAYLOAD',
       'O contrato de fotos e variantes retornado pelo servidor é inválido.',
