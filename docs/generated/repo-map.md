@@ -619,6 +619,7 @@
 │   │   └── PHOTO_CORPUS_BASELINE.md
 │   ├── ops
 │   │   ├── CONTABO_JOGOS_STAGING_2026-10-08.md
+│   │   ├── MVP_LOCAL_PHOTO_PREFLIGHT_2026-10-09.md
 │   │   └── VPS_STAGING_DEMO_RUNBOOK.md
 │   ├── plan
 │   │   └── IMPLEMENTATION_PLAN.md
@@ -1269,6 +1270,8 @@
 │   ├── clean.mjs
 │   ├── deploy
 │   │   ├── create-staging-preview-config.mjs
+│   │   ├── photo-session-preflight.mjs
+│   │   ├── photo-session-preflight.test.mjs
 │   │   ├── prepare-vps-release.mjs
 │   │   ├── release-utils.mjs
 │   │   ├── release-utils.test.mjs

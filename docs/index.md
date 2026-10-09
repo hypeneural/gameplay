@@ -2,6 +2,7 @@
 
 - [Auditoria forense — robustez do agente, CI e deploy VPS](quality/AUDITORIA_FORENSE_ANTIGRAVITY_REPO_DEPLOY_2026-10-07.md)
 - [Runbook — VPS staging-demo rápido e seguro](ops/VPS_STAGING_DEMO_RUNBOOK.md)
+- [MVP local — inspeção de pasta real, logs e gate para upload privado](ops/MVP_LOCAL_PHOTO_PREFLIGHT_2026-10-09.md)
 - [Plano Contabo — jogos.fotosdenatal.com e stack Caddy/Docker](ops/CONTABO_JOGOS_STAGING_2026-10-08.md)
 - [Point Graph MVP — tabelas, JSON de 7 APIs, fluxos e aceite](integrations/photo-sessions/MVP_POINT_GRAPH_APIS_DB_2026-10-08.md)
 - [OpenAPI MVP versionada (contrato, ainda não implantado)](contracts/mvp-photo-publication-v1.openapi.json)
