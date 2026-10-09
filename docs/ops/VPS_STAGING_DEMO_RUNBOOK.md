@@ -1,5 +1,7 @@
 # VPS — deploy rápido e seguro do staging-demo
 
+> **Contabo com Caddy externo:** antes de aplicar o template histórico systemd+Nginx, ler [Handoff Contabo jogos.fotosdenatal.com](CONTABO_JOGOS_STAGING_2026-10-08.md). O inventário EvolutionGO fornecido informa Caddy Docker ocupando 80/443; o Nginx do template não pode ser outra borda pública. Não usar este runbook isoladamente na Contabo.
+
 **Escopo atual:** somente validação sintética. `deploy/readiness.json` proíbe dados de cliente e piloto real.
 
 A VPS compartilha recursos com outros serviços. Builds, Sharp e testes pesados devem rodar em workstation/CI; a VPS recebe somente o artefato pronto.

@@ -22,6 +22,24 @@ describe('resolveCatalogRuntimeConfig', () => {
     expect(config.publicOrigin.href).toBe('https://jogos.example.test/');
     expect(config.applicationShellPath).toBe(shell);
     expect(config.port).toBe(4180);
+    expect(config.host).toBe('127.0.0.1');
+  });
+
+  it('allows overriding host for container networking', () => {
+    const config = resolveCatalogRuntimeConfig(
+      'production',
+      {
+        CATALOG_RELEASE_STAGE: 'staging-demo',
+        CATALOG_PUBLIC_ORIGIN: 'https://jogos.example.test',
+        CATALOG_SOCIAL_PREVIEW_FILE: '/etc/christmas-games/social-preview.json',
+        CATALOG_APPLICATION_SHELL: shell,
+        PORT: '4180',
+        HOST: '0.0.0.0',
+      },
+      '/unused/index.html',
+    );
+
+    expect(config.host).toBe('0.0.0.0');
   });
 
   it.each([

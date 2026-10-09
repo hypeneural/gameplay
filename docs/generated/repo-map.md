@@ -488,6 +488,11 @@
 │   └── vps
 │       ├── catalog.env.example
 │       ├── christmas-games-catalog.service.example
+│       ├── docker
+│       │   ├── Caddyfile.fragment
+│       │   ├── compose.yaml
+│       │   ├── nginx.conf
+│       │   └── stack.yaml
 │       └── nginx
 │           └── christmas-games.conf.example
 ├── docs
@@ -577,6 +582,7 @@
 │   │       ├── PLANO_IMPLEMENTACAO_GALERIA_JOGOS_EVYDFLOW.md
 │   │       ├── PROMPT_VALIDACAO_CHATGPT.md
 │   │       ├── README.md
+│   │       ├── SESSION_MEDIA_PUBLICATION_CONTRACT_V1.md
 │   │       ├── evidence
 │   │       │   ├── benchmark-summary.json
 │   │       │   ├── gallery-smoke-summary.json
@@ -592,6 +598,7 @@
 │   │   ├── NATAL_2024_CORPUS_BASELINE.md
 │   │   └── PHOTO_CORPUS_BASELINE.md
 │   ├── ops
+│   │   ├── CONTABO_JOGOS_STAGING_2026-10-08.md
 │   │   └── VPS_STAGING_DEMO_RUNBOOK.md
 │   ├── plan
 │   │   └── IMPLEMENTATION_PLAN.md

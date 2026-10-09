@@ -1,0 +1,14 @@
+schema_version: '1'
+name: christmas-games
+criticality: standard
+deployment:
+  tool: compose
+  file: compose.yaml
+network:
+  edge: true
+health:
+  endpoint: /healthz
+  port: 80
+resources:
+  ram_budget_mb: 512
+  cpu_budget_cores: 0.5
