@@ -6,6 +6,21 @@ import { URL } from 'node:url';
 
 const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
+function fingerprintPreparedManifest(manifest) {
+  const stablePhotos = manifest.photos.map((photo) => ({
+    photoId: photo.photoId,
+    contentHash: photo.contentHash,
+    sortIndex: photo.sortIndex,
+    variants: ['thumb', 'card', 'game'].map((name) => {
+      const variant = photo.variants[name];
+      return [name, variant.sha256, variant.byteLength, variant.width, variant.height];
+    }),
+  }));
+  return createHash('sha256')
+    .update(JSON.stringify([manifest.sessionId, manifest.recipeKey, stablePhotos]))
+    .digest('hex');
+}
+
 function findVariantFile(storageRoot, parsed, photo, variantName) {
   const directPath = join(storageRoot, 'derived', photo.id, `${variantName}.webp`);
   if (existsSync(directPath)) return directPath;
