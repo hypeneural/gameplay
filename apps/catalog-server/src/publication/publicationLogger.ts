@@ -51,9 +51,8 @@ export class StructuredPublicationLogger implements PublicationLogger {
     // NEVER the real URL. Only explicitly approved numeric/status details survive.
     const path = typeof params.path === 'string'
       ? params.path.split('?')[0]!
-          .replace(/\\/g, '/')
-          .replace(/\\/s\\/[A-Za-z0-9_-]{16,128}(?=\\/|$)/g, '/s/:token')
-          .replace(/\\/[0-9a-f]{8}-[0-9a-f-]{27,}(?=\\/|$)/gi, '/:id')
+          .replace(new RegExp('[/]s[/][A-Za-z0-9_-]{16,128}(?=[/]|$)', 'g'), '/s/:token')
+          .replace(new RegExp('[/][0-9a-f]{8}-[0-9a-f-]{27,}(?=[/]|$)', 'gi'), '/:id')
       : undefined;
     const allowed = new Set(['status', 'expectedBlobs', 'readyBlobs', 'photosCount', 'photoCount']);
     const details: Record<string, unknown> = {};
