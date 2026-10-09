@@ -468,7 +468,7 @@ export class PublicationService {
       this.logger?.log('session_data_served', {
         requestId,
         method: 'GET',
-        path: `/s/${encodeURIComponent(token)}/data`,
+        path: '/s/:token/data',
         status: 200,
         durationMs: Date.now() - startTime,
         details: { sessionId: gallerySession.id, photosCount: gallerySession.photos.length },
@@ -537,7 +537,7 @@ export class PublicationService {
     this.logger?.log('private_media_served', {
       requestId,
       method: 'GET',
-      path: `/s/${encodeURIComponent(token)}/media/...`,
+      path: '/s/:token/media/:revisionId/:photoId/:variant',
       status: 200,
       durationMs: Date.now() - startTime,
       revisionId,
@@ -620,7 +620,7 @@ export class PublicationService {
       response,
       500,
       'INTERNAL_ERROR',
-      error instanceof Error ? error.message : 'Internal error',
+      'Internal server error',
       requestId,
     );
   }
