@@ -5,6 +5,7 @@
 ## Evidência forense cruzada
 
 No repositório privado EvydFlow (inspeção de `flows/natal_default.yaml`, `flows/natal_laboratorio.yaml`, `evydflow/tasks/images.py`, `evydflow/tasks/contracts.py`, `evydflow/providers/evydencia.py`):
+
 - Fluxos atuais criam BAIXA (JPEG com marca) e QC (quadrado), publicam via `ftp.upload` e montam URLs antigas a partir do pedido, inclusive URLs HTTP.
 - A movimentação para TRATADAS acontece depois de tarefas de Drive/WhatsApp. **Não antecipar movimentação nem reexecutar FTP/WhatsApp ao adicionar nova publicação.**
 - A função `images.generate_outputs` usa Pillow e tem objetivos de produto diferentes. NÃO reutilizar QC quadrado para galeria; não modificar output de BAIXA legado.
