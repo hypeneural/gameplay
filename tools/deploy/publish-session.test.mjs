@@ -1,6 +1,6 @@
 import { Buffer } from 'node:buffer';
 import { createServer } from 'node:http';
-import { mkdtemp, rm, writeFile, mkdir } from 'node:fs/promises';
+import { mkdtemp, readFile, rm, writeFile, mkdir } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { URL } from 'node:url';
@@ -192,6 +192,10 @@ describe('publish-session CLI', () => {
       expect(stats.publicationCreated).toBe(true);
       expect(stats.revisionActivated).toBe(true);
       expect(stats.blobsCount).toBe(3);
+      const snapshot = JSON.parse(
+        await readFile(join(tempDir, '.publication-checkpoint.json'), 'utf8'),
+      );
+      expect(snapshot.manifest.requestId).toMatch(/^[0-9a-f-]{36}$/);
     } finally {
       await new Promise((resolve) => server.close(resolve));
       await rm(tempDir, { recursive: true, force: true });
@@ -206,6 +210,6 @@ describe('publish-session CLI', () => {
         apiSecret: 'secret',
         crmOrderUuid: 'invalid-not-a-uuid',
       }),
-    ).rejects.toThrow(/Invalid CRM order UUID/);
+    ).rejects.toThrow('PUBLISHER_ORDER_UUID_INVALID');
   });
 });

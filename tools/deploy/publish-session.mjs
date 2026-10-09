@@ -1,10 +1,85 @@
 import { createHash, randomUUID } from 'node:crypto';
 import { existsSync } from 'node:fs';
-import { appendFile, readFile } from 'node:fs/promises';
+import { appendFile, readFile, rename, unlink, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { URL } from 'node:url';
 
 const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
+function fingerprintPreparedManifest(manifest) {
+  const stablePhotos = manifest.photos.map((photo) => ({
+    photoId: photo.photoId,
+    contentHash: photo.contentHash,
+    sortIndex: photo.sortIndex,
+    variants: ['thumb', 'card', 'game'].map((name) => {
+      const variant = photo.variants[name];
+      return [name, variant.sha256, variant.byteLength, variant.width, variant.height];
+    }),
+  }));
+  return createHash('sha256')
+    .update(JSON.stringify([manifest.sessionId, manifest.recipeKey, stablePhotos]))
+    .digest('hex');
+}
+
+async function checkpointPublication(options, built) {
+  const storage = options.storageRoot ?? options.blobsDir;
+  if (!storage) throw new Error('PUBLISHER_PRIVATE_STORAGE_REQUIRED');
+  const file = join(storage, '.publication-checkpoint.json');
+  const sourceHash = fingerprintPreparedManifest(built.manifest);
+  let state;
+  try {
+    state = JSON.parse(await readFile(file, 'utf8'));
+  } catch (error) {
+    if (error?.code !== 'ENOENT') {
+      throw new Error('PUBLISHER_CHECKPOINT_INVALID', { cause: error });
+    }
+  }
+  if (!state) {
+    const tempFile = `${file}.tmp-${randomUUID()}`;
+    try {
+      const checkpoint = {
+        version: 1,
+        orderUuid: options.crmOrderUuid,
+        sourceHash,
+        manifest: built.manifest,
+      };
+      await writeFile(tempFile, JSON.stringify(checkpoint), { mode: 0o600, flag: 'wx' });
+      await rename(tempFile, file);
+    } finally {
+      await unlink(tempFile).catch(() => undefined);
+    }
+    return built;
+  }
+  const saved = state.manifest;
+  if (
+    state.version !== 1 ||
+    state.orderUuid !== options.crmOrderUuid ||
+    state.sourceHash !== sourceHash ||
+    !saved ||
+    !UUID_PATTERN.test(saved.requestId ?? '') ||
+    fingerprintPreparedManifest(saved) !== sourceHash
+  ) {
+    throw new Error('PUBLISHER_CHECKPOINT_CONFLICT');
+  }
+  const blobFileMap = new Map();
+  for (let i = 0; i < built.manifest.photos.length; i++) {
+    const current = built.manifest.photos[i];
+    const previous = saved.photos[i];
+    if (!previous || previous.photoId !== current.photoId) {
+      throw new Error('PUBLISHER_CHECKPOINT_CONFLICT');
+    }
+    for (const name of ['thumb', 'card', 'game']) {
+      const from = current.variants[name].blobId;
+      const to = previous.variants?.[name]?.blobId;
+      const localFile = built.blobFileMap.get(from);
+      if (!to || !UUID_PATTERN.test(to) || !localFile) {
+        throw new Error('PUBLISHER_CHECKPOINT_CONFLICT');
+      }
+      blobFileMap.set(to, localFile);
+    }
+  }
+  return { manifest: saved, blobFileMap };
+}
 
 function findVariantFile(storageRoot, parsed, photo, variantName) {
   const directPath = join(storageRoot, 'derived', photo.id, `${variantName}.webp`);
@@ -120,7 +195,7 @@ export async function publishSession(options) {
   const { apiOrigin, apiSecret, crmOrderUuid, logFile } = options;
 
   if (!UUID_PATTERN.test(crmOrderUuid)) {
-    throw new Error(`Invalid CRM order UUID: ${crmOrderUuid}`);
+    throw new Error('PUBLISHER_ORDER_UUID_INVALID');
   }
 
   const normalizedOrigin = apiOrigin.replace(/\/+$/, '');
@@ -142,8 +217,7 @@ export async function publishSession(options) {
   });
 
   if (!resolveRes.ok) {
-    const errorBody = await resolveRes.text();
-    throw new Error(`Failed to resolve session (${resolveRes.status}): ${errorBody}`);
+    throw new Error(`PUBLISHER_RESOLVE_HTTP_${resolveRes.status}`);
   }
 
   const sessionData = await resolveRes.json();
@@ -187,6 +261,11 @@ export async function publishSession(options) {
     throw new Error('Either storageRoot or (manifestPath and blobsDir) must be provided.');
   }
 
+  // Freeze requestId/blobIds before staging, so retries keep the same revision.
+  const stable = await checkpointPublication(options, { manifest, blobFileMap });
+  manifest = stable.manifest;
+  blobFileMap = stable.blobFileMap;
+
   // Step 3: Begin publication
   const publishRes = await fetch(`${normalizedOrigin}/internal/v1/publications`, {
     method: 'POST',
@@ -195,8 +274,7 @@ export async function publishSession(options) {
   });
 
   if (!publishRes.ok && publishRes.status !== 201) {
-    const errorBody = await publishRes.text();
-    throw new Error(`Failed to begin publication (${publishRes.status}): ${errorBody}`);
+    throw new Error(`PUBLISHER_STAGE_HTTP_${publishRes.status}`);
   }
 
   const pubData = await publishRes.json();
@@ -235,8 +313,7 @@ export async function publishSession(options) {
     );
 
     if (!uploadRes.ok && uploadRes.status !== 201) {
-      const errorBody = await uploadRes.text();
-      throw new Error(`Failed to upload blob ${blobId} (${uploadRes.status}): ${errorBody}`);
+      throw new Error(`PUBLISHER_UPLOAD_HTTP_${uploadRes.status}`);
     }
 
     totalBytesUploaded += fileBytes.byteLength;
@@ -249,8 +326,7 @@ export async function publishSession(options) {
   });
 
   if (!statusRes.ok) {
-    const errorBody = await statusRes.text();
-    throw new Error(`Failed to check publication status: ${errorBody}`);
+    throw new Error(`PUBLISHER_STATUS_HTTP_${statusRes.status}`);
   }
 
   const finalStatus = await statusRes.json();
@@ -271,8 +347,7 @@ export async function publishSession(options) {
   );
 
   if (!activateRes.ok) {
-    const errorBody = await activateRes.text();
-    throw new Error(`Failed to activate revision (${activateRes.status}): ${errorBody}`);
+    throw new Error(`PUBLISHER_ACTIVATE_HTTP_${activateRes.status}`);
   }
 
   const receiptData = await activateRes.json();

@@ -27,11 +27,7 @@ Minimum model:
 ```text
 photo_sessions
 photo_revisions
-photos
-revision_photos
-media_assets
-idempotency_records
-audit_events
+revision_blobs
 ```
 
 Do not add browser grants or WhatsApp in this first cut.
@@ -53,7 +49,7 @@ If a legacy integration still supplies `galleryKey`, accept only the constant `p
 Required states:
 
 ```text
-STAGED -> VALIDATED -> ACTIVE
+STAGED -> ACTIVE -> SUPERSEDED
    \-> FAILED
 ```
 

@@ -1,5 +1,9 @@
 # Christmas Games agent map
 
+## Current priority
+
+Finish Corte 2 publisher checkpoint, real browser loading and EvydFlow synthetic smoke before customer publication.
+
 ## Mission
 
 Build a safe, local-VPS, mobile-first factory for personalized photo minigames. This repository is public on GitHub, so operational/customer data is out of scope for version control by definition. The repository is optimized for legibility, deterministic domains and runtime evidence. Prefer boring, explicit paths over clever automation.
@@ -16,7 +20,7 @@ For Contabo VPS deployment and private photo upload design, read `docs/ops/CONTA
 6. Make the smallest coherent change and run `pnpm check:fast`.
 7. Before handoff, run `pnpm validate`; record durable discoveries in `docs/lessons.md`.
 
-## AntiGravity 2.19.1 safe execution protocol
+## Antigravity 2.22.0 safe execution protocol
 
 `AntiGravity 2.19.1` is the canonical repository label. The operator may refer to the same agent workflow as `Point Gravity` or `FluentGraft`; treat those names as aliases and do not create parallel rules, skills or architectures for them.
 
