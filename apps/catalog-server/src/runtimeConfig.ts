@@ -10,6 +10,7 @@ export interface CatalogRuntimeConfig {
   readonly applicationShellPath: string;
   readonly previewConfigPath: string;
   readonly port: number;
+  readonly host: string;
 }
 
 export function resolveCatalogRuntimeConfig(
@@ -41,6 +42,7 @@ export function resolveCatalogRuntimeConfig(
     applicationShellPath: resolve(configuredApplicationShell ?? defaultApplicationShellPath),
     previewConfigPath: resolve(previewConfigPath),
     port: parsePort(environment.PORT ?? '4180'),
+    host: environment.HOST ?? '127.0.0.1',
   };
 }
 

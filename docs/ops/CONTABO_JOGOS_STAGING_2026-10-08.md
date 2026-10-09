@@ -2,13 +2,15 @@
 
 Data 2026-10-08. Status: proposta técnica, NÃO implantada. Owner da infra: EvolutionGO em /srv/platform, repositório remoto por confirmar. Owner do app: gameplay. Dependência: PR #7.
 
-## Achados verificados vs relatados
+## Achados verificados no inventário ao vivo (08/10/2026)
 
-- Relato do operador: DNS A jogos.fotosdenatal.com apontado no Plesk da revenda para a VPS. Isso NÃO confirma DNS público, HTTPS, abertura de 80/443 ou saúde da aplicação.
-- Manual histórico EvolutionGO (fornecido): VPS Ubuntu 24.04, Caddy como borda pública de TLS/80/443, Docker edge, acesso Tailscale/SSH e sudo stackctl. Não houve inspeção live do host.
-- Este repo possui Node 24/catalog-server, bundler de staging-demo, templates systemd+Nginx e runbook docs/ops/VPS_STAGING_DEMO_RUNBOOK.md. O Nginx de deploy foi concebido como borda HTTPS, conflito potencial com Caddy na VPS relatada.
-- Runtime atual apps/catalog-server/src/CatalogServer.ts só aceita GET e HEAD; não implementa upload, SQLite, grants nem publicação de sessões reais.
-- deploy/readiness.json limita release a staging-demo sintético. Não alterar pilotReady=false, customerDataAllowed=false, automaticDeliveryAllowed=false para contornar recursos ausentes.
+- **DNS público:** `jogos.fotosdenatal.com` resolve para `169.58.210.14` (registro A), coincidindo exatamente com a interface `eth0` da VPS Contabo. Sem registro AAAA.
+- **Node.js no host:** Não instalado no Ubuntu da VPS (`bash: node: command not found`). Toda a infraestrutura roda conteinerizada no Docker via `stackctl`. O catalog-server deve rodar em container `node:24-alpine`.
+- **Servidor Web / Borda:** Caddy (`caddy-caddy-1`) possui as portas 80 e 443 do host (TCP e UDP QUIC). Permanece como borda pública única.
+- **Capacidade do host (Alerta P0):** `/dev/sda1` tem 177 GB usados de 193 GB (**92% de uso**), restando apenas **17 GB livres**. É estritamente proibido build pesado ou processamento Sharp no servidor. Quota temporária máxima de 2 GB e alerta de corte fail-closed abaixo de 5 GB. Inodes estão folgados (4% de uso).
+- **Orquestração:** CLI `stackctl` gerencia as stacks sob `/srv/platform/stacks`. Nova stack `christmas-games` definida em `deploy/vps/docker/`.
+- **Isolamento:** SmartDialer, Asterisk PBX, EvolutionGO, SMS Gateway e Telegram Campaign saudáveis e inalterados.
+- **Readiness:** `deploy/readiness.json` limita release a staging-demo sintético (`pilotReady=false`, `customerDataAllowed=false`).
 
 ## Topologia preferencial, condicionada ao inventário da VPS
 

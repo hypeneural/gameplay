@@ -1,0 +1,16 @@
+# Bloco para jogos.fotosdenatal.com na VPS Contabo
+jogos.fotosdenatal.com {
+    # Bloqueio de rotas administrativas e internas na borda da Internet
+    @blocked {
+        path /internal*
+        path /__dev*
+    }
+    respond @blocked "Access Denied" 403
+
+    reverse_proxy christmas-games-gateway:80 {
+        header_up Host {host}
+        header_up X-Real-IP {remote_host}
+        header_up X-Forwarded-For {remote_host}
+        header_up X-Forwarded-Proto {scheme}
+    }
+}

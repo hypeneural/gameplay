@@ -488,6 +488,11 @@
 │   └── vps
 │       ├── catalog.env.example
 │       ├── christmas-games-catalog.service.example
+│       ├── docker
+│       │   ├── Caddyfile.fragment
+│       │   ├── compose.yaml
+│       │   ├── nginx.conf
+│       │   └── stack.yaml
 │       └── nginx
 │           └── christmas-games.conf.example
 ├── docs
