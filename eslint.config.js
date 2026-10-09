@@ -8,6 +8,7 @@ export default tseslint.config(
   {
     ignores: [
       '.reference/**',
+      '.release/**',
       'node_modules/**',
       '**/dist/**',
       'coverage/**',
