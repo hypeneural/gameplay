@@ -287,7 +287,7 @@ export async function publishSession(options) {
   if (accessUrl.protocol !== 'https:' ||
       accessUrl.hostname !== 'jogos.fotosdenatal.com' ||
       accessUrl.port || accessUrl.search || accessUrl.hash ||
-      !/^\\/s\\/[A-Za-z0-9_-]{16,128}$/.test(accessUrl.pathname)) {
+      !new RegExp('^[/]s[/][A-Za-z0-9_-]{16,128}$').test(accessUrl.pathname)) {
     throw new Error('PUBLICATION_ACCESS_URL_INVALID');
   }
   const durationMs = Date.now() - startTime;
