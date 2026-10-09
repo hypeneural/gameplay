@@ -125,7 +125,8 @@ export async function publishSession(options) {
 
   const normalizedOrigin = apiOrigin.replace(/\/+$/, '');
   const headers = {
-    Authorization: `***    'Content-Type': 'application/json',
+    Authorization: 'Bearer ' + apiSecret,
+    'Content-Type': 'application/json',
   };
 
   await appendStructuredLog(logFile, {
@@ -225,7 +226,8 @@ export async function publishSession(options) {
       {
         method: 'PUT',
         headers: {
-          Authorization: `***          'Content-Type': 'image/webp',
+          Authorization: 'Bearer ' + apiSecret,
+          'Content-Type': 'image/webp',
           'X-Content-SHA256': sha256,
         },
         body: new Uint8Array(fileBytes),
