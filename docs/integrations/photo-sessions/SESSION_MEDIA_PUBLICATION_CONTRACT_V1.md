@@ -1,5 +1,7 @@
 # Contrato proposto v1 — Sessão única, revisões e publicação privada
 
+**Status:** arquitetura expandida proposta, preservada como referência futura. Para colocar o PRIMEIRO MVP em funcionamento, priorizar [Point Graph mínimo com 3 tabelas e 5 APIs privadas](MVP_POINT_GRAPH_APIS_DB_2026-10-08.md), que substitui esta lista de 7 APIs internas no corte inicial.
+
 Data 2026-10-08. Especificação de IMPLEMENTAÇÃO futura. Nada neste arquivo afirma que os endpoints, tabelas ou migrações já existem. Owner: apps/catalog-server; publisher manual owner: tools/media-pipeline. Stage atual proíbe mídia real na VPS.
 
 ## Modelo de produto e identidade

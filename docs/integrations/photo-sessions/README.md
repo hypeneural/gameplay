@@ -6,6 +6,8 @@ Este pacote reúne a análise dos três repositórios, os resultados agregados d
 
 ## Leitura e validação
 
+**Ponto de entrada MVP:** [Point Graph completo (tabelas, 5 APIs de upload, 2 de leitura, exemplos JSON, SQL e testes)](MVP_POINT_GRAPH_APIS_DB_2026-10-08.md). Os demais documentos registram arquitetura futura e não devem inflar o escopo da primeira publicação manual.
+
 **Pré-flight Node/Python:** [contrato do publisher futuro](PUBLISHER_EVYDFLOW_HANDOFF_V1.md) e [JSON Schema versionado](../../contracts/photo-publication-manifest-v1.schema.json). Não há API de upload funcional, nem integração Python liberada neste estágio.
 
 **Entrega Contabo 2026:** [Staging seguro com Caddy/stackctl](../../ops/CONTABO_JOGOS_STAGING_2026-10-08.md) e [contrato de publicação privada de fotos e revisões](SESSION_MEDIA_PUBLICATION_CONTRACT_V1.md). Ambos documentam proposta futura, não upload ou piloto funcional.

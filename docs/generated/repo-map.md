@@ -50,6 +50,8 @@
 │   │   ├── README.md
 │   │   ├── config
 │   │   │   └── social-preview.example.json
+│   │   ├── migrations
+│   │   │   └── 001_mvp_photo_sessions.sql
 │   │   ├── nginx
 │   │   │   └── catalog-social-preview.conf.example
 │   │   ├── package.json
@@ -63,6 +65,8 @@
 │   │   │   ├── filePreviewRepository.ts
 │   │   │   ├── main.ts
 │   │   │   ├── publication
+│   │   │   │   ├── mvpContract.test.ts
+│   │   │   │   ├── mvpSqliteSchema.test.ts
 │   │   │   │   ├── publicationManifest.test.ts
 │   │   │   │   └── publicationManifest.ts
 │   │   │   ├── runtimeConfig.test.ts
@@ -515,6 +519,7 @@
 │   ├── assets
 │   │   └── ASSET_MANIFEST_CONTRACT.md
 │   ├── contracts
+│   │   ├── mvp-photo-publication-v1.openapi.json
 │   │   └── photo-publication-manifest-v1.schema.json
 │   ├── design
 │   │   ├── PUZZLE_SWAP_EXPERIENCE_REVIEW.md
@@ -583,6 +588,7 @@
 │   │       ├── AUDITORIA_WORKFLOW_SESSOES_E_JOGOS.md
 │   │       ├── GALERIA_NATALINA_MULTI_GALERIAS.md
 │   │       ├── GALERIA_NATIVE_MOBILE_HANDOFF_2026-10-08.md
+│   │       ├── MVP_POINT_GRAPH_APIS_DB_2026-10-08.md
 │   │       ├── MVP_RAPIDO.md
 │   │       ├── PLANO_IMPLEMENTACAO_GALERIA_JOGOS_EVYDFLOW.md
 │   │       ├── PROMPT_VALIDACAO_CHATGPT.md
