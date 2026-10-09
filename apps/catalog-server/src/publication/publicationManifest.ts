@@ -175,3 +175,51 @@ export function parsePublicationManifestV1(input: unknown): PublicationManifestV
     photos: photos.sort((a, b) => a.sortIndex - b.sortIndex),
   };
 }
+
+/**
+ * Canonicalizes a validated PublicationManifestV1 into a strictly deterministic
+ * JSON string with sorted photos and fixed key ordering across all levels.
+ */
+export function canonicalizePublicationManifest(manifest: PublicationManifestV1): string {
+  const sortedPhotos = [...manifest.photos].sort((a, b) => a.sortIndex - b.sortIndex);
+
+  const canonicalObject = {
+    schemaVersion: manifest.schemaVersion,
+    requestId: manifest.requestId,
+    sessionId: manifest.sessionId,
+    expectedActiveRevisionId: manifest.expectedActiveRevisionId,
+    recipeKey: manifest.recipeKey,
+    photos: sortedPhotos.map((photo) => ({
+      photoId: photo.photoId,
+      contentHash: photo.contentHash.toLowerCase(),
+      sortIndex: photo.sortIndex,
+      width: photo.width,
+      height: photo.height,
+      variants: {
+        thumb: {
+          blobId: photo.variants.thumb.blobId,
+          sha256: photo.variants.thumb.sha256.toLowerCase(),
+          byteLength: photo.variants.thumb.byteLength,
+          width: photo.variants.thumb.width,
+          height: photo.variants.thumb.height,
+        },
+        card: {
+          blobId: photo.variants.card.blobId,
+          sha256: photo.variants.card.sha256.toLowerCase(),
+          byteLength: photo.variants.card.byteLength,
+          width: photo.variants.card.width,
+          height: photo.variants.card.height,
+        },
+        game: {
+          blobId: photo.variants.game.blobId,
+          sha256: photo.variants.game.sha256.toLowerCase(),
+          byteLength: photo.variants.game.byteLength,
+          width: photo.variants.game.width,
+          height: photo.variants.game.height,
+        },
+      },
+    })),
+  };
+
+  return JSON.stringify(canonicalObject);
+}
