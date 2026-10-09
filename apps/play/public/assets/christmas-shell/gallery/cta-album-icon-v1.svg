@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none">
+  <defs>
+    <linearGradient id="bookCover" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fff1cb"/>
+      <stop offset="100%" stop-color="#d6a751"/>
+    </linearGradient>
+    <linearGradient id="bookPages" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#fdfbf5"/>
+      <stop offset="100%" stop-color="#e8dcbe"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Album Spine / Base -->
+  <rect x="3" y="3" width="18" height="18" rx="3.5" fill="url(#bookCover)" stroke="#9c6d26" stroke-width="0.8"/>
+  <rect x="5" y="4.5" width="14.5" height="15" rx="2" fill="url(#bookPages)"/>
+
+  <!-- Photo Print Inset Frame on Cover -->
+  <rect x="7" y="6.5" width="10.5" height="10.5" rx="1.5" fill="#1b493c" stroke="#cf9f46" stroke-width="0.6"/>
+
+  <!-- Little Star of Bethlehem in Photo Frame -->
+  <g transform="translate(12.25, 11.75)">
+    <path d="M0,-3.2 L0.8,-0.8 L3.2,0 L0.8,0.8 L0,3.2 L-0.8,0.8 L-3.2,0 L-0.8,-0.8 Z" fill="#fff5d4"/>
+    <circle cx="0" cy="0" r="0.7" fill="#e5b452"/>
+  </g>
+</svg>

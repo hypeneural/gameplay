@@ -1,7 +1,8 @@
-import { Suspense, lazy, useEffect, useRef, useState } from 'react';
+import { Suspense, lazy, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import type { Session } from '@christmas-games/platform';
 import { playInterfaceTap } from '../audio/playInterfaceTap.js';
 import { PhotoPrint } from '../components/PhotoPrint.js';
+import { ShellIcon } from '../components/ShellIcon.js';
 import {
   GALLERY_AUTOLOAD_ROOT_MARGIN,
   GALLERY_FEED_SIZES,
@@ -20,6 +21,9 @@ interface SessionGalleryProps {
   selectedPhotoId: string;
   calm: boolean;
   lowQuality: boolean;
+  initialVisibleCount?: number;
+  restoreScrollY?: number;
+  onVisibleCountChange?(count: number): void;
   onSelectPhoto(photoId: string): void;
   onBack(): void;
   onPlayPhoto(photoId: string): void;
@@ -30,21 +34,39 @@ export function SessionGallery({
   selectedPhotoId,
   calm,
   lowQuality,
+  initialVisibleCount,
+  restoreScrollY = 0,
+  onVisibleCountChange,
   onSelectPhoto,
   onBack,
   onPlayPhoto,
 }: SessionGalleryProps): React.JSX.Element {
   const [visibleCount, setVisibleCount] = useState(() =>
-    Math.min(GALLERY_INITIAL_PHOTO_COUNT, session.photos.length),
+    Math.min(
+      session.photos.length,
+      Math.max(GALLERY_INITIAL_PHOTO_COUNT, initialVisibleCount ?? GALLERY_INITIAL_PHOTO_COUNT),
+    ),
   );
   const [lightboxIndex, setLightboxIndex] = useState<number>();
   const [shareStatus, setShareStatus] = useState('');
   const sentinelRef = useRef<HTMLDivElement>(null);
 
+  // Restore after Suspense has mounted the actual cards, avoiding fallback clamping.
+  // Known aspect ratios reserve space before image decoding completes.
+  useLayoutEffect(() => {
+    if (restoreScrollY > 0) window.scrollTo(0, restoreScrollY);
+  }, [restoreScrollY, session.id]);
+
   useEffect(() => {
-    setVisibleCount(Math.min(GALLERY_INITIAL_PHOTO_COUNT, session.photos.length));
+    // initialVisibleCount is a mount-only seed. The parent updates that seed as
+    // batches expand, but it must never reset an already-open photo lightbox.
+    setVisibleCount((current) => Math.min(current, session.photos.length));
     setLightboxIndex(undefined);
   }, [session.id, session.photos.length]);
+
+  useEffect(() => {
+    onVisibleCountChange?.(visibleCount);
+  }, [visibleCount, onVisibleCountChange]);
 
   useEffect(() => {
     const sentinel = sentinelRef.current;
@@ -100,32 +122,36 @@ export function SessionGallery({
             onBack();
           }}
         >
-          <span aria-hidden="true">‹</span>
+          <ShellIcon name="back" />
         </button>
-        <div className="gallery-title-group">
-          <p className="eyebrow">SEU NATAL EM FAMÍLIA</p>
-          <h1>Álbum de Natal</h1>
-        </div>
+        <span className="gallery-topbar-label">Suas fotos</span>
         <button
           className="gallery-icon-button"
           type="button"
           aria-label="Compartilhar álbum"
           onClick={() => void share()}
         >
-          <span aria-hidden="true">↗</span>
+          <ShellIcon name="share" />
         </button>
       </header>
 
-      <section className="gallery-intro" aria-labelledby="gallery-heading">
-        <div className="gallery-pine gallery-pine--left" aria-hidden="true" />
-        <div className="gallery-pine gallery-pine--right" aria-hidden="true" />
-        <p id="gallery-heading">Toque em uma lembrança para ver de perto ou brincar com ela.</p>
-        <div className="gallery-lights" aria-hidden="true">
-          <i />
-          <i />
-          <i />
-          <i />
-          <i />
+      <section className="gallery-hero" aria-labelledby="gallery-hero-title">
+        <div className="gallery-hero-glow" aria-hidden="true" />
+        <div className="gallery-hero-garland" aria-hidden="true" />
+        <div className="gallery-hero-content">
+          <div className="gallery-hero-meta">
+            <p className="eyebrow">ESTÚDIO EVYDÊNCIA • NATAL EM FAMÍLIA</p>
+            <span
+              className="gallery-photo-badge"
+              aria-label={`${session.photos.length} fotos no álbum`}
+            >
+              {session.photos.length} fotos
+            </span>
+          </div>
+          <h1 id="gallery-hero-title">Seu Álbum de Natal</h1>
+          <p className="gallery-hero-subtitle">Reviva cada lembrança com carinho</p>
+          <div className="gallery-hero-divider" aria-hidden="true" />
+          <p className="gallery-hero-instruction">Toque em uma foto para ver de perto</p>
         </div>
       </section>
 
@@ -139,6 +165,7 @@ export function SessionGallery({
         {visiblePhotos.map((photo, index) => (
           <button
             className="gallery-card"
+            data-photo-id={photo.id}
             type="button"
             key={photo.id}
             aria-label={`Abrir foto ${index + 1} de ${session.photos.length}`}
@@ -158,9 +185,6 @@ export function SessionGallery({
                 srcSetVariants={GALLERY_FEED_VARIANTS}
                 alt={`Lembrança de Natal ${index + 1}`}
               />
-            </span>
-            <span className="gallery-card-mark" aria-hidden="true">
-              ✦
             </span>
           </button>
         ))}
@@ -187,6 +211,49 @@ export function SessionGallery({
           </span>
         )}
       </div>
+
+      {!stillHasPhotos ? (
+        <footer className="gallery-finale">
+          <p className="gallery-finale-kicker">UM NATAL QUE FICA PARA SEMPRE</p>
+          <h2>As lembranças continuam</h2>
+          <p>Reviva seus momentos e transforme suas fotografias em brincadeiras de Natal.</p>
+          <button
+            className="gallery-play-photo gallery-return-games"
+            type="button"
+            onClick={() => {
+              playInterfaceTap('back');
+              onBack();
+            }}
+          >
+            Voltar aos jogos de Natal <span aria-hidden="true">→</span>
+          </button>
+          <p className="gallery-finale-signature">Com carinho, Estúdio Evydência</p>
+        </footer>
+      ) : null}
+
+      <footer className="gallery-brand-dock" data-testid="gallery-brand-dock">
+        <a
+          className="gallery-brand-link"
+          href="https://fotosdenatal.com/"
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Conheça o Natal do Estúdio Evydência em fotosdenatal.com (abre em nova aba)"
+          onClick={() => playInterfaceTap('open')}
+        >
+          <span className="gallery-brand-heart" aria-hidden="true">
+            <ShellIcon name="heart" />
+          </span>
+          <span className="gallery-brand-signature">
+            <small>FEITO COM CARINHO</small>
+            <strong>por EVYDÊNCIA</strong>
+          </span>
+          <span className="gallery-brand-destination">
+            <small>CONHEÇA NOSSO NATAL</small>
+            <strong>fotosdenatal.com</strong>
+          </span>
+          <ShellIcon name="next" />
+        </a>
+      </footer>
 
       {typeof lightboxIndex === 'number' ? (
         <Suspense

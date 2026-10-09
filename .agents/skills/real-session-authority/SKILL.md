@@ -15,7 +15,7 @@ Stop instead of improvising when:
 - the requested change needs real customer data in staging;
 - the change requires setting `pilotReady=true`;
 - a solution creates another backend/session store;
-- a solution requires weakening A/A2/B isolation;
+- a solution creates multiple galleries for the same CRM order or crosses data between different orders;
 - a database migration is destructive without an explicit migration/backup path.
 
 ## Vertical cut 1 — persistence only
@@ -38,13 +38,15 @@ Do not add browser grants or WhatsApp in this first cut.
 
 ### Session
 
-Stores stable technical identity plus optional CRM business identity and `galleryKey`.
+Stores one stable technical `photoSessionId` per CRM order and optional business identity.
 
-Business uniqueness when CRM identity is present:
+Business uniqueness when a CRM identity is present:
 
 ```text
-(crm_order_uuid, gallery_key)
+UNIQUE(crm_order_uuid)
 ```
+
+If a legacy integration still supplies `galleryKey`, accept only the constant `principal`; it must not enable additional galleries. Store photos as revisions of the same session.
 
 ### Revision
 
@@ -101,7 +103,7 @@ Node 24 `node:sqlite` may be evaluated behind an adapter, but its release-candid
 Before handoff:
 
 - targeted persistence tests;
-- A/A2/B isolation;
+- one order A with consecutive immutable revisions A1/A2; a distinct order B stays isolated;
 - stale CAS rejection;
 - idempotency replay;
 - restart/persistence test;

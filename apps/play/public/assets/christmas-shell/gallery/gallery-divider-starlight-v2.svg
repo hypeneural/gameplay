@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 16" fill="none">
+  <defs>
+    <linearGradient id="starlightRule" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#dfb46c" stop-opacity="0"/>
+      <stop offset="25%" stop-color="#e8c988" stop-opacity="0.45"/>
+      <stop offset="50%" stop-color="#fff4d0" stop-opacity="0.95"/>
+      <stop offset="75%" stop-color="#e8c988" stop-opacity="0.45"/>
+      <stop offset="100%" stop-color="#dfb46c" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Fine Tapered Rule -->
+  <line x1="20" y1="8" x2="400" y2="8" stroke="url(#starlightRule)" stroke-width="1.2" stroke-linecap="round"/>
+
+  <!-- Left Secondary Pip -->
+  <circle cx="160" cy="8" r="1.5" fill="#f8e5b4" opacity="0.85"/>
+
+  <!-- Right Secondary Pip -->
+  <circle cx="260" cy="8" r="1.5" fill="#f8e5b4" opacity="0.85"/>
+
+  <!-- Central Star of Bethlehem -->
+  <g transform="translate(210, 8)">
+    <path d="M0,-7 L1.6,-2 L7,0 L1.6,2 L0,7 L-1.6,2 L-7,0 L-1.6,-2 Z" fill="#fff7dd"/>
+    <circle cx="0" cy="0" r="1.4" fill="#d99f36"/>
+  </g>
+</svg>

@@ -4,6 +4,8 @@
 **Data de consolidação:** 06/10/2026.  
 **Baseline de partida:** `codex/puzzle-native-like-v1` em `53d301cfa1fc078e4538bb77a29478fb49376145`.
 
+> **Atualização normativa (08/10/2026):** este plano histórico descreve A/A2 como galerias distintas no mesmo pedido, mas a regra atual é **uma galeria por pedido com revisões imutáveis sucessivas**. Onde este plano mencionar `galleryKey` variável, múltiplas galerias por pedido ou masonry obrigatório, prevalecem `.agents/rules/christmas-gallery-album.md`, `.agents/skills/real-session-authority/SKILL.md` e `docs/integrations/photo-sessions/GALERIA_NATIVE_MOBILE_HANDOFF_2026-10-08.md`. Os exemplos A/A2/B antigos devem ser interpretados como **A1 e A2 = revisões da mesma sessão**, B = sessão de outro pedido. Não alterar `pilotReady` nem publicar clientes reais.
+
 Este plano transforma a auditoria de photo sessions em uma sequência implementável para o Antigravity. O caminho operacional continua sendo EvydFlow no Windows 11 e produto/backend na VPS, mas **a validação deve acontecer antes em Node-first**: Gallery Lab local, staging-demo VPS e publisher Node manual precedem a integração Python.
 
 Leitura obrigatória antes de implementação:

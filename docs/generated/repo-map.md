@@ -71,37 +71,47 @@
 │       ├── assets
 │       │   └── christmas-shell
 │       │       ├── ASSET_PROVENANCE.md
+│       │       ├── GALLERY_PROVENANCE.md
 │       │       └── manifest.json
 │       ├── index.html
 │       ├── package.json
 │       ├── public
 │       │   ├── assets
 │       │   │   ├── christmas-shell
-│       │   │   │   └── audio
-│       │   │   │       ├── back-v1.m4a
-│       │   │   │       ├── back-v1.mp3
-│       │   │   │       ├── bells-a-v1.m4a
-│       │   │   │       ├── bells-a-v1.mp3
-│       │   │   │       ├── bells-b-v1.m4a
-│       │   │   │       ├── bells-b-v1.mp3
-│       │   │   │       ├── magic-v1.m4a
-│       │   │   │       ├── magic-v1.mp3
-│       │   │   │       ├── open-v1.m4a
-│       │   │   │       ├── open-v1.mp3
-│       │   │   │       ├── paper-a-v1.m4a
-│       │   │   │       ├── paper-a-v1.mp3
-│       │   │   │       ├── paper-b-v1.m4a
-│       │   │   │       ├── paper-b-v1.mp3
-│       │   │   │       ├── reveal-v1.m4a
-│       │   │   │       ├── reveal-v1.mp3
-│       │   │   │       ├── snow-v1.m4a
-│       │   │   │       ├── snow-v1.mp3
-│       │   │   │       ├── start-v1.m4a
-│       │   │   │       ├── start-v1.mp3
-│       │   │   │       ├── tap-v1.m4a
-│       │   │   │       ├── tap-v1.mp3
-│       │   │   │       ├── toggle-v1.m4a
-│       │   │   │       └── toggle-v1.mp3
+│       │   │   │   ├── audio
+│       │   │   │   │   ├── back-v1.m4a
+│       │   │   │   │   ├── back-v1.mp3
+│       │   │   │   │   ├── bells-a-v1.m4a
+│       │   │   │   │   ├── bells-a-v1.mp3
+│       │   │   │   │   ├── bells-b-v1.m4a
+│       │   │   │   │   ├── bells-b-v1.mp3
+│       │   │   │   │   ├── magic-v1.m4a
+│       │   │   │   │   ├── magic-v1.mp3
+│       │   │   │   │   ├── open-v1.m4a
+│       │   │   │   │   ├── open-v1.mp3
+│       │   │   │   │   ├── paper-a-v1.m4a
+│       │   │   │   │   ├── paper-a-v1.mp3
+│       │   │   │   │   ├── paper-b-v1.m4a
+│       │   │   │   │   ├── paper-b-v1.mp3
+│       │   │   │   │   ├── reveal-v1.m4a
+│       │   │   │   │   ├── reveal-v1.mp3
+│       │   │   │   │   ├── snow-v1.m4a
+│       │   │   │   │   ├── snow-v1.mp3
+│       │   │   │   │   ├── start-v1.m4a
+│       │   │   │   │   ├── start-v1.mp3
+│       │   │   │   │   ├── tap-v1.m4a
+│       │   │   │   │   ├── tap-v1.mp3
+│       │   │   │   │   ├── toggle-v1.m4a
+│       │   │   │   │   └── toggle-v1.mp3
+│       │   │   │   └── gallery
+│       │   │   │       ├── cta-album-icon-v1.svg
+│       │   │   │       ├── cta-open-album-ribbon-v1.svg
+│       │   │   │       ├── gallery-badge-photo-count-v1.svg
+│       │   │   │       ├── gallery-divider-starlight-v2.svg
+│       │   │   │       ├── gallery-evergreen-hero-retina-v6.webp
+│       │   │   │       ├── gallery-evergreen-hero-v2.svg
+│       │   │   │       ├── gallery-header-glow-v1.svg
+│       │   │   │       └── gallery-starlight-footer-v1.svg
 │       │   │   ├── estilingue-das-lembrancas
 │       │   │   │   ├── art
 │       │   │   │   │   ├── alvo-bola-natal-v1.webp
@@ -413,7 +423,9 @@
 │       │   │   ├── LoadingState.tsx
 │       │   │   ├── PerformanceLab.tsx
 │       │   │   ├── SessionGallery.tsx
-│       │   │   └── ThemeLab.tsx
+│       │   │   ├── ThemeLab.tsx
+│       │   │   ├── hubGameOrder.test.ts
+│       │   │   └── hubGameOrder.ts
 │       │   ├── sharing
 │       │   │   ├── shareLink.test.ts
 │       │   │   └── shareLink.ts
@@ -560,6 +572,7 @@
 │   │       ├── AUDITORIA_NODE_FIRST_GALLERY_LAB_2026-10-06.md
 │   │       ├── AUDITORIA_WORKFLOW_SESSOES_E_JOGOS.md
 │   │       ├── GALERIA_NATALINA_MULTI_GALERIAS.md
+│   │       ├── GALERIA_NATIVE_MOBILE_HANDOFF_2026-10-08.md
 │   │       ├── MVP_RAPIDO.md
 │   │       ├── PLANO_IMPLEMENTACAO_GALERIA_JOGOS_EVYDFLOW.md
 │   │       ├── PROMPT_VALIDACAO_CHATGPT.md
