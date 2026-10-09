@@ -132,7 +132,12 @@ export function AppRouter(): React.JSX.Element {
     if (requiresRemoteSession) return undefined;
     const fixture = createFixtureSession(isPublicDemo ? 12 : fixtureCount);
     return isPublicDemo
-      ? { ...fixture, id: 'public-demo', publicToken: 'public-demo', displayName: 'Demonstração de Natal' }
+      ? {
+          ...fixture,
+          id: 'public-demo',
+          publicToken: 'public-demo',
+          displayName: 'Demonstração de Natal',
+        }
       : fixture;
   }, [fixtureCount, isPublicDemo, requiresRemoteSession]);
 
@@ -386,21 +391,26 @@ export function AppRouter(): React.JSX.Element {
       return;
     if (route.kind === 'session') hubScrollRef.current = window.scrollY;
     if (route.kind === 'gallery') galleryScrollRef.current = window.scrollY;
-    writeRoute({ kind: 'game-cover', token: route.token, gameId, ...(route.demo ? { demo: true } : {}) }, 'push');
+    writeRoute(
+      { kind: 'game-cover', token: route.token, gameId, ...(route.demo ? { demo: true } : {}) },
+      'push',
+    );
   };
 
   const openGallery = (): void => {
     if (route.kind !== 'session') return;
     hubScrollRef.current = window.scrollY;
-    writeRoute({ kind: 'gallery', token: route.token, ...(route.demo ? { demo: true } : {}) }, 'push');
+    writeRoute(
+      { kind: 'gallery', token: route.token, ...(route.demo ? { demo: true } : {}) },
+      'push',
+    );
   };
 
   const goToSession = (token: string): void => {
     const sessionRoute: SessionRoute = {
-      kind: 'session', token,
-      ...(route.kind === 'gallery' || route.kind === 'game-cover' || route.kind === 'session'
-        ? (route.demo ? { demo: true as const } : {})
-        : {}),
+      kind: 'session',
+      token,
+      ...('demo' in route && route.demo ? { demo: true as const } : {}),
     };
     if (route.kind === 'gallery') galleryScrollRef.current = window.scrollY;
     if (playingRef.current) {
@@ -575,7 +585,10 @@ export function AppRouter(): React.JSX.Element {
             setSelectedPhotoId(photoId);
             galleryScrollRef.current = window.scrollY;
             hubScrollRef.current = 0;
-            writeRoute({ kind: 'session', token: route.token, ...(route.demo ? { demo: true } : {}) }, 'push');
+            writeRoute(
+              { kind: 'session', token: route.token, ...(route.demo ? { demo: true } : {}) },
+              'push',
+            );
           }}
         />
       </Suspense>
