@@ -2,6 +2,7 @@ import { createHash, randomUUID } from 'node:crypto';
 import { existsSync } from 'node:fs';
 import { appendFile, readFile } from 'node:fs/promises';
 import { join } from 'node:path';
+import { URL } from 'node:url';
 
 const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
@@ -67,8 +68,14 @@ export async function buildManifestFromLocalConfig(
       const blobId = randomUUID();
       const variantFilePath = findVariantFile(storageRoot, parsed, photo, variantName);
       const fileBytes = await readFile(variantFilePath);
-      const sha256 = metric.sha256 ?? createHash('sha256').update(fileBytes).digest('hex');
-      const byteLength = metric.byteLength ?? fileBytes.byteLength;
+      const sha256 = createHash('sha256').update(fileBytes).digest('hex');
+      const byteLength = fileBytes.byteLength;
+      if (
+        (metric.sha256 && metric.sha256.toLowerCase() !== sha256) ||
+        (metric.byteLength !== undefined && metric.byteLength !== byteLength)
+      ) {
+        throw new Error('DERIVATIVE_INTEGRITY_MISMATCH');
+      }
 
       blobFileMap.set(blobId, variantFilePath);
       variants[variantName] = {
@@ -118,13 +125,13 @@ export async function publishSession(options) {
 
   const normalizedOrigin = apiOrigin.replace(/\/+$/, '');
   const headers = {
-    Authorization: `Bearer ${apiSecret}`,
+    Authorization: 'Bearer ' + apiSecret,
     'Content-Type': 'application/json',
   };
 
   await appendStructuredLog(logFile, {
     action: 'publish_session_start',
-    crmOrderUuid,
+    // CRM order UUID is deliberately excluded from logs.
   });
 
   // Step 1: Resolve or create session
@@ -219,7 +226,7 @@ export async function publishSession(options) {
       {
         method: 'PUT',
         headers: {
-          Authorization: `Bearer ${apiSecret}`,
+          Authorization: 'Bearer ' + apiSecret,
           'Content-Type': 'image/webp',
           'X-Content-SHA256': sha256,
         },
@@ -269,6 +276,29 @@ export async function publishSession(options) {
   }
 
   const receiptData = await activateRes.json();
+  if (
+    (receiptData.state ?? receiptData.status) !== 'ACTIVE' ||
+    receiptData.revisionId !== revisionId ||
+    (receiptData.sessionId && receiptData.sessionId !== sessionId)
+  ) {
+    throw new Error('PUBLICATION_ACTIVATION_RECEIPT_INVALID');
+  }
+  let accessUrl;
+  try {
+    accessUrl = new URL(receiptData.accessUrl);
+  } catch {
+    throw new Error('PUBLICATION_ACCESS_URL_INVALID');
+  }
+  if (
+    accessUrl.protocol !== 'https:' ||
+    accessUrl.hostname !== 'jogos.fotosdenatal.com' ||
+    accessUrl.port ||
+    accessUrl.search ||
+    accessUrl.hash ||
+    !new RegExp('^[/]s[/][A-Za-z0-9_-]{16,128}$').test(accessUrl.pathname)
+  ) {
+    throw new Error('PUBLICATION_ACCESS_URL_INVALID');
+  }
   const durationMs = Date.now() - startTime;
 
   const receipt = {
@@ -277,7 +307,7 @@ export async function publishSession(options) {
     sessionId,
     revisionId,
     publicToken: receiptData.publicToken,
-    accessUrl: receiptData.accessUrl,
+    accessUrl: accessUrl.href,
     photosCount: manifest.photos.length,
     blobsCount: finalStatus.readyBlobs,
     totalBytes: totalBytesUploaded,

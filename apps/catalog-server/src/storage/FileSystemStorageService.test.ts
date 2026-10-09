@@ -1,5 +1,5 @@
 import { createHash, randomUUID } from 'node:crypto';
-import { mkdtemp, rm } from 'node:fs/promises';
+import { mkdtemp, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { Readable } from 'node:stream';
@@ -139,6 +139,26 @@ describe('FileSystemStorageService & parseWebpMetadata', () => {
       const streamResult = await storage.getBlobStream(revisionId, blobId);
       expect(streamResult).not.toBeNull();
       expect(streamResult?.byteLength).toBe(webp.length);
+    });
+
+    it('does not trust a READY blob if its stored checksum no longer matches', async () => {
+      const revisionId = randomUUID();
+      const blobId = randomUUID();
+      const valid = createSyntheticVp8Webp(480, 360);
+      const sha256 = createHash('sha256').update(valid).digest('hex');
+      await storage.storeBlob(valid, {
+        revisionId,
+        blobId,
+        expectedSha256: sha256,
+        expectedByteLength: valid.length,
+        expectedWidth: 480,
+        expectedHeight: 360,
+      });
+      expect(await storage.hasBlob(revisionId, blobId, sha256, valid.length)).toBe(true);
+      const tampered = Buffer.from(valid);
+      tampered[tampered.length - 1] = (tampered[tampered.length - 1]! + 1) % 256;
+      await writeFile(storage.getBlobPath(revisionId, blobId), tampered);
+      expect(await storage.hasBlob(revisionId, blobId, sha256, valid.length)).toBe(false);
     });
 
     it('stores a valid WebP from a Readable stream', async () => {

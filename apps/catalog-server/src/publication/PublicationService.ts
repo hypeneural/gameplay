@@ -333,7 +333,12 @@ export class PublicationService {
 
     // Idempotent retry: already READY and confirmed on disk
     if (expected.state === 'READY') {
-      const exists = await this.storage.hasBlob(revisionId, blobId);
+      const exists = await this.storage.hasBlob(
+        revisionId,
+        blobId,
+        expected.sha256,
+        expected.byteLength,
+      );
       if (exists) {
         this.sendJson(response, 200, {
           blobId,
@@ -468,7 +473,7 @@ export class PublicationService {
       this.logger?.log('session_data_served', {
         requestId,
         method: 'GET',
-        path: `/s/${encodeURIComponent(token)}/data`,
+        path: '/s/:token/data',
         status: 200,
         durationMs: Date.now() - startTime,
         details: { sessionId: gallerySession.id, photosCount: gallerySession.photos.length },
@@ -537,7 +542,7 @@ export class PublicationService {
     this.logger?.log('private_media_served', {
       requestId,
       method: 'GET',
-      path: `/s/${encodeURIComponent(token)}/media/...`,
+      path: '/s/:token/media/:revisionId/:photoId/:variant',
       status: 200,
       durationMs: Date.now() - startTime,
       revisionId,
@@ -616,13 +621,7 @@ export class PublicationService {
       return;
     }
 
-    this.sendError(
-      response,
-      500,
-      'INTERNAL_ERROR',
-      error instanceof Error ? error.message : 'Internal error',
-      requestId,
-    );
+    this.sendError(response, 500, 'INTERNAL_ERROR', 'Internal server error', requestId);
   }
 
   private sendError(

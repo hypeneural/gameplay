@@ -1,6 +1,6 @@
 import { createHash, randomUUID } from 'node:crypto';
 import { createReadStream, createWriteStream } from 'node:fs';
-import { access, mkdir, readFile, rename, rm, stat, unlink, writeFile } from 'node:fs/promises';
+import { mkdir, readFile, rename, rm, stat, unlink, writeFile } from 'node:fs/promises';
 import { dirname, resolve } from 'node:path';
 import type { Readable } from 'node:stream';
 import { pipeline } from 'node:stream/promises';
@@ -98,7 +98,12 @@ export interface StoreBlobParams {
 
 export interface StorageService {
   storeBlob(data: Readable | Buffer, params: StoreBlobParams): Promise<VerifiedBlobConfirmation>;
-  hasBlob(revisionId: string, blobId: string): Promise<boolean>;
+  hasBlob(
+    revisionId: string,
+    blobId: string,
+    expectedSha256?: string,
+    expectedBytes?: number,
+  ): Promise<boolean>;
   getBlobPath(revisionId: string, blobId: string): string;
   getBlobStream(
     revisionId: string,
@@ -119,11 +124,22 @@ export class FileSystemStorageService implements StorageService {
     return resolve(this.storageDir, 'blobs', revisionId, `${blobId}.webp`);
   }
 
-  async hasBlob(revisionId: string, blobId: string): Promise<boolean> {
+  async hasBlob(
+    revisionId: string,
+    blobId: string,
+    expectedSha256?: string,
+    expectedBytes?: number,
+  ): Promise<boolean> {
     try {
-      const p = this.getBlobPath(revisionId, blobId);
-      await access(p);
-      return true;
+      const filePath = this.getBlobPath(revisionId, blobId);
+      const fileStat = await stat(filePath);
+      if (!fileStat.isFile() || (expectedBytes !== undefined && fileStat.size !== expectedBytes)) {
+        return false;
+      }
+      if (expectedSha256 === undefined) return true;
+      const hash = createHash('sha256');
+      for await (const chunk of createReadStream(filePath)) hash.update(chunk);
+      return hash.digest('hex') === expectedSha256.toLowerCase();
     } catch {
       return false;
     }
