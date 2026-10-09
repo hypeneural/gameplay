@@ -76,6 +76,9 @@ location = / {
     add_header X-Robots-Tag "noindex, nofollow" always;
 }
 
+location = /demo { return 302 /; }
+location = /demo/ { return 302 /; }
+
 location = /demo/fotos {
     try_files /index.html =404;
     add_header Cache-Control "no-store" always;
