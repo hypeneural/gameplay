@@ -1,0 +1,983 @@
+{
+  "openapi": "3.1.1",
+  "info": {
+    "title": "Estúdio Evydência — Photo Publication MVP v1 (CONTRACT ONLY)",
+    "version": "1.0.0-draft",
+    "description": "Planned endpoints; NOT deployed. One CRM order = one gallery; 3 SQLite tables; 5 private publication endpoints and 2 public read endpoints. Endpoint auth and bytes must be implemented and tested before real customer data."
+  },
+  "servers": [
+    {
+      "url": "https://jogos.fotosdenatal.com",
+      "description": "Public read routes only. /internal never exposed via this host."
+    },
+    {
+      "url": "https://publisher.internal.example.invalid",
+      "description": "Illustrative private Tailscale/TLS origin; resolve an approved actual origin outside Git."
+    }
+  ],
+  "tags": [
+    {
+      "name": "Publisher",
+      "description": "Private authenticated endpoints, inaccessible through public Caddy"
+    },
+    {
+      "name": "Gallery",
+      "description": "Capability URL only; no public uploads"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "publisherBearer": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "Secret scoped to private publisher over HTTPS on an approved VPN; never the customer link token."
+      }
+    },
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "code",
+          "message",
+          "requestId"
+        ],
+        "properties": {
+          "code": {
+            "type": "string",
+            "enum": [
+              "INVALID_MANIFEST",
+              "INVALID_MEDIA",
+              "PUBLISHER_UNAUTHORIZED",
+              "SESSION_NOT_FOUND",
+              "REVISION_NOT_FOUND",
+              "STALE_REVISION",
+              "IDEMPOTENCY_CONFLICT",
+              "UPLOAD_INCOMPLETE",
+              "QUOTA_EXCEEDED",
+              "RATE_LIMITED",
+              "INTERNAL_ERROR"
+            ]
+          },
+          "message": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      },
+      "SessionResolve": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "crmOrderUuid"
+        ],
+        "properties": {
+          "crmOrderUuid": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      },
+      "ResolvedSession": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "sessionId",
+          "activeRevisionId",
+          "status"
+        ],
+        "properties": {
+          "sessionId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "activeRevisionId": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "ACTIVE",
+              "REVOKED"
+            ]
+          }
+        }
+      },
+      "PublicationManifest": {
+        "$ref": "./photo-publication-manifest-v1.schema.json"
+      },
+      "PublicationState": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "revisionId",
+          "sessionId",
+          "state",
+          "expectedBlobs",
+          "readyBlobs",
+          "pendingBlobIds"
+        ],
+        "properties": {
+          "revisionId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "sessionId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "STAGED",
+              "ACTIVE",
+              "FAILED"
+            ]
+          },
+          "expectedBlobs": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "readyBlobs": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "pendingBlobIds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        }
+      },
+      "ActivationRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "expectedActiveRevisionId"
+        ],
+        "properties": {
+          "expectedActiveRevisionId": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        }
+      },
+      "ActivationReceipt": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "sessionId",
+          "revisionId",
+          "state",
+          "photoCount",
+          "accessUrl"
+        ],
+        "properties": {
+          "sessionId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "revisionId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "state": {
+            "const": "ACTIVE"
+          },
+          "photoCount": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "accessUrl": {
+            "type": "string",
+            "format": "uri",
+            "description": "SECRET customer capability URL. Never log or send before operator-approved delivery."
+          }
+        }
+      },
+      "GalleryPhoto": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "width",
+          "height",
+          "aspectRatio",
+          "orientation",
+          "variants"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "width": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "height": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "aspectRatio": {
+            "type": "number",
+            "exclusiveMinimum": 0
+          },
+          "orientation": {
+            "type": "string",
+            "enum": [
+              "portrait",
+              "landscape",
+              "square"
+            ]
+          },
+          "variants": {
+            "type": "object",
+            "required": [
+              "thumb",
+              "card",
+              "game"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "thumb": {
+                "type": "string"
+              },
+              "card": {
+                "type": "string"
+              },
+              "game": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      },
+      "GallerySession": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "publicToken",
+          "displayName",
+          "photos"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "publicToken": {
+            "type": "string"
+          },
+          "displayName": {
+            "type": "string"
+          },
+          "photos": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "$ref": "#/components/schemas/GalleryPhoto"
+            }
+          }
+        }
+      }
+    }
+  },
+  "paths": {
+    "/internal/v1/sessions/resolve": {
+      "post": {
+        "tags": [
+          "Publisher"
+        ],
+        "operationId": "resolveSession",
+        "summary": "Resolve/create exactly one session for a validated CRM order UUID",
+        "security": [
+          {
+            "publisherBearer": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SessionResolve"
+              },
+              "example": {
+                "crmOrderUuid": "33333333-3333-4333-8333-333333333333"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "JSON",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResolvedSession"
+                },
+                "example": {
+                  "sessionId": "11111111-1111-4111-8111-111111111111",
+                  "activeRevisionId": null,
+                  "status": "ACTIVE"
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "JSON",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResolvedSession"
+                },
+                "example": {
+                  "sessionId": "11111111-1111-4111-8111-111111111111",
+                  "activeRevisionId": null,
+                  "status": "ACTIVE"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Publisher access denied.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "code": "PUBLISHER_UNAUTHORIZED",
+                  "message": "Publisher access denied.",
+                  "requestId": "33333333-3333-4333-8333-333333333333"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "CRM order could not be verified.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "code": "SESSION_NOT_FOUND",
+                  "message": "CRM order could not be verified.",
+                  "requestId": "33333333-3333-4333-8333-333333333333"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "CRM verification unavailable; fail closed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "code": "INTERNAL_ERROR",
+                  "message": "CRM verification unavailable; fail closed.",
+                  "requestId": "33333333-3333-4333-8333-333333333333"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/internal/v1/publications": {
+      "post": {
+        "tags": [
+          "Publisher"
+        ],
+        "operationId": "beginPublication",
+        "summary": "Create/replay immutable staged revision from strict publication manifest",
+        "security": [
+          {
+            "publisherBearer": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PublicationManifest"
+              },
+              "example": {
+                "schemaVersion": 1,
+                "requestId": "33333333-3333-4333-8333-333333333333",
+                "sessionId": "11111111-1111-4111-8111-111111111111",
+                "expectedActiveRevisionId": null,
+                "recipeKey": "recipe-1-webp82-srgb-inside",
+                "photos": [
+                  {
+                    "photoId": "photo-01",
+                    "contentHash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+                    "sortIndex": 0,
+                    "width": 1600,
+                    "height": 1200,
+                    "variants": {
+                      "thumb": {
+                        "blobId": "22222222-2222-4222-8222-222222222222",
+                        "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                        "byteLength": 123456,
+                        "width": 480,
+                        "height": 360
+                      },
+                      "card": {
+                        "blobId": "33333333-3333-4333-8333-333333333333",
+                        "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                        "byteLength": 123456,
+                        "width": 800,
+                        "height": 600
+                      },
+                      "game": {
+                        "blobId": "44444444-4444-4444-8444-444444444444",
+                        "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                        "byteLength": 123456,
+                        "width": 1600,
+                        "height": 1200
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/paths/~1internal~1v1~1publications/post/responses/201"
+          },
+          "201": {
+            "description": "JSON",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PublicationState"
+                },
+                "example": {
+                  "revisionId": "22222222-2222-4222-8222-222222222222",
+                  "sessionId": "11111111-1111-4111-8111-111111111111",
+                  "state": "STAGED",
+                  "expectedBlobs": 3,
+                  "readyBlobs": 0,
+                  "pendingBlobIds": [
+                    "22222222-2222-4222-8222-222222222222",
+                    "33333333-3333-4333-8333-333333333333",
+                    "44444444-4444-4444-8444-444444444444"
+                  ]
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Request replay payload differs or active revision changed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "code": "IDEMPOTENCY_CONFLICT",
+                  "message": "Request replay payload differs or active revision changed.",
+                  "requestId": "33333333-3333-4333-8333-333333333333"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Manifest rejected.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "code": "INVALID_MANIFEST",
+                  "message": "Manifest rejected.",
+                  "requestId": "33333333-3333-4333-8333-333333333333"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/internal/v1/publications/{revisionId}/blobs/{blobId}": {
+      "put": {
+        "tags": [
+          "Publisher"
+        ],
+        "operationId": "uploadBlob",
+        "summary": "Upload complete WebP derivative; retry identical blob after interruption",
+        "security": [
+          {
+            "publisherBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "revisionId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "blobId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "X-Content-SHA256",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "image/webp": {
+              "schema": {
+                "type": "string",
+                "format": "binary"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Same bytes already uploaded (idempotent)."
+          },
+          "201": {
+            "description": "JSON",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "blobId",
+                    "state",
+                    "byteLength"
+                  ],
+                  "properties": {
+                    "blobId": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "state": {
+                      "const": "READY"
+                    },
+                    "byteLength": {
+                      "type": "integer"
+                    }
+                  }
+                },
+                "example": {
+                  "blobId": "33333333-3333-4333-8333-333333333333",
+                  "state": "READY",
+                  "byteLength": 123456
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Publisher access denied.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "code": "PUBLISHER_UNAUTHORIZED",
+                  "message": "Publisher access denied.",
+                  "requestId": "33333333-3333-4333-8333-333333333333"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Blob already registered with different bytes or revision not staged.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "code": "INVALID_MEDIA",
+                  "message": "Blob already registered with different bytes or revision not staged.",
+                  "requestId": "33333333-3333-4333-8333-333333333333"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Blob is too large.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "code": "QUOTA_EXCEEDED",
+                  "message": "Blob is too large.",
+                  "requestId": "33333333-3333-4333-8333-333333333333"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Hash, format or dimensions rejected.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "code": "INVALID_MEDIA",
+                  "message": "Hash, format or dimensions rejected.",
+                  "requestId": "33333333-3333-4333-8333-333333333333"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/internal/v1/publications/{revisionId}": {
+      "get": {
+        "tags": [
+          "Publisher"
+        ],
+        "operationId": "getPublication",
+        "summary": "Retrieve progress and pending blob IDs for retry",
+        "security": [
+          {
+            "publisherBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "revisionId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "JSON",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PublicationState"
+                },
+                "example": {
+                  "revisionId": "22222222-2222-4222-8222-222222222222",
+                  "sessionId": "11111111-1111-4111-8111-111111111111",
+                  "state": "STAGED",
+                  "expectedBlobs": 3,
+                  "readyBlobs": 2,
+                  "pendingBlobIds": [
+                    "44444444-4444-4444-8444-444444444444"
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Revision does not exist.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "code": "REVISION_NOT_FOUND",
+                  "message": "Revision does not exist.",
+                  "requestId": "33333333-3333-4333-8333-333333333333"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/internal/v1/publications/{revisionId}/activate": {
+      "post": {
+        "tags": [
+          "Publisher"
+        ],
+        "operationId": "activatePublication",
+        "summary": "Check all blobs then CAS active revision in one transaction",
+        "security": [
+          {
+            "publisherBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "revisionId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ActivationRequest"
+              },
+              "example": {
+                "expectedActiveRevisionId": null
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "JSON",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ActivationReceipt"
+                },
+                "example": {
+                  "sessionId": "11111111-1111-4111-8111-111111111111",
+                  "revisionId": "22222222-2222-4222-8222-222222222222",
+                  "state": "ACTIVE",
+                  "photoCount": 1,
+                  "accessUrl": "https://jogos.fotosdenatal.com/s/EXAMPLE_OPAQUE_CAPABILITY_NOT_REAL"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Active revision changed since creation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "code": "STALE_REVISION",
+                  "message": "Active revision changed since creation.",
+                  "requestId": "33333333-3333-4333-8333-333333333333"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Revision is missing verified blobs.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "code": "UPLOAD_INCOMPLETE",
+                  "message": "Revision is missing verified blobs.",
+                  "requestId": "33333333-3333-4333-8333-333333333333"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/s/{token}/data": {
+      "get": {
+        "tags": [
+          "Gallery"
+        ],
+        "operationId": "getGallerySession",
+        "summary": "Authorized current gallery session in existing Session browser shape (no fixtures)",
+        "security": [],
+        "parameters": [
+          {
+            "name": "token",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 16,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "JSON",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GallerySession"
+                },
+                "example": {
+                  "id": "11111111-1111-4111-8111-111111111111",
+                  "publicToken": "EXAMPLE_OPAQUE_CAPABILITY_NOT_REAL",
+                  "displayName": "Seu Álbum de Natal",
+                  "photos": [
+                    {
+                      "id": "photo-01",
+                      "width": 1600,
+                      "height": 1200,
+                      "aspectRatio": 1.333333,
+                      "orientation": "landscape",
+                      "variants": {
+                        "thumb": "/s/EXAMPLE_OPAQUE_CAPABILITY_NOT_REAL/media/22222222-2222-4222-8222-222222222222/photo-01/thumb",
+                        "card": "/s/EXAMPLE_OPAQUE_CAPABILITY_NOT_REAL/media/22222222-2222-4222-8222-222222222222/photo-01/card",
+                        "game": "/s/EXAMPLE_OPAQUE_CAPABILITY_NOT_REAL/media/22222222-2222-4222-8222-222222222222/photo-01/game"
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Session link is unknown, revoked or unpublished.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "code": "SESSION_NOT_FOUND",
+                  "message": "Session link is unknown, revoked or unpublished.",
+                  "requestId": "33333333-3333-4333-8333-333333333333"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/s/{token}/media/{revisionId}/{photoId}/{variant}": {
+      "get": {
+        "tags": [
+          "Gallery"
+        ],
+        "operationId": "getPrivateMedia",
+        "summary": "Authorize token + current revision + photoId + variant then internal Nginx redirect",
+        "security": [],
+        "parameters": [
+          {
+            "name": "token",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 16,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            }
+          },
+          {
+            "name": "revisionId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "photoId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 128
+            }
+          },
+          {
+            "name": "variant",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "thumb",
+                "card",
+                "game"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Private WebP derivative, no-store, served after backend authorization by Nginx internal redirect.",
+            "content": {
+              "image/webp": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Unauthorized or stale revision/media.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "code": "SESSION_NOT_FOUND",
+                  "message": "Unauthorized or stale revision/media.",
+                  "requestId": "33333333-3333-4333-8333-333333333333"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

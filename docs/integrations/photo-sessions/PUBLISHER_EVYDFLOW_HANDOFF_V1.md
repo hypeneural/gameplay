@@ -1,5 +1,7 @@
 # Contrato de upload v1 — preparação Node e integração futura Python
 
+**Diretriz mais recente para o MVP:** [Point Graph mínimo operacional](MVP_POINT_GRAPH_APIS_DB_2026-10-08.md) com JSON/SQL/OpenAPI e roteiro Node manual primeiro. A automação Python é opt-in e pós-MVP.
+
 **Fase:** preflight puro e contratos; não é API de produção, não cria SQLite, mídia pública ou sessão ACTIVE. Fonte do código em `apps/catalog-server/src/publication/publicationManifest.ts`; schema interoperável `docs/contracts/photo-publication-manifest-v1.schema.json`. O TS impõe invariantes entre itens (IDs duplicados, sortIndex contíguo e tamanho total), não expressáveis apenas no JSON Schema.
 
 ## Evidência forense cruzada
