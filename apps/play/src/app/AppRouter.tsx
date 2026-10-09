@@ -487,7 +487,7 @@ export function AppRouter(): React.JSX.Element {
     );
   }
 
-  if (releaseMode === 'production-disabled') {
+  if (releaseMode === 'production-disabled' && !isPublicDemo) {
     return (
       <main className="shell unavailable-game" role="alert">
         <p className="eyebrow">PUBLICAÇÃO PROTEGIDA</p>
