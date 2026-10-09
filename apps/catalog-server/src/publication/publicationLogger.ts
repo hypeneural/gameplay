@@ -69,8 +69,14 @@ export class StructuredPublicationLogger implements PublicationLogger {
       }
     }
     return {
-      ...params,
+      requestId: params.requestId,
+      ...(params.method ? { method: params.method } : {}),
       ...(path === undefined ? {} : { path }),
+      ...(params.status === undefined ? {} : { status: params.status }),
+      ...(params.durationMs === undefined ? {} : { durationMs: params.durationMs }),
+      ...(params.revisionId === undefined ? {} : { revisionId: params.revisionId }),
+      ...(params.blobId === undefined ? {} : { blobId: params.blobId }),
+      ...(params.byteLength === undefined ? {} : { byteLength: params.byteLength }),
       ...(params.details === undefined ? {} : { details }),
     };
   }
