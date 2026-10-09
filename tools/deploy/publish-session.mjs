@@ -56,19 +56,23 @@ async function checkpointPublication(options, built) {
     !saved ||
     !UUID_PATTERN.test(saved.requestId ?? '') ||
     fingerprintPreparedManifest(saved) !== sourceHash
-  ) throw new Error('PUBLISHER_CHECKPOINT_CONFLICT');
+  ) {
+    throw new Error('PUBLISHER_CHECKPOINT_CONFLICT');
+  }
   const blobFileMap = new Map();
   for (let i = 0; i < built.manifest.photos.length; i++) {
     const current = built.manifest.photos[i];
     const previous = saved.photos[i];
-    if (!previous || previous.photoId !== current.photoId)
+    if (!previous || previous.photoId !== current.photoId) {
       throw new Error('PUBLISHER_CHECKPOINT_CONFLICT');
+    }
     for (const name of ['thumb', 'card', 'game']) {
       const from = current.variants[name].blobId;
       const to = previous.variants?.[name]?.blobId;
       const localFile = built.blobFileMap.get(from);
-      if (!to || !UUID_PATTERN.test(to) || !localFile)
+      if (!to || !UUID_PATTERN.test(to) || !localFile) {
         throw new Error('PUBLISHER_CHECKPOINT_CONFLICT');
+      }
       blobFileMap.set(to, localFile);
     }
   }
