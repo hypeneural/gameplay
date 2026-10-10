@@ -5,7 +5,7 @@
 - Repositório `hypeneural/gameplay`; esta branch parte de `feat/public-demo-root-and-e2e-handoff-20261009` (PR #20), que parte de PR #19, depois #18 → #16 → #15. **Não assumir que `main` contém essas alterações**: o default GitHub observado anteriormente era `codex/puzzle-native-like-v1`.
 - Já existia geração de HTML OG server-side em `apps/catalog-server/src/socialPreview.ts` e `CatalogServer.ts`; `filePreviewRepository.ts` usa JSON privado separado do SQLite. Nginx já possui `/_catalog_social` genérico e `/_customer_social` via location internal.
 - Nesta branch: metadata OG da home `/`, `/demo/fotos` e `/demo/game/:id` gerado antes do React; `og:image:secure_url`, `twitter:card`; título orientado à rota e imagem versionada de sessão; suporte JPEG e teste de revogação da sessão no SQLite; `tools/media-pipeline/src/socialCover.ts` é um gerador **offline privativo** 1200×630, consentido. A configuração dinâmica da seleção de foto e do consentimento **ainda precisa ser ligada ao CRM/publicador**.
-- Arte nova aprovada no escopo visual foi **gerada com ImageGen** e exportada como `evydencia-og-natal-v2.webp` (1200×630 / 76,6 KiB aprox.) e `evydencia-og-natal-v2.jpg` (1200×630 / 134 KiB aprox.) no artefato da conversa. O código-fonte vetorial correspondente está no repo em `assets-src/catalog-social/evydencia-christmas-v2-template.svg`. **Até o binário WebP/JPEG ser copiado para o repo a partir do artefato e homologado, o OG público continua apontando para `evydencia-christmas-v1.webp` existente.** Não renomear um SVG para `.webp` nem apontar WhatsApp a SVG antes de validar compatibilidade.
+- A capa **pública V2 efetivamente versionada no GitHub** é `apps/catalog-server/public/social/evydencia-christmas-v2.webp`, WebP 1200×630 com **42.040 bytes**, SHA-256 `41cf05bbcbf6e017aa53d1d11f466b91423b6da59737c98607447c628ddff9da`. Foi renderizada de forma reproduzível a partir de `assets-src/catalog-social/evydencia-christmas-v2-template.svg` usando `tools/media-pipeline/src/renderPublicSocialArt.ts` e upload via blob GitHub. A imagem sintética fotográfica de ImageGen exportada como `evydencia-og-natal-v2.webp` (76.600 bytes) e JPEG (134.292 bytes) permanece como **alternativa de arte no pacote da conversa**, e **não deve ser confundida** com o WebP vetorial V2 já commitado. A constante OG agora aponta V2; registros genéricos V1 continuam válidos na configuração privada para transição.
 - Não há fotos reais de clientes neste patch; `deploy/readiness.json` mantém pilotReady/customerDataAllowed/automaticDeliveryAllowed=false. Nenhuma implantação/alteração de Caddy/live executada.
 
 ## Recomendação de formato
@@ -20,7 +20,7 @@
 
 | Compartilhamento   | Canonical OG             | Og:image                                                                                 |
 | ------------------ | ------------------------ | ---------------------------------------------------------------------------------------- |
-| Home pública       | `/`                      | `/social/evydencia-christmas-v1.webp` (substituir por V2 após upload de binário e teste) |
+| Home pública       | `/`                      | `/social/evydencia-christmas-v2.webp` (arquivo binário já no GitHub)              |
 | Galeria demo       | `/demo/fotos`            | mesma arte pública                                                                       |
 | Jogo demo          | `/demo/game/:id`         | mesma arte pública                                                                       |
 | Hub do cliente     | `/s/:token`              | `/s/:token/social-preview?v=:revision`                                                   |
@@ -42,7 +42,7 @@
 
 ## Nginx, Caddy e HTTPS
 
-- `/social/evydencia-christmas-v1.webp`: asset genérico e público, única rota pública de arte geral v1; `/_catalog_social/*.webp` continua `internal`.
+- `/social/evydencia-christmas-v2.webp`: nova arte genérica pública. A rota pública V1 e a interna `/_catalog_social/evydencia-christmas-v1.webp` permanecem para configurações/cache antigos; **ambas são empacotadas no release**. Os arquivos de cliente continuam apenas em `/_customer_social` com `internal`.
 - `/_customer_social/:opaqueKey.jpg` ou `.webp`: Nginx `internal` + `X-Accel-Redirect`, deve existir storage consistente e apenas derivado social aprovado; não permitir URL pública direta.
 - Garantir que Caddy público não reescreva ou perca querystring `?v=...` e não registre tokens em access logs. Responder `Content-Type` exato e tamanho físico 1200×630; testar `GET`, `HEAD` e redirects.
 - Bots sem cookie/login não conseguem renderizar imagem que exija sessão web autenticada. Isso é intencional: o token de acesso+consentimento controlam a prévia, e plataformas sociais podem guardar os bytes externamente.
@@ -65,11 +65,12 @@ pnpm release:verify
 - Abrir asset absoluto pelo GET anônimo, verificar `200`, `Content-Type`, bytes e dimensões. Requisição a `/internal/v1/*` pública deve falhar.
 - Criar sessão sintética autorizada na VPS e confirmar OG em hub, galeria e jogo; testar preview `/s/:token/social-preview` e `?v=...` com 200; revogar e confirmar 404. Nunca publicar cliente real em staging.
 - Validar link no WhatsApp de Android e iOS físicos e com ferramenta Meta Sharing Debugger se disponível; resultados e screenshots com token oculto.
-- `V2` gerada localmente **não** deve virar imagem pública de cliente sem consentimento; trata-se de foto sintética de demo criada por IA.
+- Capa V2 versionada é arte demonstrativa, sem fotografia real de cliente. O material fotográfico alternativo gerado por IA também não é uma foto de cliente; consentimento específico continua necessário para imagens reais.
 
-## Integração de imagem V2 e versão de cache
+## V2 no repositório e critérios de deploy
 
-1. Operador transfere o artefato `evydencia-og-natal-v2.webp` para o clone **local** (ferramenta AG): `apps/catalog-server/public/social/evydencia-christmas-v2.webp`. Conferir `1200x630`, SHA-256 e tamanho. Não commitar artefatos gigantes/outras mídias.
-2. Garantir empacotamento do release (`release:staging`) para o novo asset e localização Nginx pública exata `/social/evydencia-christmas-v2.webp`, mais caminho interno `/_catalog_social/evydencia-christmas-v2.webp`.
-3. Alterar a constante `genericPreviewVersion` de `evydencia-christmas-v1` para `evydencia-christmas-v2`, junto de configs privadas válidas e testes; manter V1 durante migração se houver links cacheados.
-4. Executar render de HTML, `pnpm check`, release e smoke (sem cliente). **Não** alterar `pilotReady` para a promoção da demo.
+1. **Já concluído na branch:** o binário `apps/catalog-server/public/social/evydencia-christmas-v2.webp` foi gerado via Sharp e incluído no Git; `genericPreviewVersion` agora aponta V2, e V1 permanece aceito para evitar que o JSON privado existente cause falha de inicialização.
+2. **Release:** `pnpm release:staging` empacota V1 + V2; `pnpm release:verify` exige ambas. Nginx Docker e o template alternativo incluem rotas públicas e internas exatas para as duas versões.
+3. **Pendente:** executar CI completo com arte incluída, smoke de Nginx/Caddy e compartilhamento real em WhatsApp Android/iOS. Nada disso foi implantado na VPS durante a auditoria.
+4. **Opcional:** substituir o aspecto da V2 pela arte fotográfica ImageGen incluída no pacote da conversa, após conferência de hash/tamanho, autorização de uso promocional, revisão visual e **nova revisão de asset** (não sobrescrever silenciosamente a URL já cacheada).
+5. **Nunca** alterar `pilotReady` ou `customerDataAllowed` para publicar apenas a demo OG genérica.
