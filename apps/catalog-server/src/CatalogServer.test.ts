@@ -105,7 +105,7 @@ describe('CatalogServer', () => {
     );
     expect(html).toContain('<meta property="og:type" content="website" />');
     expect(html).toContain(
-      '<meta property="og:image" content="https://jogos.exemplo.test/s/local-demo-token/social-preview" />',
+      '<meta property="og:image" content="https://jogos.exemplo.test/s/local-demo-token/social-preview?v=evydencia-christmas-v1" />',
     );
     expect(html).toContain('og:image:alt');
     expect(html).not.toContain('backend-required');
@@ -179,6 +179,28 @@ describe('CatalogServer', () => {
 
     expect(response.headers.get('x-accel-redirect')).toBe(
       '/_customer_social/social-preview-4Q4bB7GmT2pX.webp',
+    );
+  });
+
+  it('uses JPEG only for granted customer derivatives, with versioned OG image URLs', async () => {
+    const customerPreview: SocialPreviewRecord = {
+      status: 'active',
+      preview: {
+        kind: 'customer-photo',
+        consent: 'granted',
+        derivativeKey: 'social-preview-4Q4bB7GmT2pX',
+        version: 'social-v3',
+        format: 'jpeg',
+      },
+    };
+    const baseUrl = await startServer(customerPreview, vi.fn(async () => undefined));
+    const html = await (await fetch(`${baseUrl}/s/local-demo-token/fotos`)).text();
+    expect(html).toContain('<meta property="og:image:type" content="image/jpeg" />');
+    expect(html).toContain('/s/local-demo-token/social-preview?v=social-v3');
+    const image = await fetch(`${baseUrl}/s/local-demo-token/social-preview?v=social-v3`);
+    expect(image.status).toBe(200);
+    expect(image.headers.get('x-accel-redirect')).toBe(
+      '/_customer_social/social-preview-4Q4bB7GmT2pX.jpg',
     );
   });
 
