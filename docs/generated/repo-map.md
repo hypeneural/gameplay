@@ -63,6 +63,7 @@
 │   │   ├── public
 │   │   │   └── social
 │   │   │       ├── evydencia-christmas-v1.webp
+│   │   │       ├── evydencia-christmas-v2.jpg
 │   │   │       └── evydencia-christmas-v2.webp
 │   │   ├── scripts
 │   │   │   └── copy-migrations.mjs
