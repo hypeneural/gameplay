@@ -3,7 +3,7 @@ import { readdir, stat } from 'node:fs/promises';
 import { extname, join } from 'node:path';
 
 const supportedExtensions = new Set(['.jpg', '.jpeg', '.png', '.webp']);
-const ignoredPrefixPattern = /^\s*(calend[aá]rio|globo)/i;
+const ignoredPrefixPattern = /^\s*(calend[aá]rio|globo|chaveiro)/i;
 
 interface FilteredSourceFile {
   readonly sourcePath: string;
@@ -43,7 +43,7 @@ function opaquePhotoIdFromSourceName(name: string): string {
  * Filters source directories strictly according to business requirements:
  * 1. Only processes images directly in the root of the source directory.
  * 2. Subdirectories are ignored (and counted).
- * 3. Files whose names start with Calendário, Calendario, or Globo (case-insensitive,
+ * 3. Files whose names start with Calendário, Calendario, Globo, or Chaveiro (case-insensitive,
  *    leading spaces tolerated) are ignored. Names with these words in the middle are preserved.
  * 4. Only JPEG, PNG, and WebP extensions are supported; other files (e.g. .zip) are counted as incompatible.
  * 5. Original files are never modified, moved, renamed, or compressed.
