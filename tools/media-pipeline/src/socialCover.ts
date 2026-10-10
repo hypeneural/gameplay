@@ -72,7 +72,8 @@ export async function generatePrivateSocialCover(
     .toColorspace('srgb')
     .toBuffer();
 
-  const decoration = Buffer.from(`<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  const decoration =
+    Buffer.from(`<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
     <defs>
       <linearGradient id="shade"><stop offset="0" stop-color="#102f28" stop-opacity=".96"/>
         <stop offset=".48" stop-color="#102f28" stop-opacity=".73"/>
@@ -91,10 +92,7 @@ export async function generatePrivateSocialCover(
   let encoded: Buffer | undefined;
   for (const quality of [82, 74, 66, 58, 50, 42, 34]) {
     const candidate = await sharp(background)
-      .composite([
-        { input: portrait, left: 654, top: 65 },
-        { input: decoration },
-      ])
+      .composite([{ input: portrait, left: 654, top: 65 }, { input: decoration }])
       .jpeg({ quality, mozjpeg: true, chromaSubsampling: '4:2:0' })
       .toBuffer();
     if (candidate.byteLength <= maxBytes) {
