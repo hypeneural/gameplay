@@ -2,6 +2,7 @@ import { createServer } from 'node:http';
 import type { IncomingMessage, Server, ServerResponse } from 'node:http';
 import {
   isOpaquePublicToken,
+  publicDemoSocialMetadata,
   renderSessionHtml,
   resolvePreview,
   socialMetadata,
@@ -78,6 +79,21 @@ async function handleRequest(
     return;
   }
 
+  // WhatsApp/Meta crawlers do not execute React. The public demo gets server
+  // HTML Open Graph tags without ever resolving a customer capability token.
+  const demoPath = parsePublicDemoPath(requestUrl.pathname);
+  if (demoPath) {
+    const shell = await dependencies.loadApplicationShell();
+    const html = renderSessionHtml(shell, publicDemoSocialMetadata(dependencies.publicOrigin, demoPath));
+    response.setHeader('Content-Type', 'text/html; charset=utf-8');
+    response.setHeader('Cache-Control', 'no-store');
+    response.setHeader('Referrer-Policy', 'no-referrer');
+    response.setHeader('X-Robots-Tag', 'noindex, nofollow, noarchive');
+    response.setHeader('X-Content-Type-Options', 'nosniff');
+    send(response, 200, html, request.method === 'HEAD');
+    return;
+  }
+
   const route = parseSocialRoute(requestUrl.pathname);
   if (!route) {
     sendNotFound(response);
@@ -127,6 +143,12 @@ async function handleRequest(
   response.setHeader('X-Robots-Tag', 'noindex, nofollow, noarchive');
   response.setHeader('X-Content-Type-Options', 'nosniff');
   send(response, 200, html, request.method === 'HEAD');
+}
+
+function parsePublicDemoPath(pathname: string): string | undefined {
+  if (pathname === '/' || pathname === '/demo/fotos') return pathname;
+  if (/^\/demo\/game\/[a-z0-9-]{1,64}$/.test(pathname)) return pathname;
+  return undefined;
 }
 
 type SocialRoute = {
