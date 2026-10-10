@@ -20,7 +20,14 @@ export async function buildGenericSocialPreview(
   svgSource = genericSocialSvgSource,
   outputPath = genericSocialWebpOutput,
   jpegOutputPath = outputPath.replace(/\.webp$/, '.jpg'),
-): Promise<{ bytes: number; sha256: string; jpegBytes: number; jpegSha256: string; width: number; height: number }> {
+): Promise<{
+  bytes: number;
+  sha256: string;
+  jpegBytes: number;
+  jpegSha256: string;
+  width: number;
+  height: number;
+}> {
   await mkdir(dirname(outputPath), { recursive: true });
   const source = await readFile(svgSource);
   const output = await sharp(source, { density: 96 })

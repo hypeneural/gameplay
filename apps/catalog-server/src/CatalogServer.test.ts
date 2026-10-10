@@ -122,7 +122,10 @@ describe('CatalogServer', () => {
       status: 'active',
       preview: { kind: 'generic', version: 'evydencia-christmas-v1' },
     };
-    const baseUrl = await startServer(legacy, vi.fn(async () => undefined));
+    const baseUrl = await startServer(
+      legacy,
+      vi.fn(async () => undefined),
+    );
     const res = await fetch(`${baseUrl}/s/local-demo-token/social-preview`);
     expect(res.status).toBe(200);
     expect(res.headers.get('x-accel-redirect')).toBe(

@@ -44,9 +44,7 @@ const socialSources = [
   'evydencia-christmas-v1.webp',
   'evydencia-christmas-v2.webp',
   'evydencia-christmas-v2.jpg',
-].map((name) =>
-  join(repositoryRoot, 'apps', 'catalog-server', 'public', 'social', name),
-);
+].map((name) => join(repositoryRoot, 'apps', 'catalog-server', 'public', 'social', name));
 const socialConfigExampleSource = join(
   repositoryRoot,
   'apps',
