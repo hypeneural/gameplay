@@ -57,6 +57,9 @@ export interface SocialMetadata {
   readonly canonicalUrl: URL;
   readonly imageUrl: URL;
   readonly imageAlt: string;
+  readonly imageType: 'image/webp' | 'image/jpeg';
+  readonly title: string;
+  readonly description: string;
 }
 
 export function isOpaquePublicToken(value: string): boolean {
@@ -128,25 +131,47 @@ export function socialMetadata(
     canonicalUrl: new URL(canonicalPath, publicOrigin),
     imageUrl: new URL(`/s/${encodedToken}/social-preview`, publicOrigin),
     imageAlt: preview.alt,
+    imageType: 'image/webp',
+    title: titleForSocialRoute(canonicalPath),
+    description: 'Uma lembrança de Natal que vira brincadeira para toda a família.',
   };
 }
 
+/** Public homepage/preview: never backed by a CRM order, private token or photo. */
+export function publicDemoSocialMetadata(publicOrigin: URL, path: string): SocialMetadata {
+  return {
+    canonicalUrl: new URL(path, publicOrigin),
+    imageUrl: new URL(`/social/${genericPreviewVersion}.webp`, publicOrigin),
+    imageAlt: 'Arte ilustrada de Natal do Estúdio Evydência.',
+    imageType: 'image/webp',
+    title: titleForSocialRoute(path),
+    description: 'Explore os jogos e a galeria demonstrativa de Natal do Estúdio Evydência.',
+  };
+}
+
+function titleForSocialRoute(path: string): string {
+  if (path.endsWith('/fotos')) return 'Álbum de Natal — Estúdio Evydência';
+  if (path.includes('/game/')) return 'Jogos de Natal — Estúdio Evydência';
+  return 'Nosso Natal em Família — Estúdio Evydência';
+}
+
 function renderOpenGraphMetadata(metadata: SocialMetadata): string {
-  const title = 'Jogos de Natal — Estúdio Evydência';
-  const description = 'Uma lembrança de Natal que vira brincadeira para toda a família.';
   return [
     `<link rel="canonical" href="${escapeHtml(metadata.canonicalUrl.href)}" />`,
-    `<meta property="og:title" content="${title}" />`,
+    `<meta property="og:title" content="${escapeHtml(metadata.title)}" />`,
     '<meta property="og:type" content="website" />',
-    `<meta property="og:description" content="${description}" />`,
+    `<meta property="og:description" content="${escapeHtml(metadata.description)}" />`,
     `<meta property="og:url" content="${escapeHtml(metadata.canonicalUrl.href)}" />`,
     '<meta property="og:site_name" content="Estúdio Evydência" />',
     '<meta property="og:locale" content="pt_BR" />',
     `<meta property="og:image" content="${escapeHtml(metadata.imageUrl.href)}" />`,
-    '<meta property="og:image:type" content="image/webp" />',
+    `<meta property="og:image:secure_url" content="${escapeHtml(metadata.imageUrl.href)}" />`,
+    `<meta property="og:image:type" content="${metadata.imageType}" />`,
     '<meta property="og:image:width" content="1200" />',
     '<meta property="og:image:height" content="630" />',
     `<meta property="og:image:alt" content="${escapeHtml(metadata.imageAlt)}" />`,
+    '<meta name="twitter:card" content="summary_large_image" />',
+    `<meta name="twitter:image" content="${escapeHtml(metadata.imageUrl.href)}" />`,
   ].join('\n    ');
 }
 
