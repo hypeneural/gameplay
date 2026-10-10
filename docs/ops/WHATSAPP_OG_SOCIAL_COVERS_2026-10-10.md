@@ -18,14 +18,14 @@
 
 ## Roteamento e geração esperados
 
-| Compartilhamento   | Canonical OG             | Og:image                                                                                 |
-| ------------------ | ------------------------ | ---------------------------------------------------------------------------------------- |
-| Home pública       | `/`                      | `/social/evydencia-christmas-v2.webp` (arquivo binário já no GitHub)              |
-| Galeria demo       | `/demo/fotos`            | mesma arte pública                                                                       |
-| Jogo demo          | `/demo/game/:id`         | mesma arte pública                                                                       |
-| Hub do cliente     | `/s/:token`              | `/s/:token/social-preview?v=:revision`                                                   |
-| Galeria do cliente | `/s/:token/fotos`        | mesma imagem autorizada, título de álbum                                                 |
-| Jogo do cliente    | `/s/:token/game/:gameId` | mesma imagem autorizada, título de jogos                                                 |
+| Compartilhamento   | Canonical OG             | Og:image                                                             |
+| ------------------ | ------------------------ | -------------------------------------------------------------------- |
+| Home pública       | `/`                      | `/social/evydencia-christmas-v2.webp` (arquivo binário já no GitHub) |
+| Galeria demo       | `/demo/fotos`            | mesma arte pública                                                   |
+| Jogo demo          | `/demo/game/:id`         | mesma arte pública                                                   |
+| Hub do cliente     | `/s/:token`              | `/s/:token/social-preview?v=:revision`                               |
+| Galeria do cliente | `/s/:token/fotos`        | mesma imagem autorizada, título de álbum                             |
+| Jogo do cliente    | `/s/:token/game/:gameId` | mesma imagem autorizada, título de jogos                             |
 
 **Uma capa por sessão/revisão**, não uma geração por crawler nem por jogo. Mudou a fotografia ou consentimento? Criar nova revisão opaca; invalidar/retirar o asset anterior, mantendo o aviso de que caches das plataformas externas podem persistir.
 
