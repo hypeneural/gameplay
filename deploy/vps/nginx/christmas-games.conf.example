@@ -84,7 +84,7 @@ location = /demo/fotos {
     add_header Cache-Control "no-store" always;
 }
 
-location ~ ^/demo/game/[a-z0-9-]{1,64}$ {
+location ~ "^/demo/game/[a-z0-9-]{1,64}$" {
     try_files /index.html =404;
     add_header Cache-Control "no-store" always;
 }

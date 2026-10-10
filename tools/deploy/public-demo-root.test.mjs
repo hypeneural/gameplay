@@ -11,7 +11,7 @@ describe('public demo gateway boundary', () => {
       const nginx = await readFile(new URL(`../../${template}`, import.meta.url), 'utf8');
       expect(nginx).toMatch(/location = \/ \{/);
       expect(nginx).toContain('location = /demo/fotos');
-      expect(nginx).toMatch(/location ~ \^\/demo\/game\//);
+      expect(nginx).toMatch(/location ~ "?\^\/demo\/game\//);
       expect(nginx).toMatch(/location \/ \{\s*return 404;/);
       if (template.includes('/docker/')) expect(nginx).toContain('/internal-media/');
     });
