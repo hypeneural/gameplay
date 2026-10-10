@@ -27,11 +27,14 @@ let publicationService: PublicationService | undefined;
 let sessionIsActive: ((token: string) => Promise<boolean>) | undefined;
 
 if (runtime.databasePath && runtime.publisherApiSecret) {
+  if (!runtime.serverSecret) {
+    throw new Error('CATALOG_SERVER_SECRET_MISSING');
+  }
   const db = openSqliteDatabase(runtime.databasePath);
   applyMigrations(db);
   const sessionRepository = new SqliteSessionRepository({
     db,
-    serverSecret: runtime.serverSecret ?? 'default-server-secret-change-in-production',
+    serverSecret: runtime.serverSecret,
     publicBaseUrl: runtime.publicOrigin.origin,
   });
   sessionIsActive = async (token) => (await sessionRepository.getActiveSession(token)) !== null;
