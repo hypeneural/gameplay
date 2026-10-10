@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#250712"/><stop offset=".56" stop-color="#5d111b"/><stop offset="1" stop-color="#15372b"/></linearGradient>
+    <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff2c6"/><stop offset=".49" stop-color="#d7a654"/><stop offset="1" stop-color="#fff0b5"/></linearGradient>
+    <radialGradient id="goldGlow"><stop offset="0" stop-color="#f1c976" stop-opacity=".27"/><stop offset="1" stop-color="#f1c976" stop-opacity="0"/></radialGradient>
+    <linearGradient id="slot" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#21463b"/><stop offset="1" stop-color="#12231f"/></linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <circle cx="1110" cy="70" r="330" fill="url(#goldGlow)"/>
+  <circle cx="170" cy="565" r="325" fill="url(#goldGlow)"/>
+  <path d="M0 42 H600 M0 590 H600" stroke="#a8773e" opacity=".45"/>
+  <g opacity=".32" stroke="#cfab65" fill="none" stroke-width="2">
+    <path d="M12 12 Q85 100 6 191 M50 5 Q105 80 20 147 M118 2 Q130 70 64 115"/>
+    <path d="M0 610 Q130 550 144 458 M10 582 Q83 570 101 492"/>
+  </g>
+  <g fill="#e6ba65" opacity=".74">
+    <circle cx="75" cy="97" r="3"/><circle cx="197" cy="60" r="2"/><circle cx="460" cy="65" r="3"/>
+    <circle cx="520" cy="170" r="2"/><circle cx="574" cy="386" r="3"/><circle cx="80" cy="485" r="2"/>
+    <circle cx="280" cy="573" r="2"/><circle cx="572" cy="548" r="2"/>
+  </g>
+  <text x="64" y="98" fill="#efd4a1" font-family="Georgia,serif" font-size="21" letter-spacing="7">ESTÚDIO</text>
+  <text x="63" y="151" fill="url(#gold)" font-family="Georgia,serif" font-size="52" font-style="italic">Evydência</text>
+  <path d="M65 174 H502" stroke="url(#gold)" stroke-width="1.4" opacity=".85"/>
+  <text x="65" y="215" fill="#f8e5cd" font-family="Arial,sans-serif" font-size="16" letter-spacing="4">FOTOGRAFIAS QUE VIRAM MEMÓRIAS</text>
+  <text x="58" y="321" fill="#fff7e8" font-family="Georgia,serif" font-size="82" font-weight="bold">Nosso Natal</text>
+  <text x="63" y="388" fill="url(#gold)" font-family="Georgia,serif" font-size="71" font-style="italic">em Família</text>
+  <text x="67" y="432" fill="#f2dcc5" font-family="Arial,sans-serif" font-size="21">Brinque, reviva e compartilhe</text>
+  <text x="67" y="462" fill="#f2dcc5" font-family="Arial,sans-serif" font-size="21">momentos especiais.</text>
+  <g transform="translate(65 511)" stroke="#e5c07a" stroke-width="2.3" fill="none">
+    <rect x="0" y="0" width="46" height="46" rx="10"/><path d="M12 15h9c-3-9 7-10 8-2v2h8v8c-8-2-10 6-3 8h3v7H12V15Z" stroke-linejoin="round"/>
+    <rect x="177" y="0" width="46" height="46" rx="10"/><rect x="188" y="12" width="24" height="21" rx="2"/><circle cx="207" cy="17" r="2"/><path d="m190 30 8-9 6 5 3-3 4 7"/>
+    <rect x="352" y="0" width="46" height="46" rx="10"/><path d="M363 20q-4 1-5 10l2 7 10-6h10l10 6 2-7q-1-9-5-10l-6 5h-12Z"/><path d="M369 23v10m-5-5h10m11-2h1m-4 6h1"/>
+  </g>
+  <g font-family="Arial,sans-serif" font-size="16" fill="#f7e2c2">
+    <text x="69" y="581">Quebra-cabeça</text><text x="244" y="581">Galeria</text><text x="421" y="581">Jogos</text>
+  </g>
+  <!-- Private photo window: composited after this layer by the local Sharp pipeline. -->
+  <rect x="655" y="61" width="492" height="507" rx="20" fill="url(#slot)"/>
+  <g fill="#d0bb91" opacity=".75"><text x="901" y="292" text-anchor="middle" font-family="Georgia,serif" font-size="27">Sua lembrança</text><text x="901" y="330" text-anchor="middle" font-family="Arial,sans-serif" font-size="16" letter-spacing="3">FOTO DA SESSÃO</text></g>
+</svg>
