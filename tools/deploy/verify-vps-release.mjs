@@ -32,6 +32,8 @@ for (const requiredPath of [
   'package.json',
   'web/index.html',
   'server/main.js',
+  'public/social/evydencia-christmas-v1.webp',
+  'public/social/evydencia-christmas-v2.webp',
   'ops/catalog.env.example',
   'ops/christmas-games-catalog.service.example',
   'ops/nginx/christmas-games.conf.example',
