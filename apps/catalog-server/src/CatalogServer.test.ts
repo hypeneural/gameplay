@@ -76,7 +76,7 @@ describe('CatalogServer', () => {
       expect(html).toContain(`https://jogos.exemplo.test${path}`);
       expect(html).toContain(title);
       expect(html).toContain(
-        '<meta property="og:image" content="https://jogos.exemplo.test/social/evydencia-christmas-v2.webp" />',
+        '<meta property="og:image" content="https://jogos.exemplo.test/social/evydencia-christmas-v2.jpg" />',
       );
       expect(html).toContain('<meta property="og:image:width" content="1200" />');
       expect(html).toContain('<meta property="og:image:height" content="630" />');
