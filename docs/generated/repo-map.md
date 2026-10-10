@@ -62,7 +62,8 @@
 │   │   ├── package.json
 │   │   ├── public
 │   │   │   └── social
-│   │   │       └── evydencia-christmas-v1.webp
+│   │   │       ├── evydencia-christmas-v1.webp
+│   │   │       └── evydencia-christmas-v2.webp
 │   │   ├── scripts
 │   │   │   └── copy-migrations.mjs
 │   │   ├── src
@@ -1436,6 +1437,8 @@
 │   │   │   ├── prepareLocal.ts
 │   │   │   ├── prepareMultiLocal.ts
 │   │   │   ├── recipe.ts
+│   │   │   ├── renderPublicSocialArt.test.ts
+│   │   │   ├── renderPublicSocialArt.ts
 │   │   │   ├── socialCover.test.ts
 │   │   │   ├── socialCover.ts
 │   │   │   └── sourceFilter.ts
