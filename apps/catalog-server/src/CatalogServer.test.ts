@@ -117,6 +117,21 @@ describe('CatalogServer', () => {
     });
   });
 
+  it('keeps legacy V1 social records on WebP during the V2 JPEG migration', async () => {
+    const legacy: SocialPreviewRecord = {
+      status: 'active',
+      preview: { kind: 'generic', version: 'evydencia-christmas-v1' },
+    };
+    const baseUrl = await startServer(legacy, vi.fn(async () => undefined));
+    const res = await fetch(`${baseUrl}/s/local-demo-token/social-preview`);
+    expect(res.status).toBe(200);
+    expect(res.headers.get('x-accel-redirect')).toBe(
+      '/_catalog_social/evydencia-christmas-v1.webp',
+    );
+    const html = await (await fetch(`${baseUrl}/s/local-demo-token`)).text();
+    expect(html).toContain('<meta property="og:image:type" content="image/webp" />');
+  });
+
   it('serves a direct gallery reload with its own canonical path', async () => {
     const baseUrl = await startServer(
       activeGeneric,
