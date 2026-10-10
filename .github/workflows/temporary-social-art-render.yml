@@ -1,4 +1,4 @@
-name: Temporary Social Art Rendering Evidence
+name: Temporary Social OG Source Formatter
 on:
   push:
     branches:
@@ -6,7 +6,7 @@ on:
 permissions:
   contents: read
 jobs:
-  render:
+  exact-format:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -19,17 +19,25 @@ jobs:
         with:
           version: '11.19.0'
       - run: pnpm install --frozen-lockfile
-      - name: Render OG and print portable binary receipt
+      - name: Prettier output as public-source evidence
         run: |
-          pnpm --filter @christmas-games/media-pipeline exec tsx src/renderPublicSocialArt.ts
+          pnpm exec prettier --write \
+            apps/catalog-server/src/socialPreview.ts \
+            apps/catalog-server/src/filePreviewRepository.ts \
+            apps/catalog-server/src/filePreviewRepository.test.ts \
+            apps/catalog-server/src/CatalogServer.test.ts \
+            apps/catalog-server/config/social-preview.example.json \
+            tools/deploy/prepare-vps-release.mjs \
+            tools/deploy/verify-vps-release.mjs \
+            tools/media-pipeline/src/renderPublicSocialArt.ts \
+            tools/media-pipeline/src/renderPublicSocialArt.test.ts \
+            tools/media-pipeline/package.json \
+            docs/ops/WHATSAPP_OG_SOCIAL_COVERS_2026-10-10.md \
+            apps/catalog-server/ASSET_PROVENANCE.md
           node --input-type=module <<'NODE'
           import { readFileSync } from 'node:fs';
-          import { createHash } from 'node:crypto';
-          const path='apps/catalog-server/public/social/evydencia-christmas-v2.webp';
-          const bytes=readFileSync(path);
-          console.log('SOCIAL_WEBP_RECEIPT=' + JSON.stringify({
-            path, bytes: bytes.length,
-            sha256:createHash('sha256').update(bytes).digest('hex'),
-            base64: bytes.toString('base64'),
+          const paths = ["apps/catalog-server/src/socialPreview.ts","apps/catalog-server/src/filePreviewRepository.ts","apps/catalog-server/src/filePreviewRepository.test.ts","apps/catalog-server/src/CatalogServer.test.ts","apps/catalog-server/config/social-preview.example.json","tools/deploy/prepare-vps-release.mjs","tools/deploy/verify-vps-release.mjs","tools/media-pipeline/src/renderPublicSocialArt.ts","tools/media-pipeline/src/renderPublicSocialArt.test.ts","tools/media-pipeline/package.json","docs/ops/WHATSAPP_OG_SOCIAL_COVERS_2026-10-10.md","apps/catalog-server/ASSET_PROVENANCE.md"];
+          for (const path of paths) console.log('OG_FORMATTED_SOURCE=' + JSON.stringify({
+            path, content: readFileSync(path, 'utf8'),
           }));
           NODE
