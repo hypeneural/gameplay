@@ -86,7 +86,10 @@ async function handleRequest(
   const demoPath = parsePublicDemoPath(requestUrl.pathname);
   if (demoPath) {
     const shell = await dependencies.loadApplicationShell();
-    const html = renderSessionHtml(shell, publicDemoSocialMetadata(dependencies.publicOrigin, demoPath));
+    const html = renderSessionHtml(
+      shell,
+      publicDemoSocialMetadata(dependencies.publicOrigin, demoPath),
+    );
     response.setHeader('Content-Type', 'text/html; charset=utf-8');
     response.setHeader('Cache-Control', 'no-store');
     response.setHeader('Referrer-Policy', 'no-referrer');
