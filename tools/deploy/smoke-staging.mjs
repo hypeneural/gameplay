@@ -36,13 +36,27 @@ for (const [name, suffix] of [
   if (!result.response.headers.get('content-type')?.includes('text/html')) {
     throw new Error(`${name} route did not return HTML.`);
   }
-  if (result.response.headers.get('referrer-policy') !== 'no-referrer') {
+  const referrerPolicy = result.response.headers.get('referrer-policy');
+  if (
+    !referrerPolicy ||
+    !referrerPolicy
+      .split(',')
+      .map((s) => s.trim())
+      .includes('no-referrer')
+  ) {
     throw new Error(`${name} route is missing Referrer-Policy: no-referrer.`);
   }
   if (!result.response.headers.get('x-robots-tag')?.includes('noindex')) {
     throw new Error(`${name} route is missing private noindex policy.`);
   }
-  if (result.response.headers.get('x-frame-options') !== 'DENY') {
+  const frameOptions = result.response.headers.get('x-frame-options');
+  if (
+    !frameOptions ||
+    !frameOptions
+      .split(',')
+      .map((s) => s.trim())
+      .includes('DENY')
+  ) {
     throw new Error(`${name} route is missing X-Frame-Options: DENY.`);
   }
   if (!result.response.headers.get('content-security-policy')?.includes("frame-ancestors 'none'")) {

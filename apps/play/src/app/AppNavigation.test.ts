@@ -2,6 +2,37 @@ import { describe, expect, it } from 'vitest';
 import { parseAppRoute, routePath, sameRoute } from './AppNavigation.js';
 
 describe('AppNavigation', () => {
+  it('routes homepage demo, gallery and games without generating customer tokens', () => {
+    const home = { kind: 'session' as const, token: 'public-demo', demo: true as const };
+    expect(parseAppRoute('/')).toEqual(home);
+    expect(parseAppRoute('/demo/fotos')).toEqual({
+      kind: 'gallery',
+      token: 'public-demo',
+      demo: true,
+    });
+    expect(parseAppRoute('/demo/game/memory')).toEqual({
+      kind: 'game-cover',
+      token: 'public-demo',
+      gameId: 'memory',
+      demo: true,
+    });
+    expect(routePath(home)).toBe('/');
+    expect(routePath({ kind: 'gallery', token: 'public-demo', demo: true })).toBe('/demo/fotos');
+    expect(
+      routePath({
+        kind: 'game-cover',
+        token: 'public-demo',
+        gameId: 'memory',
+        demo: true,
+      }),
+    ).toBe('/demo/game/memory');
+    expect(sameRoute(home, { kind: 'session', token: 'public-demo' })).toBe(false);
+    expect(parseAppRoute('/s/real-customer-token')).toEqual({
+      kind: 'session',
+      token: 'real-customer-token',
+    });
+  });
+
   it('keeps the public session, gallery and selected game in stable paths', () => {
     expect(parseAppRoute('/s/local-demo-token')).toEqual({
       kind: 'session',

@@ -68,6 +68,25 @@ describe('SessionDataLoader', () => {
     });
   });
 
+  it('rejects absolute variants and media for a different token', () => {
+    for (const unsafe of [
+      'https://another-host.test/image.webp',
+      '/s/another-session-token/media/rev-1/photo-1/thumb',
+      '/s/test-token-1234567890/media/rev-1/photo-1/thumb?redirect=1',
+    ]) {
+      const payload = {
+        ...validSession,
+        photos: [
+          {
+            ...validSession.photos[0]!,
+            variants: { ...validSession.photos[0]!.variants, thumb: unsafe },
+          },
+        ],
+      };
+      expect(isSessionPayload(payload)).toBe(false);
+    }
+  });
+
   describe('fetchSessionData', () => {
     it('fetches and returns session data on 200 OK', async () => {
       const mockFetch = vi.fn().mockResolvedValue({
