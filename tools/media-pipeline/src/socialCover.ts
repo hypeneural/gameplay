@@ -53,11 +53,21 @@ export async function generatePrivateSocialCover(
   }
   await mkdir(outputRoot, { recursive: true, mode: 0o700 });
 
+  // Fill the canvas softly, but keep the selected family photo fully visible
+  // in a separate frame: never crop a face based on a heuristic.
   const background = await sharp(input, { limitInputPixels: 40_000_000 })
     .rotate()
-    .resize(targetWidth, targetHeight, {
-      fit: 'cover',
-      position: sharp.strategy.attention,
+    .resize(targetWidth, targetHeight, { fit: 'cover' })
+    .blur(14)
+    .modulate({ brightness: 0.48 })
+    .toColorspace('srgb')
+    .toBuffer();
+
+  const portrait = await sharp(input, { limitInputPixels: 40_000_000 })
+    .rotate()
+    .resize(492, 500, {
+      fit: 'contain',
+      background: { r: 19, g: 52, b: 43, alpha: 1 },
     })
     .toColorspace('srgb')
     .toBuffer();
@@ -69,6 +79,7 @@ export async function generatePrivateSocialCover(
         <stop offset="1" stop-color="#102f28" stop-opacity="0"/></linearGradient>
     </defs>
     <rect width="1200" height="630" fill="url(#shade)"/>
+    <rect x="642" y="59" width="516" height="512" rx="16" fill="none" stroke="#f6d79b" stroke-width="9"/>
     <rect x="35" y="35" width="1130" height="560" rx="18" fill="none" stroke="#edca88" stroke-opacity=".9" stroke-width="3"/>
     <text x="92" y="136" font-family="sans-serif" font-size="30" fill="#f3d79b" letter-spacing="3">ESTÚDIO EVYDÊNCIA</text>
     <text x="92" y="296" font-family="serif" font-size="76" font-weight="bold" fill="#fff4dd">Nosso Natal</text>
@@ -80,7 +91,10 @@ export async function generatePrivateSocialCover(
   let encoded: Buffer | undefined;
   for (const quality of [82, 74, 66, 58, 50, 42, 34]) {
     const candidate = await sharp(background)
-      .composite([{ input: decoration }])
+      .composite([
+        { input: portrait, left: 654, top: 65 },
+        { input: decoration },
+      ])
       .jpeg({ quality, mozjpeg: true, chromaSubsampling: '4:2:0' })
       .toBuffer();
     if (candidate.byteLength <= maxBytes) {
