@@ -3,7 +3,7 @@ const opaqueDerivativeKey = /^[a-zA-Z0-9_-]{16,128}$/;
 
 export const genericPreviewVersion = 'evydencia-christmas-v2';
 export const legacyGenericPreviewVersion = 'evydencia-christmas-v1';
-export const genericPreviewInternalUri = `/_catalog_social/${genericPreviewVersion}.webp`;
+export const genericPreviewInternalUri = `/_catalog_social/${genericPreviewVersion}.jpg`;
 
 export interface SocialPreviewClock {
   now(): Date;
@@ -101,9 +101,13 @@ export function resolvePreview(record: SocialPreviewRecord): ResolvedSocialPrevi
     return {
       kind: 'generic',
       version: record.preview.version,
-      internalUri: `/_catalog_social/${record.preview.version}.webp`,
+      internalUri:
+        record.preview.version === legacyGenericPreviewVersion
+          ? `/_catalog_social/${record.preview.version}.webp`
+          : genericPreviewInternalUri,
       alt: 'Ilustração de uma noite de Natal iluminada.',
-      imageType: 'image/webp',
+      imageType:
+        record.preview.version === legacyGenericPreviewVersion ? 'image/webp' : 'image/jpeg',
     };
   }
   if (
@@ -115,7 +119,7 @@ export function resolvePreview(record: SocialPreviewRecord): ResolvedSocialPrevi
       version: genericPreviewVersion,
       internalUri: genericPreviewInternalUri,
       alt: 'Ilustração de uma noite de Natal iluminada.',
-      imageType: 'image/webp',
+      imageType: 'image/jpeg',
     };
   }
   const jpeg = record.preview.format === 'jpeg';
@@ -152,9 +156,9 @@ export function socialMetadata(
 export function publicDemoSocialMetadata(publicOrigin: URL, path: string): SocialMetadata {
   return {
     canonicalUrl: new URL(path, publicOrigin),
-    imageUrl: new URL(`/social/${genericPreviewVersion}.webp`, publicOrigin),
+    imageUrl: new URL(`/social/${genericPreviewVersion}.jpg`, publicOrigin),
     imageAlt: 'Arte ilustrada de Natal do Estúdio Evydência.',
-    imageType: 'image/webp',
+    imageType: 'image/jpeg',
     title: titleForSocialRoute(path),
     description: 'Explore os jogos e a galeria demonstrativa de Natal do Estúdio Evydência.',
   };
