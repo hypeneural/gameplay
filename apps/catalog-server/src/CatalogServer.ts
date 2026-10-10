@@ -26,6 +26,8 @@ export interface CatalogServerDependencies {
   };
   readonly readiness?: () => Promise<void>;
   readonly publicationService?: PublicationService;
+  /** Database authority: validates ACTIVE session, not just the OG preview config. */
+  readonly sessionIsActive?: (token: string) => Promise<boolean>;
 }
 
 /**
@@ -103,6 +105,16 @@ async function handleRequest(
   const record = await dependencies.previews.getByPublicToken(route.token);
   const preview = record ? resolvePreview(record) : undefined;
   if (!preview) {
+    sendNotFound(response);
+    return;
+  }
+
+  // A mutable preview config is NOT proof that the underlying private
+  // customer session exists and remains ACTIVE. Revoke both together.
+  if (
+    preview.kind === 'customer-photo' &&
+    (!dependencies.sessionIsActive || !(await dependencies.sessionIsActive(route.token)))
+  ) {
     sendNotFound(response);
     return;
   }
