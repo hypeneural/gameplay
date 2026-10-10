@@ -40,8 +40,8 @@ if (options.checkOnly) {
 
 const webSource = join(repositoryRoot, 'apps', 'play', 'dist');
 const serverSource = join(repositoryRoot, 'apps', 'catalog-server', 'dist');
-const socialSources = ['evydencia-christmas-v1.webp', 'evydencia-christmas-v2.webp'].map(
-  (name) => join(repositoryRoot, 'apps', 'catalog-server', 'public', 'social', name),
+const socialSources = ['evydencia-christmas-v1.webp', 'evydencia-christmas-v2.webp'].map((name) =>
+  join(repositoryRoot, 'apps', 'catalog-server', 'public', 'social', name),
 );
 const socialConfigExampleSource = join(
   repositoryRoot,
