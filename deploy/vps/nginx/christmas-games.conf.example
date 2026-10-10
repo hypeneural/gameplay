@@ -62,10 +62,9 @@ location = /_catalog_social/evydencia-christmas-v1.webp {
 
 # Reserved for approved customer social derivatives in the future pilot. The
 # current staging-demo readiness contract does not permit customer data.
-location ~ ^/_customer_social/([A-Za-z0-9_-]{16,128})\.webp$ {
+location ~ "^/_customer_social/([A-Za-z0-9_-]{16,128})\.(webp|jpg)$" {
     internal;
-    alias /srv/christmas-private/derived/social/$1.webp;
-    default_type image/webp;
+    alias /srv/christmas-private/derived/social/$1.$2;
     add_header X-Content-Type-Options "nosniff" always;
 }
 
