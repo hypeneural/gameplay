@@ -6,6 +6,7 @@ description: Use for per-session WhatsApp Open Graph cards, server-rendered craw
 # Social OG — single-authority rule
 
 Read in order:
+
 1. `docs/ops/WHATSAPP_OG_SOCIAL_COVERS_2026-10-10.md`
 2. `docs/architecture/SHARING_AND_SOCIAL_PREVIEW.md`
 3. `apps/catalog-server/src/{socialPreview,CatalogServer,filePreviewRepository,main}.ts`
