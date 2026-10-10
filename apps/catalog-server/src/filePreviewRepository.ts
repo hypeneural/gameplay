@@ -1,5 +1,9 @@
 import { readFile } from 'node:fs/promises';
-import { genericPreviewVersion, isOpaquePublicToken, legacyGenericPreviewVersion } from './socialPreview.js';
+import {
+  genericPreviewVersion,
+  isOpaquePublicToken,
+  legacyGenericPreviewVersion,
+} from './socialPreview.js';
 import type { SocialPreviewRecord, SocialPreviewRepository } from './socialPreview.js';
 
 /**
@@ -60,9 +64,11 @@ function parsePreviewRecord(value: Record<string, unknown>): SocialPreviewRecord
   ) {
     throw new Error('A configuração de prévia social contém um estado inválido.');
   }
-  if (value.preview.kind === 'generic' &&
+  if (
+    value.preview.kind === 'generic' &&
     (value.preview.version === genericPreviewVersion ||
-      value.preview.version === legacyGenericPreviewVersion)) {
+      value.preview.version === legacyGenericPreviewVersion)
+  ) {
     return { status: 'active', preview: { kind: 'generic', version: value.preview.version } };
   }
   if (
