@@ -193,7 +193,10 @@ describe('CatalogServer', () => {
         format: 'jpeg',
       },
     };
-    const baseUrl = await startServer(customerPreview, vi.fn(async () => undefined));
+    const baseUrl = await startServer(
+      customerPreview,
+      vi.fn(async () => undefined),
+    );
     const html = await (await fetch(`${baseUrl}/s/local-demo-token/fotos`)).text();
     expect(html).toContain('<meta property="og:image:type" content="image/jpeg" />');
     expect(html).toContain('/s/local-demo-token/social-preview?v=social-v3');
@@ -216,9 +219,7 @@ describe('CatalogServer', () => {
       },
     };
     const audit = vi.fn(async () => undefined);
-    const base = await startServer(
-      customerPreview, audit, undefined, undefined, async () => false,
-    );
+    const base = await startServer(customerPreview, audit, undefined, undefined, async () => false);
     const response = await fetch(`${base}/s/local-demo-token/social-preview`);
     expect(response.status).toBe(404);
     expect(response.headers.get('x-accel-redirect')).toBeNull();
