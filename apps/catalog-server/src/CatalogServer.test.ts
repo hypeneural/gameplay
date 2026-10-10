@@ -76,7 +76,7 @@ describe('CatalogServer', () => {
       expect(html).toContain(`https://jogos.exemplo.test${path}`);
       expect(html).toContain(title);
       expect(html).toContain(
-        '<meta property="og:image" content="https://jogos.exemplo.test/social/evydencia-christmas-v1.webp" />',
+        '<meta property="og:image" content="https://jogos.exemplo.test/social/evydencia-christmas-v2.webp" />',
       );
       expect(html).toContain('<meta property="og:image:width" content="1200" />');
       expect(html).toContain('<meta property="og:image:height" content="630" />');
@@ -105,7 +105,7 @@ describe('CatalogServer', () => {
     );
     expect(html).toContain('<meta property="og:type" content="website" />');
     expect(html).toContain(
-      '<meta property="og:image" content="https://jogos.exemplo.test/s/local-demo-token/social-preview?v=evydencia-christmas-v1" />',
+      '<meta property="og:image" content="https://jogos.exemplo.test/s/local-demo-token/social-preview?v=evydencia-christmas-v2" />',
     );
     expect(html).toContain('og:image:alt');
     expect(html).not.toContain('backend-required');
