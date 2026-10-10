@@ -1,5 +1,9 @@
 import { readFile } from 'node:fs/promises';
-import { genericPreviewVersion, isOpaquePublicToken } from './socialPreview.js';
+import {
+  genericPreviewVersion,
+  isOpaquePublicToken,
+  legacyGenericPreviewVersion,
+} from './socialPreview.js';
 import type { SocialPreviewRecord, SocialPreviewRepository } from './socialPreview.js';
 
 /**
@@ -60,14 +64,23 @@ function parsePreviewRecord(value: Record<string, unknown>): SocialPreviewRecord
   ) {
     throw new Error('A configuração de prévia social contém um estado inválido.');
   }
-  if (value.preview.kind === 'generic' && value.preview.version === genericPreviewVersion) {
-    return { status: 'active', preview: { kind: 'generic', version: genericPreviewVersion } };
+  if (
+    value.preview.kind === 'generic' &&
+    (value.preview.version === genericPreviewVersion ||
+      value.preview.version === legacyGenericPreviewVersion)
+  ) {
+    return { status: 'active', preview: { kind: 'generic', version: value.preview.version } };
   }
   if (
     value.preview.kind === 'customer-photo' &&
     (value.preview.consent === 'granted' || value.preview.consent === 'revoked') &&
     typeof value.preview.derivativeKey === 'string' &&
-    typeof value.preview.version === 'string'
+    /^[A-Za-z0-9_-]{16,128}$/.test(value.preview.derivativeKey) &&
+    typeof value.preview.version === 'string' &&
+    /^[A-Za-z0-9_-]{1,64}$/.test(value.preview.version) &&
+    (value.preview.format === undefined ||
+      value.preview.format === 'webp' ||
+      value.preview.format === 'jpeg')
   ) {
     return {
       status: 'active',
@@ -76,6 +89,7 @@ function parsePreviewRecord(value: Record<string, unknown>): SocialPreviewRecord
         consent: value.preview.consent,
         derivativeKey: value.preview.derivativeKey,
         version: value.preview.version,
+        ...(value.preview.format ? { format: value.preview.format as 'webp' | 'jpeg' } : {}),
       },
     };
   }

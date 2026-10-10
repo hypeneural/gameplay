@@ -21,3 +21,20 @@ de Nginx. Ela é uma arte do catálogo, não um asset de runtime de um jogo; por
 isso não entra no manifesto de `packages/games/<id>`. Uma foto de cliente nunca
 substitui este arquivo. Quando houver consentimento social, a foto usa outra
 derivada, outro identificador opaco e outra entrega interna.
+
+## V2 — novo padrão público de Open Graph (2026-10-10)
+
+| Campo               | Registro                                                                                                               |
+| ------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| Papel               | Arte pública padronizada para `/`, `/demo/fotos`, `/demo/game/:id` e fallback genérico de cliente                      |
+| Arte-fonte editável | `assets-src/catalog-social/evydencia-christmas-v2-template.svg`                                                        |
+| WebP versionado     | `apps/catalog-server/public/social/evydencia-christmas-v2.webp`                                                        |
+| Origem              | Composição editorial sintética em SVG, criada para esta versão do estúdio; sem retratos reais de cliente               |
+| Receita             | `pnpm --filter @christmas-games/media-pipeline run social:render` (Sharp 0.35.3, 1200×630, WebP qualidade 82/effort 6) |
+| Tamanho             | 42.040 bytes                                                                                                           |
+| SHA-256             | `41cf05bbcbf6e017aa53d1d11f466b91423b6da59737c98607447c628ddff9da`                                                     |
+| Política            | Público, sem consentimento de cliente; não utilizar esta pasta para derivadas de clientes                              |
+
+**JPEG V2 prioritário para WhatsApp:** `apps/catalog-server/public/social/evydencia-christmas-v2.jpg` — 68.806 bytes, SHA-256 `ee9bf1554975c48fd80291575258856e3571915b151c01ed44e10b0202748a5c`, 1200×630. Gerado com Sharp, qualidade 82/MozJPEG, sem fotografias reais e com o mesmo SVG de origem. O WebP V2 de 42.040 bytes é mantido como alternativa.
+
+A arte V1 permanece disponível para compartilhar links antigos com cache persistente.

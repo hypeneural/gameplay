@@ -40,14 +40,11 @@ if (options.checkOnly) {
 
 const webSource = join(repositoryRoot, 'apps', 'play', 'dist');
 const serverSource = join(repositoryRoot, 'apps', 'catalog-server', 'dist');
-const socialSource = join(
-  repositoryRoot,
-  'apps',
-  'catalog-server',
-  'public',
-  'social',
+const socialSources = [
   'evydencia-christmas-v1.webp',
-);
+  'evydencia-christmas-v2.webp',
+  'evydencia-christmas-v2.jpg',
+].map((name) => join(repositoryRoot, 'apps', 'catalog-server', 'public', 'social', name));
 const socialConfigExampleSource = join(
   repositoryRoot,
   'apps',
@@ -60,7 +57,9 @@ const releaseToolsSource = join(repositoryRoot, 'tools', 'deploy');
 
 await assertFile(join(webSource, 'index.html'), 'apps/play/dist/index.html');
 await assertFile(join(serverSource, 'main.js'), 'apps/catalog-server/dist/main.js');
-await assertFile(socialSource, 'generic social preview');
+for (const socialSource of socialSources) {
+  await assertFile(socialSource, 'generic social preview');
+}
 await assertFile(socialConfigExampleSource, 'social preview config example');
 
 await rm(outputRoot, { recursive: true, force: true });
@@ -74,7 +73,9 @@ await writeFile(
 await copyTree(webSource, join(outputRoot, 'web'), { excludeSourceMaps: true });
 await copyTree(serverSource, join(outputRoot, 'server'), { excludeSourceMaps: true });
 await mkdir(join(outputRoot, 'public', 'social'), { recursive: true });
-await cp(socialSource, join(outputRoot, 'public', 'social', basename(socialSource)));
+for (const socialSource of socialSources) {
+  await cp(socialSource, join(outputRoot, 'public', 'social', basename(socialSource)));
+}
 await copyTree(opsSource, join(outputRoot, 'ops'), { excludeSourceMaps: true });
 await cp(socialConfigExampleSource, join(outputRoot, 'ops', 'social-preview.example.json'));
 await mkdir(join(outputRoot, 'ops', 'tools'), { recursive: true });
