@@ -57,6 +57,38 @@ describe('CatalogServer', () => {
     expect(await response.json()).toEqual({ status: 'unavailable', releaseStage: 'test' });
   });
 
+  it('serves bot-readable Open Graph on the root and demo without a customer token', async () => {
+    const baseUrl = await startServer(
+      { status: 'revoked' },
+      vi.fn(async () => undefined),
+      'staging-demo',
+    );
+
+    for (const [path, title] of [
+      ['/', 'Nosso Natal em Família'],
+      ['/demo/fotos', 'Álbum de Natal'],
+      ['/demo/game/memory', 'Jogos de Natal'],
+    ]) {
+      const response = await fetch(`${baseUrl}${path}`);
+      expect(response.status).toBe(200);
+      expect(response.headers.get('content-type')).toContain('text/html');
+      const html = await response.text();
+      expect(html).toContain(`https://jogos.exemplo.test${path}`);
+      expect(html).toContain(title);
+      expect(html).toContain(
+        '<meta property="og:image" content="https://jogos.exemplo.test/social/evydencia-christmas-v1.webp" />',
+      );
+      expect(html).toContain('<meta property="og:image:width" content="1200" />');
+      expect(html).toContain('<meta property="og:image:height" content="630" />');
+      expect(html).toContain('<meta name="twitter:card" content="summary_large_image" />');
+      expect(html).not.toContain('backend-required');
+    }
+    const head = await fetch(`${baseUrl}/`, { method: 'HEAD' });
+    expect(head.status).toBe(200);
+    expect(await head.text()).toBe('');
+    expect((await fetch(`${baseUrl}/unexpected`)).status).toBe(404);
+  });
+
   it('renders complete Open Graph markup before the browser runs React', async () => {
     const audit = vi.fn(async () => undefined);
     const baseUrl = await startServer(activeGeneric, audit);
