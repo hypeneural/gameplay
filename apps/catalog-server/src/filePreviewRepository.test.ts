@@ -38,6 +38,22 @@ describe('parsePreviewConfiguration', () => {
     });
   });
 
+  it('continues accepting V1 generic records when the public default becomes V2', () => {
+    const legacy = parsePreviewConfiguration({
+      version: 1,
+      sessions: [
+        {
+          token: 'valid-legacy-social-token-1234',
+          status: 'active',
+          preview: { kind: 'generic', version: 'evydencia-christmas-v1' },
+        },
+      ],
+    });
+    expect(legacy.get('valid-legacy-social-token-1234')).toMatchObject({
+      preview: { kind: 'generic', version: 'evydencia-christmas-v1' },
+    });
+  });
+
   it('recognizes explicit JPEG preview metadata and rejects invalid formats', () => {
     const valid = {
       version: 1,
