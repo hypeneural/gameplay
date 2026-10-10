@@ -70,7 +70,9 @@ function parsePreviewRecord(value: Record<string, unknown>): SocialPreviewRecord
     /^[A-Za-z0-9_-]{16,128}$/.test(value.preview.derivativeKey) &&
     typeof value.preview.version === 'string' &&
     /^[A-Za-z0-9_-]{1,64}$/.test(value.preview.version) &&
-    (value.preview.format === undefined || value.preview.format === 'webp' || value.preview.format === 'jpeg')
+    (value.preview.format === undefined ||
+      value.preview.format === 'webp' ||
+      value.preview.format === 'jpeg')
   ) {
     return {
       status: 'active',
