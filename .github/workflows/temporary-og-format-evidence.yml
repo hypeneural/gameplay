@@ -1,0 +1,52 @@
+name: Temporary OG Formatter Evidence
+on:
+  push:
+    branches:
+      - feat/social-og-whatsapp-demo-hub-20261010
+permissions:
+  contents: read
+jobs:
+  source-format:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Enable Corepack
+        run: corepack enable
+      - uses: pnpm/action-setup@v4
+        with:
+          version: '10.21.0'
+      - name: Install
+        run: pnpm install --frozen-lockfile
+      - name: Print exact Prettier 3.9.6 result
+        run: |
+          pnpm exec prettier --write \
+            .agents/skills/whatsapp-social-preview/SKILL.md \
+            apps/catalog-server/src/CatalogServer.test.ts \
+            apps/catalog-server/src/CatalogServer.ts \
+            apps/catalog-server/src/filePreviewRepository.test.ts \
+            apps/catalog-server/src/filePreviewRepository.ts \
+            docs/ops/WHATSAPP_OG_SOCIAL_COVERS_2026-10-10.md \
+            tools/media-pipeline/src/socialCover.test.ts \
+            tools/media-pipeline/src/socialCover.ts
+          node --input-type=module <<'NODE'
+          import { readFileSync } from 'node:fs';
+          const files = [
+            '.agents/skills/whatsapp-social-preview/SKILL.md',
+            'apps/catalog-server/src/CatalogServer.test.ts',
+            'apps/catalog-server/src/CatalogServer.ts',
+            'apps/catalog-server/src/filePreviewRepository.test.ts',
+            'apps/catalog-server/src/filePreviewRepository.ts',
+            'docs/ops/WHATSAPP_OG_SOCIAL_COVERS_2026-10-10.md',
+            'tools/media-pipeline/src/socialCover.test.ts',
+            'tools/media-pipeline/src/socialCover.ts',
+          ];
+          for (const path of files) {
+            process.stdout.write('FORMAT_SOURCE_JSON=' + JSON.stringify({
+              path, content: readFileSync(path, 'utf8'),
+            }) + '\n');
+          }
+          NODE
