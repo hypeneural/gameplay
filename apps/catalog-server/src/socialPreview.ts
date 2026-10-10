@@ -1,7 +1,8 @@
 const opaqueToken = /^[a-zA-Z0-9_-]{16,128}$/;
 const opaqueDerivativeKey = /^[a-zA-Z0-9_-]{16,128}$/;
 
-export const genericPreviewVersion = 'evydencia-christmas-v1';
+export const genericPreviewVersion = 'evydencia-christmas-v2';
+export const legacyGenericPreviewVersion = 'evydencia-christmas-v1';
 export const genericPreviewInternalUri = `/_catalog_social/${genericPreviewVersion}.webp`;
 
 export interface SocialPreviewClock {
@@ -22,7 +23,7 @@ export type SocialPreviewRecord =
       readonly status: 'active';
       readonly preview: {
         readonly kind: 'generic';
-        readonly version: typeof genericPreviewVersion;
+        readonly version: typeof genericPreviewVersion | typeof legacyGenericPreviewVersion;
       };
     }
   | {
@@ -100,7 +101,7 @@ export function resolvePreview(record: SocialPreviewRecord): ResolvedSocialPrevi
     return {
       kind: 'generic',
       version: record.preview.version,
-      internalUri: genericPreviewInternalUri,
+      internalUri: `/_catalog_social/${record.preview.version}.webp`,
       alt: 'Ilustração de uma noite de Natal iluminada.',
       imageType: 'image/webp',
     };
