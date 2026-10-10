@@ -204,6 +204,29 @@ describe('CatalogServer', () => {
     );
   });
 
+  it('denies customer preview if SQLite no longer recognizes its ACTIVE session', async () => {
+    const customerPreview: SocialPreviewRecord = {
+      status: 'active',
+      preview: {
+        kind: 'customer-photo',
+        consent: 'granted',
+        derivativeKey: 'social-preview-4Q4bB7GmT2pX',
+        version: 'social-v3',
+        format: 'jpeg',
+      },
+    };
+    const audit = vi.fn(async () => undefined);
+    const base = await startServer(
+      customerPreview, audit, undefined, undefined, async () => false,
+    );
+    const response = await fetch(`${base}/s/local-demo-token/social-preview`);
+    expect(response.status).toBe(404);
+    expect(response.headers.get('x-accel-redirect')).toBeNull();
+    const html = await fetch(`${base}/s/local-demo-token`);
+    expect(html.status).toBe(404);
+    expect(audit).not.toHaveBeenCalled();
+  });
+
   it('refuses customer-photo previews in staging-demo even when config says granted', async () => {
     const customerPreview = {
       status: 'active' as const,
@@ -247,6 +270,7 @@ function startServer(
   }) => Promise<void>,
   releaseStage?: string,
   readiness?: () => Promise<void>,
+  sessionIsActive: (token: string) => Promise<boolean> = async () => true,
 ): Promise<string> {
   const server = createCatalogServer({
     publicOrigin: parsePublicOrigin('https://jogos.exemplo.test'),
@@ -256,6 +280,7 @@ function startServer(
     clock: { now: () => new Date('2026-08-25T12:00:00.000Z') },
     ...(releaseStage === undefined ? {} : { runtime: { releaseStage } }),
     ...(readiness === undefined ? {} : { readiness }),
+    sessionIsActive,
   });
   servers.push(server);
   return new Promise((resolve, reject) => {
