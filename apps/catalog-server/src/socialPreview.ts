@@ -33,6 +33,8 @@ export type SocialPreviewRecord =
         readonly consent: 'granted' | 'revoked';
         readonly derivativeKey: string;
         readonly version: string;
+        /** Optional for backward-compatible records; new social covers use JPEG. */
+        readonly format?: 'webp' | 'jpeg';
       };
     }
   | { readonly status: 'revoked' };
@@ -51,6 +53,7 @@ export interface ResolvedSocialPreview {
   /** URI consumed only by Nginx after this backend's authorization decision. */
   readonly internalUri: string;
   readonly alt: string;
+  readonly imageType: 'image/webp' | 'image/jpeg';
 }
 
 export interface SocialMetadata {
@@ -99,6 +102,7 @@ export function resolvePreview(record: SocialPreviewRecord): ResolvedSocialPrevi
       version: record.preview.version,
       internalUri: genericPreviewInternalUri,
       alt: 'Ilustração de uma noite de Natal iluminada.',
+      imageType: 'image/webp',
     };
   }
   if (
@@ -110,13 +114,16 @@ export function resolvePreview(record: SocialPreviewRecord): ResolvedSocialPrevi
       version: genericPreviewVersion,
       internalUri: genericPreviewInternalUri,
       alt: 'Ilustração de uma noite de Natal iluminada.',
+      imageType: 'image/webp',
     };
   }
+  const jpeg = record.preview.format === 'jpeg';
   return {
     kind: 'customer-photo',
     version: record.preview.version,
-    internalUri: `/_customer_social/${record.preview.derivativeKey}.webp`,
+    internalUri: `/_customer_social/${record.preview.derivativeKey}.${jpeg ? 'jpg' : 'webp'}`,
     alt: 'Uma lembrança natalina em forma de brincadeira.',
+    imageType: jpeg ? 'image/jpeg' : 'image/webp',
   };
 }
 
@@ -129,9 +136,12 @@ export function socialMetadata(
   const encodedToken = encodeURIComponent(token);
   return {
     canonicalUrl: new URL(canonicalPath, publicOrigin),
-    imageUrl: new URL(`/s/${encodedToken}/social-preview`, publicOrigin),
+    imageUrl: new URL(
+      `/s/${encodedToken}/social-preview?v=${encodeURIComponent(preview.version)}`,
+      publicOrigin,
+    ),
     imageAlt: preview.alt,
-    imageType: 'image/webp',
+    imageType: preview.imageType,
     title: titleForSocialRoute(canonicalPath),
     description: 'Uma lembrança de Natal que vira brincadeira para toda a família.',
   };
