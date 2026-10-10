@@ -24,6 +24,7 @@ parsePreviewConfiguration(JSON.parse(previewSource), {
 });
 
 let publicationService: PublicationService | undefined;
+let sessionIsActive: ((token: string) => Promise<boolean>) | undefined;
 
 if (runtime.databasePath && runtime.publisherApiSecret) {
   const db = openSqliteDatabase(runtime.databasePath);
@@ -33,6 +34,7 @@ if (runtime.databasePath && runtime.publisherApiSecret) {
     serverSecret: runtime.serverSecret ?? 'default-server-secret-change-in-production',
     publicBaseUrl: runtime.publicOrigin.origin,
   });
+  sessionIsActive = async (token) => (await sessionRepository.getActiveSession(token)) !== null;
   const storageService = new FileSystemStorageService({
     storageDir: runtime.storageDir ?? './data/media',
   });
@@ -68,6 +70,7 @@ const server = createCatalogServer({
     });
   },
   ...(publicationService ? { publicationService } : {}),
+  ...(sessionIsActive ? { sessionIsActive } : {}),
 });
 
 server.listen(runtime.port, runtime.host, () => {
