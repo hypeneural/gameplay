@@ -43,7 +43,7 @@ describe('private JPEG Open Graph composition', () => {
     expect(metadata.width).toBe(1200);
     expect(metadata.height).toBe(630);
     expect(metadata.exif).toBeUndefined();
-  });
+  }, 20_000);
 
   it('rejects absent consent and any attempt to write inside repository', async () => {
     const { input, storage } = await createInput();

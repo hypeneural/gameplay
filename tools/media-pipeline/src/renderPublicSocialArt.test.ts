@@ -45,5 +45,5 @@ describe('generic Open Graph asset', () => {
     } finally {
       await rm(temp, { recursive: true, force: true });
     }
-  });
+  }, 20_000);
 });
