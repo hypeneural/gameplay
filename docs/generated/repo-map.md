@@ -24,7 +24,9 @@
 │       │   └── SKILL.md
 │       ├── revisao-visual-mobile
 │       │   └── SKILL.md
-│       └── vps-staging-release
+│       ├── vps-staging-release
+│       │   └── SKILL.md
+│       └── whatsapp-social-preview
 │           └── SKILL.md
 ├── .dependency-cruiser.cjs
 ├── .gitattributes
@@ -571,7 +573,8 @@
 │       └── vite.localTestMedia.ts
 ├── assets-src
 │   ├── catalog-social
-│   │   └── evydencia-christmas-v1.png
+│   │   ├── evydencia-christmas-v1.png
+│   │   └── evydencia-christmas-v2-template.svg
 │   ├── estilingue-das-lembrancas
 │   │   └── audio
 │   │       ├── button-press-v1.wav
@@ -743,7 +746,8 @@
 │   │   ├── EVYDFLOW_GAMEPLAY_P0_HANDOFF_2026-10-09.md
 │   │   ├── GAMEPLAY_PUBLIC_DEMO_AND_CRM_EVYDFLOW_FORENSIC_2026-10-09.md
 │   │   ├── MVP_LOCAL_PHOTO_PREFLIGHT_2026-10-09.md
-│   │   └── VPS_STAGING_DEMO_RUNBOOK.md
+│   │   ├── VPS_STAGING_DEMO_RUNBOOK.md
+│   │   └── WHATSAPP_OG_SOCIAL_COVERS_2026-10-10.md
 │   ├── plan
 │   │   └── IMPLEMENTATION_PLAN.md
 │   ├── privacy
@@ -1432,6 +1436,8 @@
 │   │   │   ├── prepareLocal.ts
 │   │   │   ├── prepareMultiLocal.ts
 │   │   │   ├── recipe.ts
+│   │   │   ├── socialCover.test.ts
+│   │   │   ├── socialCover.ts
 │   │   │   └── sourceFilter.ts
 │   │   └── tests
 │   │       ├── inspect.test.ts
