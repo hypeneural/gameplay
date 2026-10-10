@@ -53,6 +53,13 @@ location ~ ^/s/[A-Za-z0-9_-]{16,128}(?:/fotos|/game/[a-z0-9-]{1,64}|/social-prev
 
 # Generic social image. It is reachable only after backend authorization via
 # X-Accel-Redirect.
+location = /_catalog_social/evydencia-christmas-v2.webp {
+    internal;
+    alias /srv/christmas-games/current/public/social/evydencia-christmas-v2.webp;
+    default_type image/webp;
+    add_header X-Content-Type-Options "nosniff" always;
+}
+
 location = /_catalog_social/evydencia-christmas-v1.webp {
     internal;
     alias /srv/christmas-games/current/public/social/evydencia-christmas-v1.webp;
@@ -69,6 +76,13 @@ location ~ "^/_customer_social/([A-Za-z0-9_-]{16,128})\.(webp|jpg)$" {
 }
 
 # Only studio-owned generic social art is public; customer art stays internal.
+location = /social/evydencia-christmas-v2.webp {
+    alias /srv/christmas-games/current/public/social/evydencia-christmas-v2.webp;
+    default_type image/webp;
+    add_header Cache-Control "public, max-age=86400" always;
+    add_header X-Content-Type-Options "nosniff" always;
+}
+
 location = /social/evydencia-christmas-v1.webp {
     alias /srv/christmas-games/current/public/social/evydencia-christmas-v1.webp;
     default_type image/webp;
