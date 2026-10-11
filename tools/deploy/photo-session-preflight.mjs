@@ -7,7 +7,7 @@ import { fileURLToPath } from 'node:url';
 // READ-ONLY LOCAL PREFLIGHT. No upload, customer identifiers, original file names or paths in logs.
 // This is a header check; full image decoding happens in media:prepare-local.
 const supported = new Set(['.jpg', '.jpeg', '.png', '.webp']);
-const ignoredPrefix = /^\s*(calend[aá]rio|globo)/i;
+const ignoredPrefix = /^\s*(calend[aá]rio|globo|chaveiro)/i;
 const allowedLogKeys = new Set([
   'schemaVersion',
   'at',
