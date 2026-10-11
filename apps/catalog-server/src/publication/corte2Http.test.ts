@@ -121,7 +121,7 @@ describe('Corte 2 HTTP Endpoints & Storage Flow', () => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: 'Bearer wrong-secret',
+        Authorization: '***',
       },
       body: JSON.stringify({ crmOrderUuid: randomUUID() }),
     });
@@ -136,8 +136,7 @@ describe('Corte 2 HTTP Endpoints & Storage Flow', () => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${PUBLISHER_SECRET}`,
-      },
+        Authorization: `***      },
       body: JSON.stringify({ crmOrderUuid }),
     });
     expect(resolveRes.status).toBe(201);
@@ -155,8 +154,7 @@ describe('Corte 2 HTTP Endpoints & Storage Flow', () => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${PUBLISHER_SECRET}`,
-      },
+        Authorization: `***      },
       body: JSON.stringify({ crmOrderUuid }),
     });
     expect(resolveAgain.status).toBe(200);
@@ -223,8 +221,7 @@ describe('Corte 2 HTTP Endpoints & Storage Flow', () => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${PUBLISHER_SECRET}`,
-      },
+        Authorization: `***      },
       body: JSON.stringify(manifest),
     });
     expect(beginRes.status).toBe(201);
@@ -248,15 +245,14 @@ describe('Corte 2 HTTP Endpoints & Storage Flow', () => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${PUBLISHER_SECRET}`,
-      },
+        Authorization: `***      },
       body: JSON.stringify(manifest),
     });
     expect(beginReplay.status).toBe(200);
 
     // 4. GET Publication Status
     const statusRes = await fetch(`${baseUrl}/internal/v1/publications/${revisionId}`, {
-      headers: { Authorization: `Bearer ${PUBLISHER_SECRET}` },
+      headers: { Authorization: `*** },
     });
     expect(statusRes.status).toBe(200);
     const currentStatus = (await statusRes.json()) as typeof stagedPub;
@@ -269,8 +265,7 @@ describe('Corte 2 HTTP Endpoints & Storage Flow', () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${PUBLISHER_SECRET}`,
-        },
+          Authorization: `***        },
         body: JSON.stringify({ expectedActiveRevisionId: null }),
       },
     );
@@ -286,8 +281,7 @@ describe('Corte 2 HTTP Endpoints & Storage Flow', () => {
         headers: {
           'Content-Type': 'image/webp',
           'X-Content-SHA256': thumbSha256,
-          Authorization: `Bearer ${PUBLISHER_SECRET}`,
-        },
+          Authorization: `***        },
         body: new Uint8Array(thumbBuf),
       },
     );
@@ -304,8 +298,7 @@ describe('Corte 2 HTTP Endpoints & Storage Flow', () => {
         headers: {
           'Content-Type': 'image/webp',
           'X-Content-SHA256': thumbSha256,
-          Authorization: `Bearer ${PUBLISHER_SECRET}`,
-        },
+          Authorization: `***        },
         body: new Uint8Array(thumbBuf),
       },
     );
@@ -319,8 +312,7 @@ describe('Corte 2 HTTP Endpoints & Storage Flow', () => {
         headers: {
           'Content-Type': 'image/webp',
           'X-Content-SHA256': '0'.repeat(64),
-          Authorization: `Bearer ${PUBLISHER_SECRET}`,
-        },
+          Authorization: `***        },
         body: new Uint8Array(cardBuf),
       },
     );
@@ -334,8 +326,7 @@ describe('Corte 2 HTTP Endpoints & Storage Flow', () => {
         headers: {
           'Content-Type': 'image/webp',
           'X-Content-SHA256': cardSha256,
-          Authorization: `Bearer ${PUBLISHER_SECRET}`,
-        },
+          Authorization: `***        },
         body: new Uint8Array(cardBuf),
       },
     );
@@ -349,8 +340,7 @@ describe('Corte 2 HTTP Endpoints & Storage Flow', () => {
         headers: {
           'Content-Type': 'image/webp',
           'X-Content-SHA256': gameSha256,
-          Authorization: `Bearer ${PUBLISHER_SECRET}`,
-        },
+          Authorization: `***        },
         body: new Uint8Array(gameBuf),
       },
     );
@@ -358,7 +348,7 @@ describe('Corte 2 HTTP Endpoints & Storage Flow', () => {
 
     // Verify status now has 3 ready blobs, 0 pending
     const statusAllReady = await fetch(`${baseUrl}/internal/v1/publications/${revisionId}`, {
-      headers: { Authorization: `Bearer ${PUBLISHER_SECRET}` },
+      headers: { Authorization: `*** },
     });
     const statusJson = (await statusAllReady.json()) as typeof stagedPub;
     expect(statusJson.readyBlobs).toBe(3);
@@ -369,8 +359,7 @@ describe('Corte 2 HTTP Endpoints & Storage Flow', () => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${PUBLISHER_SECRET}`,
-      },
+        Authorization: `***      },
       body: JSON.stringify({ expectedActiveRevisionId: null }),
     });
     expect(activateRes.status).toBe(200);
@@ -447,8 +436,7 @@ describe('Corte 2 HTTP Endpoints & Storage Flow', () => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${PUBLISHER_SECRET}`,
-      },
+        Authorization: `***      },
       body: JSON.stringify({
         schemaVersion: 1,
         requestId: randomUUID(),
@@ -500,8 +488,7 @@ describe('Corte 2 HTTP Endpoints & Storage Flow', () => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${PUBLISHER_SECRET}`,
-      },
+        Authorization: `***      },
       body: JSON.stringify({ crmOrderUuid }),
     });
     const { sessionId } = (await resolveRes.json()) as { sessionId: string };
@@ -551,8 +538,7 @@ describe('Corte 2 HTTP Endpoints & Storage Flow', () => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${PUBLISHER_SECRET}`,
-      },
+        Authorization: `***      },
       body: JSON.stringify(firstManifest),
     });
     expect(firstRes.status).toBe(201);
@@ -566,8 +552,7 @@ describe('Corte 2 HTTP Endpoints & Storage Flow', () => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${PUBLISHER_SECRET}`,
-      },
+        Authorization: `***      },
       body: JSON.stringify(conflictingManifest),
     });
     expect(conflictRes.status).toBe(409);
@@ -580,8 +565,7 @@ describe('Corte 2 HTTP Endpoints & Storage Flow', () => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${PUBLISHER_SECRET}`,
-      },
+        Authorization: `***      },
       body: JSON.stringify({ invalid: 'garbage' }),
     });
     expect(res.status).toBe(422);
@@ -591,7 +575,7 @@ describe('Corte 2 HTTP Endpoints & Storage Flow', () => {
 
   it('returns 404 for nonexistent revision in GET /internal/v1/publications/:revisionId', async () => {
     const res = await fetch(`${baseUrl}/internal/v1/publications/${randomUUID()}`, {
-      headers: { Authorization: `Bearer ${PUBLISHER_SECRET}` },
+      headers: { Authorization: `*** },
     });
     expect(res.status).toBe(404);
     const body = (await res.json()) as { code: string };
@@ -604,8 +588,7 @@ describe('Corte 2 HTTP Endpoints & Storage Flow', () => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${PUBLISHER_SECRET}`,
-      },
+        Authorization: `***      },
       body: JSON.stringify({ crmOrderUuid }),
     });
     const { sessionId } = (await resolveRes.json()) as { sessionId: string };
@@ -652,8 +635,7 @@ describe('Corte 2 HTTP Endpoints & Storage Flow', () => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${PUBLISHER_SECRET}`,
-      },
+        Authorization: `***      },
       body: JSON.stringify(manifest),
     });
     const { revisionId } = (await beginRes.json()) as { revisionId: string };
@@ -665,8 +647,7 @@ describe('Corte 2 HTTP Endpoints & Storage Flow', () => {
         headers: {
           'Content-Type': 'image/webp',
           'X-Content-SHA256': hash,
-          Authorization: `Bearer ${PUBLISHER_SECRET}`,
-        },
+          Authorization: `***        },
         body: new Uint8Array(oversizedBuffer),
       },
     );
@@ -717,44 +698,60 @@ describe('CRM Server-to-Server Eligibility Gate', () => {
     const db = openSqliteDatabase(':memory:');
     applyMigrations(db);
     const repo = new SqliteSessionRepository({
-      db, serverSecret: SERVER_SECRET, publicBaseUrl: 'http://127.0.0.1',
+      db,
+      serverSecret: SERVER_SECRET,
+      publicBaseUrl: 'http://127.0.0.1',
     });
     const order = randomUUID();
     const session = await repo.resolveOrCreateSession(order);
     const revisionId = randomUUID();
-    db.prepare(`INSERT INTO photo_revisions
+    db.prepare(
+      `INSERT INTO photo_revisions
       (id, session_id, sequence, request_id, manifest_sha256, manifest_json, state)
-      VALUES (?, ?, 1, ?, ?, '{}', 'STAGED')`
+      VALUES (?, ?, 1, ?, ?, '{}', 'STAGED')`,
     ).run(revisionId, session.sessionId, randomUUID(), 'a'.repeat(64));
     const crm = new InMemoryCrmClient();
-    crm.setEligibility({ orderUuid: order, status: 'CANCELLED',
-      isEligibleForGallery: false, revoked: true });
+    crm.setEligibility({
+      orderUuid: order,
+      status: 'CANCELLED',
+      isEligibleForGallery: false,
+      revoked: true,
+    });
     const server = createCatalogServer({
       publicOrigin: new URL('http://127.0.0.1'),
       loadApplicationShell: async () => '<html></html>',
-      previews: { async getByPublicToken() { return undefined; } },
+      previews: {
+        async getByPublicToken() {
+          return undefined;
+        },
+      },
       audit: { async record() {} },
       clock: { now: () => new Date() },
       runtime: { releaseStage: 'development' },
       publicationService: new PublicationService({
-        sessionRepository: repo, storageService: new FileSystemStorageService({ storageDir: tempDir }),
-        publisherSecret: PUBLISHER_SECRET, crmClient: crm,
+        sessionRepository: repo,
+        storageService: new FileSystemStorageService({ storageDir: tempDir }),
+        publisherSecret: PUBLISHER_SECRET,
+        crmClient: crm,
       }),
     });
     server.listen(0, '127.0.0.1');
     await once(server, 'listening');
     const port = (server.address() as AddressInfo).port;
-    const activate = () => fetch(
-      `http://127.0.0.1:${port}/internal/v1/publications/${revisionId}/activate`,
-      { method: 'POST', headers: {
-          Authorization: `Bearer ${PUBLISHER_SECRET}`, 'Content-Type': 'application/json',
-        }, body: JSON.stringify({ expectedActiveRevisionId: null }) },
-    );
+    const activate = () =>
+      fetch(`http://127.0.0.1:${port}/internal/v1/publications/${revisionId}/activate`, {
+        method: 'POST',
+        headers: {
+          Authorization: `***          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ expectedActiveRevisionId: null }),
+      });
     try {
       expect((await activate()).status).toBe(403);
       crm.removeEligibility(order);
       expect((await activate()).status).toBe(404);
-      const state = db.prepare('SELECT state FROM photo_revisions WHERE id = ?')
+      const state = db
+        .prepare('SELECT state FROM photo_revisions WHERE id = ?')
         .get(revisionId) as { state: string };
       expect(state.state).toBe('STAGED');
     } finally {
@@ -829,8 +826,7 @@ describe('CRM Server-to-Server Eligibility Gate', () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${PUBLISHER_SECRET}`,
-        },
+          Authorization: `***        },
         body: JSON.stringify({ crmOrderUuid: authorizedOrder }),
       });
       expect(resOk.status).toBe(201);
@@ -840,8 +836,7 @@ describe('CRM Server-to-Server Eligibility Gate', () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${PUBLISHER_SECRET}`,
-        },
+          Authorization: `***        },
         body: JSON.stringify({ crmOrderUuid: cancelledOrder }),
       });
       expect(resCancelled.status).toBe(403);
@@ -851,8 +846,7 @@ describe('CRM Server-to-Server Eligibility Gate', () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${PUBLISHER_SECRET}`,
-        },
+          Authorization: `***        },
         body: JSON.stringify({ crmOrderUuid: randomUUID() }),
       });
       expect(resUnknown.status).toBe(404);

@@ -489,15 +489,33 @@ export class PublicationService {
           !eligibility.isEligibleForGallery ||
           eligibility.revoked === true
         ) {
-          this.sendError(response, 403, 'SESSION_NOT_FOUND', 'CRM order is no longer eligible.', requestId);
+          this.sendError(
+            response,
+            403,
+            'SESSION_NOT_FOUND',
+            'CRM order is no longer eligible.',
+            requestId,
+          );
           return;
         }
       } catch (error) {
         if (error instanceof CrmClientError && error.isTransient) {
-          this.sendError(response, 503, 'INTERNAL_ERROR', 'CRM eligibility unavailable.', requestId);
+          this.sendError(
+            response,
+            503,
+            'INTERNAL_ERROR',
+            'CRM eligibility unavailable.',
+            requestId,
+          );
           return;
         }
-        this.sendError(response, 404, 'SESSION_NOT_FOUND', 'CRM order could not be verified.', requestId);
+        this.sendError(
+          response,
+          404,
+          'SESSION_NOT_FOUND',
+          'CRM order could not be verified.',
+          requestId,
+        );
         return;
       }
     }
