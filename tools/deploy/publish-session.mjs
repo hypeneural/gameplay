@@ -2,7 +2,7 @@ import { createHash, randomUUID } from 'node:crypto';
 import { existsSync } from 'node:fs';
 import { appendFile, mkdir, open, readFile, rename, unlink, writeFile } from 'node:fs/promises';
 import { dirname, isAbsolute, join, relative, resolve } from 'node:path';
-import { URL } from 'node:url';
+import { URL, fileURLToPath } from 'node:url';
 
 const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
@@ -531,7 +531,7 @@ function parseCliArgs(argv) {
     throw new Error('PUBLISHER_PRIVATE_RECEIPT_FILE_REQUIRED');
   }
   // No customer capability URLs or tokens may be written into the Git repo.
-  const repositoryRoot = resolve(new URL('../..', import.meta.url).pathname);
+  const repositoryRoot = resolve(fileURLToPath(new URL('../..', import.meta.url)));
   const finalReceiptFile = resolve(privateReceiptFile);
   const rel = relative(repositoryRoot, finalReceiptFile);
   if (!rel || (!rel.startsWith('..') && !isAbsolute(rel))) {
@@ -566,11 +566,31 @@ function parseCliArgs(argv) {
 
 async function main() {
   const options = parseCliArgs(process.argv.slice(2));
+  const target = options.privateReceiptFile;
+  // A durable private receipt is an at-most-once CLI fence; use status/GET,
+  // never rerun a completed publication just to produce another link.
+  if (existsSync(target)) {
+    const saved = JSON.parse(await readFile(target, 'utf8'));
+    process.stdout.write(`${JSON.stringify({
+      status: 'ALREADY_PUBLISHED_USE_PRIVATE_RECEIPT',
+      sessionIdPresent: Boolean(saved.sessionId),
+      revisionIdPresent: Boolean(saved.revisionId),
+      privateReceiptSaved: true,
+      capabilityUrlPrinted: false,
+    })}\n`);
+    return;
+  }
+  // Prove private output destination is writable BEFORE any remote mutation.
+  await mkdir(dirname(target), { recursive: true, mode: 0o700 });
+  const probe = `${target}.preflight-${randomUUID()}`;
+  try {
+    await writeFile(probe, '', { encoding: 'utf8', mode: 0o600, flag: 'wx' });
+  } finally {
+    await unlink(probe).catch(() => undefined);
+  }
   const receipt = await publishSession(options);
   // Persist the COMPLETE capability only in a private file outside Git.
   // Never emit accessUrl, galleryUrl, hubUrl, CRM identity or credentials to stdout.
-  const target = options.privateReceiptFile;
-  await mkdir(dirname(target), { recursive: true, mode: 0o700 });
   let prior;
   try {
     prior = JSON.parse(await readFile(target, 'utf8'));
