@@ -1,7 +1,7 @@
 import { createHash, randomUUID } from 'node:crypto';
 import { existsSync } from 'node:fs';
 import { appendFile, open, readFile, rename, unlink, writeFile } from 'node:fs/promises';
-import { join } from 'node:path';
+import { isAbsolute, join } from 'node:path';
 import { URL } from 'node:url';
 
 const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -558,20 +558,36 @@ function parseCliArgs(argv) {
   };
 }
 
+/** Atomic private receipt: write to a restricted temp file, then rename. */
+export async function writePrivateReceipt(path, receipt) {
+  const temporary = `${path}.tmp-${randomUUID()}`;
+  try {
+    await writeFile(temporary, JSON.stringify(receipt, null, 2), {
+      mode: 0o600,
+      flag: 'wx',
+      encoding: 'utf8',
+    });
+    await rename(temporary, path);
+  } finally {
+    await unlink(temporary).catch(() => undefined);
+  }
+}
+
 async function main() {
   const options = parseCliArgs(process.argv.slice(2));
+  if (options.showUrls) {
+    throw new Error('PUBLISHER_URL_STDOUT_DISABLED_USE_RECEIPT_FILE');
+  }
+  if (options.receiptFile && !isAbsolute(options.receiptFile)) {
+    throw new Error('PUBLISHER_RECEIPT_REQUIRES_ABSOLUTE_PATH');
+  }
   const receipt = await publishSession(options);
 
   if (options.receiptFile) {
-    await writeFile(options.receiptFile, JSON.stringify(receipt, null, 2), {
-      mode: 0o600,
-      encoding: 'utf-8',
-    });
+    await writePrivateReceipt(options.receiptFile, receipt);
   }
 
-  if (options.showUrls) {
-    process.stdout.write(`${JSON.stringify(receipt, null, 2)}\n`);
-  } else {
+  {
     const safeSummary = {
       status: receipt.status,
       sessionId: receipt.sessionId,
