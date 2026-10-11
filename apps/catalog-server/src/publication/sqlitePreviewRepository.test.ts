@@ -29,10 +29,24 @@ describe('SqlitePreviewRepository: autoridade unificada SQLite para prévia soci
     expect(await previewRepo.getByPublicToken('a'.repeat(43))).toBeUndefined();
   });
 
-  it('retorna fallback genérico V2 para sessão ativa sem capa personalizada', async () => {
+  function markSyntheticRevisionActive(sessionId: string): void {
+    const revisionId = randomUUID();
+    db.prepare(`
+      INSERT INTO photo_revisions
+        (id, session_id, sequence, request_id, manifest_sha256, manifest_json, state)
+      VALUES (?, ?, 1, ?, ?, '{}', 'ACTIVE')
+    `).run(revisionId, sessionId, randomUUID(), 'a'.repeat(64));
+    db.prepare('UPDATE photo_sessions SET active_revision_id = ? WHERE id = ?').run(
+      revisionId, sessionId,
+    );
+  }
+
+  it('bloqueia prévia antes da ativação CAS e permite fallback após ACTIVE', async () => {
     const crmOrderUuid = randomUUID();
     const session = await sessionRepo.resolveOrCreateSession(crmOrderUuid);
     const token = session.publicToken!;
+    expect(await previewRepo.getByPublicToken(token)).toBeUndefined();
+    markSyntheticRevisionActive(session.sessionId);
 
     const preview = await previewRepo.getByPublicToken(token);
     expect(preview).toEqual({
@@ -48,6 +62,7 @@ describe('SqlitePreviewRepository: autoridade unificada SQLite para prévia soci
     const crmOrderUuid = randomUUID();
     const session = await sessionRepo.resolveOrCreateSession(crmOrderUuid);
     const token = session.publicToken!;
+    markSyntheticRevisionActive(session.sessionId);
 
     previewRepo.setSocialPreview(session.sessionId, {
       consent: 'granted',
@@ -69,10 +84,20 @@ describe('SqlitePreviewRepository: autoridade unificada SQLite para prévia soci
     });
   });
 
+  it('impede chave de derivada com path traversal', async () => {
+    const session = await sessionRepo.resolveOrCreateSession(randomUUID());
+    expect(() => previewRepo.setSocialPreview(session.sessionId, {
+      consent: 'granted',
+      derivativeKey: '../other-customer',
+      version: 'social-v1',
+    })).toThrow('SOCIAL_PREVIEW_INVALID_DERIVATIVE');
+  });
+
   it('retorna revoked imediatamente quando a sessão for revogada no SQLite', async () => {
     const crmOrderUuid = randomUUID();
     const session = await sessionRepo.resolveOrCreateSession(crmOrderUuid);
     const token = session.publicToken!;
+    markSyntheticRevisionActive(session.sessionId);
 
     previewRepo.setSocialPreview(session.sessionId, {
       consent: 'granted',
