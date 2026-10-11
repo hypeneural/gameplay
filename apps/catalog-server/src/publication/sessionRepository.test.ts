@@ -405,6 +405,9 @@ describe('SessionRepository with SQLite, CAS and A1/A2/B isolation', () => {
     // Active before revocation
     const active = await repo.getActiveSession(session.publicToken!);
     expect(active).not.toBeNull();
+    expect(await repo.isSessionActive(session.publicToken!)).toBe(true);
+    expect(await repo.isSessionActive('invalid_short_token')).toBe(false);
+    expect(await repo.isSessionActive('b'.repeat(43))).toBe(false);
 
     // Revoke
     await repo.revokeSession(session.sessionId);
@@ -412,6 +415,7 @@ describe('SessionRepository with SQLite, CAS and A1/A2/B isolation', () => {
     // Invalidation is immediate (fail closed)
     const afterRevocation = await repo.getActiveSession(session.publicToken!);
     expect(afterRevocation).toBeNull();
+    expect(await repo.isSessionActive(session.publicToken!)).toBe(false);
 
     // Resolving session again reports status REVOKED
     const resolved = await repo.resolveOrCreateSession(CRM_ORDER_A);

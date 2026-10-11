@@ -1,8 +1,9 @@
 const opaqueToken = /^[a-zA-Z0-9_-]{16,128}$/;
 const opaqueDerivativeKey = /^[a-zA-Z0-9_-]{16,128}$/;
 
-export const genericPreviewVersion = 'evydencia-christmas-v1';
-export const genericPreviewInternalUri = `/_catalog_social/${genericPreviewVersion}.webp`;
+export const genericPreviewVersion = 'evydencia-christmas-v2';
+export const legacyGenericPreviewVersion = 'evydencia-christmas-v1';
+export const genericPreviewInternalUri = `/_catalog_social/${genericPreviewVersion}.jpg`;
 
 export interface SocialPreviewClock {
   now(): Date;
@@ -22,7 +23,7 @@ export type SocialPreviewRecord =
       readonly status: 'active';
       readonly preview: {
         readonly kind: 'generic';
-        readonly version: typeof genericPreviewVersion;
+        readonly version: typeof genericPreviewVersion | typeof legacyGenericPreviewVersion;
       };
     }
   | {
@@ -33,6 +34,8 @@ export type SocialPreviewRecord =
         readonly consent: 'granted' | 'revoked';
         readonly derivativeKey: string;
         readonly version: string;
+        /** Optional for backward-compatible records; new social covers use JPEG. */
+        readonly format?: 'webp' | 'jpeg';
       };
     }
   | { readonly status: 'revoked' };
@@ -51,12 +54,16 @@ export interface ResolvedSocialPreview {
   /** URI consumed only by Nginx after this backend's authorization decision. */
   readonly internalUri: string;
   readonly alt: string;
+  readonly imageType: 'image/webp' | 'image/jpeg';
 }
 
 export interface SocialMetadata {
   readonly canonicalUrl: URL;
   readonly imageUrl: URL;
   readonly imageAlt: string;
+  readonly imageType: 'image/webp' | 'image/jpeg';
+  readonly title: string;
+  readonly description: string;
 }
 
 export function isOpaquePublicToken(value: string): boolean {
@@ -94,8 +101,13 @@ export function resolvePreview(record: SocialPreviewRecord): ResolvedSocialPrevi
     return {
       kind: 'generic',
       version: record.preview.version,
-      internalUri: genericPreviewInternalUri,
+      internalUri:
+        record.preview.version === legacyGenericPreviewVersion
+          ? `/_catalog_social/${record.preview.version}.webp`
+          : genericPreviewInternalUri,
       alt: 'Ilustração de uma noite de Natal iluminada.',
+      imageType:
+        record.preview.version === legacyGenericPreviewVersion ? 'image/webp' : 'image/jpeg',
     };
   }
   if (
@@ -107,13 +119,16 @@ export function resolvePreview(record: SocialPreviewRecord): ResolvedSocialPrevi
       version: genericPreviewVersion,
       internalUri: genericPreviewInternalUri,
       alt: 'Ilustração de uma noite de Natal iluminada.',
+      imageType: 'image/jpeg',
     };
   }
+  const jpeg = record.preview.format === 'jpeg';
   return {
     kind: 'customer-photo',
     version: record.preview.version,
-    internalUri: `/_customer_social/${record.preview.derivativeKey}.webp`,
+    internalUri: `/_customer_social/${record.preview.derivativeKey}.${jpeg ? 'jpg' : 'webp'}`,
     alt: 'Uma lembrança natalina em forma de brincadeira.',
+    imageType: jpeg ? 'image/jpeg' : 'image/webp',
   };
 }
 
@@ -126,27 +141,52 @@ export function socialMetadata(
   const encodedToken = encodeURIComponent(token);
   return {
     canonicalUrl: new URL(canonicalPath, publicOrigin),
-    imageUrl: new URL(`/s/${encodedToken}/social-preview`, publicOrigin),
+    imageUrl: new URL(
+      `/s/${encodedToken}/social-preview?v=${encodeURIComponent(preview.version)}`,
+      publicOrigin,
+    ),
     imageAlt: preview.alt,
+    imageType: preview.imageType,
+    title: titleForSocialRoute(canonicalPath),
+    description: 'Uma lembrança de Natal que vira brincadeira para toda a família.',
   };
 }
 
+/** Public homepage/preview: never backed by a CRM order, private token or photo. */
+export function publicDemoSocialMetadata(publicOrigin: URL, path: string): SocialMetadata {
+  return {
+    canonicalUrl: new URL(path, publicOrigin),
+    imageUrl: new URL(`/social/${genericPreviewVersion}.jpg`, publicOrigin),
+    imageAlt: 'Arte ilustrada de Natal do Estúdio Evydência.',
+    imageType: 'image/jpeg',
+    title: titleForSocialRoute(path),
+    description: 'Explore os jogos e a galeria demonstrativa de Natal do Estúdio Evydência.',
+  };
+}
+
+function titleForSocialRoute(path: string): string {
+  if (path.endsWith('/fotos')) return 'Álbum de Natal — Estúdio Evydência';
+  if (path.includes('/game/')) return 'Jogos de Natal — Estúdio Evydência';
+  return 'Nosso Natal em Família — Estúdio Evydência';
+}
+
 function renderOpenGraphMetadata(metadata: SocialMetadata): string {
-  const title = 'Jogos de Natal — Estúdio Evydência';
-  const description = 'Uma lembrança de Natal que vira brincadeira para toda a família.';
   return [
     `<link rel="canonical" href="${escapeHtml(metadata.canonicalUrl.href)}" />`,
-    `<meta property="og:title" content="${title}" />`,
+    `<meta property="og:title" content="${escapeHtml(metadata.title)}" />`,
     '<meta property="og:type" content="website" />',
-    `<meta property="og:description" content="${description}" />`,
+    `<meta property="og:description" content="${escapeHtml(metadata.description)}" />`,
     `<meta property="og:url" content="${escapeHtml(metadata.canonicalUrl.href)}" />`,
     '<meta property="og:site_name" content="Estúdio Evydência" />',
     '<meta property="og:locale" content="pt_BR" />',
     `<meta property="og:image" content="${escapeHtml(metadata.imageUrl.href)}" />`,
-    '<meta property="og:image:type" content="image/webp" />',
+    `<meta property="og:image:secure_url" content="${escapeHtml(metadata.imageUrl.href)}" />`,
+    `<meta property="og:image:type" content="${metadata.imageType}" />`,
     '<meta property="og:image:width" content="1200" />',
     '<meta property="og:image:height" content="630" />',
     `<meta property="og:image:alt" content="${escapeHtml(metadata.imageAlt)}" />`,
+    '<meta name="twitter:card" content="summary_large_image" />',
+    `<meta name="twitter:image" content="${escapeHtml(metadata.imageUrl.href)}" />`,
   ].join('\n    ');
 }
 

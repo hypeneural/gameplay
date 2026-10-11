@@ -493,6 +493,8 @@ function parseCliArgs(argv) {
   let crmOrderUuid = process.env.CRM_ORDER_UUID ?? '';
   let logFile;
   let recoverStaleLock = false;
+  let receiptFile;
+  let showUrls = false;
 
   for (let i = 0; i < argv.length; i++) {
     const arg = argv[i];
@@ -520,6 +522,11 @@ function parseCliArgs(argv) {
       i++;
     } else if (arg === '--recover-stale-lock') {
       recoverStaleLock = true;
+    } else if (arg === '--receipt-file' && next) {
+      receiptFile = next;
+      i++;
+    } else if (arg === '--show-urls') {
+      showUrls = true;
     }
   }
 
@@ -546,13 +553,36 @@ function parseCliArgs(argv) {
     crmOrderUuid,
     logFile,
     recoverStaleLock,
+    receiptFile,
+    showUrls,
   };
 }
 
 async function main() {
   const options = parseCliArgs(process.argv.slice(2));
   const receipt = await publishSession(options);
-  process.stdout.write(`${JSON.stringify(receipt, null, 2)}\n`);
+
+  if (options.receiptFile) {
+    await writeFile(options.receiptFile, JSON.stringify(receipt, null, 2), {
+      mode: 0o600,
+      encoding: 'utf-8',
+    });
+  }
+
+  if (options.showUrls) {
+    process.stdout.write(`${JSON.stringify(receipt, null, 2)}\n`);
+  } else {
+    const safeSummary = {
+      status: receipt.status,
+      sessionId: receipt.sessionId,
+      revisionId: receipt.revisionId,
+      photosCount: receipt.photosCount,
+      blobsCount: receipt.blobsCount,
+      totalBytes: receipt.totalBytes,
+      durationMs: receipt.durationMs,
+    };
+    process.stdout.write(`${JSON.stringify(safeSummary, null, 2)}\n`);
+  }
 }
 
 if (process.argv[1]?.endsWith('publish-session.mjs')) {

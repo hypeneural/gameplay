@@ -24,7 +24,9 @@
 │       │   └── SKILL.md
 │       ├── revisao-visual-mobile
 │       │   └── SKILL.md
-│       └── vps-staging-release
+│       ├── vps-staging-release
+│       │   └── SKILL.md
+│       └── whatsapp-social-preview
 │           └── SKILL.md
 ├── .dependency-cruiser.cjs
 ├── .gitattributes
@@ -54,18 +56,24 @@
 │   │   │   └── social-preview.example.json
 │   │   ├── migrations
 │   │   │   ├── 001_mvp_photo_sessions.sql
-│   │   │   └── 002_photo_revisions_superseded_state.sql
+│   │   │   ├── 002_photo_revisions_superseded_state.sql
+│   │   │   └── 002_social_previews.sql
 │   │   ├── nginx
 │   │   │   └── catalog-social-preview.conf.example
 │   │   ├── package.json
 │   │   ├── public
 │   │   │   └── social
-│   │   │       └── evydencia-christmas-v1.webp
+│   │   │       ├── evydencia-christmas-v1.webp
+│   │   │       ├── evydencia-christmas-v2.jpg
+│   │   │       └── evydencia-christmas-v2.webp
 │   │   ├── scripts
 │   │   │   └── copy-migrations.mjs
 │   │   ├── src
 │   │   │   ├── CatalogServer.test.ts
 │   │   │   ├── CatalogServer.ts
+│   │   │   ├── crm
+│   │   │   │   ├── CrmEligibilityService.test.ts
+│   │   │   │   └── CrmEligibilityService.ts
 │   │   │   ├── filePreviewRepository.test.ts
 │   │   │   ├── filePreviewRepository.ts
 │   │   │   ├── main.ts
@@ -81,6 +89,8 @@
 │   │   │   │   ├── publicationManifest.ts
 │   │   │   │   ├── sessionRepository.test.ts
 │   │   │   │   ├── sqliteDatabase.ts
+│   │   │   │   ├── sqlitePreviewRepository.test.ts
+│   │   │   │   ├── sqlitePreviewRepository.ts
 │   │   │   │   └── tokenSecurity.ts
 │   │   │   ├── runtimeConfig.test.ts
 │   │   │   ├── runtimeConfig.ts
@@ -571,7 +581,8 @@
 │       └── vite.localTestMedia.ts
 ├── assets-src
 │   ├── catalog-social
-│   │   └── evydencia-christmas-v1.png
+│   │   ├── evydencia-christmas-v1.png
+│   │   └── evydencia-christmas-v2-template.svg
 │   ├── estilingue-das-lembrancas
 │   │   └── audio
 │   │       ├── button-press-v1.wav
@@ -743,7 +754,8 @@
 │   │   ├── EVYDFLOW_GAMEPLAY_P0_HANDOFF_2026-10-09.md
 │   │   ├── GAMEPLAY_PUBLIC_DEMO_AND_CRM_EVYDFLOW_FORENSIC_2026-10-09.md
 │   │   ├── MVP_LOCAL_PHOTO_PREFLIGHT_2026-10-09.md
-│   │   └── VPS_STAGING_DEMO_RUNBOOK.md
+│   │   ├── VPS_STAGING_DEMO_RUNBOOK.md
+│   │   └── WHATSAPP_OG_SOCIAL_COVERS_2026-10-10.md
 │   ├── plan
 │   │   └── IMPLEMENTATION_PLAN.md
 │   ├── privacy
@@ -1432,6 +1444,11 @@
 │   │   │   ├── prepareLocal.ts
 │   │   │   ├── prepareMultiLocal.ts
 │   │   │   ├── recipe.ts
+│   │   │   ├── renderPublicSocialArt.test.ts
+│   │   │   ├── renderPublicSocialArt.ts
+│   │   │   ├── socialCover.test.ts
+│   │   │   ├── socialCover.ts
+│   │   │   ├── sourceFilter.test.ts
 │   │   │   └── sourceFilter.ts
 │   │   └── tests
 │   │       ├── inspect.test.ts

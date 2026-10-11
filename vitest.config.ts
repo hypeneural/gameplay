@@ -38,6 +38,7 @@ export default defineConfig({
       'apps/**/src/**/*.test.ts',
       'packages/**/tests/**/*.test.ts',
       'tools/**/tests/**/*.test.ts',
+      'tools/**/src/**/*.test.ts',
       'tools/**/*.test.mjs',
     ],
     environment: 'node',

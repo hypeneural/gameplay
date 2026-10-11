@@ -57,6 +57,38 @@ describe('CatalogServer', () => {
     expect(await response.json()).toEqual({ status: 'unavailable', releaseStage: 'test' });
   });
 
+  it('serves bot-readable Open Graph on the root and demo without a customer token', async () => {
+    const baseUrl = await startServer(
+      { status: 'revoked' },
+      vi.fn(async () => undefined),
+      'staging-demo',
+    );
+
+    for (const [path, title] of [
+      ['/', 'Nosso Natal em Família'],
+      ['/demo/fotos', 'Álbum de Natal'],
+      ['/demo/game/memory', 'Jogos de Natal'],
+    ]) {
+      const response = await fetch(`${baseUrl}${path}`);
+      expect(response.status).toBe(200);
+      expect(response.headers.get('content-type')).toContain('text/html');
+      const html = await response.text();
+      expect(html).toContain(`https://jogos.exemplo.test${path}`);
+      expect(html).toContain(title);
+      expect(html).toContain(
+        '<meta property="og:image" content="https://jogos.exemplo.test/social/evydencia-christmas-v2.jpg" />',
+      );
+      expect(html).toContain('<meta property="og:image:width" content="1200" />');
+      expect(html).toContain('<meta property="og:image:height" content="630" />');
+      expect(html).toContain('<meta name="twitter:card" content="summary_large_image" />');
+      expect(html).not.toContain('backend-required');
+    }
+    const head = await fetch(`${baseUrl}/`, { method: 'HEAD' });
+    expect(head.status).toBe(200);
+    expect(await head.text()).toBe('');
+    expect((await fetch(`${baseUrl}/unexpected`)).status).toBe(404);
+  });
+
   it('renders complete Open Graph markup before the browser runs React', async () => {
     const audit = vi.fn(async () => undefined);
     const baseUrl = await startServer(activeGeneric, audit);
@@ -73,7 +105,7 @@ describe('CatalogServer', () => {
     );
     expect(html).toContain('<meta property="og:type" content="website" />');
     expect(html).toContain(
-      '<meta property="og:image" content="https://jogos.exemplo.test/s/local-demo-token/social-preview" />',
+      '<meta property="og:image" content="https://jogos.exemplo.test/s/local-demo-token/social-preview?v=evydencia-christmas-v2" />',
     );
     expect(html).toContain('og:image:alt');
     expect(html).not.toContain('backend-required');
@@ -83,6 +115,24 @@ describe('CatalogServer', () => {
       previewVersion: genericPreviewVersion,
       occurredAt: '2026-08-25T12:00:00.000Z',
     });
+  });
+
+  it('keeps legacy V1 social records on WebP during the V2 JPEG migration', async () => {
+    const legacy: SocialPreviewRecord = {
+      status: 'active',
+      preview: { kind: 'generic', version: 'evydencia-christmas-v1' },
+    };
+    const baseUrl = await startServer(
+      legacy,
+      vi.fn(async () => undefined),
+    );
+    const res = await fetch(`${baseUrl}/s/local-demo-token/social-preview`);
+    expect(res.status).toBe(200);
+    expect(res.headers.get('x-accel-redirect')).toBe(
+      '/_catalog_social/evydencia-christmas-v1.webp',
+    );
+    const html = await (await fetch(`${baseUrl}/s/local-demo-token`)).text();
+    expect(html).toContain('<meta property="og:image:type" content="image/webp" />');
   });
 
   it('serves a direct gallery reload with its own canonical path', async () => {
@@ -150,6 +200,52 @@ describe('CatalogServer', () => {
     );
   });
 
+  it('uses JPEG only for granted customer derivatives, with versioned OG image URLs', async () => {
+    const customerPreview: SocialPreviewRecord = {
+      status: 'active',
+      preview: {
+        kind: 'customer-photo',
+        consent: 'granted',
+        derivativeKey: 'social-preview-4Q4bB7GmT2pX',
+        version: 'social-v3',
+        format: 'jpeg',
+      },
+    };
+    const baseUrl = await startServer(
+      customerPreview,
+      vi.fn(async () => undefined),
+    );
+    const html = await (await fetch(`${baseUrl}/s/local-demo-token/fotos`)).text();
+    expect(html).toContain('<meta property="og:image:type" content="image/jpeg" />');
+    expect(html).toContain('/s/local-demo-token/social-preview?v=social-v3');
+    const image = await fetch(`${baseUrl}/s/local-demo-token/social-preview?v=social-v3`);
+    expect(image.status).toBe(200);
+    expect(image.headers.get('x-accel-redirect')).toBe(
+      '/_customer_social/social-preview-4Q4bB7GmT2pX.jpg',
+    );
+  });
+
+  it('denies customer preview if SQLite no longer recognizes its ACTIVE session', async () => {
+    const customerPreview: SocialPreviewRecord = {
+      status: 'active',
+      preview: {
+        kind: 'customer-photo',
+        consent: 'granted',
+        derivativeKey: 'social-preview-4Q4bB7GmT2pX',
+        version: 'social-v3',
+        format: 'jpeg',
+      },
+    };
+    const audit = vi.fn(async () => undefined);
+    const base = await startServer(customerPreview, audit, undefined, undefined, async () => false);
+    const response = await fetch(`${base}/s/local-demo-token/social-preview`);
+    expect(response.status).toBe(404);
+    expect(response.headers.get('x-accel-redirect')).toBeNull();
+    const html = await fetch(`${base}/s/local-demo-token`);
+    expect(html.status).toBe(404);
+    expect(audit).not.toHaveBeenCalled();
+  });
+
   it('refuses customer-photo previews in staging-demo even when config says granted', async () => {
     const customerPreview = {
       status: 'active' as const,
@@ -193,6 +289,7 @@ function startServer(
   }) => Promise<void>,
   releaseStage?: string,
   readiness?: () => Promise<void>,
+  sessionIsActive: (token: string) => Promise<boolean> = async () => true,
 ): Promise<string> {
   const server = createCatalogServer({
     publicOrigin: parsePublicOrigin('https://jogos.exemplo.test'),
@@ -202,6 +299,7 @@ function startServer(
     clock: { now: () => new Date('2026-08-25T12:00:00.000Z') },
     ...(releaseStage === undefined ? {} : { runtime: { releaseStage } }),
     ...(readiness === undefined ? {} : { readiness }),
+    sessionIsActive,
   });
   servers.push(server);
   return new Promise((resolve, reject) => {

@@ -20,6 +20,8 @@ For Contabo VPS deployment and private photo upload design, read `docs/ops/CONTA
 6. Make the smallest coherent change and run `pnpm check:fast`.
 7. Before handoff, run `pnpm validate`; record durable discoveries in `docs/lessons.md`.
 
+For WhatsApp / Open Graph artwork, crawler HTML, social previews, or customer-photo covers, first read `docs/ops/WHATSAPP_OG_SOCIAL_COVERS_2026-10-10.md` and `.agents/skills/whatsapp-social-preview/SKILL.md`. Never permit customer social art solely from a preview JSON flag; require live session authority and opt-in consent.
+
 ## Antigravity 2.22.0 safe execution protocol
 
 `AntiGravity 2.19.1` is the canonical repository label. The operator may refer to the same agent workflow as `Point Gravity` or `FluentGraft`; treat those names as aliases and do not create parallel rules, skills or architectures for them.

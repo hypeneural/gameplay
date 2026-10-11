@@ -5,6 +5,8 @@ import type { StorageService } from '../storage/FileSystemStorageService.js';
 import type { PublicationErrorCode, SessionRepository } from './SessionRepository.js';
 import { PublicationDomainError } from './SessionRepository.js';
 import type { PublicationLogger } from './publicationLogger.js';
+import type { CrmClient } from '../crm/CrmEligibilityService.js';
+import { CrmClientError } from '../crm/CrmEligibilityService.js';
 
 const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const SHA256_PATTERN = /^[a-f0-9]{64}$/i;
@@ -16,6 +18,7 @@ export interface PublicationServiceDependencies {
   readonly publisherSecret: string;
   readonly logger?: PublicationLogger;
   readonly publicBaseUrl?: string;
+  readonly crmClient?: CrmClient;
 }
 
 export class PublicationService {
@@ -24,6 +27,7 @@ export class PublicationService {
   private readonly publisherSecret: string;
   private readonly logger: PublicationLogger | undefined;
   private readonly publicBaseUrl: string | undefined;
+  private readonly crmClient: CrmClient | undefined;
 
   constructor(dependencies: PublicationServiceDependencies) {
     if (!dependencies.publisherSecret || dependencies.publisherSecret.length < 16) {
@@ -34,6 +38,7 @@ export class PublicationService {
     this.publisherSecret = dependencies.publisherSecret;
     this.logger = dependencies.logger;
     this.publicBaseUrl = dependencies.publicBaseUrl;
+    this.crmClient = dependencies.crmClient;
   }
 
   async handleHttpRequest(request: IncomingMessage, response: ServerResponse): Promise<boolean> {
@@ -170,6 +175,45 @@ export class PublicationService {
         requestId,
       );
       return;
+    }
+
+    if (this.crmClient) {
+      try {
+        const eligibility = await this.crmClient.verifyEligibility(crmOrderUuid);
+        if (
+          eligibility.status === 'CANCELLED' ||
+          !eligibility.isEligibleForGallery ||
+          eligibility.revoked === true
+        ) {
+          this.sendError(
+            response,
+            403,
+            'SESSION_NOT_FOUND',
+            'CRM order is cancelled, revoked or not eligible for photo games gallery.',
+            requestId,
+          );
+          return;
+        }
+      } catch (crmErr) {
+        if (crmErr instanceof CrmClientError && crmErr.isTransient) {
+          this.sendError(
+            response,
+            503,
+            'INTERNAL_ERROR',
+            'CRM eligibility service temporarily unavailable.',
+            requestId,
+          );
+          return;
+        }
+        this.sendError(
+          response,
+          404,
+          'SESSION_NOT_FOUND',
+          'CRM order could not be verified.',
+          requestId,
+        );
+        return;
+      }
     }
 
     try {

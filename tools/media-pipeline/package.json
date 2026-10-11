@@ -8,6 +8,7 @@
     "inspect": "tsx src/inspect.ts",
     "prepare-local": "tsx src/prepareLocal.ts",
     "prepare-demo": "tsx src/prepareDemo.ts",
+    "social:render": "tsx src/renderPublicSocialArt.ts",
     "gallery-lab": "tsx src/galleryLab.ts",
     "gallery-lab-multi": "tsx src/galleryLabMulti.ts"
   },

@@ -38,6 +38,66 @@ describe('parsePreviewConfiguration', () => {
     });
   });
 
+  it('continues accepting V1 generic records when the public default becomes V2', () => {
+    const legacy = parsePreviewConfiguration({
+      version: 1,
+      sessions: [
+        {
+          token: 'valid-legacy-social-token-1234',
+          status: 'active',
+          preview: { kind: 'generic', version: 'evydencia-christmas-v1' },
+        },
+      ],
+    });
+    expect(legacy.get('valid-legacy-social-token-1234')).toMatchObject({
+      preview: { kind: 'generic', version: 'evydencia-christmas-v1' },
+    });
+  });
+
+  it('recognizes explicit JPEG preview metadata and rejects invalid formats', () => {
+    const valid = {
+      version: 1,
+      sessions: [
+        {
+          token: 'safe-opaque-token-12345678',
+          status: 'active',
+          preview: {
+            kind: 'customer-photo',
+            consent: 'granted',
+            derivativeKey: 'opaque-social-image-12345',
+            version: 'revision-3',
+            format: 'jpeg',
+          },
+        },
+      ],
+    };
+    expect(parsePreviewConfiguration(valid).get('safe-opaque-token-12345678')).toMatchObject({
+      preview: { format: 'jpeg' },
+    });
+    expect(() =>
+      parsePreviewConfiguration({
+        ...valid,
+        sessions: [
+          {
+            ...valid.sessions[0],
+            preview: { ...valid.sessions[0]!.preview, format: 'image/svg+xml' },
+          },
+        ],
+      }),
+    ).toThrow('prévia inválida');
+    expect(() =>
+      parsePreviewConfiguration({
+        ...valid,
+        sessions: [
+          {
+            ...valid.sessions[0],
+            preview: { ...valid.sessions[0]!.preview, version: '../../unsafe' },
+          },
+        ],
+      }),
+    ).toThrow('prévia inválida');
+  });
+
   it('rejects example tokens when the runtime requests production-safe configuration', () => {
     expect(() =>
       parsePreviewConfiguration(
