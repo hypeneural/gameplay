@@ -64,7 +64,8 @@ export class HttpCrmClient implements CrmClient {
       const response = await fetch(url, {
         method: 'GET',
         headers: {
-          Authorization: `***          Accept: 'application/json',
+          Authorization: 'Bearer ' + this.secret,
+          Accept: 'application/json',
           'User-Agent': 'ChristmasGames-CatalogServer/1.0',
         },
         signal: controller.signal,
