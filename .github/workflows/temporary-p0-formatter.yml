@@ -1,0 +1,39 @@
+name: Temporary P0 Formatter Evidence
+on:
+  push:
+    branches:
+      - audit/p0-crm-sqlite-activation-20261011
+permissions:
+  contents: read
+jobs:
+  formatter:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - run: corepack enable
+      - uses: pnpm/action-setup@v4
+        with:
+          version: '11.19.0'
+      - run: pnpm install --frozen-lockfile
+      - name: Emit exact Prettier source
+        run: |
+          pnpm exec prettier --write \
+            apps/catalog-server/src/crm/CrmEligibilityService.test.ts \
+            apps/catalog-server/src/crm/CrmEligibilityService.ts \
+            apps/catalog-server/src/main.ts \
+            apps/catalog-server/src/publication/sqlitePreviewRepository.test.ts \
+            apps/catalog-server/src/publication/sqlitePreviewRepository.ts \
+            apps/catalog-server/src/runtimeConfig.test.ts \
+            apps/catalog-server/src/runtimeConfig.ts \
+            docs/ops/EVYDFLOW_GAMEPLAY_P0_HANDOFF_2026-10-09.md
+          node --input-type=module <<'NODE'
+          import { readFileSync } from 'node:fs';
+          const paths = ["apps/catalog-server/src/crm/CrmEligibilityService.test.ts","apps/catalog-server/src/crm/CrmEligibilityService.ts","apps/catalog-server/src/main.ts","apps/catalog-server/src/publication/sqlitePreviewRepository.test.ts","apps/catalog-server/src/publication/sqlitePreviewRepository.ts","apps/catalog-server/src/runtimeConfig.test.ts","apps/catalog-server/src/runtimeConfig.ts","docs/ops/EVYDFLOW_GAMEPLAY_P0_HANDOFF_2026-10-09.md"];
+          for (const path of paths) console.log('P0_FORMAT_SOURCE=' + JSON.stringify({
+            path, content: readFileSync(path, 'utf8'),
+          }));
+          NODE
