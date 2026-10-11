@@ -93,6 +93,40 @@ describe('resolveCatalogRuntimeConfig', () => {
     expect(config.applicationShellPath).toBe(resolve('/repo/apps/play/dist/index.html'));
   });
 
+  it('requires both CRM endpoint and credentials, and validates SQLite cutover', () => {
+    const base = {
+      CATALOG_RELEASE_STAGE: 'staging-demo',
+      CATALOG_PUBLIC_ORIGIN: 'https://jogos.example.test',
+      CATALOG_SOCIAL_PREVIEW_FILE: '/tmp/private-preview.json',
+      CATALOG_APPLICATION_SHELL: shell,
+    };
+    expect(() => resolveCatalogRuntimeConfig('production', {
+      ...base,
+      CATALOG_CRM_ELIGIBILITY_ORIGIN: 'https://crm.example.test',
+    }, shell)).toThrow('CATALOG_CRM_CREDENTIALS_INCOMPLETE');
+    expect(() => resolveCatalogRuntimeConfig('production', {
+      ...base,
+      CATALOG_CRM_ELIGIBILITY_ORIGIN: 'http://public-crm.example.test',
+      CATALOG_CRM_API_SECRET: 'private-secret',
+    }, shell)).toThrow('CATALOG_CRM_ELIGIBILITY_ORIGIN_INVALID');
+    expect(() => resolveCatalogRuntimeConfig('production', {
+      ...base,
+      CATALOG_PREVIEW_AUTHORITY: 'sqlite',
+    }, shell)).toThrow('CATALOG_SQLITE_PREVIEW_REQUIRES_PERSISTENCE');
+    const valid = resolveCatalogRuntimeConfig('production', {
+      ...base,
+      CATALOG_DATABASE_PATH: '/tmp/catalog.db',
+      PUBLISHER_API_SECRET: 'publisher-private-secret',
+      CATALOG_SERVER_SECRET: 'server-private-secret',
+      CATALOG_PREVIEW_AUTHORITY: 'sqlite',
+      CATALOG_CRM_ELIGIBILITY_ORIGIN: 'https://crm.example.test',
+      CATALOG_CRM_API_SECRET: 'crm-private-secret',
+    }, shell);
+    expect(valid.previewAuthority).toBe('sqlite');
+    expect(valid.crmEligibilityOrigin).toBe('https://crm.example.test');
+    expect(valid.crmApiSecret).toBe('crm-private-secret');
+  });
+
   it('resolves secrets from file path when *_FILE is provided', () => {
     const config = resolveCatalogRuntimeConfig(
       'development',
