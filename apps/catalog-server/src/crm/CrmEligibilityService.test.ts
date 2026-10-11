@@ -94,4 +94,107 @@ describe('CrmEligibilityService', () => {
       expect((error as CrmClientError).isTransient).toBe(true);
     }
   });
+
+  it('supports Laravel CRM /api/orders/{uuid}/detail contract with SingleAuthentication header and official OrderStatus IDs', async () => {
+    const orderUuid = '682dfedd-c32c-4f67-9e13-70331810228e';
+    const customerUuid = '0f7c9f5d-cb4f-45f1-b6b4-111111111111';
+    const network = vi.spyOn(globalThis, 'fetch').mockResolvedValue(
+      new Response(
+        JSON.stringify({
+          data: {
+            id: 4849,
+            uuid: orderUuid,
+            status: { id: 7, name: 'Sessão Finalizada' },
+            customer: { id: 10, uuid: customerUuid, name: 'Tabata Mousquer' },
+          },
+        }),
+        { status: 200, headers: { 'Content-Type': 'application/json' } },
+      ),
+    );
+
+    try {
+      const client = new HttpCrmClient({
+        crmEndpointUrl: 'https://api.evydencia.com',
+        apiSecret: 'exact-laravel-single-auth-token',
+        endpointStyle: 'laravel-detail',
+      });
+      const result = await client.verifyEligibility(orderUuid);
+      expect(result).toEqual({
+        orderUuid,
+        customerUuid,
+        status: 'CONFIRMED',
+        isEligibleForGallery: true,
+        revoked: false,
+        allowSocialCoverPublishing: false,
+      });
+      expect(network).toHaveBeenCalledWith(
+        `https://api.evydencia.com/api/orders/${orderUuid}/detail`,
+        expect.objectContaining({
+          method: 'GET',
+          redirect: 'error',
+          headers: expect.objectContaining({
+            Authorization: 'exact-laravel-single-auth-token',
+          }),
+        }),
+      );
+    } finally {
+      network.mockRestore();
+    }
+  });
+
+  it('maps Laravel cancelled/chargeback/refunded statuses (1, 2, 13) to revoked and waiting_payment (4) to not eligible', async () => {
+    const orderUuid = '682dfedd-c32c-4f67-9e13-70331810228e';
+    const client = new HttpCrmClient({
+      crmEndpointUrl: 'https://api.evydencia.com',
+      apiSecret: 'exact-laravel-single-auth-token',
+      endpointStyle: 'laravel-detail',
+    });
+
+    for (const statusId of [1, 2, 13]) {
+      const network = vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce(
+        new Response(
+          JSON.stringify({
+            uuid: orderUuid,
+            status: { id: statusId, name: 'Cancelado' },
+            social_cover_consent: true,
+          }),
+          { status: 200, headers: { 'Content-Type': 'application/json' } },
+        ),
+      );
+      try {
+        const result = await client.verifyEligibility(orderUuid);
+        expect(result).toEqual({
+          orderUuid,
+          status: 'CANCELLED',
+          isEligibleForGallery: false,
+          revoked: true,
+          allowSocialCoverPublishing: false,
+        });
+      } finally {
+        network.mockRestore();
+      }
+    }
+
+    const waitingNetwork = vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce(
+      new Response(
+        JSON.stringify({
+          uuid: orderUuid,
+          status: { id: 4, name: 'Aguardando Pagamento' },
+        }),
+        { status: 200, headers: { 'Content-Type': 'application/json' } },
+      ),
+    );
+    try {
+      const waitingResult = await client.verifyEligibility(orderUuid);
+      expect(waitingResult).toEqual({
+        orderUuid,
+        status: 'CANCELLED',
+        isEligibleForGallery: false,
+        revoked: false,
+        allowSocialCoverPublishing: false,
+      });
+    } finally {
+      waitingNetwork.mockRestore();
+    }
+  });
 });

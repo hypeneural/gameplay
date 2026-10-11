@@ -19,6 +19,7 @@ export interface CatalogRuntimeConfig {
   /** HTTPS CRM origin; never a URL containing customer data or query parameters. */
   readonly crmEligibilityOrigin?: string;
   readonly crmApiSecret?: string;
+  readonly crmEndpointStyle?: 'eligibility' | 'laravel-detail';
   /** Explicit cutover; staging demos retain the legacy file adapter until approved. */
   readonly previewAuthority: 'file-demo' | 'sqlite';
 }
@@ -76,6 +77,14 @@ export function resolveCatalogRuntimeConfig(
   if (Boolean(crmEligibilityOrigin) !== Boolean(crmApiSecret)) {
     throw new Error('CATALOG_CRM_CREDENTIALS_INCOMPLETE');
   }
+  const crmEndpointStyle = environment.CATALOG_CRM_ENDPOINT_STYLE;
+  if (
+    crmEndpointStyle !== undefined &&
+    crmEndpointStyle !== 'eligibility' &&
+    crmEndpointStyle !== 'laravel-detail'
+  ) {
+    throw new Error('CATALOG_CRM_ENDPOINT_STYLE_INVALID');
+  }
   const previewAuthority = environment.CATALOG_PREVIEW_AUTHORITY ?? 'file-demo';
   if (previewAuthority !== 'file-demo' && previewAuthority !== 'sqlite') {
     throw new Error('CATALOG_PREVIEW_AUTHORITY_INVALID');
@@ -105,6 +114,7 @@ export function resolveCatalogRuntimeConfig(
     ...(serverSecret !== undefined ? { serverSecret } : {}),
     ...(crmEligibilityOrigin ? { crmEligibilityOrigin } : {}),
     ...(crmApiSecret ? { crmApiSecret } : {}),
+    ...(crmEndpointStyle ? { crmEndpointStyle } : {}),
   };
 }
 

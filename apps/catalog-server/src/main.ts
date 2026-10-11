@@ -58,6 +58,7 @@ if (runtime.databasePath && runtime.publisherApiSecret) {
       ? new HttpCrmClient({
           crmEndpointUrl: runtime.crmEligibilityOrigin,
           apiSecret: runtime.crmApiSecret,
+          ...(runtime.crmEndpointStyle ? { endpointStyle: runtime.crmEndpointStyle } : {}),
         })
       : {
           async verifyEligibility() {
