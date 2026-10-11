@@ -473,6 +473,35 @@ export class PublicationService {
       return;
     }
 
+    // Eligibility at resolve is not authority at activation time: a paid
+    // order may be cancelled/refunded while media is being processed.
+    if (this.crmClient) {
+      const crmOrderUuid = await this.sessionRepo.getCrmOrderUuidForRevision(revisionId);
+      if (!crmOrderUuid) {
+        this.sendError(response, 404, 'REVISION_NOT_FOUND', 'Revision does not exist.', requestId);
+        return;
+      }
+      try {
+        const eligibility = await this.crmClient.verifyEligibility(crmOrderUuid);
+        if (
+          eligibility.orderUuid.toLowerCase() !== crmOrderUuid.toLowerCase() ||
+          eligibility.status === 'CANCELLED' ||
+          !eligibility.isEligibleForGallery ||
+          eligibility.revoked === true
+        ) {
+          this.sendError(response, 403, 'SESSION_NOT_FOUND', 'CRM order is no longer eligible.', requestId);
+          return;
+        }
+      } catch (error) {
+        if (error instanceof CrmClientError && error.isTransient) {
+          this.sendError(response, 503, 'INTERNAL_ERROR', 'CRM eligibility unavailable.', requestId);
+          return;
+        }
+        this.sendError(response, 404, 'SESSION_NOT_FOUND', 'CRM order could not be verified.', requestId);
+        return;
+      }
+    }
+
     try {
       const receipt = await this.sessionRepo.activatePublication(
         revisionId,
