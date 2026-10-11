@@ -31,13 +31,16 @@ describe('SqlitePreviewRepository: autoridade unificada SQLite para prévia soci
 
   function markSyntheticRevisionActive(sessionId: string): void {
     const revisionId = randomUUID();
-    db.prepare(`
+    db.prepare(
+      `
       INSERT INTO photo_revisions
         (id, session_id, sequence, request_id, manifest_sha256, manifest_json, state)
       VALUES (?, ?, 1, ?, ?, '{}', 'ACTIVE')
-    `).run(revisionId, sessionId, randomUUID(), 'a'.repeat(64));
+    `,
+    ).run(revisionId, sessionId, randomUUID(), 'a'.repeat(64));
     db.prepare('UPDATE photo_sessions SET active_revision_id = ? WHERE id = ?').run(
-      revisionId, sessionId,
+      revisionId,
+      sessionId,
     );
   }
 
@@ -86,11 +89,13 @@ describe('SqlitePreviewRepository: autoridade unificada SQLite para prévia soci
 
   it('impede chave de derivada com path traversal', async () => {
     const session = await sessionRepo.resolveOrCreateSession(randomUUID());
-    expect(() => previewRepo.setSocialPreview(session.sessionId, {
-      consent: 'granted',
-      derivativeKey: '../other-customer',
-      version: 'social-v1',
-    })).toThrow('SOCIAL_PREVIEW_INVALID_DERIVATIVE');
+    expect(() =>
+      previewRepo.setSocialPreview(session.sessionId, {
+        consent: 'granted',
+        derivativeKey: '../other-customer',
+        version: 'social-v1',
+      }),
+    ).toThrow('SOCIAL_PREVIEW_INVALID_DERIVATIVE');
   });
 
   it('retorna revoked imediatamente quando a sessão for revogada no SQLite', async () => {

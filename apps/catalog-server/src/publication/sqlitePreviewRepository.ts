@@ -90,8 +90,10 @@ export class SqlitePreviewRepository implements SocialPreviewRepository {
       readonly format?: 'jpeg' | 'webp';
     },
   ): void {
-    if (!/^[A-Za-z0-9_-]{16,128}$/.test(preview.derivativeKey) ||
-        !/^[A-Za-z0-9_-]{1,64}$/.test(preview.version)) {
+    if (
+      !/^[A-Za-z0-9_-]{16,128}$/.test(preview.derivativeKey) ||
+      !/^[A-Za-z0-9_-]{1,64}$/.test(preview.version)
+    ) {
       throw new Error('SOCIAL_PREVIEW_INVALID_DERIVATIVE');
     }
     const upsertQuery = this.db.prepare(`

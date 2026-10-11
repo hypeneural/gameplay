@@ -62,12 +62,21 @@ describe('CrmEligibilityService', () => {
   });
 
   it('rejects insecure remote CRM origins and invalid timeout bounds', () => {
-    expect(() => new HttpCrmClient({
-      crmEndpointUrl: 'http://external.example.test', apiSecret: 'secret',
-    })).toThrow('CRM_ELIGIBILITY_ORIGIN_INVALID');
-    expect(() => new HttpCrmClient({
-      crmEndpointUrl: 'https://crm.example.test', apiSecret: 'secret', timeoutMs: 0,
-    })).toThrow('CRM_ELIGIBILITY_TIMEOUT_INVALID');
+    expect(
+      () =>
+        new HttpCrmClient({
+          crmEndpointUrl: 'http://external.example.test',
+          apiSecret: 'secret',
+        }),
+    ).toThrow('CRM_ELIGIBILITY_ORIGIN_INVALID');
+    expect(
+      () =>
+        new HttpCrmClient({
+          crmEndpointUrl: 'https://crm.example.test',
+          apiSecret: 'secret',
+          timeoutMs: 0,
+        }),
+    ).toThrow('CRM_ELIGIBILITY_TIMEOUT_INVALID');
   });
 
   it('HttpCrmClient throws transient CrmClientError on network failure', async () => {

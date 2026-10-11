@@ -37,8 +37,13 @@ export class HttpCrmClient implements CrmClient {
     }
     const url = new URL(options.crmEndpointUrl);
     const loopback = ['127.0.0.1', 'localhost', '[::1]'].includes(url.hostname);
-    if ((url.protocol !== 'https:' && !(url.protocol === 'http:' && loopback)) ||
-        url.username || url.password || url.search || url.hash) {
+    if (
+      (url.protocol !== 'https:' && !(url.protocol === 'http:' && loopback)) ||
+      url.username ||
+      url.password ||
+      url.search ||
+      url.hash
+    ) {
       throw new Error('CRM_ELIGIBILITY_ORIGIN_INVALID');
     }
     const timeoutMs = options.timeoutMs ?? 5000;
@@ -59,8 +64,7 @@ export class HttpCrmClient implements CrmClient {
       const response = await fetch(url, {
         method: 'GET',
         headers: {
-          Authorization: `Bearer ${this.secret}`,
-          Accept: 'application/json',
+          Authorization: `***          Accept: 'application/json',
           'User-Agent': 'ChristmasGames-CatalogServer/1.0',
         },
         signal: controller.signal,

@@ -62,9 +62,14 @@ export function resolveCatalogRuntimeConfig(
   if (crmEligibilityOrigin) {
     const crmUrl = new URL(crmEligibilityOrigin);
     const loopback = ['127.0.0.1', 'localhost', '[::1]'].includes(crmUrl.hostname);
-    if ((crmUrl.protocol !== 'https:' && !(crmUrl.protocol === 'http:' && loopback)) ||
-        crmUrl.username || crmUrl.password || crmUrl.search || crmUrl.hash ||
-        crmUrl.pathname !== '/') {
+    if (
+      (crmUrl.protocol !== 'https:' && !(crmUrl.protocol === 'http:' && loopback)) ||
+      crmUrl.username ||
+      crmUrl.password ||
+      crmUrl.search ||
+      crmUrl.hash ||
+      crmUrl.pathname !== '/'
+    ) {
       throw new Error('CATALOG_CRM_ELIGIBILITY_ORIGIN_INVALID');
     }
   }
@@ -75,8 +80,10 @@ export function resolveCatalogRuntimeConfig(
   if (previewAuthority !== 'file-demo' && previewAuthority !== 'sqlite') {
     throw new Error('CATALOG_PREVIEW_AUTHORITY_INVALID');
   }
-  if (previewAuthority === 'sqlite' &&
-      (!environment.CATALOG_DATABASE_PATH || !publisherApiSecret || !serverSecret)) {
+  if (
+    previewAuthority === 'sqlite' &&
+    (!environment.CATALOG_DATABASE_PATH || !publisherApiSecret || !serverSecret)
+  ) {
     throw new Error('CATALOG_SQLITE_PREVIEW_REQUIRES_PERSISTENCE');
   }
 

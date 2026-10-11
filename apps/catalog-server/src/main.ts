@@ -95,8 +95,7 @@ const server = createCatalogServer({
     if (runtime.previewAuthority === 'sqlite') {
       // Lightweight indexed DB connection health; no customer rows are logged.
       const check = readinessDatabase?.prepare('SELECT 1 AS ok').get() as
-        | { ok?: number }
-        | undefined;
+        { ok?: number } | undefined;
       if (check?.ok !== 1) throw new Error('CATALOG_SQLITE_UNAVAILABLE');
       return;
     }
