@@ -2,6 +2,10 @@ import { readFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import { createCatalogServer } from './CatalogServer.js';
 import { createFilePreviewRepository, parsePreviewConfiguration } from './filePreviewRepository.js';
+import type { SocialPreviewRepository } from './socialPreview.js';
+import { SqlitePreviewRepository } from './publication/sqlitePreviewRepository.js';
+import { CrmClientError, HttpCrmClient } from './crm/CrmEligibilityService.js';
+import type { CrmClient } from './crm/CrmEligibilityService.js';
 import { resolveCatalogRuntimeConfig } from './runtimeConfig.js';
 import { PublicationService } from './publication/PublicationService.js';
 import { SqliteSessionRepository } from './publication/SessionRepository.js';
@@ -25,6 +29,9 @@ parsePreviewConfiguration(JSON.parse(previewSource), {
 
 let publicationService: PublicationService | undefined;
 let sessionIsActive: ((token: string) => Promise<boolean>) | undefined;
+let previews: SocialPreviewRepository = createFilePreviewRepository(runtime.previewConfigPath, {
+  rejectExampleTokens: environment === 'production',
+});
 
 if (runtime.databasePath && runtime.publisherApiSecret) {
   if (!runtime.serverSecret) {
@@ -38,6 +45,23 @@ if (runtime.databasePath && runtime.publisherApiSecret) {
     publicBaseUrl: runtime.publicOrigin.origin,
   });
   sessionIsActive = async (token) => sessionRepository.isSessionActive(token);
+  if (runtime.previewAuthority === 'sqlite') {
+    previews = new SqlitePreviewRepository({ db });
+  }
+
+  // In persistent mode a missing CRM connection must deny session resolution.
+  // Staging HTML/OG remains accessible, but no unknown customer UUID is accepted.
+  const crmClient: CrmClient =
+    runtime.crmEligibilityOrigin && runtime.crmApiSecret
+      ? new HttpCrmClient({
+          crmEndpointUrl: runtime.crmEligibilityOrigin,
+          apiSecret: runtime.crmApiSecret,
+        })
+      : {
+          async verifyEligibility() {
+            throw new CrmClientError('CRM_ELIGIBILITY_NOT_CONFIGURED', true);
+          },
+        };
   const storageService = new FileSystemStorageService({
     storageDir: runtime.storageDir ?? './data/media',
   });
@@ -46,6 +70,7 @@ if (runtime.databasePath && runtime.publisherApiSecret) {
     sessionRepository,
     storageService,
     publisherSecret: runtime.publisherApiSecret,
+    crmClient,
     logger,
     publicBaseUrl: runtime.publicOrigin.origin,
   });
@@ -54,9 +79,7 @@ if (runtime.databasePath && runtime.publisherApiSecret) {
 const server = createCatalogServer({
   publicOrigin: runtime.publicOrigin,
   loadApplicationShell: async () => applicationShell,
-  previews: createFilePreviewRepository(runtime.previewConfigPath, {
-    rejectExampleTokens: environment === 'production',
-  }),
+  previews,
   audit: {
     async record(entry) {
       // A integração de auditoria só recebe decisão, versão e data. Nunca
