@@ -712,6 +712,59 @@ describe('Publication logger capability privacy regression', () => {
 });
 
 describe('CRM Server-to-Server Eligibility Gate', () => {
+  it('does not activate a staged revision after CRM cancellation or CRM outage', async () => {
+    const tempDir = await mkdtemp(join(tmpdir(), 'crm-activate-'));
+    const db = openSqliteDatabase(':memory:');
+    applyMigrations(db);
+    const repo = new SqliteSessionRepository({
+      db, serverSecret: SERVER_SECRET, publicBaseUrl: 'http://127.0.0.1',
+    });
+    const order = randomUUID();
+    const session = await repo.resolveOrCreateSession(order);
+    const revisionId = randomUUID();
+    db.prepare(`INSERT INTO photo_revisions
+      (id, session_id, sequence, request_id, manifest_sha256, manifest_json, state)
+      VALUES (?, ?, 1, ?, ?, '{}', 'STAGED')`
+    ).run(revisionId, session.sessionId, randomUUID(), 'a'.repeat(64));
+    const crm = new InMemoryCrmClient();
+    crm.setEligibility({ orderUuid: order, status: 'CANCELLED',
+      isEligibleForGallery: false, revoked: true });
+    const server = createCatalogServer({
+      publicOrigin: new URL('http://127.0.0.1'),
+      loadApplicationShell: async () => '<html></html>',
+      previews: { async getByPublicToken() { return undefined; } },
+      audit: { async record() {} },
+      clock: { now: () => new Date() },
+      runtime: { releaseStage: 'development' },
+      publicationService: new PublicationService({
+        sessionRepository: repo, storageService: new FileSystemStorageService({ storageDir: tempDir }),
+        publisherSecret: PUBLISHER_SECRET, crmClient: crm,
+      }),
+    });
+    server.listen(0, '127.0.0.1');
+    await once(server, 'listening');
+    const port = (server.address() as AddressInfo).port;
+    const activate = () => fetch(
+      `http://127.0.0.1:${port}/internal/v1/publications/${revisionId}/activate`,
+      { method: 'POST', headers: {
+          Authorization: `Bearer ${PUBLISHER_SECRET}`, 'Content-Type': 'application/json',
+        }, body: JSON.stringify({ expectedActiveRevisionId: null }) },
+    );
+    try {
+      expect((await activate()).status).toBe(403);
+      crm.removeEligibility(order);
+      expect((await activate()).status).toBe(404);
+      const state = db.prepare('SELECT state FROM photo_revisions WHERE id = ?')
+        .get(revisionId) as { state: string };
+      expect(state.state).toBe('STAGED');
+    } finally {
+      server.close();
+      await once(server, 'close');
+      db.close();
+      await rm(tempDir, { recursive: true, force: true });
+    }
+  });
+
   it('enforces CRM eligibility checks when CrmClient is configured', async () => {
     const tempDir = await mkdtemp(join(tmpdir(), 'crm-test-'));
     const db = openSqliteDatabase(':memory:');
