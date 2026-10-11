@@ -181,6 +181,7 @@ export class PublicationService {
       try {
         const eligibility = await this.crmClient.verifyEligibility(crmOrderUuid);
         if (
+          eligibility.orderUuid.toLowerCase() !== crmOrderUuid.toLowerCase() ||
           eligibility.status === 'CANCELLED' ||
           !eligibility.isEligibleForGallery ||
           eligibility.revoked === true
