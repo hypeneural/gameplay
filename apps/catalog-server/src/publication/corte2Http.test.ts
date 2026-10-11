@@ -121,7 +121,7 @@ describe('Corte 2 HTTP Endpoints & Storage Flow', () => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: '***',
+        Authorization: 'Bearer wrong-secret',
       },
       body: JSON.stringify({ crmOrderUuid: randomUUID() }),
     });
@@ -136,7 +136,8 @@ describe('Corte 2 HTTP Endpoints & Storage Flow', () => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `***      },
+        Authorization: `Bearer ${PUBLISHER_SECRET}`,
+      },
       body: JSON.stringify({ crmOrderUuid }),
     });
     expect(resolveRes.status).toBe(201);
@@ -154,7 +155,8 @@ describe('Corte 2 HTTP Endpoints & Storage Flow', () => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `***      },
+        Authorization: `Bearer ${PUBLISHER_SECRET}`,
+      },
       body: JSON.stringify({ crmOrderUuid }),
     });
     expect(resolveAgain.status).toBe(200);
@@ -221,7 +223,8 @@ describe('Corte 2 HTTP Endpoints & Storage Flow', () => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `***      },
+        Authorization: `Bearer ${PUBLISHER_SECRET}`,
+      },
       body: JSON.stringify(manifest),
     });
     expect(beginRes.status).toBe(201);
@@ -245,14 +248,15 @@ describe('Corte 2 HTTP Endpoints & Storage Flow', () => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `***      },
+        Authorization: `Bearer ${PUBLISHER_SECRET}`,
+      },
       body: JSON.stringify(manifest),
     });
     expect(beginReplay.status).toBe(200);
 
     // 4. GET Publication Status
     const statusRes = await fetch(`${baseUrl}/internal/v1/publications/${revisionId}`, {
-      headers: { Authorization: `*** },
+      headers: { Authorization: `Bearer ${PUBLISHER_SECRET}` },
     });
     expect(statusRes.status).toBe(200);
     const currentStatus = (await statusRes.json()) as typeof stagedPub;
@@ -265,7 +269,8 @@ describe('Corte 2 HTTP Endpoints & Storage Flow', () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `***        },
+          Authorization: `Bearer ${PUBLISHER_SECRET}`,
+        },
         body: JSON.stringify({ expectedActiveRevisionId: null }),
       },
     );
@@ -281,7 +286,8 @@ describe('Corte 2 HTTP Endpoints & Storage Flow', () => {
         headers: {
           'Content-Type': 'image/webp',
           'X-Content-SHA256': thumbSha256,
-          Authorization: `***        },
+          Authorization: `Bearer ${PUBLISHER_SECRET}`,
+        },
         body: new Uint8Array(thumbBuf),
       },
     );
@@ -298,7 +304,8 @@ describe('Corte 2 HTTP Endpoints & Storage Flow', () => {
         headers: {
           'Content-Type': 'image/webp',
           'X-Content-SHA256': thumbSha256,
-          Authorization: `***        },
+          Authorization: `Bearer ${PUBLISHER_SECRET}`,
+        },
         body: new Uint8Array(thumbBuf),
       },
     );
@@ -312,7 +319,8 @@ describe('Corte 2 HTTP Endpoints & Storage Flow', () => {
         headers: {
           'Content-Type': 'image/webp',
           'X-Content-SHA256': '0'.repeat(64),
-          Authorization: `***        },
+          Authorization: `Bearer ${PUBLISHER_SECRET}`,
+        },
         body: new Uint8Array(cardBuf),
       },
     );
@@ -326,7 +334,8 @@ describe('Corte 2 HTTP Endpoints & Storage Flow', () => {
         headers: {
           'Content-Type': 'image/webp',
           'X-Content-SHA256': cardSha256,
-          Authorization: `***        },
+          Authorization: `Bearer ${PUBLISHER_SECRET}`,
+        },
         body: new Uint8Array(cardBuf),
       },
     );
@@ -340,7 +349,8 @@ describe('Corte 2 HTTP Endpoints & Storage Flow', () => {
         headers: {
           'Content-Type': 'image/webp',
           'X-Content-SHA256': gameSha256,
-          Authorization: `***        },
+          Authorization: `Bearer ${PUBLISHER_SECRET}`,
+        },
         body: new Uint8Array(gameBuf),
       },
     );
@@ -348,7 +358,7 @@ describe('Corte 2 HTTP Endpoints & Storage Flow', () => {
 
     // Verify status now has 3 ready blobs, 0 pending
     const statusAllReady = await fetch(`${baseUrl}/internal/v1/publications/${revisionId}`, {
-      headers: { Authorization: `*** },
+      headers: { Authorization: `Bearer ${PUBLISHER_SECRET}` },
     });
     const statusJson = (await statusAllReady.json()) as typeof stagedPub;
     expect(statusJson.readyBlobs).toBe(3);
@@ -359,7 +369,8 @@ describe('Corte 2 HTTP Endpoints & Storage Flow', () => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `***      },
+        Authorization: `Bearer ${PUBLISHER_SECRET}`,
+      },
       body: JSON.stringify({ expectedActiveRevisionId: null }),
     });
     expect(activateRes.status).toBe(200);
@@ -436,7 +447,8 @@ describe('Corte 2 HTTP Endpoints & Storage Flow', () => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `***      },
+        Authorization: `Bearer ${PUBLISHER_SECRET}`,
+      },
       body: JSON.stringify({
         schemaVersion: 1,
         requestId: randomUUID(),
@@ -488,7 +500,8 @@ describe('Corte 2 HTTP Endpoints & Storage Flow', () => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `***      },
+        Authorization: `Bearer ${PUBLISHER_SECRET}`,
+      },
       body: JSON.stringify({ crmOrderUuid }),
     });
     const { sessionId } = (await resolveRes.json()) as { sessionId: string };
@@ -538,7 +551,8 @@ describe('Corte 2 HTTP Endpoints & Storage Flow', () => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `***      },
+        Authorization: `Bearer ${PUBLISHER_SECRET}`,
+      },
       body: JSON.stringify(firstManifest),
     });
     expect(firstRes.status).toBe(201);
@@ -552,7 +566,8 @@ describe('Corte 2 HTTP Endpoints & Storage Flow', () => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `***      },
+        Authorization: `Bearer ${PUBLISHER_SECRET}`,
+      },
       body: JSON.stringify(conflictingManifest),
     });
     expect(conflictRes.status).toBe(409);
@@ -565,7 +580,8 @@ describe('Corte 2 HTTP Endpoints & Storage Flow', () => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `***      },
+        Authorization: `Bearer ${PUBLISHER_SECRET}`,
+      },
       body: JSON.stringify({ invalid: 'garbage' }),
     });
     expect(res.status).toBe(422);
@@ -575,7 +591,7 @@ describe('Corte 2 HTTP Endpoints & Storage Flow', () => {
 
   it('returns 404 for nonexistent revision in GET /internal/v1/publications/:revisionId', async () => {
     const res = await fetch(`${baseUrl}/internal/v1/publications/${randomUUID()}`, {
-      headers: { Authorization: `*** },
+      headers: { Authorization: `Bearer ${PUBLISHER_SECRET}` },
     });
     expect(res.status).toBe(404);
     const body = (await res.json()) as { code: string };
@@ -588,7 +604,8 @@ describe('Corte 2 HTTP Endpoints & Storage Flow', () => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `***      },
+        Authorization: `Bearer ${PUBLISHER_SECRET}`,
+      },
       body: JSON.stringify({ crmOrderUuid }),
     });
     const { sessionId } = (await resolveRes.json()) as { sessionId: string };
@@ -635,7 +652,8 @@ describe('Corte 2 HTTP Endpoints & Storage Flow', () => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `***      },
+        Authorization: `Bearer ${PUBLISHER_SECRET}`,
+      },
       body: JSON.stringify(manifest),
     });
     const { revisionId } = (await beginRes.json()) as { revisionId: string };
@@ -647,7 +665,8 @@ describe('Corte 2 HTTP Endpoints & Storage Flow', () => {
         headers: {
           'Content-Type': 'image/webp',
           'X-Content-SHA256': hash,
-          Authorization: `***        },
+          Authorization: `Bearer ${PUBLISHER_SECRET}`,
+        },
         body: new Uint8Array(oversizedBuffer),
       },
     );
@@ -742,7 +761,8 @@ describe('CRM Server-to-Server Eligibility Gate', () => {
       fetch(`http://127.0.0.1:${port}/internal/v1/publications/${revisionId}/activate`, {
         method: 'POST',
         headers: {
-          Authorization: `***          'Content-Type': 'application/json',
+          Authorization: 'Bearer ' + PUBLISHER_SECRET,
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({ expectedActiveRevisionId: null }),
       });
@@ -826,7 +846,8 @@ describe('CRM Server-to-Server Eligibility Gate', () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `***        },
+          Authorization: `Bearer ${PUBLISHER_SECRET}`,
+        },
         body: JSON.stringify({ crmOrderUuid: authorizedOrder }),
       });
       expect(resOk.status).toBe(201);
@@ -836,7 +857,8 @@ describe('CRM Server-to-Server Eligibility Gate', () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `***        },
+          Authorization: `Bearer ${PUBLISHER_SECRET}`,
+        },
         body: JSON.stringify({ crmOrderUuid: cancelledOrder }),
       });
       expect(resCancelled.status).toBe(403);
@@ -846,7 +868,8 @@ describe('CRM Server-to-Server Eligibility Gate', () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `***        },
+          Authorization: `Bearer ${PUBLISHER_SECRET}`,
+        },
         body: JSON.stringify({ crmOrderUuid: randomUUID() }),
       });
       expect(resUnknown.status).toBe(404);
