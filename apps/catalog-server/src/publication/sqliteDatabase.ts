@@ -108,7 +108,9 @@ export function applyMigrations(db: DatabaseSync, customMigrationsDir?: string):
     .sort((a, b) => {
       const numA = parseInt(a.split('_')[0] ?? '0', 10);
       const numB = parseInt(b.split('_')[0] ?? '0', 10);
-      return numA - numB;
+      // Two legacy migrations share numeric prefix 002. Preserve their
+      // existing filenames/checksums and always choose the same tie order.
+      return numA - numB || a.localeCompare(b, 'en');
     });
 
   if (migrationFiles.length === 0) {
