@@ -35,9 +35,19 @@ export class HttpCrmClient implements CrmClient {
     if (!options.crmEndpointUrl || !options.apiSecret) {
       throw new Error('HttpCrmClient requires crmEndpointUrl and apiSecret');
     }
-    this.endpoint = options.crmEndpointUrl.replace(/\/+$/, '');
+    const url = new URL(options.crmEndpointUrl);
+    const loopback = ['127.0.0.1', 'localhost', '[::1]'].includes(url.hostname);
+    if ((url.protocol !== 'https:' && !(url.protocol === 'http:' && loopback)) ||
+        url.username || url.password || url.search || url.hash) {
+      throw new Error('CRM_ELIGIBILITY_ORIGIN_INVALID');
+    }
+    const timeoutMs = options.timeoutMs ?? 5000;
+    if (!Number.isSafeInteger(timeoutMs) || timeoutMs < 100 || timeoutMs > 30000) {
+      throw new Error('CRM_ELIGIBILITY_TIMEOUT_INVALID');
+    }
+    this.endpoint = url.href.replace(/\/+$/, '');
     this.secret = options.apiSecret;
-    this.timeoutMs = options.timeoutMs ?? 5000;
+    this.timeoutMs = timeoutMs;
   }
 
   async verifyEligibility(orderUuid: string): Promise<CrmOrderEligibility> {
@@ -54,6 +64,7 @@ export class HttpCrmClient implements CrmClient {
           'User-Agent': 'ChristmasGames-CatalogServer/1.0',
         },
         signal: controller.signal,
+        redirect: 'error',
       });
 
       if (!response.ok) {
@@ -70,6 +81,7 @@ export class HttpCrmClient implements CrmClient {
       if (
         !body ||
         typeof body.orderUuid !== 'string' ||
+        body.orderUuid.toLowerCase() !== orderUuid.toLowerCase() ||
         typeof body.isEligibleForGallery !== 'boolean' ||
         (body.status !== 'CONFIRMED' && body.status !== 'DELIVERED' && body.status !== 'CANCELLED')
       ) {
@@ -87,9 +99,7 @@ export class HttpCrmClient implements CrmClient {
       if (error instanceof CrmClientError) throw error;
       const isAbort = controller.signal.aborted;
       throw new CrmClientError(
-        isAbort
-          ? `CRM request timed out after ${this.timeoutMs}ms`
-          : `CRM network failure: ${String(error)}`,
+        isAbort ? 'CRM_ELIGIBILITY_TIMEOUT' : 'CRM_ELIGIBILITY_NETWORK_FAILURE',
         true,
       );
     } finally {
