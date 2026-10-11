@@ -1,11 +1,34 @@
 import { Buffer } from 'node:buffer';
 import { createServer } from 'node:http';
-import { mkdtemp, readFile, rm, writeFile, mkdir } from 'node:fs/promises';
+import { mkdtemp, readFile, rm, writeFile, mkdir, stat } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { URL } from 'node:url';
 import { describe, expect, it } from 'vitest';
-import { isPidAlive, publishSession } from './publish-session.mjs';
+import { isPidAlive, publishSession, writePrivateReceipt } from './publish-session.mjs';
+
+describe('private receipt file', () => {
+  it('writes atomically with restricted permissions and keeps previous receipt intact on replay', async () => {
+    const directory = await mkdtemp(join(tmpdir(), 'publisher-private-receipt-'));
+    const path = join(directory, 'private-receipt.json');
+    try {
+      await writePrivateReceipt(path, {
+        status: 'ACTIVE',
+        hubUrl: 'https://jogos.example.test/s/synthetic-secret-token',
+      });
+      const first = JSON.parse(await readFile(path, 'utf8'));
+      expect(first.status).toBe('ACTIVE');
+      expect(first.hubUrl).toContain('synthetic-secret-token');
+      if (process.platform !== 'win32') {
+        expect((await stat(path)).mode & 0o077).toBe(0);
+      }
+      await writePrivateReceipt(path, { status: 'ACTIVE', revisionId: 'replayed' });
+      expect(JSON.parse(await readFile(path, 'utf8')).revisionId).toBe('replayed');
+    } finally {
+      await rm(directory, { recursive: true, force: true });
+    }
+  });
+});
 
 function createMockCatalogServer() {
   const blobsReceived = new Map();
