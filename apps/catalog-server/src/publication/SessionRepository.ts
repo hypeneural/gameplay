@@ -111,6 +111,8 @@ export interface SessionRepository {
   beginPublication(manifestInput: unknown): Promise<PublicationState>;
   recordVerifiedBlob(confirmation: VerifiedBlobConfirmation): Promise<RecordBlobResult>;
   getPublicationStatus(revisionId: string): Promise<PublicationState>;
+  /** Private-only CRM owner lookup for last-moment activation eligibility checks. */
+  getCrmOrderUuidForRevision(revisionId: string): Promise<string | null>;
   getExpectedBlob(revisionId: string, blobId: string): Promise<ExpectedBlobInfo | null>;
   activatePublication(
     revisionId: string,
@@ -470,6 +472,16 @@ export class SqliteSessionRepository implements SessionRepository {
       readyBlobs,
       pendingBlobIds,
     };
+  }
+
+  async getCrmOrderUuidForRevision(revisionId: string): Promise<string | null> {
+    const row = this.db.prepare(
+      `SELECT s.crm_order_uuid AS crm_order_uuid
+       FROM photo_revisions AS r
+       JOIN photo_sessions AS s ON s.id = r.session_id
+       WHERE r.id = ? LIMIT 1`,
+    ).get(revisionId) as { crm_order_uuid: string } | undefined;
+    return row?.crm_order_uuid ?? null;
   }
 
   async activatePublication(
