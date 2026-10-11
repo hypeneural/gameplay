@@ -612,10 +612,10 @@ async function main() {
     }
   }
   process.stdout.write(`${JSON.stringify({
-    state: receipt.state ?? 'ACTIVE',
+    status: receipt.status,
     sessionIdPresent: Boolean(receipt.sessionId),
     revisionIdPresent: Boolean(receipt.revisionId),
-    photoCount: receipt.photoCount,
+    photosCount: receipt.photosCount,
     privateReceiptSaved: true,
     capabilityUrlPrinted: false,
   })}\n`);
