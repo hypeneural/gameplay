@@ -1,4 +1,4 @@
-import type { URL } from 'node:url';
+import { URL } from 'node:url';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { parsePublicOrigin } from './socialPreview.js';
