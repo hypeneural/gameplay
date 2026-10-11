@@ -37,7 +37,7 @@ if (runtime.databasePath && runtime.publisherApiSecret) {
     serverSecret: runtime.serverSecret,
     publicBaseUrl: runtime.publicOrigin.origin,
   });
-  sessionIsActive = async (token) => (await sessionRepository.getActiveSession(token)) !== null;
+  sessionIsActive = async (token) => sessionRepository.isSessionActive(token);
   const storageService = new FileSystemStorageService({
     storageDir: runtime.storageDir ?? './data/media',
   });

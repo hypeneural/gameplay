@@ -56,7 +56,8 @@
 │   │   │   └── social-preview.example.json
 │   │   ├── migrations
 │   │   │   ├── 001_mvp_photo_sessions.sql
-│   │   │   └── 002_photo_revisions_superseded_state.sql
+│   │   │   ├── 002_photo_revisions_superseded_state.sql
+│   │   │   └── 002_social_previews.sql
 │   │   ├── nginx
 │   │   │   └── catalog-social-preview.conf.example
 │   │   ├── package.json
@@ -70,6 +71,9 @@
 │   │   ├── src
 │   │   │   ├── CatalogServer.test.ts
 │   │   │   ├── CatalogServer.ts
+│   │   │   ├── crm
+│   │   │   │   ├── CrmEligibilityService.test.ts
+│   │   │   │   └── CrmEligibilityService.ts
 │   │   │   ├── filePreviewRepository.test.ts
 │   │   │   ├── filePreviewRepository.ts
 │   │   │   ├── main.ts
@@ -85,6 +89,8 @@
 │   │   │   │   ├── publicationManifest.ts
 │   │   │   │   ├── sessionRepository.test.ts
 │   │   │   │   ├── sqliteDatabase.ts
+│   │   │   │   ├── sqlitePreviewRepository.test.ts
+│   │   │   │   ├── sqlitePreviewRepository.ts
 │   │   │   │   └── tokenSecurity.ts
 │   │   │   ├── runtimeConfig.test.ts
 │   │   │   ├── runtimeConfig.ts
@@ -1442,6 +1448,7 @@
 │   │   │   ├── renderPublicSocialArt.ts
 │   │   │   ├── socialCover.test.ts
 │   │   │   ├── socialCover.ts
+│   │   │   ├── sourceFilter.test.ts
 │   │   │   └── sourceFilter.ts
 │   │   └── tests
 │   │       ├── inspect.test.ts

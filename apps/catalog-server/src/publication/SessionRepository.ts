@@ -118,6 +118,7 @@ export interface SessionRepository {
     publicBaseUrl?: string,
   ): Promise<ActivationReceipt>;
   getActiveSession(token: string): Promise<GallerySession | null>;
+  isSessionActive(token: string): Promise<boolean>;
   getBlobIdForPhotoVariant(
     token: string,
     revisionId: string,
@@ -692,6 +693,21 @@ export class SqliteSessionRepository implements SessionRepository {
       displayName: 'Seu Álbum de Natal',
       photos,
     };
+  }
+
+  async isSessionActive(token: string): Promise<boolean> {
+    if (!isValidTokenFormat(token)) {
+      return false;
+    }
+
+    const tokenHash = computeTokenHash(token);
+    const selectSession = this.db.prepare(
+      `SELECT 1 FROM photo_sessions
+       WHERE public_token_hash = ? AND status = 'ACTIVE' AND active_revision_id IS NOT NULL LIMIT 1`,
+    );
+
+    const row = selectSession.get(tokenHash);
+    return Boolean(row);
   }
 
   async revokeSession(sessionId: string): Promise<void> {

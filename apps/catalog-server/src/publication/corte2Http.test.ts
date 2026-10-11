@@ -16,6 +16,7 @@ import { SqliteSessionRepository } from './SessionRepository.js';
 import { applyMigrations, openSqliteDatabase } from './sqliteDatabase.js';
 import { StructuredPublicationLogger } from './publicationLogger.js';
 import type { PublicationLogEntry } from './publicationLogger.js';
+import { InMemoryCrmClient } from '../crm/CrmEligibilityService.js';
 
 function createSyntheticVp8Webp(width: number, height: number): Buffer {
   const vp8Payload = Buffer.alloc(10);
@@ -707,5 +708,105 @@ describe('Publication logger capability privacy regression', () => {
     expect(serialized).not.toContain('accessUrl');
     expect(serialized).not.toContain('sessionId');
     expect(entries[0]?.details).toEqual({ photosCount: 4 });
+  });
+});
+
+describe('CRM Server-to-Server Eligibility Gate', () => {
+  it('enforces CRM eligibility checks when CrmClient is configured', async () => {
+    const tempDir = await mkdtemp(join(tmpdir(), 'crm-test-'));
+    const db = openSqliteDatabase(':memory:');
+    applyMigrations(db);
+
+    const sessionRepository = new SqliteSessionRepository({
+      db,
+      serverSecret: SERVER_SECRET,
+      publicBaseUrl: 'http://127.0.0.1',
+    });
+
+    const storageService = new FileSystemStorageService({
+      storageDir: tempDir,
+    });
+
+    const inMemoryCrm = new InMemoryCrmClient();
+    const authorizedOrder = randomUUID();
+    inMemoryCrm.setEligibility({
+      orderUuid: authorizedOrder,
+      status: 'CONFIRMED',
+      isEligibleForGallery: true,
+      revoked: false,
+    });
+
+    const cancelledOrder = randomUUID();
+    inMemoryCrm.setEligibility({
+      orderUuid: cancelledOrder,
+      status: 'CANCELLED',
+      isEligibleForGallery: false,
+      revoked: false,
+    });
+
+    const publicationService = new PublicationService({
+      sessionRepository,
+      storageService,
+      publisherSecret: PUBLISHER_SECRET,
+      crmClient: inMemoryCrm,
+    });
+
+    const catalogServer = createCatalogServer({
+      publicOrigin: new URL('http://127.0.0.1'),
+      loadApplicationShell: async () => '<html></html>',
+      previews: {
+        async getByPublicToken() {
+          return undefined;
+        },
+      },
+      audit: { async record() {} },
+      clock: { now: () => new Date() },
+      runtime: { releaseStage: 'development' },
+      publicationService,
+    });
+
+    catalogServer.listen(0, '127.0.0.1');
+    await once(catalogServer, 'listening');
+    const port = (catalogServer.address() as AddressInfo).port;
+    const testBaseUrl = `http://127.0.0.1:${port}`;
+
+    try {
+      // 1. Authorized order resolves successfully (201)
+      const resOk = await fetch(`${testBaseUrl}/internal/v1/sessions/resolve`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${PUBLISHER_SECRET}`,
+        },
+        body: JSON.stringify({ crmOrderUuid: authorizedOrder }),
+      });
+      expect(resOk.status).toBe(201);
+
+      // 2. Cancelled/ineligible order is rejected with 403
+      const resCancelled = await fetch(`${testBaseUrl}/internal/v1/sessions/resolve`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${PUBLISHER_SECRET}`,
+        },
+        body: JSON.stringify({ crmOrderUuid: cancelledOrder }),
+      });
+      expect(resCancelled.status).toBe(403);
+
+      // 3. Unknown order in CRM is rejected with 404
+      const resUnknown = await fetch(`${testBaseUrl}/internal/v1/sessions/resolve`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${PUBLISHER_SECRET}`,
+        },
+        body: JSON.stringify({ crmOrderUuid: randomUUID() }),
+      });
+      expect(resUnknown.status).toBe(404);
+    } finally {
+      catalogServer.close();
+      await once(catalogServer, 'close');
+      await rm(tempDir, { recursive: true, force: true });
+    }
   });
 });
