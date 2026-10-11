@@ -1,7 +1,7 @@
 import { createHash, randomUUID } from 'node:crypto';
 import { existsSync } from 'node:fs';
-import { appendFile, open, readFile, rename, unlink, writeFile } from 'node:fs/promises';
-import { join } from 'node:path';
+import { appendFile, mkdir, open, readFile, rename, unlink, writeFile } from 'node:fs/promises';
+import { dirname, isAbsolute, join, relative, resolve } from 'node:path';
 import { URL } from 'node:url';
 
 const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -492,6 +492,7 @@ function parseCliArgs(argv) {
   let apiSecret = process.env.PUBLISHER_API_SECRET ?? '';
   let crmOrderUuid = process.env.CRM_ORDER_UUID ?? '';
   let logFile;
+  let privateReceiptFile;
   let recoverStaleLock = false;
 
   for (let i = 0; i < argv.length; i++) {
@@ -518,11 +519,24 @@ function parseCliArgs(argv) {
     } else if (arg === '--log-file' && next) {
       logFile = next;
       i++;
+    } else if (arg === '--receipt-file' && next) {
+      privateReceiptFile = next;
+      i++;
     } else if (arg === '--recover-stale-lock') {
       recoverStaleLock = true;
     }
   }
 
+  if (!privateReceiptFile) {
+    throw new Error('PUBLISHER_PRIVATE_RECEIPT_FILE_REQUIRED');
+  }
+  // No customer capability URLs or tokens may be written into the Git repo.
+  const repositoryRoot = resolve(new URL('../..', import.meta.url).pathname);
+  const finalReceiptFile = resolve(privateReceiptFile);
+  const rel = relative(repositoryRoot, finalReceiptFile);
+  if (!rel || (!rel.startsWith('..') && !isAbsolute(rel))) {
+    throw new Error('PUBLISHER_RECEIPT_MUST_BE_OUTSIDE_GIT');
+  }
   if (!apiSecret) {
     throw new Error(
       'Missing publisher API secret. Provide --api-secret or set PUBLISHER_API_SECRET.',
@@ -546,13 +560,45 @@ function parseCliArgs(argv) {
     crmOrderUuid,
     logFile,
     recoverStaleLock,
+    privateReceiptFile: finalReceiptFile,
   };
 }
 
 async function main() {
   const options = parseCliArgs(process.argv.slice(2));
   const receipt = await publishSession(options);
-  process.stdout.write(`${JSON.stringify(receipt, null, 2)}\n`);
+  // Persist the COMPLETE capability only in a private file outside Git.
+  // Never emit accessUrl, galleryUrl, hubUrl, CRM identity or credentials to stdout.
+  const target = options.privateReceiptFile;
+  await mkdir(dirname(target), { recursive: true, mode: 0o700 });
+  let prior;
+  try {
+    prior = JSON.parse(await readFile(target, 'utf8'));
+  } catch (err) {
+    if (err?.code !== 'ENOENT') throw new Error('PUBLISHER_PRIVATE_RECEIPT_UNREADABLE');
+  }
+  if (prior && (prior.sessionId !== receipt.sessionId ||
+                prior.revisionId !== receipt.revisionId ||
+                prior.accessUrl !== receipt.accessUrl)) {
+    throw new Error('PUBLISHER_PRIVATE_RECEIPT_CONFLICT');
+  }
+  if (!prior) {
+    const temp = `${target}.tmp-${randomUUID()}`;
+    try {
+      await writeFile(temp, JSON.stringify(receipt), { encoding: 'utf8', mode: 0o600, flag: 'wx' });
+      await rename(temp, target);
+    } finally {
+      await unlink(temp).catch(() => undefined);
+    }
+  }
+  process.stdout.write(`${JSON.stringify({
+    state: receipt.state ?? 'ACTIVE',
+    sessionIdPresent: Boolean(receipt.sessionId),
+    revisionIdPresent: Boolean(receipt.revisionId),
+    photoCount: receipt.photoCount,
+    privateReceiptSaved: true,
+    capabilityUrlPrinted: false,
+  })}\n`);
 }
 
 if (process.argv[1]?.endsWith('publish-session.mjs')) {
@@ -560,7 +606,8 @@ if (process.argv[1]?.endsWith('publish-session.mjs')) {
     process.stderr.write(
       `${JSON.stringify({
         status: 'error',
-        message: err instanceof Error ? err.message : String(err),
+        code: err instanceof Error && /^PUBLISHER_[A-Z0-9_]+$/.test(err.message)
+          ? err.message : 'PUBLISHER_OPERATION_FAILED_CHECK_PRIVATE_LOGS',
       })}\n`,
     );
     process.exit(1);
