@@ -78,7 +78,12 @@ if (runtime.databasePath && runtime.publisherApiSecret) {
     runtime.releaseStage === 'staging-demo' &&
     process.env.CATALOG_CUSTOMER_PILOT_ENABLED === '1' &&
     process.env.CATALOG_CUSTOMER_DATA_ALLOWED === '1' &&
-    Boolean(pilotOrderUuid && /^[0-9a-f]{8}-[0-9a-f-]{27}$/.test(pilotOrderUuid));
+    Boolean(
+      pilotOrderUuid &&
+        /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/.test(
+          pilotOrderUuid,
+        ),
+    );
   publicationService = new PublicationService({
     sessionRepository,
     storageService,
