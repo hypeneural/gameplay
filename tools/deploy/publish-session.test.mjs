@@ -27,7 +27,10 @@ describe('canonical activation capability receipt', () => {
       { accessUrl: url.replace('https://', 'https://attacker@') },
       { accessUrl: url + '/fotos' },
       { accessUrl: url + '?key=secret' },
-      { accessUrl: 'https://jogos.fotosdenatal.com.evil.invalid/s/test-public-token-1234567890123456' },
+      {
+        accessUrl:
+          'https://jogos.fotosdenatal.com.evil.invalid/s/test-public-token-1234567890123456',
+      },
     ]) {
       expect(() => validateActivationAccessUrl(record)).toThrow();
     }
