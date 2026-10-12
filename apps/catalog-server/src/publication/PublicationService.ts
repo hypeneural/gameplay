@@ -194,7 +194,10 @@ export class PublicationService {
 
     if (this.isOrderAllowedForPublication && !this.isOrderAllowedForPublication(crmOrderUuid)) {
       this.sendError(
-        response, 403, 'SESSION_NOT_FOUND', 'Customer publication is not authorized for this order.',
+        response,
+        403,
+        'SESSION_NOT_FOUND',
+        'Customer publication is not authorized for this order.',
         requestId,
       );
       return;
@@ -539,7 +542,10 @@ export class PublicationService {
       }
       if (this.isOrderAllowedForPublication && !this.isOrderAllowedForPublication(crmOrderUuid)) {
         this.sendError(
-          response, 403, 'SESSION_NOT_FOUND', 'Customer publication is not authorized for this order.',
+          response,
+          403,
+          'SESSION_NOT_FOUND',
+          'Customer publication is not authorized for this order.',
           requestId,
         );
         return;
