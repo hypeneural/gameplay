@@ -1,0 +1,27 @@
+name: Temporary P0 Safe Formatting
+on:
+  push:
+    branches: [audit/p0-production-readiness-20261011]
+permissions:
+  contents: read
+jobs:
+  diff:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - run: corepack enable
+      - uses: pnpm/action-setup@v4
+        with:
+          version: '11.19.0'
+      - run: pnpm install --frozen-lockfile
+      - run: |
+          pnpm exec prettier --write tools/deploy/publish-session.test.mjs
+          node --input-type=module <<'NODE'
+          import { execFileSync } from 'node:child_process';
+          const change = execFileSync('git', ['diff', '--no-ext-diff', '--', 'tools/deploy/publish-session.test.mjs']);
+          console.log('P0_SAFE_DIFF64=' + change.toString('base64'));
+          NODE
