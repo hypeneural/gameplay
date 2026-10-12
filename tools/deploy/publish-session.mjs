@@ -270,6 +270,41 @@ export async function publishSession(options) {
   }
 }
 
+/** Restrict Bearer-secret transport to local/private publishers or an explicit TLS allowlist. */
+export function validatePrivatePublisherOrigin(value) {
+  let origin;
+  try {
+    origin = new URL(value);
+  } catch {
+    throw new Error('PUBLISHER_ORIGIN_INVALID');
+  }
+  const host = origin.hostname.toLowerCase();
+  const loopback = host === 'localhost' || host === '127.0.0.1' || host === '[::1]';
+  const octets = host.split('.').map(Number);
+  const tailscale =
+    octets.length === 4 &&
+    octets.every((part) => Number.isInteger(part) && part >= 0 && part <= 255) &&
+    octets[0] === 100 &&
+    octets[1] >= 64 &&
+    octets[1] <= 127;
+  const explicit = process.env.PUBLISHER_ALLOWED_PRIVATE_ORIGIN?.replace(/\\/+$/, '');
+  const allowedTlsOrigin =
+    origin.protocol === 'https:' && Boolean(explicit) && origin.origin === explicit;
+  if (
+    !['http:', 'https:'].includes(origin.protocol) ||
+    origin.username ||
+    origin.password ||
+    origin.pathname !== '/' ||
+    origin.search ||
+    origin.hash ||
+    !(loopback || tailscale || allowedTlsOrigin) ||
+    (origin.protocol === 'http:' && !(loopback || tailscale))
+  ) {
+    throw new Error('PUBLISHER_ORIGIN_NOT_PRIVATE');
+  }
+  return origin.origin;
+}
+
 async function publishSessionUnlocked(options) {
   const startTime = Date.now();
   const { apiOrigin, apiSecret, crmOrderUuid, logFile } = options;
@@ -278,7 +313,7 @@ async function publishSessionUnlocked(options) {
     throw new Error('PUBLISHER_ORDER_UUID_INVALID');
   }
 
-  const normalizedOrigin = apiOrigin.replace(/\/+$/, '');
+  const normalizedOrigin = validatePrivatePublisherOrigin(apiOrigin);
   const headers = {
     Authorization: 'Bearer ' + apiSecret,
     'Content-Type': 'application/json',
@@ -496,9 +531,9 @@ function parseCliArgs(argv) {
     } else if (arg === '--api-origin' && next) {
       apiOrigin = next;
       i++;
-    } else if (arg === '--api-secret' && next) {
-      apiSecret = next;
-      i++;
+    } else if (arg === '--api-secret') {
+      // Process listings and diagnostic collectors can expose CLI arguments.
+      throw new Error('PUBLISHER_SECRET_CLI_FORBIDDEN_USE_ENV');
     } else if (arg === '--crm-order-uuid' && next) {
       crmOrderUuid = next;
       i++;
@@ -517,7 +552,7 @@ function parseCliArgs(argv) {
 
   if (!apiSecret) {
     throw new Error(
-      'Missing publisher API secret. Provide --api-secret or set PUBLISHER_API_SECRET.',
+      'Missing publisher API secret. Set PUBLISHER_API_SECRET in a private environment.',
     );
   }
   if (!crmOrderUuid) {
