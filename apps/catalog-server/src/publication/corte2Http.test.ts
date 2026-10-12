@@ -882,6 +882,7 @@ describe('CRM Server-to-Server Eligibility Gate', () => {
        VALUES (?, ?, 1, ?, ?, '{}', 'STAGED')`,
     ).run(revision, session.sessionId, randomUUID(), 'a'.repeat(64));
 
+    const tmpStorage = await mkdtemp(join(tmpdir(), 'pilot-guard-'));
     const crm = new InMemoryCrmClient();
     crm.setEligibility({
       orderUuid: order,
@@ -898,7 +899,7 @@ describe('CRM Server-to-Server Eligibility Gate', () => {
       runtime: { releaseStage: 'development' },
       publicationService: new PublicationService({
         sessionRepository: repo,
-        storageService: new FileSystemStorageService({ storageDir: await mkdtemp(join(tmpdir(), 'pilot-guard-')) }),
+        storageService: new FileSystemStorageService({ storageDir: tmpStorage }),
         publisherSecret: PUBLISHER_SECRET,
         crmClient: crm,
         isOrderAllowedForPublication: () => false,
@@ -933,9 +934,9 @@ describe('CRM Server-to-Server Eligibility Gate', () => {
       server.close();
       await once(server, 'close');
       db.close();
+      await rm(tmpStorage, { recursive: true, force: true });
     }
   });
-
 
   it('does not activate a staged revision after CRM cancellation or CRM outage', async () => {
     const tempDir = await mkdtemp(join(tmpdir(), 'crm-activate-'));
