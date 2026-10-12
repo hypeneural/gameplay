@@ -5,7 +5,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { URL } from 'node:url';
 import { describe, expect, it } from 'vitest';
-import { isPidAlive, publishSession, writePrivateReceipt } from './publish-session.mjs';
+import { isPidAlive, publishSession, reservePrivateReceipt, writePrivateReceipt } from './publish-session.mjs';
 
 describe('private receipt file', () => {
   it('writes atomically with restricted permissions and keeps previous receipt intact on replay', async () => {
@@ -22,8 +22,29 @@ describe('private receipt file', () => {
       if (process.platform !== 'win32') {
         expect((await stat(path)).mode & 0o077).toBe(0);
       }
-      await writePrivateReceipt(path, { status: 'ACTIVE', revisionId: 'replayed' });
-      expect(JSON.parse(await readFile(path, 'utf8')).revisionId).toBe('replayed');
+      await expect(writePrivateReceipt(path, { status: 'ACTIVE', revisionId: 'replayed' }))
+        .rejects.toMatchObject({ code: 'EEXIST' });
+      expect(JSON.parse(await readFile(path, 'utf8'))).toEqual(first);
+    } finally {
+      await rm(directory, { recursive: true, force: true });
+    }
+  });
+  it('blocks replay before HTTP and leaves an inflight fence for ambiguous outcomes', async () => {
+    const directory = await mkdtemp(join(tmpdir(), 'publisher-receipt-fence-'));
+    const path = join(directory, 'private-receipt.json');
+    try {
+      const release = await reservePrivateReceipt(path);
+      await expect(reservePrivateReceipt(path)).rejects.toThrow(
+        'PUBLISHER_RECEIPT_INFLIGHT_RECONCILE_MANUALLY',
+      );
+      await release();
+      await writePrivateReceipt(path, { status: 'ACTIVE', revisionId: 'original' });
+      await expect(reservePrivateReceipt(path)).rejects.toThrow(
+        'PUBLISHER_RECEIPT_EXISTS_RECONCILE_MANUALLY',
+      );
+      expect(JSON.parse(await readFile(path, 'utf8'))).toEqual({
+        status: 'ACTIVE', revisionId: 'original',
+      });
     } finally {
       await rm(directory, { recursive: true, force: true });
     }
