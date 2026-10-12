@@ -287,7 +287,7 @@ export function validatePrivatePublisherOrigin(value) {
     octets[0] === 100 &&
     octets[1] >= 64 &&
     octets[1] <= 127;
-  const explicit = process.env.PUBLISHER_ALLOWED_PRIVATE_ORIGIN?.replace(/\\/+$/, '');
+  const explicit = process.env.PUBLISHER_ALLOWED_PRIVATE_ORIGIN?.replace(/\/+$/, '');
   const allowedTlsOrigin =
     origin.protocol === 'https:' && Boolean(explicit) && origin.origin === explicit;
   if (
