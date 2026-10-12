@@ -5,7 +5,12 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { URL } from 'node:url';
 import { describe, expect, it } from 'vitest';
-import { isPidAlive, publishSession, validateActivationAccessUrl, writePrivateReceipt } from './publish-session.mjs';
+import {
+  isPidAlive,
+  publishSession,
+  validateActivationAccessUrl,
+  writePrivateReceipt,
+} from './publish-session.mjs';
 
 describe('canonical activation capability receipt', () => {
   const url = 'https://jogos.fotosdenatal.com/s/test-public-token-1234567890123456';
