@@ -10,6 +10,7 @@ import {
   publishSession,
   reservePrivateReceipt,
   validateActivationAccessUrl,
+  validatePrivatePublisherOrigin,
   writePrivateReceipt,
 } from './publish-session.mjs';
 
@@ -34,6 +35,26 @@ describe('canonical activation capability receipt', () => {
       },
     ]) {
       expect(() => validateActivationAccessUrl(record)).toThrow();
+    }
+  });
+});
+
+describe('private publisher origin security', () => {
+  it('accepts loopback/Tailscale, rejects public endpoints and credentialed URLs', () => {
+    expect(validatePrivatePublisherOrigin('http://127.0.0.1:4180')).toBe(
+      'http://127.0.0.1:4180',
+    );
+    expect(validatePrivatePublisherOrigin('http://100.116.8.109:4180')).toBe(
+      'http://100.116.8.109:4180',
+    );
+    for (const url of [
+      'http://example.com:4180',
+      'https://evil.example:4180',
+      'http://169.254.169.254/',
+      'http://user:pass@127.0.0.1:4180',
+      'http://100.116.8.109:4180/steal',
+    ]) {
+      expect(() => validatePrivatePublisherOrigin(url)).toThrow();
     }
   });
 });
