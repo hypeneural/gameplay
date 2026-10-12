@@ -42,9 +42,18 @@ describe('canonical activation capability receipt', () => {
 describe('private publisher origin security', () => {
   it('accepts loopback/Tailscale, rejects public endpoints and credentialed URLs', () => {
     expect(validatePrivatePublisherOrigin('http://127.0.0.1:4180')).toBe('http://127.0.0.1:4180');
-    expect(validatePrivatePublisherOrigin('http://100.116.8.109:4180')).toBe(
-      'http://100.116.8.109:4180',
-    );
+    const previous = process.env.PUBLISHER_ALLOWED_PRIVATE_ORIGIN;
+    try {
+      delete process.env.PUBLISHER_ALLOWED_PRIVATE_ORIGIN;
+      expect(() => validatePrivatePublisherOrigin('http://100.116.8.109:4180')).toThrow();
+      process.env.PUBLISHER_ALLOWED_PRIVATE_ORIGIN = 'http://100.116.8.109:4180';
+      expect(validatePrivatePublisherOrigin('http://100.116.8.109:4180')).toBe(
+        'http://100.116.8.109:4180',
+      );
+    } finally {
+      if (previous === undefined) delete process.env.PUBLISHER_ALLOWED_PRIVATE_ORIGIN;
+      else process.env.PUBLISHER_ALLOWED_PRIVATE_ORIGIN = previous;
+    }
     for (const url of [
       'http://example.com:4180',
       'https://evil.example:4180',
