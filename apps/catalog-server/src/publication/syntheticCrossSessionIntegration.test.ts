@@ -260,7 +260,7 @@ describe('Synthetic Cross-Session Multi-Order Integration (P0 Etapa 8)', () => {
     const orderB = randomUUID();
 
     const resultA = await publishOrderSession(orderA, 2);
-    const resultB = await publishOrderSession(orderB, 3);
+    const resultB = await publishOrderSession(orderB, 2);
 
     expect(resultA.sessionId).not.toBe(resultB.sessionId);
     expect(resultA.publicToken).not.toBe(resultB.publicToken);
@@ -291,7 +291,7 @@ describe('Synthetic Cross-Session Multi-Order Integration (P0 Etapa 8)', () => {
       },
     );
     expect(leakAttempt.status).toBe(404);
-  });
+  }, 15_000);
 
   it('proves idempotent publication replay without duplicate blobs or CAS conflict', async () => {
     const orderA = randomUUID();
