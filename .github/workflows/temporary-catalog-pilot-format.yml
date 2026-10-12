@@ -1,0 +1,27 @@
+name: Temporary Catalog Pilot Format Diff
+on:
+  push:
+    branches: [audit/p0-catalog-pilot-order-allowlist-20261012]
+permissions:
+  contents: read
+jobs:
+  diff:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - run: corepack enable
+      - uses: pnpm/action-setup@v4
+        with:
+          version: '11.19.0'
+      - run: pnpm install --frozen-lockfile
+      - run: |
+          pnpm exec prettier --write apps/catalog-server/src/main.ts apps/catalog-server/src/publication/PublicationService.ts apps/catalog-server/src/publication/corte2Http.test.ts
+          node --input-type=module <<'NODE'
+          import { execFileSync } from 'node:child_process';
+          const result = execFileSync('git', ['diff', '-U1', '--', 'apps/catalog-server/src/main.ts', 'apps/catalog-server/src/publication/PublicationService.ts', 'apps/catalog-server/src/publication/corte2Http.test.ts']);
+          console.log('CATALOG_FORMAT_PATCH64=' + result.toString('base64'));
+          NODE
