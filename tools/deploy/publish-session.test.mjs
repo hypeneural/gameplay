@@ -5,7 +5,29 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { URL } from 'node:url';
 import { describe, expect, it } from 'vitest';
-import { isPidAlive, publishSession, writePrivateReceipt } from './publish-session.mjs';
+import { isPidAlive, publishSession, validateActivationAccessUrl, writePrivateReceipt } from './publish-session.mjs';
+
+describe('canonical activation capability receipt', () => {
+  const url = 'https://jogos.fotosdenatal.com/s/test-public-token-1234567890123456';
+
+  it('derives the public token when the Node API returns only the documented accessUrl', () => {
+    const result = validateActivationAccessUrl({ accessUrl: url });
+    expect(result.publicToken).toBe('test-public-token-1234567890123456');
+    expect(result.accessUrl.href).toBe(url);
+  });
+
+  it('rejects contradictory tokens, URL credentials and redirects to foreign paths', () => {
+    for (const record of [
+      { accessUrl: url, publicToken: 'different-client-token-987654321' },
+      { accessUrl: url.replace('https://', 'https://attacker@') },
+      { accessUrl: url + '/fotos' },
+      { accessUrl: url + '?key=secret' },
+      { accessUrl: 'https://jogos.fotosdenatal.com.evil.invalid/s/test-public-token-1234567890123456' },
+    ]) {
+      expect(() => validateActivationAccessUrl(record)).toThrow();
+    }
+  });
+});
 
 describe('private receipt file', () => {
   it('writes atomically with restricted permissions and keeps previous receipt intact on replay', async () => {
