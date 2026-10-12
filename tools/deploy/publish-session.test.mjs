@@ -11,6 +11,7 @@ import {
   reservePrivateReceipt,
   validateActivationAccessUrl,
   validatePrivatePublisherOrigin,
+  validateUploadConcurrency,
   writePrivateReceipt,
 } from './publish-session.mjs';
 
@@ -62,6 +63,20 @@ describe('private publisher origin security', () => {
       'http://100.116.8.109:4180/steal',
     ]) {
       expect(() => validatePrivatePublisherOrigin(url)).toThrow();
+    }
+  });
+});
+
+describe('bounded blob upload concurrency', () => {
+  it('keeps safe sequential default and rejects unbounded inputs', () => {
+    expect(validateUploadConcurrency(undefined)).toBe(1);
+    expect(validateUploadConcurrency('1')).toBe(1);
+    expect(validateUploadConcurrency(2)).toBe(2);
+    expect(validateUploadConcurrency('3')).toBe(3);
+    for (const unsafe of [0, 4, '0', '4', '2.5', '', -1, {}]) {
+      expect(() => validateUploadConcurrency(unsafe)).toThrow(
+        'PUBLISHER_UPLOAD_CONCURRENCY_INVALID',
+      );
     }
   });
 });
