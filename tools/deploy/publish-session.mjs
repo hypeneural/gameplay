@@ -1,6 +1,15 @@
 import { createHash, randomUUID } from 'node:crypto';
 import { existsSync } from 'node:fs';
-import { appendFile, link, lstat, open, readFile, rename, unlink, writeFile } from 'node:fs/promises';
+import {
+  appendFile,
+  link,
+  lstat,
+  open,
+  readFile,
+  rename,
+  unlink,
+  writeFile,
+} from 'node:fs/promises';
 import { isAbsolute, join } from 'node:path';
 import { URL } from 'node:url';
 
@@ -599,10 +608,7 @@ export function validateActivationAccessUrl(receiptData) {
     throw new Error('PUBLICATION_ACCESS_URL_INVALID');
   }
   const publicToken = accessUrl.pathname.slice('/s/'.length);
-  if (
-    receiptData.publicToken !== undefined &&
-    receiptData.publicToken !== publicToken
-  ) {
+  if (receiptData.publicToken !== undefined && receiptData.publicToken !== publicToken) {
     throw new Error('PUBLICATION_ACTIVATION_RECEIPT_INVALID');
   }
   return { accessUrl, publicToken };
