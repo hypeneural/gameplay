@@ -91,6 +91,7 @@
 │   │   │   │   ├── sqliteDatabase.ts
 │   │   │   │   ├── sqlitePreviewRepository.test.ts
 │   │   │   │   ├── sqlitePreviewRepository.ts
+│   │   │   │   ├── syntheticCrossSessionIntegration.test.ts
 │   │   │   │   └── tokenSecurity.ts
 │   │   │   ├── runtimeConfig.test.ts
 │   │   │   ├── runtimeConfig.ts
