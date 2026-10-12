@@ -447,12 +447,23 @@ async function publishSessionUnlocked(options) {
   if (
     accessUrl.protocol !== 'https:' ||
     accessUrl.hostname !== 'jogos.fotosdenatal.com' ||
+    accessUrl.username ||
+    accessUrl.password ||
     accessUrl.port ||
     accessUrl.search ||
     accessUrl.hash ||
     !new RegExp('^[/]s[/][A-Za-z0-9_-]{16,128}$').test(accessUrl.pathname)
   ) {
     throw new Error('PUBLICATION_ACCESS_URL_INVALID');
+  }
+  // API activation contract guarantees accessUrl, but not publicToken.
+  // Derive it from the validated canonical path and reject mismatched extras.
+  const publicToken = accessUrl.pathname.slice('/s/'.length);
+  if (
+    receiptData.publicToken !== undefined &&
+    receiptData.publicToken !== publicToken
+  ) {
+    throw new Error('PUBLICATION_ACTIVATION_RECEIPT_INVALID');
   }
   const durationMs = Date.now() - startTime;
 
@@ -461,7 +472,7 @@ async function publishSessionUnlocked(options) {
     crmOrderUuid,
     sessionId,
     revisionId,
-    publicToken: receiptData.publicToken,
+    publicToken,
     accessUrl: accessUrl.href,
     hubUrl: accessUrl.href,
     galleryUrl: `${accessUrl.href}/fotos`,
