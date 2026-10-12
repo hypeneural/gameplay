@@ -438,33 +438,7 @@ async function publishSessionUnlocked(options) {
   ) {
     throw new Error('PUBLICATION_ACTIVATION_RECEIPT_INVALID');
   }
-  let accessUrl;
-  try {
-    accessUrl = new URL(receiptData.accessUrl);
-  } catch {
-    throw new Error('PUBLICATION_ACCESS_URL_INVALID');
-  }
-  if (
-    accessUrl.protocol !== 'https:' ||
-    accessUrl.hostname !== 'jogos.fotosdenatal.com' ||
-    accessUrl.username ||
-    accessUrl.password ||
-    accessUrl.port ||
-    accessUrl.search ||
-    accessUrl.hash ||
-    !new RegExp('^[/]s[/][A-Za-z0-9_-]{16,128}$').test(accessUrl.pathname)
-  ) {
-    throw new Error('PUBLICATION_ACCESS_URL_INVALID');
-  }
-  // API activation contract guarantees accessUrl, but not publicToken.
-  // Derive it from the validated canonical path and reject mismatched extras.
-  const publicToken = accessUrl.pathname.slice('/s/'.length);
-  if (
-    receiptData.publicToken !== undefined &&
-    receiptData.publicToken !== publicToken
-  ) {
-    throw new Error('PUBLICATION_ACTIVATION_RECEIPT_INVALID');
-  }
+  const { accessUrl, publicToken } = validateActivationAccessUrl(receiptData);
   const durationMs = Date.now() - startTime;
 
   const receipt = {
@@ -567,6 +541,36 @@ function parseCliArgs(argv) {
     receiptFile,
     showUrls,
   };
+}
+
+/** Keep capability URL and token strictly identical even if API omits publicToken. */
+export function validateActivationAccessUrl(receiptData) {
+  let accessUrl;
+  try {
+    accessUrl = new URL(receiptData.accessUrl);
+  } catch {
+    throw new Error('PUBLICATION_ACCESS_URL_INVALID');
+  }
+  if (
+    accessUrl.protocol !== 'https:' ||
+    accessUrl.hostname !== 'jogos.fotosdenatal.com' ||
+    accessUrl.username ||
+    accessUrl.password ||
+    accessUrl.port ||
+    accessUrl.search ||
+    accessUrl.hash ||
+    !/^\/s\/[A-Za-z0-9_-]{16,128}$/.test(accessUrl.pathname)
+  ) {
+    throw new Error('PUBLICATION_ACCESS_URL_INVALID');
+  }
+  const publicToken = accessUrl.pathname.slice('/s/'.length);
+  if (
+    receiptData.publicToken !== undefined &&
+    receiptData.publicToken !== publicToken
+  ) {
+    throw new Error('PUBLICATION_ACTIVATION_RECEIPT_INVALID');
+  }
+  return { accessUrl, publicToken };
 }
 
 /** Atomic private receipt: write to a restricted temp file, then rename. */
