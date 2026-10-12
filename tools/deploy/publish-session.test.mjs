@@ -41,9 +41,7 @@ describe('canonical activation capability receipt', () => {
 
 describe('private publisher origin security', () => {
   it('accepts loopback/Tailscale, rejects public endpoints and credentialed URLs', () => {
-    expect(validatePrivatePublisherOrigin('http://127.0.0.1:4180')).toBe(
-      'http://127.0.0.1:4180',
-    );
+    expect(validatePrivatePublisherOrigin('http://127.0.0.1:4180')).toBe('http://127.0.0.1:4180');
     expect(validatePrivatePublisherOrigin('http://100.116.8.109:4180')).toBe(
       'http://100.116.8.109:4180',
     );
