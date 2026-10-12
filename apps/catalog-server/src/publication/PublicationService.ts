@@ -60,6 +60,17 @@ export class PublicationService {
       return true;
     }
 
+    // 1b. POST /internal/v1/sessions/:sessionId/revoke
+    const revokeMatch = /^\/internal\/v1\/sessions\/([0-9a-f-]{36})\/revoke$/.exec(pathname);
+    if (revokeMatch) {
+      if (method !== 'POST') {
+        this.sendError(response, 405, 'INTERNAL_ERROR', 'Method not allowed', requestId);
+        return true;
+      }
+      await this.handleRevokeSession(revokeMatch[1]!, request, response, requestId, startTime);
+      return true;
+    }
+
     // 2. POST /internal/v1/publications
     if (pathname === '/internal/v1/publications') {
       if (method !== 'POST') {
@@ -181,6 +192,7 @@ export class PublicationService {
       try {
         const eligibility = await this.crmClient.verifyEligibility(crmOrderUuid);
         if (
+          eligibility.orderUuid.toLowerCase() !== crmOrderUuid.toLowerCase() ||
           eligibility.status === 'CANCELLED' ||
           !eligibility.isEligibleForGallery ||
           eligibility.revoked === true
@@ -231,6 +243,39 @@ export class PublicationService {
         status: statusCode,
         durationMs: Date.now() - startTime,
         details: { sessionId: resolved.sessionId, status: resolved.status },
+      });
+    } catch (error) {
+      this.handleDomainError(response, error, requestId);
+    }
+  }
+
+  private async handleRevokeSession(
+    sessionId: string,
+    request: IncomingMessage,
+    response: ServerResponse,
+    requestId: string,
+    startTime: number,
+  ): Promise<void> {
+    if (!this.checkPublisherAuth(request, response, requestId)) return;
+
+    if (!UUID_PATTERN.test(sessionId)) {
+      this.sendError(response, 400, 'INTERNAL_ERROR', 'Invalid sessionId format', requestId);
+      return;
+    }
+
+    try {
+      await this.sessionRepo.revokeSession(sessionId);
+      this.sendJson(response, 200, {
+        sessionId,
+        status: 'REVOKED',
+      });
+      this.logger?.log('session_revoked', {
+        requestId,
+        method: 'POST',
+        path: `/internal/v1/sessions/${sessionId}/revoke`,
+        status: 200,
+        durationMs: Date.now() - startTime,
+        details: { sessionId, status: 'REVOKED' },
       });
     } catch (error) {
       this.handleDomainError(response, error, requestId);
@@ -470,6 +515,53 @@ export class PublicationService {
         requestId,
       );
       return;
+    }
+
+    // Eligibility at resolve is not authority at activation time: a paid
+    // order may be cancelled/refunded while media is being processed.
+    if (this.crmClient) {
+      const crmOrderUuid = await this.sessionRepo.getCrmOrderUuidForRevision(revisionId);
+      if (!crmOrderUuid) {
+        this.sendError(response, 404, 'REVISION_NOT_FOUND', 'Revision does not exist.', requestId);
+        return;
+      }
+      try {
+        const eligibility = await this.crmClient.verifyEligibility(crmOrderUuid);
+        if (
+          eligibility.orderUuid.toLowerCase() !== crmOrderUuid.toLowerCase() ||
+          eligibility.status === 'CANCELLED' ||
+          !eligibility.isEligibleForGallery ||
+          eligibility.revoked === true
+        ) {
+          this.sendError(
+            response,
+            403,
+            'SESSION_NOT_FOUND',
+            'CRM order is no longer eligible.',
+            requestId,
+          );
+          return;
+        }
+      } catch (error) {
+        if (error instanceof CrmClientError && error.isTransient) {
+          this.sendError(
+            response,
+            503,
+            'INTERNAL_ERROR',
+            'CRM eligibility unavailable.',
+            requestId,
+          );
+          return;
+        }
+        this.sendError(
+          response,
+          404,
+          'SESSION_NOT_FOUND',
+          'CRM order could not be verified.',
+          requestId,
+        );
+        return;
+      }
     }
 
     try {

@@ -38,6 +38,11 @@ services:
       CATALOG_APPLICATION_SHELL: /var/www/html/web/index.html
       CATALOG_DATABASE_PATH: /var/lib/christmas-games/sqlite/catalog.db
       CATALOG_STORAGE_DIR: /var/lib/christmas-games/media
+      # Default preserves current synthetic staging. Only switch after canary migration.
+      CATALOG_PREVIEW_AUTHORITY: ${CATALOG_PREVIEW_AUTHORITY:-file-demo}
+      # Missing CRM credentials intentionally block new publisher session resolutions.
+      CATALOG_CRM_ELIGIBILITY_ORIGIN: ${CATALOG_CRM_ELIGIBILITY_ORIGIN:-}
+      CATALOG_CRM_API_SECRET_FILE: ${CATALOG_CRM_API_SECRET_FILE:-}
       PUBLISHER_API_SECRET_FILE: /srv/secrets/christmas-games/publisher.secret
       CATALOG_SERVER_SECRET_FILE: /srv/secrets/christmas-games/server.secret
       PORT: 4180

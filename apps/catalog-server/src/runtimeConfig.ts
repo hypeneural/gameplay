@@ -1,4 +1,4 @@
-import type { URL } from 'node:url';
+import { URL } from 'node:url';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { parsePublicOrigin } from './socialPreview.js';
@@ -16,6 +16,12 @@ export interface CatalogRuntimeConfig {
   readonly storageDir?: string;
   readonly publisherApiSecret?: string;
   readonly serverSecret?: string;
+  /** HTTPS CRM origin; never a URL containing customer data or query parameters. */
+  readonly crmEligibilityOrigin?: string;
+  readonly crmApiSecret?: string;
+  readonly crmEndpointStyle?: 'eligibility' | 'laravel-detail';
+  /** Explicit cutover; staging demos retain the legacy file adapter until approved. */
+  readonly previewAuthority: 'file-demo' | 'sqlite';
 }
 
 export function resolveCatalogRuntimeConfig(
@@ -49,6 +55,46 @@ export function resolveCatalogRuntimeConfig(
     environment.CATALOG_SERVER_SECRET,
     environment.CATALOG_SERVER_SECRET_FILE,
   );
+  const crmApiSecret = resolveSecret(
+    environment.CATALOG_CRM_API_SECRET,
+    environment.CATALOG_CRM_API_SECRET_FILE,
+  );
+  const crmEligibilityOrigin = environment.CATALOG_CRM_ELIGIBILITY_ORIGIN;
+  if (crmEligibilityOrigin) {
+    const crmUrl = new URL(crmEligibilityOrigin);
+    const loopback = ['127.0.0.1', 'localhost', '[::1]'].includes(crmUrl.hostname);
+    if (
+      (crmUrl.protocol !== 'https:' && !(crmUrl.protocol === 'http:' && loopback)) ||
+      crmUrl.username ||
+      crmUrl.password ||
+      crmUrl.search ||
+      crmUrl.hash ||
+      crmUrl.pathname !== '/'
+    ) {
+      throw new Error('CATALOG_CRM_ELIGIBILITY_ORIGIN_INVALID');
+    }
+  }
+  if (Boolean(crmEligibilityOrigin) !== Boolean(crmApiSecret)) {
+    throw new Error('CATALOG_CRM_CREDENTIALS_INCOMPLETE');
+  }
+  const crmEndpointStyle = environment.CATALOG_CRM_ENDPOINT_STYLE;
+  if (
+    crmEndpointStyle !== undefined &&
+    crmEndpointStyle !== 'eligibility' &&
+    crmEndpointStyle !== 'laravel-detail'
+  ) {
+    throw new Error('CATALOG_CRM_ENDPOINT_STYLE_INVALID');
+  }
+  const previewAuthority = environment.CATALOG_PREVIEW_AUTHORITY ?? 'file-demo';
+  if (previewAuthority !== 'file-demo' && previewAuthority !== 'sqlite') {
+    throw new Error('CATALOG_PREVIEW_AUTHORITY_INVALID');
+  }
+  if (
+    previewAuthority === 'sqlite' &&
+    (!environment.CATALOG_DATABASE_PATH || !publisherApiSecret || !serverSecret)
+  ) {
+    throw new Error('CATALOG_SQLITE_PREVIEW_REQUIRES_PERSISTENCE');
+  }
 
   return {
     releaseStage,
@@ -57,6 +103,7 @@ export function resolveCatalogRuntimeConfig(
     previewConfigPath: resolve(previewConfigPath),
     port: parsePort(environment.PORT ?? '4180'),
     host: environment.HOST ?? '127.0.0.1',
+    previewAuthority,
     ...(environment.CATALOG_DATABASE_PATH
       ? { databasePath: resolve(environment.CATALOG_DATABASE_PATH) }
       : {}),
@@ -65,6 +112,9 @@ export function resolveCatalogRuntimeConfig(
       : {}),
     ...(publisherApiSecret !== undefined ? { publisherApiSecret } : {}),
     ...(serverSecret !== undefined ? { serverSecret } : {}),
+    ...(crmEligibilityOrigin ? { crmEligibilityOrigin } : {}),
+    ...(crmApiSecret ? { crmApiSecret } : {}),
+    ...(crmEndpointStyle ? { crmEndpointStyle } : {}),
   };
 }
 

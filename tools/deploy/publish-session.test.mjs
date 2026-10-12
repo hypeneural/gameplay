@@ -1,11 +1,116 @@
 import { Buffer } from 'node:buffer';
 import { createServer } from 'node:http';
-import { mkdtemp, readFile, rm, writeFile, mkdir } from 'node:fs/promises';
+import { mkdtemp, readFile, rm, writeFile, mkdir, stat } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { URL } from 'node:url';
 import { describe, expect, it } from 'vitest';
-import { isPidAlive, publishSession } from './publish-session.mjs';
+import {
+  isPidAlive,
+  publishSession,
+  reservePrivateReceipt,
+  validateActivationAccessUrl,
+  validatePrivatePublisherOrigin,
+  writePrivateReceipt,
+} from './publish-session.mjs';
+
+describe('canonical activation capability receipt', () => {
+  const url = 'https://jogos.fotosdenatal.com/s/test-public-token-1234567890123456';
+
+  it('derives the public token when the Node API returns only the documented accessUrl', () => {
+    const result = validateActivationAccessUrl({ accessUrl: url });
+    expect(result.publicToken).toBe('test-public-token-1234567890123456');
+    expect(result.accessUrl.href).toBe(url);
+  });
+
+  it('rejects contradictory tokens, URL credentials and redirects to foreign paths', () => {
+    for (const record of [
+      { accessUrl: url, publicToken: 'different-client-token-987654321' },
+      { accessUrl: url.replace('https://', 'https://attacker@') },
+      { accessUrl: url + '/fotos' },
+      { accessUrl: url + '?key=secret' },
+      {
+        accessUrl:
+          'https://jogos.fotosdenatal.com.evil.invalid/s/test-public-token-1234567890123456',
+      },
+    ]) {
+      expect(() => validateActivationAccessUrl(record)).toThrow();
+    }
+  });
+});
+
+describe('private publisher origin security', () => {
+  it('accepts loopback/Tailscale, rejects public endpoints and credentialed URLs', () => {
+    expect(validatePrivatePublisherOrigin('http://127.0.0.1:4180')).toBe('http://127.0.0.1:4180');
+    const previous = process.env.PUBLISHER_ALLOWED_PRIVATE_ORIGIN;
+    try {
+      delete process.env.PUBLISHER_ALLOWED_PRIVATE_ORIGIN;
+      expect(() => validatePrivatePublisherOrigin('http://100.116.8.109:4180')).toThrow();
+      process.env.PUBLISHER_ALLOWED_PRIVATE_ORIGIN = 'http://100.116.8.109:4180';
+      expect(validatePrivatePublisherOrigin('http://100.116.8.109:4180')).toBe(
+        'http://100.116.8.109:4180',
+      );
+    } finally {
+      if (previous === undefined) delete process.env.PUBLISHER_ALLOWED_PRIVATE_ORIGIN;
+      else process.env.PUBLISHER_ALLOWED_PRIVATE_ORIGIN = previous;
+    }
+    for (const url of [
+      'http://example.com:4180',
+      'https://evil.example:4180',
+      'http://169.254.169.254/',
+      'http://user:pass@127.0.0.1:4180',
+      'http://100.116.8.109:4180/steal',
+    ]) {
+      expect(() => validatePrivatePublisherOrigin(url)).toThrow();
+    }
+  });
+});
+
+describe('private receipt file', () => {
+  it('writes atomically with restricted permissions and keeps previous receipt intact on replay', async () => {
+    const directory = await mkdtemp(join(tmpdir(), 'publisher-private-receipt-'));
+    const path = join(directory, 'private-receipt.json');
+    try {
+      const first = {
+        status: 'ACTIVE',
+        hubUrl: 'https://jogos.example.test/s/synthetic-secret-token',
+      };
+      await writePrivateReceipt(path, first);
+      expect(JSON.parse(await readFile(path, 'utf8'))).toEqual(first);
+      if (process.platform !== 'win32') {
+        expect((await stat(path)).mode & 0o077).toBe(0);
+      }
+      await expect(
+        writePrivateReceipt(path, { status: 'ACTIVE', revisionId: 'replayed' }),
+      ).rejects.toMatchObject({ code: 'EEXIST' });
+      expect(JSON.parse(await readFile(path, 'utf8'))).toEqual(first);
+    } finally {
+      await rm(directory, { recursive: true, force: true });
+    }
+  });
+
+  it('blocks replay before HTTP and leaves an inflight fence for ambiguous outcomes', async () => {
+    const directory = await mkdtemp(join(tmpdir(), 'publisher-receipt-fence-'));
+    const path = join(directory, 'private-receipt.json');
+    try {
+      const release = await reservePrivateReceipt(path);
+      await expect(reservePrivateReceipt(path)).rejects.toThrow(
+        'PUBLISHER_RECEIPT_INFLIGHT_RECONCILE_MANUALLY',
+      );
+      await release();
+      await writePrivateReceipt(path, { status: 'ACTIVE', revisionId: 'original' });
+      await expect(reservePrivateReceipt(path)).rejects.toThrow(
+        'PUBLISHER_RECEIPT_EXISTS_RECONCILE_MANUALLY',
+      );
+      expect(JSON.parse(await readFile(path, 'utf8'))).toEqual({
+        status: 'ACTIVE',
+        revisionId: 'original',
+      });
+    } finally {
+      await rm(directory, { recursive: true, force: true });
+    }
+  });
+});
 
 function createMockCatalogServer() {
   const blobsReceived = new Map();

@@ -1,7 +1,16 @@
 import { createHash, randomUUID } from 'node:crypto';
 import { existsSync } from 'node:fs';
-import { appendFile, open, readFile, rename, unlink, writeFile } from 'node:fs/promises';
-import { join } from 'node:path';
+import {
+  appendFile,
+  link,
+  lstat,
+  open,
+  readFile,
+  rename,
+  unlink,
+  writeFile,
+} from 'node:fs/promises';
+import { isAbsolute, join } from 'node:path';
 import { URL } from 'node:url';
 
 const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -270,6 +279,42 @@ export async function publishSession(options) {
   }
 }
 
+/** Restrict Bearer-secret transport to local/private publishers or an explicit TLS allowlist. */
+export function validatePrivatePublisherOrigin(value) {
+  let origin;
+  try {
+    origin = new URL(value);
+  } catch {
+    throw new Error('PUBLISHER_ORIGIN_INVALID');
+  }
+  const host = origin.hostname.toLowerCase();
+  const loopback = host === 'localhost' || host === '127.0.0.1' || host === '[::1]';
+  const octets = host.split('.').map(Number);
+  const tailscale =
+    octets.length === 4 &&
+    octets.every((part) => Number.isInteger(part) && part >= 0 && part <= 255) &&
+    octets[0] === 100 &&
+    octets[1] >= 64 &&
+    octets[1] <= 127;
+  const explicit = process.env.PUBLISHER_ALLOWED_PRIVATE_ORIGIN?.replace(/\/+$/, '');
+  const allowedPrivateOrigin = Boolean(explicit) && origin.origin === explicit;
+  const allowedTlsOrigin = origin.protocol === 'https:' && allowedPrivateOrigin;
+  const allowedPeerOrigin = tailscale && allowedPrivateOrigin;
+  if (
+    !['http:', 'https:'].includes(origin.protocol) ||
+    origin.username ||
+    origin.password ||
+    origin.pathname !== '/' ||
+    origin.search ||
+    origin.hash ||
+    !(loopback || allowedPeerOrigin || allowedTlsOrigin) ||
+    (origin.protocol === 'http:' && !(loopback || allowedPeerOrigin))
+  ) {
+    throw new Error('PUBLISHER_ORIGIN_NOT_PRIVATE');
+  }
+  return origin.origin;
+}
+
 async function publishSessionUnlocked(options) {
   const startTime = Date.now();
   const { apiOrigin, apiSecret, crmOrderUuid, logFile } = options;
@@ -278,7 +323,7 @@ async function publishSessionUnlocked(options) {
     throw new Error('PUBLISHER_ORDER_UUID_INVALID');
   }
 
-  const normalizedOrigin = apiOrigin.replace(/\/+$/, '');
+  const normalizedOrigin = validatePrivatePublisherOrigin(apiOrigin);
   const headers = {
     Authorization: 'Bearer ' + apiSecret,
     'Content-Type': 'application/json',
@@ -438,22 +483,7 @@ async function publishSessionUnlocked(options) {
   ) {
     throw new Error('PUBLICATION_ACTIVATION_RECEIPT_INVALID');
   }
-  let accessUrl;
-  try {
-    accessUrl = new URL(receiptData.accessUrl);
-  } catch {
-    throw new Error('PUBLICATION_ACCESS_URL_INVALID');
-  }
-  if (
-    accessUrl.protocol !== 'https:' ||
-    accessUrl.hostname !== 'jogos.fotosdenatal.com' ||
-    accessUrl.port ||
-    accessUrl.search ||
-    accessUrl.hash ||
-    !new RegExp('^[/]s[/][A-Za-z0-9_-]{16,128}$').test(accessUrl.pathname)
-  ) {
-    throw new Error('PUBLICATION_ACCESS_URL_INVALID');
-  }
+  const { accessUrl, publicToken } = validateActivationAccessUrl(receiptData);
   const durationMs = Date.now() - startTime;
 
   const receipt = {
@@ -461,7 +491,7 @@ async function publishSessionUnlocked(options) {
     crmOrderUuid,
     sessionId,
     revisionId,
-    publicToken: receiptData.publicToken,
+    publicToken,
     accessUrl: accessUrl.href,
     hubUrl: accessUrl.href,
     galleryUrl: `${accessUrl.href}/fotos`,
@@ -511,9 +541,9 @@ function parseCliArgs(argv) {
     } else if (arg === '--api-origin' && next) {
       apiOrigin = next;
       i++;
-    } else if (arg === '--api-secret' && next) {
-      apiSecret = next;
-      i++;
+    } else if (arg === '--api-secret') {
+      // Process listings and diagnostic collectors can expose CLI arguments.
+      throw new Error('PUBLISHER_SECRET_CLI_FORBIDDEN_USE_ENV');
     } else if (arg === '--crm-order-uuid' && next) {
       crmOrderUuid = next;
       i++;
@@ -532,7 +562,7 @@ function parseCliArgs(argv) {
 
   if (!apiSecret) {
     throw new Error(
-      'Missing publisher API secret. Provide --api-secret or set PUBLISHER_API_SECRET.',
+      'Missing publisher API secret. Set PUBLISHER_API_SECRET in a private environment.',
     );
   }
   if (!crmOrderUuid) {
@@ -558,20 +588,112 @@ function parseCliArgs(argv) {
   };
 }
 
+/** Keep capability URL and token strictly identical even if API omits publicToken. */
+export function validateActivationAccessUrl(receiptData) {
+  let accessUrl;
+  try {
+    accessUrl = new URL(receiptData.accessUrl);
+  } catch (error) {
+    throw new Error('PUBLICATION_ACCESS_URL_INVALID', { cause: error });
+  }
+  if (
+    accessUrl.protocol !== 'https:' ||
+    accessUrl.hostname !== 'jogos.fotosdenatal.com' ||
+    accessUrl.username ||
+    accessUrl.password ||
+    accessUrl.port ||
+    accessUrl.search ||
+    accessUrl.hash ||
+    !/^\/s\/[A-Za-z0-9_-]{16,128}$/.test(accessUrl.pathname)
+  ) {
+    throw new Error('PUBLICATION_ACCESS_URL_INVALID');
+  }
+  const publicToken = accessUrl.pathname.slice('/s/'.length);
+  if (receiptData.publicToken !== undefined && receiptData.publicToken !== publicToken) {
+    throw new Error('PUBLICATION_ACTIVATION_RECEIPT_INVALID');
+  }
+  return { accessUrl, publicToken };
+}
+
+/** The receipt is an irreversible delivery fence, not a mutable status report.
+ * Reserve before making any HTTP call. If publication fails or times out, leave
+ * the .inflight file for manual remote reconciliation instead of blind replay.
+ * Separate worktrees on the same private filesystem share this reservation.
+ */
+export async function reservePrivateReceipt(path) {
+  if (!path || !isAbsolute(path)) {
+    throw new Error('PUBLISHER_RECEIPT_REQUIRES_ABSOLUTE_PATH');
+  }
+  try {
+    await lstat(path);
+    throw new Error('PUBLISHER_RECEIPT_EXISTS_RECONCILE_MANUALLY');
+  } catch (error) {
+    if (error?.code !== 'ENOENT') throw error;
+  }
+  const marker = `${path}.inflight`;
+  let handle;
+  try {
+    handle = await open(marker, 'wx', 0o600);
+    await handle.writeFile(
+      JSON.stringify({ schema: 1, pid: process.pid, startedAt: new Date().toISOString() }),
+    );
+    await handle.sync();
+  } catch (error) {
+    if (error?.code === 'EEXIST') {
+      throw new Error('PUBLISHER_RECEIPT_INFLIGHT_RECONCILE_MANUALLY', { cause: error });
+    }
+    throw error;
+  } finally {
+    await handle?.close();
+  }
+  // Recheck after acquiring the exclusive marker (another process may have
+  // completed before it could reserve this receipt).
+  try {
+    await lstat(path);
+    throw new Error('PUBLISHER_RECEIPT_EXISTS_RECONCILE_MANUALLY');
+  } catch (error) {
+    if (error?.code !== 'ENOENT') throw error;
+  }
+  return async () => unlink(marker);
+}
+
+/** Exclusive and durable private receipt publication; never overwrite a
+ * previously accepted access token/revision even during a race.
+ */
+export async function writePrivateReceipt(path, receipt) {
+  const temporary = `${path}.tmp-${randomUUID()}`;
+  try {
+    const handle = await open(temporary, 'wx', 0o600);
+    try {
+      await handle.writeFile(JSON.stringify(receipt, null, 2), 'utf8');
+      await handle.sync();
+    } finally {
+      await handle.close();
+    }
+    // Atomic no-replace on NTFS/POSIX when temp and receipt share a directory.
+    // rename() would overwrite an existing receipt on some platforms.
+    await link(temporary, path);
+  } finally {
+    await unlink(temporary).catch(() => undefined);
+  }
+}
+
 async function main() {
   const options = parseCliArgs(process.argv.slice(2));
-  const receipt = await publishSession(options);
-
-  if (options.receiptFile) {
-    await writeFile(options.receiptFile, JSON.stringify(receipt, null, 2), {
-      mode: 0o600,
-      encoding: 'utf-8',
-    });
-  }
-
   if (options.showUrls) {
-    process.stdout.write(`${JSON.stringify(receipt, null, 2)}\n`);
-  } else {
+    throw new Error('PUBLISHER_URL_STDOUT_DISABLED_USE_RECEIPT_FILE');
+  }
+  if (!options.receiptFile || !isAbsolute(options.receiptFile)) {
+    throw new Error('PUBLISHER_RECEIPT_REQUIRES_ABSOLUTE_PATH');
+  }
+  // Failure or timeout intentionally leaves .inflight for operator review.
+  // Do not remove the reservation in a generic catch/finally branch.
+  const releaseReservation = await reservePrivateReceipt(options.receiptFile);
+  const receipt = await publishSession(options);
+  await writePrivateReceipt(options.receiptFile, receipt);
+  await releaseReservation();
+
+  {
     const safeSummary = {
       status: receipt.status,
       sessionId: receipt.sessionId,
