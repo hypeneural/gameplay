@@ -865,6 +865,83 @@ describe('Publication logger capability privacy regression', () => {
 });
 
 describe('CRM Server-to-Server Eligibility Gate', () => {
+  it('denies a CRM-eligible order and a pre-staged revision outside the pilot allowlist', async () => {
+    const db = openSqliteDatabase(':memory:');
+    applyMigrations(db);
+    const repo = new SqliteSessionRepository({
+      db,
+      serverSecret: SERVER_SECRET,
+      publicBaseUrl: 'http://127.0.0.1',
+    });
+    const order = randomUUID();
+    const session = await repo.resolveOrCreateSession(order);
+    const revision = randomUUID();
+    db.prepare(
+      `INSERT INTO photo_revisions
+       (id, session_id, sequence, request_id, manifest_sha256, manifest_json, state)
+       VALUES (?, ?, 1, ?, ?, '{}', 'STAGED')`,
+    ).run(revision, session.sessionId, randomUUID(), 'a'.repeat(64));
+
+    const tmpStorage = await mkdtemp(join(tmpdir(), 'pilot-guard-'));
+    const crm = new InMemoryCrmClient();
+    crm.setEligibility({
+      orderUuid: order,
+      status: 'CONFIRMED',
+      isEligibleForGallery: true,
+      revoked: false,
+    });
+    const server = createCatalogServer({
+      publicOrigin: new URL('http://127.0.0.1'),
+      loadApplicationShell: async () => '<html></html>',
+      previews: {
+        async getByPublicToken() {
+          return undefined;
+        },
+      },
+      audit: { async record() {} },
+      clock: { now: () => new Date() },
+      runtime: { releaseStage: 'development' },
+      publicationService: new PublicationService({
+        sessionRepository: repo,
+        storageService: new FileSystemStorageService({ storageDir: tmpStorage }),
+        publisherSecret: PUBLISHER_SECRET,
+        crmClient: crm,
+        isOrderAllowedForPublication: () => false,
+      }),
+    });
+    server.listen(0, '127.0.0.1');
+    await once(server, 'listening');
+    const port = (server.address() as AddressInfo).port;
+    const base = `http://127.0.0.1:${port}`;
+    const headers = {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${PUBLISHER_SECRET}`,
+    };
+    try {
+      const resolve = await fetch(`${base}/internal/v1/sessions/resolve`, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({ crmOrderUuid: order }),
+      });
+      expect(resolve.status).toBe(403);
+      const activate = await fetch(`${base}/internal/v1/publications/${revision}/activate`, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({ expectedActiveRevisionId: null }),
+      });
+      expect(activate.status).toBe(403);
+      const state = db.prepare('SELECT state FROM photo_revisions WHERE id = ?').get(revision) as {
+        state: string;
+      };
+      expect(state.state).toBe('STAGED');
+    } finally {
+      server.close();
+      await once(server, 'close');
+      db.close();
+      await rm(tmpStorage, { recursive: true, force: true });
+    }
+  });
+
   it('does not activate a staged revision after CRM cancellation or CRM outage', async () => {
     const tempDir = await mkdtemp(join(tmpdir(), 'crm-activate-'));
     const db = openSqliteDatabase(':memory:');
