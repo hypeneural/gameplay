@@ -19,6 +19,8 @@ export interface PublicationServiceDependencies {
   readonly logger?: PublicationLogger;
   readonly publicBaseUrl?: string;
   readonly crmClient?: CrmClient;
+  /** Per-order, server-side gate independent of CRM payment eligibility. */
+  readonly isOrderAllowedForPublication?: (crmOrderUuid: string) => boolean;
 }
 
 export class PublicationService {
@@ -28,6 +30,7 @@ export class PublicationService {
   private readonly logger: PublicationLogger | undefined;
   private readonly publicBaseUrl: string | undefined;
   private readonly crmClient: CrmClient | undefined;
+  private readonly isOrderAllowedForPublication: ((crmOrderUuid: string) => boolean) | undefined;
 
   constructor(dependencies: PublicationServiceDependencies) {
     if (!dependencies.publisherSecret || dependencies.publisherSecret.length < 16) {
@@ -39,6 +42,7 @@ export class PublicationService {
     this.logger = dependencies.logger;
     this.publicBaseUrl = dependencies.publicBaseUrl;
     this.crmClient = dependencies.crmClient;
+    this.isOrderAllowedForPublication = dependencies.isOrderAllowedForPublication;
   }
 
   async handleHttpRequest(request: IncomingMessage, response: ServerResponse): Promise<boolean> {
@@ -183,6 +187,17 @@ export class PublicationService {
         404,
         'SESSION_NOT_FOUND',
         'CRM order could not be verified.',
+        requestId,
+      );
+      return;
+    }
+
+    if (this.isOrderAllowedForPublication && !this.isOrderAllowedForPublication(crmOrderUuid)) {
+      this.sendError(
+        response,
+        403,
+        'SESSION_NOT_FOUND',
+        'Customer publication is not authorized for this order.',
         requestId,
       );
       return;
@@ -523,6 +538,16 @@ export class PublicationService {
       const crmOrderUuid = await this.sessionRepo.getCrmOrderUuidForRevision(revisionId);
       if (!crmOrderUuid) {
         this.sendError(response, 404, 'REVISION_NOT_FOUND', 'Revision does not exist.', requestId);
+        return;
+      }
+      if (this.isOrderAllowedForPublication && !this.isOrderAllowedForPublication(crmOrderUuid)) {
+        this.sendError(
+          response,
+          403,
+          'SESSION_NOT_FOUND',
+          'Customer publication is not authorized for this order.',
+          requestId,
+        );
         return;
       }
       try {

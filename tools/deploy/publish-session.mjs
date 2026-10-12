@@ -315,6 +315,22 @@ export function validatePrivatePublisherOrigin(value) {
   return origin.origin;
 }
 
+/** Concurrency is opt-in for measured canaries; default remains sequential. */
+export function validateUploadConcurrency(input) {
+  const value = input ?? 1;
+  if (typeof value !== 'number' && typeof value !== 'string') {
+    throw new Error('PUBLISHER_UPLOAD_CONCURRENCY_INVALID');
+  }
+  if (typeof value === 'string' && !/^[1-3]$/.test(value)) {
+    throw new Error('PUBLISHER_UPLOAD_CONCURRENCY_INVALID');
+  }
+  const parsed = Number(value);
+  if (!Number.isInteger(parsed) || parsed < 1 || parsed > 3) {
+    throw new Error('PUBLISHER_UPLOAD_CONCURRENCY_INVALID');
+  }
+  return parsed;
+}
+
 async function publishSessionUnlocked(options) {
   const startTime = Date.now();
   const { apiOrigin, apiSecret, crmOrderUuid, logFile } = options;
@@ -413,35 +429,56 @@ async function publishSessionUnlocked(options) {
     readyBlobsCount: pubData.readyBlobs,
   });
 
-  // Step 4: Upload all pending blobs
+  // Step 4: Upload pending blobs. Default one request; only increase
+  // PUBLISHER_UPLOAD_CONCURRENCY after a measured synthetic canary. All
+  // in-flight workers finish before a failure is returned, leaving the
+  // private .inflight receipt reservation intact for reconciliation.
+  const uploadConcurrency = validateUploadConcurrency(
+    options.uploadConcurrency ?? process.env.PUBLISHER_UPLOAD_CONCURRENCY,
+  );
   let totalBytesUploaded = 0;
-  for (const blobId of pendingBlobIds) {
-    const filePath = blobFileMap.get(blobId);
-    if (!filePath) {
-      throw new Error(`No file mapping found for pending blob ${blobId}`);
+  let nextBlobIndex = 0;
+  let uploadFailure;
+
+  const uploadWorker = async () => {
+    while (nextBlobIndex < pendingBlobIds.length && !uploadFailure) {
+      const blobId = pendingBlobIds[nextBlobIndex++];
+      try {
+        const filePath = blobFileMap.get(blobId);
+        if (!filePath) {
+          throw new Error('PUBLISHER_BLOB_FILE_MAPPING_MISSING');
+        }
+        const fileBytes = await readFile(filePath);
+        const sha256 = createHash('sha256').update(fileBytes).digest('hex');
+        const uploadRes = await fetch(
+          `${normalizedOrigin}/internal/v1/publications/${revisionId}/blobs/${blobId}`,
+          {
+            method: 'PUT',
+            headers: {
+              Authorization: 'Bearer ' + apiSecret,
+              'Content-Type': 'image/webp',
+              'X-Content-SHA256': sha256,
+            },
+            body: new Uint8Array(fileBytes),
+          },
+        );
+        if (!uploadRes.ok) {
+          throw new Error(`PUBLISHER_UPLOAD_HTTP_${uploadRes.status}`);
+        }
+        totalBytesUploaded += fileBytes.byteLength;
+      } catch (error) {
+        // Finish already running requests; do not start more after an error.
+        uploadFailure ??= error;
+      }
     }
-
-    const fileBytes = await readFile(filePath);
-    const sha256 = createHash('sha256').update(fileBytes).digest('hex');
-
-    const uploadRes = await fetch(
-      `${normalizedOrigin}/internal/v1/publications/${revisionId}/blobs/${blobId}`,
-      {
-        method: 'PUT',
-        headers: {
-          Authorization: 'Bearer ' + apiSecret,
-          'Content-Type': 'image/webp',
-          'X-Content-SHA256': sha256,
-        },
-        body: new Uint8Array(fileBytes),
-      },
-    );
-
-    if (!uploadRes.ok && uploadRes.status !== 201) {
-      throw new Error(`PUBLISHER_UPLOAD_HTTP_${uploadRes.status}`);
-    }
-
-    totalBytesUploaded += fileBytes.byteLength;
+  };
+  await Promise.all(
+    Array.from({ length: Math.min(uploadConcurrency, pendingBlobIds.length) }, () =>
+      uploadWorker(),
+    ),
+  );
+  if (uploadFailure) {
+    throw uploadFailure;
   }
 
   // Step 5: Check publication status to ensure 100% readiness
