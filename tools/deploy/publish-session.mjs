@@ -297,8 +297,9 @@ export function validatePrivatePublisherOrigin(value) {
     octets[1] >= 64 &&
     octets[1] <= 127;
   const explicit = process.env.PUBLISHER_ALLOWED_PRIVATE_ORIGIN?.replace(/\/+$/, '');
-  const allowedTlsOrigin =
-    origin.protocol === 'https:' && Boolean(explicit) && origin.origin === explicit;
+  const allowedPrivateOrigin = Boolean(explicit) && origin.origin === explicit;
+  const allowedTlsOrigin = origin.protocol === 'https:' && allowedPrivateOrigin;
+  const allowedPeerOrigin = tailscale && allowedPrivateOrigin;
   if (
     !['http:', 'https:'].includes(origin.protocol) ||
     origin.username ||
@@ -306,8 +307,8 @@ export function validatePrivatePublisherOrigin(value) {
     origin.pathname !== '/' ||
     origin.search ||
     origin.hash ||
-    !(loopback || tailscale || allowedTlsOrigin) ||
-    (origin.protocol === 'http:' && !(loopback || tailscale))
+    !(loopback || allowedPeerOrigin || allowedTlsOrigin) ||
+    (origin.protocol === 'http:' && !(loopback || allowedPeerOrigin))
   ) {
     throw new Error('PUBLISHER_ORIGIN_NOT_PRIVATE');
   }
