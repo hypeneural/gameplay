@@ -893,7 +893,11 @@ describe('CRM Server-to-Server Eligibility Gate', () => {
     const server = createCatalogServer({
       publicOrigin: new URL('http://127.0.0.1'),
       loadApplicationShell: async () => '<html></html>',
-      previews: { async getByPublicToken() { return undefined; } },
+      previews: {
+        async getByPublicToken() {
+          return undefined;
+        },
+      },
       audit: { async record() {} },
       clock: { now: () => new Date() },
       runtime: { releaseStage: 'development' },
@@ -915,20 +919,20 @@ describe('CRM Server-to-Server Eligibility Gate', () => {
     };
     try {
       const resolve = await fetch(`${base}/internal/v1/sessions/resolve`, {
-        method: 'POST', headers, body: JSON.stringify({ crmOrderUuid: order }),
+        method: 'POST',
+        headers,
+        body: JSON.stringify({ crmOrderUuid: order }),
       });
       expect(resolve.status).toBe(403);
-      const activate = await fetch(
-        `${base}/internal/v1/publications/${revision}/activate`,
-        {
-          method: 'POST',
-          headers,
-          body: JSON.stringify({ expectedActiveRevisionId: null }),
-        },
-      );
+      const activate = await fetch(`${base}/internal/v1/publications/${revision}/activate`, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({ expectedActiveRevisionId: null }),
+      });
       expect(activate.status).toBe(403);
-      const state = db.prepare('SELECT state FROM photo_revisions WHERE id = ?')
-        .get(revision) as { state: string };
+      const state = db.prepare('SELECT state FROM photo_revisions WHERE id = ?').get(revision) as {
+        state: string;
+      };
       expect(state.state).toBe('STAGED');
     } finally {
       server.close();
