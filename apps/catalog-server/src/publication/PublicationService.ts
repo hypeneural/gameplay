@@ -60,6 +60,17 @@ export class PublicationService {
       return true;
     }
 
+    // 1b. POST /internal/v1/sessions/:sessionId/revoke
+    const revokeMatch = /^\/internal\/v1\/sessions\/([0-9a-f-]{36})\/revoke$/.exec(pathname);
+    if (revokeMatch) {
+      if (method !== 'POST') {
+        this.sendError(response, 405, 'INTERNAL_ERROR', 'Method not allowed', requestId);
+        return true;
+      }
+      await this.handleRevokeSession(revokeMatch[1]!, request, response, requestId, startTime);
+      return true;
+    }
+
     // 2. POST /internal/v1/publications
     if (pathname === '/internal/v1/publications') {
       if (method !== 'POST') {
@@ -232,6 +243,39 @@ export class PublicationService {
         status: statusCode,
         durationMs: Date.now() - startTime,
         details: { sessionId: resolved.sessionId, status: resolved.status },
+      });
+    } catch (error) {
+      this.handleDomainError(response, error, requestId);
+    }
+  }
+
+  private async handleRevokeSession(
+    sessionId: string,
+    request: IncomingMessage,
+    response: ServerResponse,
+    requestId: string,
+    startTime: number,
+  ): Promise<void> {
+    if (!this.checkPublisherAuth(request, response, requestId)) return;
+
+    if (!UUID_PATTERN.test(sessionId)) {
+      this.sendError(response, 400, 'INTERNAL_ERROR', 'Invalid sessionId format', requestId);
+      return;
+    }
+
+    try {
+      await this.sessionRepo.revokeSession(sessionId);
+      this.sendJson(response, 200, {
+        sessionId,
+        status: 'REVOKED',
+      });
+      this.logger?.log('session_revoked', {
+        requestId,
+        method: 'POST',
+        path: `/internal/v1/sessions/${sessionId}/revoke`,
+        status: 200,
+        durationMs: Date.now() - startTime,
+        details: { sessionId, status: 'REVOKED' },
       });
     } catch (error) {
       this.handleDomainError(response, error, requestId);

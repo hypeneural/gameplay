@@ -1,6 +1,6 @@
 import { createHash, randomUUID } from 'node:crypto';
 import { existsSync } from 'node:fs';
-import { appendFile, open, readFile, rename, unlink, writeFile } from 'node:fs/promises';
+import { appendFile, link, lstat, open, readFile, rename, unlink, writeFile } from 'node:fs/promises';
 import { isAbsolute, join } from 'node:path';
 import { URL } from 'node:url';
 
@@ -438,22 +438,7 @@ async function publishSessionUnlocked(options) {
   ) {
     throw new Error('PUBLICATION_ACTIVATION_RECEIPT_INVALID');
   }
-  let accessUrl;
-  try {
-    accessUrl = new URL(receiptData.accessUrl);
-  } catch {
-    throw new Error('PUBLICATION_ACCESS_URL_INVALID');
-  }
-  if (
-    accessUrl.protocol !== 'https:' ||
-    accessUrl.hostname !== 'jogos.fotosdenatal.com' ||
-    accessUrl.port ||
-    accessUrl.search ||
-    accessUrl.hash ||
-    !new RegExp('^[/]s[/][A-Za-z0-9_-]{16,128}$').test(accessUrl.pathname)
-  ) {
-    throw new Error('PUBLICATION_ACCESS_URL_INVALID');
-  }
+  const { accessUrl, publicToken } = validateActivationAccessUrl(receiptData);
   const durationMs = Date.now() - startTime;
 
   const receipt = {
@@ -461,7 +446,7 @@ async function publishSessionUnlocked(options) {
     crmOrderUuid,
     sessionId,
     revisionId,
-    publicToken: receiptData.publicToken,
+    publicToken,
     accessUrl: accessUrl.href,
     hubUrl: accessUrl.href,
     galleryUrl: `${accessUrl.href}/fotos`,
@@ -558,16 +543,94 @@ function parseCliArgs(argv) {
   };
 }
 
-/** Atomic private receipt: write to a restricted temp file, then rename. */
+/** Keep capability URL and token strictly identical even if API omits publicToken. */
+export function validateActivationAccessUrl(receiptData) {
+  let accessUrl;
+  try {
+    accessUrl = new URL(receiptData.accessUrl);
+  } catch (error) {
+    throw new Error('PUBLICATION_ACCESS_URL_INVALID', { cause: error });
+  }
+  if (
+    accessUrl.protocol !== 'https:' ||
+    accessUrl.hostname !== 'jogos.fotosdenatal.com' ||
+    accessUrl.username ||
+    accessUrl.password ||
+    accessUrl.port ||
+    accessUrl.search ||
+    accessUrl.hash ||
+    !/^\/s\/[A-Za-z0-9_-]{16,128}$/.test(accessUrl.pathname)
+  ) {
+    throw new Error('PUBLICATION_ACCESS_URL_INVALID');
+  }
+  const publicToken = accessUrl.pathname.slice('/s/'.length);
+  if (
+    receiptData.publicToken !== undefined &&
+    receiptData.publicToken !== publicToken
+  ) {
+    throw new Error('PUBLICATION_ACTIVATION_RECEIPT_INVALID');
+  }
+  return { accessUrl, publicToken };
+}
+
+/** The receipt is an irreversible delivery fence, not a mutable status report.
+ * Reserve before making any HTTP call. If publication fails or times out, leave
+ * the .inflight file for manual remote reconciliation instead of blind replay.
+ * Separate worktrees on the same private filesystem share this reservation.
+ */
+export async function reservePrivateReceipt(path) {
+  if (!path || !isAbsolute(path)) {
+    throw new Error('PUBLISHER_RECEIPT_REQUIRES_ABSOLUTE_PATH');
+  }
+  try {
+    await lstat(path);
+    throw new Error('PUBLISHER_RECEIPT_EXISTS_RECONCILE_MANUALLY');
+  } catch (error) {
+    if (error?.code !== 'ENOENT') throw error;
+  }
+  const marker = `${path}.inflight`;
+  let handle;
+  try {
+    handle = await open(marker, 'wx', 0o600);
+    await handle.writeFile(
+      JSON.stringify({ schema: 1, pid: process.pid, startedAt: new Date().toISOString() }),
+    );
+    await handle.sync();
+  } catch (error) {
+    if (error?.code === 'EEXIST') {
+      throw new Error('PUBLISHER_RECEIPT_INFLIGHT_RECONCILE_MANUALLY', { cause: error });
+    }
+    throw error;
+  } finally {
+    await handle?.close();
+  }
+  // Recheck after acquiring the exclusive marker (another process may have
+  // completed before it could reserve this receipt).
+  try {
+    await lstat(path);
+    throw new Error('PUBLISHER_RECEIPT_EXISTS_RECONCILE_MANUALLY');
+  } catch (error) {
+    if (error?.code !== 'ENOENT') throw error;
+  }
+  return async () => unlink(marker);
+}
+
+/** Exclusive and durable private receipt publication; never overwrite a
+ * previously accepted access token/revision even during a race.
+ */
 export async function writePrivateReceipt(path, receipt) {
   const temporary = `${path}.tmp-${randomUUID()}`;
   try {
-    await writeFile(temporary, JSON.stringify(receipt, null, 2), {
-      mode: 0o600,
-      flag: 'wx',
-      encoding: 'utf8',
-    });
-    await rename(temporary, path);
+    const handle = await open(temporary, 'wx', 0o600);
+    try {
+      await handle.writeFile(JSON.stringify(receipt, null, 2), 'utf8');
+      await handle.sync();
+    } finally {
+      await handle.close();
+    }
+    // Atomic no-replace on NTFS/POSIX when temp and receipt share a directory.
+    // rename() would overwrite an existing receipt on some platforms.
+    await link(temporary, path);
   } finally {
     await unlink(temporary).catch(() => undefined);
   }
@@ -578,14 +641,15 @@ async function main() {
   if (options.showUrls) {
     throw new Error('PUBLISHER_URL_STDOUT_DISABLED_USE_RECEIPT_FILE');
   }
-  if (options.receiptFile && !isAbsolute(options.receiptFile)) {
+  if (!options.receiptFile || !isAbsolute(options.receiptFile)) {
     throw new Error('PUBLISHER_RECEIPT_REQUIRES_ABSOLUTE_PATH');
   }
+  // Failure or timeout intentionally leaves .inflight for operator review.
+  // Do not remove the reservation in a generic catch/finally branch.
+  const releaseReservation = await reservePrivateReceipt(options.receiptFile);
   const receipt = await publishSession(options);
-
-  if (options.receiptFile) {
-    await writePrivateReceipt(options.receiptFile, receipt);
-  }
+  await writePrivateReceipt(options.receiptFile, receipt);
+  await releaseReservation();
 
   {
     const safeSummary = {

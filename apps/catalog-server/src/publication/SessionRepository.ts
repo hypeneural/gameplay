@@ -726,16 +726,16 @@ export class SqliteSessionRepository implements SessionRepository {
 
   async revokeSession(sessionId: string): Promise<void> {
     const selectSession = this.db.prepare(
-      'SELECT id, access_version FROM photo_sessions WHERE id = ? LIMIT 1',
+      'SELECT id, access_version FROM photo_sessions WHERE id = ? OR crm_order_uuid = ? LIMIT 1',
     );
 
     this.db.exec('BEGIN IMMEDIATE;');
     try {
-      const session = selectSession.get(sessionId) as
+      const session = selectSession.get(sessionId, sessionId) as
         { id: string; access_version: number } | undefined;
       if (!session) {
         this.db.exec('COMMIT;');
-        return;
+        throw new PublicationDomainError('SESSION_NOT_FOUND', 'Session not found');
       }
 
       const nextAccessVersion = session.access_version + 1;
@@ -746,7 +746,7 @@ export class SqliteSessionRepository implements SessionRepository {
          SET access_version = ?, public_token_hash = ?, status = 'REVOKED', updated_at = CURRENT_TIMESTAMP
          WHERE id = ?`,
       );
-      updateRevoked.run(nextAccessVersion, invalidTokenHash, sessionId);
+      updateRevoked.run(nextAccessVersion, invalidTokenHash, session.id);
       this.db.exec('COMMIT;');
     } catch (error) {
       try {
