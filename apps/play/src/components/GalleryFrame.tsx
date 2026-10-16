@@ -24,12 +24,14 @@ export function GalleryFrame({
   srcSetVariants,
   allowRetry = false,
 }: GalleryFrameProps): React.JSX.Element {
-  const [measured, setMeasured] = useState<{ photoId: string; variant: PhotoVariant; ratio: number }>();
+  const [measured, setMeasured] = useState<{
+    photoId: string;
+    variant: PhotoVariant;
+    ratio: number;
+  }>();
   const reservedRatio = galleryFrameAspectRatio(photo, variant);
   const ratio =
-    measured?.photoId === photo.id && measured.variant === variant
-      ? measured.ratio
-      : reservedRatio;
+    measured?.photoId === photo.id && measured.variant === variant ? measured.ratio : reservedRatio;
 
   return (
     <span
@@ -37,7 +39,11 @@ export function GalleryFrame({
       data-frame-orientation={photo.orientation}
       style={{ '--gallery-frame-ratio': ratio } as CSSProperties}
     >
-      <span className="gallery-photo-frame gallery-frame-window" style={{ aspectRatio: ratio }}>
+      <span
+        className="gallery-photo-frame gallery-frame-window"
+        data-intrinsic-ratio={ratio.toFixed(4)}
+        style={{ aspectRatio: ratio }}
+      >
         <PhotoPrint
           photo={photo}
           variant={variant}
@@ -45,8 +51,11 @@ export function GalleryFrame({
           {...(allowRetry ? { allowRetry } : {})}
           onIntrinsicDimensions={(width, height) => {
             const actualRatio = width / height;
-            if (Number.isFinite(actualRatio) && actualRatio > 0 &&
-                Math.abs(actualRatio / ratio - 1) > 0.0005) {
+            if (
+              Number.isFinite(actualRatio) &&
+              actualRatio > 0 &&
+              Math.abs(actualRatio / ratio - 1) > 0.0005
+            ) {
               setMeasured({ photoId: photo.id, variant, ratio: actualRatio });
             }
           }}
