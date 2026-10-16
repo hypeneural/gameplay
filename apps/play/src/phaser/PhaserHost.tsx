@@ -15,8 +15,10 @@ import { PhaserMountCoordinator } from './PhaserMountCoordinator.js';
 import { loadGameRuntime, mountLoadedGame } from './createGame.js';
 import { createRunIdentity } from './createRunIdentity.js';
 import type { AvailableGameId } from './gameRegistry.js';
+import { statusForBridgeEvent } from './statusForBridgeEvent.js';
+import type { HostBridgeStatus } from './statusForBridgeEvent.js';
 
-export type PhaserHostStatus = 'loading' | 'ready' | 'error';
+export type PhaserHostStatus = HostBridgeStatus;
 
 interface PhaserHostProps {
   bridge: GameBridge;
@@ -65,28 +67,8 @@ export function PhaserHost({
       onSoundChangeRef.current?.(event.enabled);
       return;
     }
-    // A retry, milestone or exit is not proof that the Phaser Scene is ready.
-    // Keep the existing state until an explicit lifecycle signal arrives.
-    switch (event.type) {
-      case 'GAME_OPENED':
-        onStateChangeRef.current('loading', event.type, event.sequence);
-        return;
-      case 'GAME_ASSET_FAILED':
-        onStateChangeRef.current('error', event.type, event.sequence);
-        return;
-      case 'GAME_READY':
-      case 'GAME_STARTED':
-      case 'GAME_PAUSED':
-      case 'GAME_RESUMED':
-      case 'GAME_COMPLETED':
-      case 'GAME_INTERACTION_SETTLED':
-        onStateChangeRef.current('ready', event.type, event.sequence);
-        return;
-      case 'GAME_ASSET_RETRY':
-      case 'GAME_MILESTONE':
-      case 'GAME_EXITED':
-        return;
-    }
+    const status = statusForBridgeEvent(event.type);
+    if (status) onStateChangeRef.current(status, event.type, event.sequence);
   }, []);
 
   const publishLoading = useCallback(
