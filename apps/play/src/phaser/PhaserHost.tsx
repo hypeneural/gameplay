@@ -65,13 +65,28 @@ export function PhaserHost({
       onSoundChangeRef.current?.(event.enabled);
       return;
     }
-    const status: PhaserHostStatus =
-      event.type === 'GAME_ASSET_FAILED'
-        ? 'error'
-        : event.type === 'GAME_OPENED'
-          ? 'loading'
-          : 'ready';
-    onStateChangeRef.current(status, event.type, event.sequence);
+    // A retry, milestone or exit is not proof that the Phaser Scene is ready.
+    // Keep the existing state until an explicit lifecycle signal arrives.
+    switch (event.type) {
+      case 'GAME_OPENED':
+        onStateChangeRef.current('loading', event.type, event.sequence);
+        return;
+      case 'GAME_ASSET_FAILED':
+        onStateChangeRef.current('error', event.type, event.sequence);
+        return;
+      case 'GAME_READY':
+      case 'GAME_STARTED':
+      case 'GAME_PAUSED':
+      case 'GAME_RESUMED':
+      case 'GAME_COMPLETED':
+      case 'GAME_INTERACTION_SETTLED':
+        onStateChangeRef.current('ready', event.type, event.sequence);
+        return;
+      case 'GAME_ASSET_RETRY':
+      case 'GAME_MILESTONE':
+      case 'GAME_EXITED':
+        return;
+    }
   }, []);
 
   const publishLoading = useCallback(
