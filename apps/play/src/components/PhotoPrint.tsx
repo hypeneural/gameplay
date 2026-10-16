@@ -10,6 +10,7 @@ interface PhotoPrintProps {
   srcSetVariants?: readonly PhotoVariant[] | undefined;
   sessionKey?: string | undefined;
   allowRetry?: boolean | undefined;
+  onIntrinsicDimensions?: ((width: number, height: number) => void) | undefined;
 }
 
 interface DisplayedPhoto {
@@ -38,6 +39,7 @@ export function PhotoPrint({
   srcSetVariants,
   sessionKey,
   allowRetry = false,
+  onIntrinsicDimensions,
 }: PhotoPrintProps): React.JSX.Element {
   const [retryNonce, setRetryNonce] = useState(0);
   const src = photo.variants[variant];
@@ -196,7 +198,13 @@ export function PhotoPrint({
           src={renderedPhoto.src}
           srcSet={renderedPhoto.srcSet}
           sizes={renderedPhoto.sizes}
-          onLoad={() => {
+          onLoad={(event) => {
+            if (renderedPhoto.key === targetKey) {
+              const { naturalWidth, naturalHeight } = event.currentTarget;
+              if (naturalWidth > 0 && naturalHeight > 0) {
+                onIntrinsicDimensions?.(naturalWidth, naturalHeight);
+              }
+            }
             if (activeDisplayed) return;
             generationRef.current += 1;
             setDisplayed({

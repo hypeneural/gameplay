@@ -12,6 +12,7 @@ interface GalleryFrameProps {
   sizes?: string;
   srcSetVariants?: readonly PhotoVariant[];
   allowRetry?: boolean;
+  sessionKey?: string | undefined;
 }
 
 /** Decorative matte is outside the full-bleed, intrinsic-ratio photo window. */
@@ -23,6 +24,7 @@ export function GalleryFrame({
   sizes,
   srcSetVariants,
   allowRetry = false,
+  sessionKey,
 }: GalleryFrameProps): React.JSX.Element {
   const [measured, setMeasured] = useState<{
     photoId: string;
@@ -47,6 +49,7 @@ export function GalleryFrame({
         <PhotoPrint
           photo={photo}
           variant={variant}
+          sessionKey={sessionKey}
           eager={eager}
           {...(allowRetry ? { allowRetry } : {})}
           onIntrinsicDimensions={(width, height) => {
