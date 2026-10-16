@@ -546,6 +546,9 @@
 │   │   └── SHARING_AND_SOCIAL_PREVIEW.md
 │   ├── assets
 │   │   └── ASSET_MANIFEST_CONTRACT.md
+│   ├── contracts
+│   │   ├── mvp-photo-publication-v1.openapi.json
+│   │   └── photo-publication-manifest-v1.schema.json
 │   ├── design
 │   │   ├── PUZZLE_SWAP_EXPERIENCE_REVIEW.md
 │   │   └── THEME_DIRECTION.md
