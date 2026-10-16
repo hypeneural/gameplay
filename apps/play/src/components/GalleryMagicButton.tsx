@@ -14,12 +14,19 @@ export function GalleryMagicButton({ active }: { active: boolean }): React.JSX.E
       disabled={!active}
       onClick={() => {
         playInterfaceTap('bells');
-        setBurst((value) => value + 1);
+        if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+          setBurst((value) => value + 1);
+        }
       }}
     >
       <span className="gallery-magic-hit" aria-hidden="true" />
       {burst > 0 && active ? (
-        <span key={burst} className="gallery-magic-burst" aria-hidden="true">
+        <span
+          key={burst}
+          className="gallery-magic-burst"
+          aria-hidden="true"
+          onAnimationEnd={() => setBurst(0)}
+        >
           {Array.from({ length: 8 }, (_, index) => (
             <i
               key={index}

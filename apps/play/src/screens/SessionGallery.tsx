@@ -23,6 +23,8 @@ interface SessionGalleryProps {
   selectedPhotoId: string;
   calm: boolean;
   lowQuality: boolean;
+  soundEnabled: boolean;
+  onToggleSound(): void;
   initialVisibleCount?: number;
   restoreScrollY?: number;
   onVisibleCountChange?(count: number): void;
@@ -36,6 +38,8 @@ export function SessionGallery({
   selectedPhotoId,
   calm,
   lowQuality,
+  soundEnabled,
+  onToggleSound,
   initialVisibleCount,
   restoreScrollY = 0,
   onVisibleCountChange,
@@ -128,6 +132,15 @@ export function SessionGallery({
           <ShellIcon name="back" />
         </button>
         <span className="gallery-topbar-label">Suas fotos</span>
+        <button
+          className="gallery-icon-button"
+          type="button"
+          aria-pressed={soundEnabled}
+          aria-label={soundEnabled ? 'Desligar som' : 'Ligar som'}
+          onClick={onToggleSound}
+        >
+          <ShellIcon name={soundEnabled ? 'volume' : 'muted'} />
+        </button>
         <button
           className="gallery-icon-button"
           type="button"

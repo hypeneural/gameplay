@@ -197,6 +197,7 @@ export function SessionGalleryLightbox({
           variant="game"
           index={index}
           eager
+          allowRetry
           sizes={GALLERY_LIGHTBOX_SIZES}
           srcSetVariants={GALLERY_LIGHTBOX_VARIANTS}
         />

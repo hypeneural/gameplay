@@ -20,8 +20,16 @@ export function GalleryAtmosphere({ active }: { active: boolean }): React.JSX.El
 
   return (
     <>
-      <div className="gallery-edge-rail gallery-edge-rail--left" aria-hidden="true" />
-      <div className="gallery-edge-rail gallery-edge-rail--right" aria-hidden="true" />
+      <div
+        className="gallery-edge-rail gallery-edge-rail--left"
+        data-ambient-active={active && visible}
+        aria-hidden="true"
+      />
+      <div
+        className="gallery-edge-rail gallery-edge-rail--right"
+        data-ambient-active={active && visible}
+        aria-hidden="true"
+      />
       {active && visible ? (
         <div className="gallery-atmosphere-snow" aria-hidden="true">
           {flakes.map((flake, index) => (

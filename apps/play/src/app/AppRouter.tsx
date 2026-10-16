@@ -417,6 +417,8 @@ export function AppRouter(): React.JSX.Element {
           selectedPhotoId={selectedPhoto.id}
           calm={calm}
           lowQuality={quality === 'LOW'}
+          soundEnabled={soundEnabled}
+          onToggleSound={shellControls.onToggleSound}
           onSelectPhoto={setSelectedPhotoId}
           initialVisibleCount={galleryVisibleCountRef.current}
           restoreScrollY={galleryScrollRef.current}

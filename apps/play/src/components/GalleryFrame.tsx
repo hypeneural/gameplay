@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import type { CSSProperties } from 'react';
 import type { Photo, PhotoVariant } from '@christmas-games/platform';
 import { galleryFrameAspectRatio } from '../gallery/galleryFrameGeometry.js';
@@ -10,6 +11,7 @@ interface GalleryFrameProps {
   eager?: boolean;
   sizes?: string;
   srcSetVariants?: readonly PhotoVariant[];
+  allowRetry?: boolean;
 }
 
 /** Decorative matte is outside the full-bleed, intrinsic-ratio photo window. */
@@ -20,8 +22,14 @@ export function GalleryFrame({
   eager = false,
   sizes,
   srcSetVariants,
+  allowRetry = false,
 }: GalleryFrameProps): React.JSX.Element {
-  const ratio = galleryFrameAspectRatio(photo, variant);
+  const [measured, setMeasured] = useState<{ photoId: string; variant: PhotoVariant; ratio: number }>();
+  const reservedRatio = galleryFrameAspectRatio(photo, variant);
+  const ratio =
+    measured?.photoId === photo.id && measured.variant === variant
+      ? measured.ratio
+      : reservedRatio;
 
   return (
     <span
@@ -34,6 +42,14 @@ export function GalleryFrame({
           photo={photo}
           variant={variant}
           eager={eager}
+          {...(allowRetry ? { allowRetry } : {})}
+          onIntrinsicDimensions={(width, height) => {
+            const actualRatio = width / height;
+            if (Number.isFinite(actualRatio) && actualRatio > 0 &&
+                Math.abs(actualRatio / ratio - 1) > 0.0005) {
+              setMeasured({ photoId: photo.id, variant, ratio: actualRatio });
+            }
+          }}
           {...(sizes ? { sizes } : {})}
           {...(srcSetVariants ? { srcSetVariants } : {})}
           alt={`Lembrança de Natal ${index + 1}`}

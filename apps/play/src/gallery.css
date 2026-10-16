@@ -1263,3 +1263,39 @@
   min-width: 180%;
   max-width: none;
 }
+
+/* 2026-10-16: ergonomic four-control header; same Hub mute state. */
+.gallery-topbar {
+  grid-template-columns: 48px minmax(0, 1fr) 44px 48px;
+}
+.gallery-topbar-label {
+  min-width: 0;
+}
+.gallery-edge-rail[data-ambient-active='false']::after {
+  animation: none;
+}
+.gallery-frame-window .photo-print[data-status='ready'] img {
+  opacity: 1;
+}
+.gallery-lightbox-stage .photo-print-retry {
+  min-height: 44px;
+  padding: 10px 16px;
+  border: 1px solid #e5bc7c;
+  border-radius: 12px;
+  background: #651a2c;
+  color: #ffefcb;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+.gallery-lightbox-stage .photo-print-retry:focus-visible {
+  outline: 3px solid #ffe0a3;
+  outline-offset: 2px;
+}
+@media (max-width: 340px) {
+  .gallery-topbar {
+    grid-template-columns: 44px minmax(0, 1fr) 42px 44px;
+    gap: 5px;
+    padding-inline: 8px;
+  }
+}
