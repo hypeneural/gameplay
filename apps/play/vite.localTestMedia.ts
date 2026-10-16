@@ -62,6 +62,21 @@ interface MultiClientRegistry {
   sessions: RegisteredSessionEntry[];
 }
 
+const loopbackAddresses = new Set(['127.0.0.1', '::1', '::ffff:127.0.0.1']);
+const loopbackHostHeader = /^(?:127\.0\.0\.1|localhost|\[::1\])(?::\d+)?$/i;
+
+function isLoopbackRequest(request: IncomingMessage): boolean {
+  const remoteAddress = request.socket?.remoteAddress;
+  if (remoteAddress && !loopbackAddresses.has(remoteAddress)) {
+    return false;
+  }
+  const host = request.headers.host;
+  if (host && !loopbackHostHeader.test(host)) {
+    return false;
+  }
+  return Boolean(remoteAddress || host);
+}
+
 /**
  * A development-only, loopback-served adapter for real local derivatives.
  * Supports both single-session and multi-session client isolation.
@@ -94,6 +109,11 @@ async function handleRequest(
   const pathname = urlObj.pathname;
   if (!pathname.startsWith('/__local-test/')) {
     next();
+    return;
+  }
+
+  if (!isLoopbackRequest(request)) {
+    sendJson(response, 403, { code: 'local_test_loopback_only' });
     return;
   }
 
@@ -136,22 +156,35 @@ async function handleRequest(
   // 3. Multi-client session lookup: /__local-test/sessions/:token
   if (pathname.startsWith('/__local-test/sessions/')) {
     const token = decodeURIComponent(pathname.slice('/__local-test/sessions/'.length));
-    if (!token || !registry) {
+    if (!token) {
       sendJson(response, 404, { code: 'local_test_session_not_found' });
       return;
     }
-    const sessionEntry = registry.sessions.find((entry) => entry.publicToken === token);
-    if (!sessionEntry) {
+    if (registry) {
+      const sessionEntry = registry.sessions.find((entry) => entry.publicToken === token);
+      if (!sessionEntry) {
+        sendJson(response, 404, { code: 'local_test_session_not_found' });
+        return;
+      }
+      try {
+        const config = await readConfigFile(sessionEntry.configPath);
+        sendSessionJson(response, config, token);
+        return;
+      } catch {
+        sendJson(response, 404, { code: 'local_test_session_not_prepared' });
+        return;
+      }
+    } else {
+      try {
+        const config = await readConfig(storageRoot);
+        if (config.session.publicToken === token) {
+          sendSessionJson(response, config, token);
+          return;
+        }
+      } catch {
+        // Ignore unreadable single-session config and fall through to 404.
+      }
       sendJson(response, 404, { code: 'local_test_session_not_found' });
-      return;
-    }
-
-    try {
-      const config = await readConfigFile(sessionEntry.configPath);
-      sendSessionJson(response, config, token);
-      return;
-    } catch {
-      sendJson(response, 404, { code: 'local_test_session_not_prepared' });
       return;
     }
   }
@@ -159,42 +192,61 @@ async function handleRequest(
   // 4. Multi-client media lookup: /__local-test/media/:token/:photoId/:variant
   const multiMediaMatch =
     /^\/__local-test\/media\/([a-z0-9._-]+)\/([a-z0-9-]+)\/(thumb|card|game)$/i.exec(pathname);
-  if (multiMediaMatch && registry) {
+  if (multiMediaMatch) {
     const [, token, photoId, variant] = multiMediaMatch;
     if (!token || !photoId || !variant || !variants.includes(variant as Variant)) {
       sendJson(response, 404, { code: 'local_test_media_not_found' });
       return;
     }
 
-    const sessionEntry = registry.sessions.find((entry) => entry.publicToken === token);
-    if (!sessionEntry) {
+    if (registry) {
+      const sessionEntry = registry.sessions.find((entry) => entry.publicToken === token);
+      if (!sessionEntry) {
+        sendJson(response, 404, { code: 'local_test_media_not_found' });
+        return;
+      }
+
+      let config: LocalTestMediaConfig;
+      try {
+        config = await readConfigFile(sessionEntry.configPath);
+      } catch {
+        sendJson(response, 404, { code: 'local_test_media_not_found' });
+        return;
+      }
+
+      const photo = config.photos.find((candidate) => candidate.id === photoId);
+      if (!photo) {
+        sendJson(response, 404, { code: 'local_test_media_not_found' });
+        return;
+      }
+
+      await streamDerivative(
+        sessionEntry.storageDirectory,
+        config,
+        photo,
+        variant as Variant,
+        response,
+      );
+      return;
+    } else {
+      let config: LocalTestMediaConfig;
+      try {
+        config = await readConfig(storageRoot);
+      } catch {
+        sendJson(response, 404, { code: 'local_test_media_not_found' });
+        return;
+      }
+
+      if (config.session.publicToken === token) {
+        const photo = config.photos.find((candidate) => candidate.id === photoId);
+        if (photo) {
+          await streamDerivative(storageRoot, config, photo, variant as Variant, response);
+          return;
+        }
+      }
       sendJson(response, 404, { code: 'local_test_media_not_found' });
       return;
     }
-
-    let config: LocalTestMediaConfig;
-    try {
-      config = await readConfigFile(sessionEntry.configPath);
-    } catch {
-      sendJson(response, 404, { code: 'local_test_media_not_found' });
-      return;
-    }
-
-    // Strict ownership verification: photoId MUST belong to this session
-    const photo = config.photos.find((candidate) => candidate.id === photoId);
-    if (!photo) {
-      sendJson(response, 404, { code: 'local_test_media_not_found' });
-      return;
-    }
-
-    await streamDerivative(
-      sessionEntry.storageDirectory,
-      config,
-      photo,
-      variant as Variant,
-      response,
-    );
-    return;
   }
 
   // 5. Legacy Single-session fallback: /__local-test/session

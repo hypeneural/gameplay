@@ -24,4 +24,12 @@ These assets are owned by the project, static, responsive, accessible as decorat
 
 - `gallery-evergreen-hero-retina-v6.webp`: **Guirlanda fotorrealista Retina de alta resolução (640x126 px, 13672 B, SHA-256 `620f1197cc8c46ef4025b44e03d59833014881a65bdb9572f8ccbb3d75bb6cfa`)**, master de IA de 1376x768 em fundo preto sólido, processado via Sharp com máscara alfa suave e fade gradiente nos 30% inferiores. Densidade visual perfeita para telas mobile Retina 2x/3x (390px-430px viewports).
 - Substituiu os assets legados não utilizados `gallery-evergreen-header-v1.svg` (9095 B) e `gallery-snowflake-seal-v1.svg` (1176 B), liberando 10271 B de orçamento e mantendo o shell rigorosamente em 34389 B (dentro do teto máximo de 36000 B).
-- A arte é decorativa apenas: sem fotos, rostos, textos ou mockups incorporados. Mantém o fallback vetorial `gallery-evergreen-hero-v2.svg` via `image-set()`. Validação em aparelhos físicos mobile pendente.
+- A arte é decorativa apenas: sem fotos, rostos, textos ou mockups incorporados. Validação em aparelhos físicos mobile pendente.
+
+## gallery-velvet-v1 (2026-10-16)
+
+- `gallery-velvet-side-left-v1.webp` (56x224 px, 4968 B, SHA-256 `4bd4ab4a01f56757547188d76c92a7240509f992f4d04df78be54f60eae070cd`): guirlanda vertical fotorrealista sem emenda (`repeat-y`) com ramos de pinheiro, fita de veludo rubi, pinhas, berries e luzes quentes; despill unpremultiply e borda direita interna com `alpha === 0`.
+- `gallery-velvet-frame-corners-v1.webp` (144x144 px, 5716 B, SHA-256 `103cc0a8be66670f78fd4f112341849c0d944f45e21436b3045b0a93b1218d55`): atlas 2x2 de cantos ornamentais independentes (72x72 px por canto: pinheiro/azevinho/pinha/berries em TL/BR e floco barroco dourado 3D em TR/BL) com pontas suavizadas e quadrante interno voltado à foto com `alpha === 0`.
+- `gallery-velvet-frame-edges-v1.webp` (144x144 px, 2262 B, SHA-256 `6d90b27c88e2e311eacbf1a087e23d3195e4f0a16cccb5146f1dff1941c3a5ed`): moldura 9-slice (`slice 48`) com aro de ouro champagne 3D, passe-partout marfim aquecido e filete interno candy-cane; janela central `28..115` com `alpha === 0`.
+- `gallery-velvet-bottom-v1.webp` (288x58 px, 4510 B, SHA-256 `2917ecd22ee5ce064f7891d1e555a968054b0451174fdd872d54f21fc808d54b`): vinheta inferior fotorrealista em berço U com ramos de abeto, pinhas, bolas rubi/ouro e arabescos dourados sem cortes secos laterais; topo `y=0` com `alpha === 0`.
+- Substituiu os cinco SVGs legados da galeria (`gallery-starlight-footer-v1.svg`, `gallery-evergreen-hero-v2.svg`, `gallery-header-glow-v1.svg`, `gallery-badge-photo-count-v1.svg`, `gallery-divider-starlight-v2.svg`), mantendo o total visual do `christmas-shell` em **33916 B / 36000 B** sem elevar limites de orçamento.

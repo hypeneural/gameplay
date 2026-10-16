@@ -150,3 +150,42 @@ test('gallery fixed Evydência CTA stays visible and Hub follows the commercial 
   await expect(dock).toBeVisible();
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
 });
+
+test('Christmas velvet keeps image wells exact and ornaments outside photo pixels', async ({
+  page,
+}) => {
+  await page.goto('/s/local-demo-token/fotos');
+  const cards = page.locator('.gallery-card');
+  await expect(cards).toHaveCount(8);
+  await expect(page.locator('.gallery-frame')).toHaveCount(8);
+  await expect(page.locator('.gallery-photo-badge')).toHaveCount(0);
+
+  const well = cards.first().locator('.gallery-frame-window');
+  const aspect = await well.evaluate((element) => {
+    const rectangle = element.getBoundingClientRect();
+    const image = element.querySelector('img');
+    return {
+      ratio: rectangle.width / rectangle.height,
+      objectFit: image ? getComputedStyle(image).objectFit : '',
+      imageCount: element.querySelectorAll('img').length,
+      ornamentsWithinWindow: element.querySelectorAll('.gallery-frame-ornament').length,
+    };
+  });
+  expect(Math.abs(aspect.ratio - 500 / 700)).toBeLessThan(0.02);
+  expect(aspect.objectFit).toBe('contain');
+  expect(aspect.imageCount).toBe(1);
+  expect(aspect.ornamentsWithinWindow).toBe(0);
+
+  const count = page.getByTestId('gallery-brand-dock').locator('.gallery-footer-photo-count');
+  await expect(count).toContainText('12 fotos');
+  const magic = page.getByRole('button', { name: 'Acender as luzinhas de Natal' });
+  await magic.click();
+  await expect(page.locator('.gallery-magic-burst i')).toHaveCount(8);
+
+  await cards.first().click();
+  await expect(page.locator('.gallery-lightbox')).toBeVisible();
+  await expect(page.locator('.gallery-atmosphere-snow i')).toHaveCount(0);
+  await expect(page.locator('.gallery-lightbox-count')).toContainText('1 de 12');
+  await page.keyboard.press('ArrowRight');
+  await expect(page.locator('.gallery-lightbox-count')).toContainText('2 de 12');
+});
