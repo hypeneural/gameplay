@@ -1,7 +1,9 @@
 import { Suspense, lazy, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import type { Session } from '@christmas-games/platform';
 import { playInterfaceTap } from '../audio/playInterfaceTap.js';
-import { PhotoPrint } from '../components/PhotoPrint.js';
+import { GalleryAtmosphere } from '../components/GalleryAtmosphere.js';
+import { GalleryMagicButton } from '../components/GalleryMagicButton.js';
+import { GalleryFrame } from '../components/GalleryFrame.js';
 import { ShellIcon } from '../components/ShellIcon.js';
 import {
   GALLERY_AUTOLOAD_ROOT_MARGIN,
@@ -21,6 +23,8 @@ interface SessionGalleryProps {
   selectedPhotoId: string;
   calm: boolean;
   lowQuality: boolean;
+  soundEnabled: boolean;
+  onToggleSound(): void;
   initialVisibleCount?: number;
   restoreScrollY?: number;
   onVisibleCountChange?(count: number): void;
@@ -34,6 +38,8 @@ export function SessionGallery({
   selectedPhotoId,
   calm,
   lowQuality,
+  soundEnabled,
+  onToggleSound,
   initialVisibleCount,
   restoreScrollY = 0,
   onVisibleCountChange,
@@ -49,6 +55,7 @@ export function SessionGallery({
   );
   const [lightboxIndex, setLightboxIndex] = useState<number>();
   const [shareStatus, setShareStatus] = useState('');
+  const [magicPulse, setMagicPulse] = useState(false);
   const sentinelRef = useRef<HTMLDivElement>(null);
 
   // Restore after Suspense has mounted the actual cards, avoiding fallback clamping.
@@ -112,6 +119,10 @@ export function SessionGallery({
       data-calm={calm || lowQuality}
       data-testid="session-gallery"
     >
+      <GalleryAtmosphere
+        active={!calm && !lowQuality && lightboxIndex === undefined}
+        magicPulse={magicPulse}
+      />
       <header className="gallery-topbar">
         <button
           className="gallery-icon-button"
@@ -128,6 +139,15 @@ export function SessionGallery({
         <button
           className="gallery-icon-button"
           type="button"
+          aria-pressed={soundEnabled}
+          aria-label={soundEnabled ? 'Desligar som' : 'Ligar som'}
+          onClick={onToggleSound}
+        >
+          <ShellIcon name={soundEnabled ? 'volume' : 'muted'} />
+        </button>
+        <button
+          className="gallery-icon-button"
+          type="button"
           aria-label="Compartilhar álbum"
           onClick={() => void share()}
         >
@@ -135,23 +155,34 @@ export function SessionGallery({
         </button>
       </header>
 
-      <section className="gallery-hero" aria-labelledby="gallery-hero-title">
+      <section
+        className="gallery-hero"
+        data-magic-pulse={magicPulse}
+        aria-labelledby="gallery-hero-title"
+      >
         <div className="gallery-hero-glow" aria-hidden="true" />
         <div className="gallery-hero-garland" aria-hidden="true" />
+        <GalleryMagicButton active={!calm && !lowQuality} onCelebrate={setMagicPulse} />
         <div className="gallery-hero-content">
-          <div className="gallery-hero-meta">
-            <p className="eyebrow">ESTÚDIO EVYDÊNCIA • NATAL EM FAMÍLIA</p>
-            <span
-              className="gallery-photo-badge"
-              aria-label={`${session.photos.length} fotos no álbum`}
-            >
-              {session.photos.length} fotos
-            </span>
-          </div>
           <h1 id="gallery-hero-title">Seu Álbum de Natal</h1>
-          <p className="gallery-hero-subtitle">Reviva cada lembrança com carinho</p>
-          <div className="gallery-hero-divider" aria-hidden="true" />
-          <p className="gallery-hero-instruction">Toque em uma foto para ver de perto</p>
+          <span className="gallery-hero-flourish" aria-hidden="true">
+            <svg viewBox="0 0 180 22" focusable="false">
+              <path
+                d="M12 12c22 0 34-6 52-6 10 0 14 4 26 4s16-4 26-4c18 0 30 6 52 6"
+                fill="none"
+                stroke="#eec97f"
+                strokeWidth="1.3"
+                strokeLinecap="round"
+                opacity="0.85"
+              />
+              <path
+                d="M90 2l3.2 5.5h-2l2.6 4.5h-2.2l2.8 4.8H85.6l2.8-4.8h-2.2l2.6-4.5h-2L90 2Z"
+                fill="#ffe5a3"
+              />
+              <circle cx="52" cy="11" r="1.6" fill="#ffd98a" />
+              <circle cx="128" cy="11" r="1.6" fill="#ffd98a" />
+            </svg>
+          </span>
         </div>
       </section>
 
@@ -165,6 +196,7 @@ export function SessionGallery({
         {visiblePhotos.map((photo, index) => (
           <button
             className="gallery-card"
+            data-orientation={photo.orientation}
             data-photo-id={photo.id}
             type="button"
             key={photo.id}
@@ -176,17 +208,15 @@ export function SessionGallery({
               setLightboxIndex(index);
             }}
           >
-            <span className="gallery-photo-frame" style={{ aspectRatio: photo.aspectRatio }}>
-              <PhotoPrint
-                photo={photo}
-                sessionKey={session.id}
-                variant="card"
-                eager={index === 0}
-                sizes={GALLERY_FEED_SIZES}
-                srcSetVariants={GALLERY_FEED_VARIANTS}
-                alt={`Lembrança de Natal ${index + 1}`}
-              />
-            </span>
+            <GalleryFrame
+              sessionKey={session.id}
+              photo={photo}
+              variant="card"
+              index={index}
+              eager={index === 0}
+              sizes={GALLERY_FEED_SIZES}
+              srcSetVariants={GALLERY_FEED_VARIANTS}
+            />
           </button>
         ))}
       </div>
@@ -233,6 +263,12 @@ export function SessionGallery({
       ) : null}
 
       <footer className="gallery-brand-dock" data-testid="gallery-brand-dock">
+        <span
+          className="gallery-footer-photo-count"
+          aria-label={`${session.photos.length} fotos no álbum`}
+        >
+          <ShellIcon name="photos" /> {session.photos.length} fotos
+        </span>
         <a
           className="gallery-brand-link"
           href="https://fotosdenatal.com/"
