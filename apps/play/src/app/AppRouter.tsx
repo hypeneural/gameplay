@@ -25,6 +25,7 @@ import {
 } from '../audio/playInterfaceTap.js';
 import type { AppRoute, GameCoverRoute, PublicRoute, SessionRoute } from './AppNavigation.js';
 import { fetchLocalTestSession, shouldUseLocalTestMedia } from './LocalTestSession.js';
+import { fetchSessionData, SessionLoadError } from './SessionDataLoader.js';
 import type { Session } from '@christmas-games/platform';
 
 type FixtureCount = 4 | 12 | 120 | 172;
@@ -85,6 +86,8 @@ export function AppRouter(): React.JSX.Element {
   const [selectedPhotoId, setSelectedPhotoId] = useState('ph_001');
   const [localSession, setLocalSession] = useState<{ token: string; value: Session }>();
   const [localSessionError, setLocalSessionError] = useState<string>();
+  const [remoteSession, setRemoteSession] = useState<{ token: string; value: Session }>();
+  const [remoteSessionError, setRemoteSessionError] = useState<string>();
   const [playing, setPlaying] = useState(false);
   const [soundEnabled, setSoundEnabled] = useState(true);
   const soundPreferenceRef = useRef(true);
@@ -101,12 +104,24 @@ export function AppRouter(): React.JSX.Element {
   const [exitRequest, setExitRequest] = useState(0);
 
   const currentToken = 'token' in route ? route.token : undefined;
+  const isRemoteSessionRoute = Boolean(
+    currentToken && currentToken !== 'local-demo-token' && !usesLocalTestMedia,
+  );
   const validLocalSession =
     localSession && (currentToken ? localSession.token === currentToken : localSession.token === '')
       ? localSession.value
       : undefined;
+  const validRemoteSession =
+    remoteSession && (currentToken ? remoteSession.token === currentToken : false)
+      ? remoteSession.value
+      : undefined;
   const fixtureSession = useMemo(() => createFixtureSession(fixtureCount), [fixtureCount]);
-  const session = usesLocalTestMedia && validLocalSession ? validLocalSession : fixtureSession;
+  const session =
+    usesLocalTestMedia && validLocalSession
+      ? validLocalSession
+      : validRemoteSession
+        ? validRemoteSession
+        : fixtureSession;
   const selectedPhoto =
     session.photos.find((photo) => photo.id === selectedPhotoId) ?? session.photos[0]!;
   const context = useMemo<GameContextSeed>(
@@ -212,6 +227,38 @@ export function AppRouter(): React.JSX.Element {
       active = false;
     };
   }, [usesLocalTestMedia, currentToken]);
+
+  useEffect(() => {
+    if (!isRemoteSessionRoute || !currentToken) {
+      setRemoteSession(undefined);
+      setRemoteSessionError(undefined);
+      return;
+    }
+
+    const controller = new AbortController();
+    setRemoteSession(undefined);
+    setRemoteSessionError(undefined);
+
+    fetchSessionData(currentToken, controller.signal)
+      .then((loadedSession) => {
+        setRemoteSession({ token: currentToken, value: loadedSession });
+        if (loadedSession.photos.length > 0) {
+          setSelectedPhotoId(loadedSession.photos[0]!.id);
+        }
+      })
+      .catch((error: unknown) => {
+        if (controller.signal.aborted) return;
+        setRemoteSessionError(
+          error instanceof SessionLoadError || error instanceof Error
+            ? error.message
+            : 'Não foi possível carregar as fotos da sessão.',
+        );
+      });
+
+    return () => {
+      controller.abort();
+    };
+  }, [currentToken, isRemoteSessionRoute]);
 
   const writeRoute = useCallback(
     (nextRoute: PublicRoute, mode: Exclude<HistoryMode, 'none'>) => {
@@ -403,6 +450,30 @@ export function AppRouter(): React.JSX.Element {
         <p className="eyebrow">TESTE LOCAL</p>
         <h1>{localSessionError ? 'Sessão local indisponível' : 'Preparando fotos para o jogo…'}</h1>
         {localSessionError ? <p>{localSessionError}</p> : null}
+      </main>
+    );
+  }
+
+  if (isRemoteSessionRoute && remoteSessionError) {
+    return (
+      <main className="shell unavailable-game" role="alert">
+        <p className="eyebrow">ÁLBUM INDISPONÍVEL</p>
+        <h1>{remoteSessionError}</h1>
+        <p>Verifique o link enviado pelo estúdio ou tente novamente mais tarde.</p>
+      </main>
+    );
+  }
+
+  if (isRemoteSessionRoute && !validRemoteSession) {
+    return (
+      <main className="shell unavailable-game" role="status">
+        <ChristmasLoadingExperience
+          mode="session"
+          eyebrow="SEU ÁLBUM DE NATAL"
+          title="Preparando suas lembranças…"
+          calm={calm}
+          lowQuality={quality === 'LOW'}
+        />
       </main>
     );
   }

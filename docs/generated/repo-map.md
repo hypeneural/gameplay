@@ -389,6 +389,7 @@
 │       │   │   ├── App.tsx
 │       │   │   ├── AppNavigation.test.ts
 │       │   │   ├── AppNavigation.ts
+│       │   │   ├── AppRouter.test.ts
 │       │   │   ├── AppRouter.tsx
 │       │   │   ├── AppServices.ts
 │       │   │   ├── ExperienceSettings.test.ts
