@@ -83,6 +83,7 @@ for (const toolName of [
   'verify-vps-release.mjs',
   'smoke-staging.mjs',
   'vps-docker-preflight.sh',
+  'vps-gateway-smoke.sh',
 ]) {
   await cp(join(releaseToolsSource, toolName), join(outputRoot, 'ops', 'tools', toolName));
 }

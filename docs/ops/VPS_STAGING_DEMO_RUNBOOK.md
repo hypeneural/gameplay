@@ -212,3 +212,15 @@ Para testar o candidato **antes de trocar `current`**, é preferível criar um c
 - https://docs.docker.com/compose/how-tos/networking/
 
 **Não alterar `deploy/readiness.json`:** apenas staging-demo com fixtures sintéticas. A existência de PRs de publicação real não torna o piloto aprovado.
+
+### 9.1 Smoke automatizado gateway→catalog (substitui o teste local insuficiente)
+
+Após recriar os containers, o pacote inclui `ops/tools/vps-gateway-smoke.sh`. Executar com bash no diretório do release já instalado:
+
+```bash
+bash ops/tools/vps-gateway-smoke.sh --check <sha-completo>
+```
+
+O script confirma `current/RELEASE.json.gitSha` por verificador, `HOST=0.0.0.0` no container, ausência de publicação direta da porta do catalog, e resposta do `/healthz` **executada dentro do gateway via serviço DNS `catalog:4180`**. Falha implica rollback. O comando não imprime secrets/tokens. Depois rodar o smoke público com hashes de assets em workstation.
+
+Este smoke requer `wget` ou `curl` já presente dentro da imagem do gateway; não instalar dependências em produção. Se nenhum estiver disponível, registrar `NO_GO_GATEWAY_PROBE_UNAVAILABLE` e preparar uma validação de rede equivalente e isolada em nova PR, sem dar bypass ao gate.

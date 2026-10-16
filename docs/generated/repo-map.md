@@ -1262,7 +1262,8 @@
 │   │   ├── smoke-release-runtime.mjs
 │   │   ├── smoke-staging.mjs
 │   │   ├── verify-vps-release.mjs
-│   │   └── vps-docker-preflight.sh
+│   │   ├── vps-docker-preflight.sh
+│   │   └── vps-gateway-smoke.sh
 │   ├── export-puzzle-source-reader.mjs
 │   ├── fixture-generator
 │   │   ├── package.json
