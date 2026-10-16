@@ -1,11 +1,15 @@
 .christmas-gallery-shell {
   width: 100%;
-  max-width: 1040px;
+  max-width: 760px;
+  margin-inline: auto;
   min-height: 100svh;
-  padding: max(12px, env(safe-area-inset-top)) 12px max(34px, env(safe-area-inset-bottom));
+  padding-top: max(12px, env(safe-area-inset-top));
+  padding-right: max(12px, env(safe-area-inset-right));
+  padding-bottom: max(116px, calc(env(safe-area-inset-bottom) + 102px));
+  padding-left: max(12px, env(safe-area-inset-left));
   background:
-    radial-gradient(circle at 50% -80px, rgb(205 165 88 / 18%), transparent 280px),
-    linear-gradient(180deg, #071f27 0%, #0b302c 42%, #071f22 100%);
+    radial-gradient(ellipse at 50% -70px, rgb(205 165 88 / 16%), transparent 270px),
+    linear-gradient(180deg, #031b19 0%, #0b342b 44%, #061a1c 100%);
   color: #fff4dd;
   overflow-x: clip;
 }
@@ -27,8 +31,10 @@
   grid-template-columns: 48px minmax(0, 1fr) 48px;
   align-items: center;
   gap: 8px;
-  margin: 0 -12px;
-  padding: max(8px, env(safe-area-inset-top)) 12px 10px;
+  margin-right: calc(-1 * max(12px, env(safe-area-inset-right)));
+  margin-left: calc(-1 * max(12px, env(safe-area-inset-left)));
+  padding: max(8px, env(safe-area-inset-top)) max(12px, env(safe-area-inset-right)) 10px
+    max(12px, env(safe-area-inset-left));
   background: linear-gradient(180deg, rgb(4 24 29 / 96%), rgb(6 32 34 / 88%));
   border-bottom: 1px solid rgb(232 201 147 / 20%);
   box-shadow: 0 8px 20px rgb(0 10 12 / 18%);
@@ -36,40 +42,37 @@
   backdrop-filter: blur(14px) saturate(120%);
 }
 
-.gallery-title-group {
+.gallery-topbar-label {
   min-width: 0;
   text-align: center;
-}
-
-.gallery-title-group .eyebrow {
-  margin: 0 0 2px;
-  color: #e9cb92;
-  font-size: 0.58rem;
-  letter-spacing: 0.16em;
-}
-
-.gallery-title-group h1 {
-  margin: 0;
   font-family: Georgia, serif;
-  font-size: clamp(1.18rem, 5.2vw, 1.62rem);
-  line-height: 1;
-  letter-spacing: -0.03em;
-  text-wrap: balance;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #f7e6c4;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .gallery-icon-button {
+  position: relative;
   display: grid;
   place-items: center;
   width: 46px;
   height: 46px;
   padding: 0;
-  border: 1px solid rgb(234 205 153 / 28%);
+  border: 1px solid rgb(247 208 130 / 56%);
   border-radius: 15px;
   color: #fff0cd;
-  background: rgb(9 37 37 / 82%);
+  background:
+    radial-gradient(circle at 28% 0%, rgb(242 212 151 / 22%), transparent 55%),
+    linear-gradient(150deg, #19433b 0%, #052521 80%);
   box-shadow:
-    inset 0 1px rgb(255 255 255 / 10%),
-    0 6px 14px rgb(0 12 13 / 24%);
+    inset 0 1px rgb(255 249 224 / 24%),
+    inset 0 -2px rgb(0 0 0 / 24%),
+    0 5px 14px rgb(0 12 10 / 45%),
+    0 0 0 2px rgb(195 135 58 / 8%);
   cursor: pointer;
   touch-action: manipulation;
   transition:
@@ -77,9 +80,11 @@
     background 120ms ease;
 }
 
-.gallery-icon-button > span {
-  font-size: 1.72rem;
-  line-height: 1;
+.gallery-icon-button .shell-glyph {
+  display: block;
+  width: 27px;
+  height: 27px;
+  filter: drop-shadow(0 1px 2px rgb(255 185 78 / 30%));
 }
 
 .gallery-icon-button:active {
@@ -87,93 +92,131 @@
   background: rgb(130 41 58 / 78%);
 }
 
-.gallery-intro {
+.gallery-hero {
   position: relative;
   isolation: isolate;
-  margin: 12px 0 16px;
-  padding: 18px 42px 22px;
-  overflow: hidden;
-  border: 1px solid rgb(224 194 137 / 24%);
-  border-radius: 23px;
+  margin: 9px 0 13px;
+  padding: 58px 14px 13px;
+  border: 1px solid rgba(238, 203, 142, 0.32);
+  border-radius: 20px;
   background:
-    radial-gradient(circle at 50% 0, rgb(243 201 112 / 15%), transparent 60%),
-    linear-gradient(145deg, rgb(21 66 53 / 88%), rgb(9 43 39 / 92%));
-  box-shadow: inset 0 1px rgb(255 247 220 / 7%);
+    radial-gradient(ellipse at 50% 8%, rgb(172 115 53 / 20%), transparent 62%),
+    linear-gradient(155deg, #0b372e 0%, #05221e 100%);
+  box-shadow:
+    inset 0 1px 1px rgba(255, 255, 255, 0.12),
+    0 6px 20px rgba(0, 15, 12, 0.35);
+  overflow: hidden;
   text-align: center;
 }
 
-.gallery-intro p {
+.gallery-hero-glow {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: url('/assets/christmas-shell/gallery/gallery-header-glow-v1.svg') center top / 100%
+    100% no-repeat;
+  opacity: 0.85;
+}
+
+.gallery-hero-garland {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 77px;
+  z-index: 2;
+  pointer-events: none;
+  background-image: url('/assets/christmas-shell/gallery/gallery-evergreen-hero-v2.svg');
+  background-image: image-set(
+    url('/assets/christmas-shell/gallery/gallery-evergreen-hero-retina-v6.webp') type('image/webp'),
+    url('/assets/christmas-shell/gallery/gallery-evergreen-hero-v2.svg') type('image/svg+xml')
+  );
+  background-position: center top;
+  background-repeat: no-repeat;
+  background-size: 100% auto;
+}
+
+.gallery-hero-content {
   position: relative;
   z-index: 2;
-  max-width: 520px;
-  margin: 0 auto;
-  color: #e9e0cb;
-  font-size: 0.82rem;
-  line-height: 1.45;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 14px;
+}
+
+.gallery-hero-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  margin-bottom: 2px;
+  gap: 8px;
+}
+
+.gallery-hero-meta .eyebrow {
+  margin: 0;
+  color: #e8c988;
+  font-size: 0.58rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-align: left;
+}
+
+.gallery-photo-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3px 12px;
+  border: 1px solid rgba(246, 219, 160, 0.6);
+  border-radius: 999px;
+  background:
+    url('/assets/christmas-shell/gallery/gallery-badge-photo-count-v1.svg') center / cover no-repeat,
+    linear-gradient(135deg, #78172c, #480a17);
+  color: #fff2d2;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.25),
+    0 2px 6px rgba(0, 0, 0, 0.4);
+  white-space: nowrap;
+}
+
+.gallery-hero-content h1 {
+  margin: 2px 0 2px;
+  font-family: Georgia, serif;
+  font-size: clamp(1.28rem, 5.2vw, 1.68rem);
+  font-weight: 700;
+  line-height: 1.15;
+  color: #fff4dc;
+  letter-spacing: -0.02em;
+  text-shadow: 0 2px 8px rgba(0, 15, 12, 0.6);
+}
+
+.gallery-hero-subtitle {
+  margin: 0 0 5px;
+  color: #e5d8be;
+  font-size: 0.77rem;
+  line-height: 1.35;
   text-wrap: balance;
 }
 
-.gallery-pine {
-  position: absolute;
-  top: 7px;
-  width: 72px;
-  height: 26px;
-  border-radius: 100% 0 100% 0;
-  background:
-    repeating-linear-gradient(160deg, transparent 0 8px, rgb(89 128 74 / 90%) 9px 12px),
-    linear-gradient(110deg, #214d39, #3c6d47);
-  opacity: 0.72;
-  filter: drop-shadow(0 3px 3px rgb(0 13 12 / 30%));
+.gallery-hero-divider {
+  width: 100%;
+  max-width: 320px;
+  height: 12px;
+  margin: 1px 0 5px;
+  background: url('/assets/christmas-shell/gallery/gallery-divider-starlight-v2.svg') center /
+    contain no-repeat;
 }
 
-.gallery-pine::after {
-  position: absolute;
-  content: '';
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: #a7384f;
-  box-shadow:
-    16px 5px #d8b263,
-    31px -2px #a7384f;
-}
-
-.gallery-pine--left {
-  left: -18px;
-  transform: rotate(-10deg);
-}
-
-.gallery-pine--right {
-  right: -18px;
-  transform: scaleX(-1) rotate(-10deg);
-}
-
-.gallery-lights {
-  position: absolute;
-  right: 22%;
-  bottom: 7px;
-  left: 22%;
-  z-index: 1;
-  display: flex;
-  justify-content: space-between;
-  border-top: 1px solid rgb(169 139 88 / 50%);
-}
-
-.gallery-lights i {
-  position: relative;
-  top: -1px;
-  width: 6px;
-  height: 9px;
-  border-radius: 40% 40% 50% 50%;
-  background: #f0c36c;
-  box-shadow: 0 0 8px rgb(255 214 125 / 45%);
-  animation: gallery-light-pulse 3.8s ease-in-out infinite alternate;
-}
-
-.gallery-lights i:nth-child(even) {
-  background: #b74755;
-  box-shadow: 0 0 8px rgb(216 98 110 / 36%);
-  animation-delay: -1.4s;
+.gallery-hero-instruction {
+  margin: 0;
+  color: #cfd8cf;
+  font-size: 0.72rem;
+  font-weight: 500;
+  line-height: 1.4;
 }
 
 .gallery-share-status {
@@ -186,7 +229,7 @@
 .gallery-grid {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  gap: 14px;
+  gap: 18px;
   align-items: start;
 }
 
@@ -196,11 +239,11 @@
   width: 100%;
   min-width: 0;
   margin: 0;
-  padding: 7px 7px 19px;
+  padding: 5px;
   overflow: hidden;
-  border: 1px solid rgb(222 203 165 / 44%);
-  border-radius: 8px;
-  background: linear-gradient(165deg, #f2ead7, #e4d6b8);
+  border: 1px solid rgb(239 209 151 / 54%);
+  border-radius: 15px;
+  background: linear-gradient(155deg, #f4e9d3, #d8c39a);
   box-shadow:
     0 8px 22px rgb(0 14 15 / 28%),
     0 2px 0 rgb(109 79 47 / 25%);
@@ -230,7 +273,7 @@
   width: 100%;
   min-height: 0;
   overflow: hidden;
-  border-radius: 3px;
+  border-radius: 8px;
   background: #173d34;
 }
 
@@ -241,15 +284,6 @@
 
 .gallery-photo-frame .photo-print img {
   object-fit: contain;
-}
-
-.gallery-card-mark {
-  position: absolute;
-  right: 10px;
-  bottom: 3px;
-  color: #9c3550;
-  font-size: 0.88rem;
-  text-shadow: 0 1px #fff8e9;
 }
 
 .gallery-sentinel {
@@ -453,24 +487,25 @@
     padding-inline: 18px;
   }
 
-  .gallery-intro {
+  .gallery-hero {
     margin-top: 16px;
+    padding: 16px 20px 14px;
   }
 
   .gallery-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 18px;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 22px;
   }
 }
 
 @media (min-width: 900px) {
   .gallery-grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 20px;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 22px;
   }
 
-  .gallery-intro {
-    padding-block: 22px 26px;
+  .gallery-hero {
+    padding: 18px 24px 16px;
   }
 }
 
@@ -491,4 +526,321 @@
 .christmas-gallery-shell[data-calm='true'] *::after {
   animation: none !important;
   transition: none !important;
+}
+
+/* Native-like Christmas gallery: the photography, not a grid, is the hero. */
+.gallery-finale-kicker {
+  color: #edcb83 !important;
+  font-size: 0.62rem !important;
+  font-weight: 800;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+
+.gallery-photo-frame {
+  isolation: isolate;
+}
+
+.gallery-card:focus-visible {
+  outline: 3px solid #ffe3a2;
+  outline-offset: 4px;
+}
+
+.gallery-finale {
+  position: relative;
+  isolation: isolate;
+  margin-top: 24px;
+  padding: 33px 19px 105px;
+  overflow: hidden;
+  border: 1px solid rgb(225 190 121 / 30%);
+  border-radius: 22px;
+  background:
+    url('/assets/christmas-shell/gallery/gallery-starlight-footer-v1.svg') center bottom / 100% auto
+      no-repeat,
+    radial-gradient(circle at 50% 0, rgb(194 149 68 / 19%), transparent 55%),
+    linear-gradient(160deg, #0d4135 0%, #05221d 100%);
+  box-shadow: inset 0 1px rgb(255 250 220 / 9%);
+  text-align: center;
+}
+
+.gallery-finale h2 {
+  position: relative;
+  z-index: 1;
+  margin: 8px 0;
+  color: #fff1c9;
+  font-family: Georgia, serif;
+  font-size: clamp(1.45rem, 5vw, 1.95rem);
+  font-weight: 500;
+}
+
+.gallery-finale > p:not(.gallery-finale-kicker) {
+  position: relative;
+  z-index: 1;
+  max-width: 480px;
+  margin: 9px auto 15px;
+  color: #ebdfc2;
+  font-size: 0.82rem;
+  line-height: 1.5;
+}
+
+.gallery-finale .gallery-return-games {
+  position: relative;
+  z-index: 1;
+  width: min(100%, 345px);
+  padding: 11px 16px;
+}
+
+.gallery-return-games span {
+  margin-left: 8px;
+}
+
+.gallery-finale .gallery-finale-signature {
+  margin-top: 15px !important;
+  color: #e4c58b !important;
+  font-size: 0.72rem !important;
+}
+
+@media (max-width: 380px) {
+  .gallery-hero-meta {
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .gallery-hero-meta .eyebrow {
+    text-align: center;
+  }
+}
+
+/* Premium gold interaction system: actual icons, not font glyph approximations. */
+.gallery-lightbox-arrow .shell-glyph {
+  display: block;
+  width: 27px;
+  height: 27px;
+  filter: drop-shadow(0 1px 2px rgb(255 185 78 / 30%));
+}
+
+.gallery-icon-button:focus-visible,
+.gallery-lightbox-arrow:focus-visible,
+.gallery-play-photo:focus-visible {
+  outline: 3px solid #ffdea3;
+  outline-offset: 3px;
+}
+
+.gallery-icon-button:active,
+.gallery-lightbox-arrow:active {
+  transform: scale(0.95);
+}
+
+.gallery-lightbox-arrow {
+  border: 1px solid rgb(225 180 105 / 40%);
+  background: linear-gradient(165deg, #184a3d, #06231f);
+  box-shadow:
+    inset 0 1px rgb(255 243 215 / 16%),
+    0 3px 12px rgb(0 0 0 / 24%);
+}
+
+.gallery-play-photo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  min-width: 0;
+  min-height: 59px;
+  padding: 6px 9px;
+  border: 1px solid #e7ba70;
+  border-radius: 17px;
+  background:
+    radial-gradient(ellipse at 50% 0%, rgb(255 204 125 / 23%), transparent 60%),
+    linear-gradient(160deg, #ba2844 0%, #88162e 63%, #6d102b 100%);
+  box-shadow:
+    inset 0 1px rgb(255 247 211 / 34%),
+    inset 0 -2px rgb(73 11 29 / 60%),
+    0 4px 16px rgb(170 32 59 / 37%),
+    0 0 0 2px rgb(244 181 90 / 12%);
+  color: #fff4dd;
+}
+
+.gallery-play-photo .shell-glyph {
+  width: 24px;
+  height: 24px;
+  flex: none;
+}
+
+.gallery-play-photo-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+
+.gallery-play-photo-copy strong {
+  font-size: 0.84rem;
+  font-weight: 800;
+  line-height: 1.18;
+  white-space: nowrap;
+}
+
+.gallery-play-photo-copy small {
+  font-size: 0.6rem;
+  font-weight: 600;
+  color: #f3d7bb;
+  line-height: 1.25;
+}
+
+.gallery-play-photo:active {
+  transform: translateY(1px) scale(0.985);
+}
+
+.gallery-lightbox-footer {
+  grid-template-columns: 45px minmax(0, 1fr) 45px;
+  gap: 8px;
+}
+
+.gallery-lightbox-arrow {
+  width: 45px;
+  height: 49px;
+}
+
+@media (max-width: 380px) {
+  .gallery-hero {
+    padding-top: 57px;
+  }
+
+  .gallery-hero-meta .eyebrow {
+    letter-spacing: 0.055em;
+    font-size: 0.54rem;
+  }
+
+  .gallery-play-photo-copy strong {
+    font-size: 0.77rem;
+  }
+
+  .gallery-lightbox-footer {
+    gap: 5px;
+  }
+}
+
+/* A single fixed studio signature: never embed an order token in the external URL. */
+.gallery-brand-dock {
+  position: fixed;
+  right: auto;
+  bottom: max(10px, env(safe-area-inset-bottom));
+  left: 50%;
+  z-index: 20;
+  width: min(736px, calc(100% - 24px));
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+.gallery-brand-link {
+  display: grid;
+  grid-template-columns: 30px minmax(0, 1fr) auto 20px;
+  align-items: center;
+  gap: 9px;
+  min-height: 66px;
+  padding: 9px 13px;
+  overflow: hidden;
+  border: 1px solid rgb(243 204 130 / 74%);
+  border-radius: 18px;
+  background:
+    radial-gradient(ellipse at 10% 0%, rgb(243 200 127 / 18%), transparent 56%),
+    linear-gradient(145deg, #113e33 0%, #062924 63%, #071f21 100%);
+  box-shadow:
+    inset 0 1px rgb(255 245 210 / 25%),
+    0 7px 22px rgb(0 12 14 / 58%);
+  color: #fff1d1;
+  text-decoration: none;
+  pointer-events: auto;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.gallery-brand-link:focus-visible {
+  outline: 3px solid #ffe1a0;
+  outline-offset: 3px;
+}
+
+.gallery-brand-link:active {
+  background: linear-gradient(145deg, #205746, #092f2a);
+}
+
+.gallery-brand-heart {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border: 1px solid rgb(232 168 97 / 50%);
+  border-radius: 50%;
+  background: #76243a;
+}
+
+.gallery-brand-heart .shell-glyph {
+  width: 19px;
+  height: 19px;
+  filter: drop-shadow(0 1px 2px rgb(0 0 0 / 24%));
+}
+
+.gallery-brand-signature,
+.gallery-brand-destination {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.gallery-brand-signature small,
+.gallery-brand-destination small {
+  color: #e6c78e;
+  font-size: 0.51rem;
+  font-weight: 800;
+  letter-spacing: 0.065em;
+  white-space: nowrap;
+}
+
+.gallery-brand-signature strong {
+  font-family: Georgia, serif;
+  font-size: 0.94rem;
+  white-space: nowrap;
+}
+
+.gallery-brand-destination {
+  text-align: right;
+}
+
+.gallery-brand-destination strong {
+  font-size: 0.78rem;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.gallery-brand-link > .shell-glyph {
+  width: 20px;
+  height: 20px;
+}
+
+@media (max-width: 370px) {
+  .gallery-brand-link {
+    grid-template-columns: 26px minmax(0, 1fr) auto 15px;
+    gap: 5px;
+    padding-inline: 9px;
+  }
+
+  .gallery-brand-heart {
+    width: 26px;
+    height: 26px;
+  }
+
+  .gallery-brand-signature strong {
+    font-size: 0.81rem;
+  }
+
+  .gallery-brand-destination strong {
+    font-size: 0.7rem;
+  }
+
+  .gallery-brand-signature small,
+  .gallery-brand-destination small {
+    font-size: 0.45rem;
+    letter-spacing: 0.025em;
+  }
 }

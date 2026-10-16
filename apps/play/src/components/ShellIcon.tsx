@@ -11,7 +11,10 @@ type ShellIconName =
   | 'close'
   | 'share'
   | 'play'
-  | 'heart';
+  | 'heart'
+  | 'zoom-in'
+  | 'zoom-out'
+  | 'gamepad';
 
 /** Small material icons share a stable silhouette and never depend on emoji fonts. */
 export function ShellIcon({ name }: { name: ShellIconName }): React.JSX.Element {
@@ -81,6 +84,21 @@ export function ShellIcon({ name }: { name: ShellIconName }): React.JSX.Element 
           </>
         ) : null}
         {name === 'close' ? <path d="m9 9 14 14M23 9 9 23" /> : null}
+        {name === 'zoom-in' || name === 'zoom-out' ? (
+          <>
+            <circle cx="13" cy="13" r="8" />
+            <path d="m19 19 8 8M9 13h8" />
+            {name === 'zoom-in' ? <path d="M13 9v8" /> : null}
+          </>
+        ) : null}
+        {name === 'gamepad' ? (
+          <>
+            <path d="M9 10h14c3 0 4 2 5 7l1 6c.3 3-3 4-5 2l-5-4h-6l-5 4c-2 2-5 1-5-2l1-6c1-5 2-7 5-7Z" />
+            <path d="M9 16h8m-4-4v8" strokeWidth="1.9" />
+            <circle cx="22" cy="14" r="1.5" fill={`url(#${gold})`} stroke="none" />
+            <circle cx="25" cy="18" r="1.5" fill={`url(#${gold})`} stroke="none" />
+          </>
+        ) : null}
         {name === 'share' ? (
           <>
             <path d="M16 21V4m-6 6 6-6 6 6M9 15H5v13h22V15h-4" />

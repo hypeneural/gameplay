@@ -11,3 +11,7 @@
 - Preserve browser Back/Forward, gallery scroll and `selectedPhotoId` across Gallery -> game -> Gallery.
 - Responsive `srcset` is emitted only when actual per-variant intrinsic dimensions exist.
 - Run `pnpm check:fast` during iteration; Gallery changes also run `pnpm test:e2e:gallery`; run `pnpm check` before handoff.
+- In Gallery Lightbox, `Jogar com esta foto` **selects the photo and navigates to Hub**; it never auto-opens Puzzle. Hub's game cards own subsequent game selection. Preserve browser back to Gallery, photo selection and scroll.
+- Gallery visual v3 uses AI-generated decorative WebP in `christmas-shell/gallery` with a vector fallback. All UI text/controls are real DOM + accessible icons, never baked into artwork.
+- Ordenação do Hub é política de apresentação em `screens/hubGameOrder.ts`, não ordem de registro em `phaser/gameRegistry.ts`. Cinco jogos prioritários e fallback estável, preservando minPhotos e flags DEV.
+- `/s/:token/fotos` usa dock fixo de marca com link público estático `https://fotosdenatal.com/`, `rel=noopener noreferrer`; nunca transmitir token de sessão como query, fragment, Referrer ou analytics para o domínio externo.

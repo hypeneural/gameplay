@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import type { Photo } from '@christmas-games/platform';
 import { playInterfaceTap } from '../audio/playInterfaceTap.js';
 import { PhotoPrint } from './PhotoPrint.js';
+import { ShellIcon } from './ShellIcon.js';
 import { GALLERY_LIGHTBOX_SIZES, GALLERY_LIGHTBOX_VARIANTS } from '../gallery/galleryPolicy.js';
 
 interface SessionGalleryLightboxProps {
@@ -22,11 +23,16 @@ export function SessionGalleryLightbox({
   onPlayPhoto,
 }: SessionGalleryLightboxProps): React.JSX.Element {
   const dialogRef = useRef<HTMLDialogElement>(null);
-  const touchStartRef = useRef<{ x: number; y: number } | undefined>(undefined);
+  const stageRef = useRef<HTMLDivElement>(null);
+  const touchStartRef = useRef<{ x: number; y: number; time: number } | undefined>(undefined);
+  const lastTapRef = useRef<{ x: number; y: number; time: number } | undefined>(undefined);
+  const pinchStartDistRef = useRef<number | undefined>(undefined);
+  const previouslyFocusedRef = useRef<HTMLElement | null>(null);
   const [zoomed, setZoomed] = useState(false);
   const photo = photos[index];
 
   useEffect(() => {
+    previouslyFocusedRef.current = document.activeElement as HTMLElement | null;
     const dialog = dialogRef.current;
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
@@ -34,11 +40,13 @@ export function SessionGalleryLightbox({
     return () => {
       dialog?.close();
       document.body.style.overflow = previousOverflow;
+      previouslyFocusedRef.current?.focus?.();
     };
   }, []);
 
   useEffect(() => {
     setZoomed(false);
+    stageRef.current?.scrollTo(0, 0);
   }, [index]);
 
   if (!photo) return <></>;
@@ -51,6 +59,71 @@ export function SessionGalleryLightbox({
     playInterfaceTap('photo');
     onSelectPhoto(next.id);
     onIndexChange(nextIndex);
+  };
+
+  const handleTouchStart = (event: React.TouchEvent<HTMLDivElement>): void => {
+    if (event.touches.length === 2) {
+      const t0 = event.touches[0]!;
+      const t1 = event.touches[1]!;
+      pinchStartDistRef.current = Math.hypot(t0.clientX - t1.clientX, t0.clientY - t1.clientY);
+      return;
+    }
+    if (event.touches.length === 1) {
+      const touch = event.touches[0]!;
+      const now = performance.now();
+      const lastTap = lastTapRef.current;
+
+      // Double-tap detection (< 300ms, < 28px displacement)
+      if (
+        lastTap &&
+        now - lastTap.time < 300 &&
+        Math.hypot(touch.clientX - lastTap.x, touch.clientY - lastTap.y) < 28
+      ) {
+        lastTapRef.current = undefined;
+        playInterfaceTap('toggle');
+        setZoomed((z) => !z);
+        return;
+      }
+
+      lastTapRef.current = { x: touch.clientX, y: touch.clientY, time: now };
+      if (!zoomed) {
+        touchStartRef.current = { x: touch.clientX, y: touch.clientY, time: now };
+      }
+    }
+  };
+
+  const handleTouchMove = (event: React.TouchEvent<HTMLDivElement>): void => {
+    if (event.touches.length === 2 && pinchStartDistRef.current !== undefined) {
+      const t0 = event.touches[0]!;
+      const t1 = event.touches[1]!;
+      const dist = Math.hypot(t0.clientX - t1.clientX, t0.clientY - t1.clientY);
+      const ratio = dist / pinchStartDistRef.current;
+      if (!zoomed && ratio > 1.25) {
+        playInterfaceTap('toggle');
+        setZoomed(true);
+        pinchStartDistRef.current = dist;
+      } else if (zoomed && ratio < 0.8) {
+        playInterfaceTap('toggle');
+        setZoomed(false);
+        pinchStartDistRef.current = dist;
+      }
+    }
+  };
+
+  const handleTouchEnd = (event: React.TouchEvent<HTMLDivElement>): void => {
+    if (event.touches.length < 2) {
+      pinchStartDistRef.current = undefined;
+    }
+    if (zoomed) return;
+    const start = touchStartRef.current;
+    touchStartRef.current = undefined;
+    const touch = event.changedTouches[0];
+    if (!start || !touch) return;
+    const dx = touch.clientX - start.x;
+    const dy = touch.clientY - start.y;
+    if (Math.abs(dx) > 48 && Math.abs(dx) > Math.abs(dy) * 1.35) {
+      move(dx < 0 ? 1 : -1);
+    }
   };
 
   return (
@@ -77,7 +150,7 @@ export function SessionGalleryLightbox({
             onClose();
           }}
         >
-          <span aria-hidden="true">×</span>
+          <ShellIcon name="close" />
         </button>
         <span aria-live="polite">
           {index + 1} de {photos.length}
@@ -92,30 +165,17 @@ export function SessionGalleryLightbox({
             setZoomed((value) => !value);
           }}
         >
-          <span aria-hidden="true">{zoomed ? '−' : '+'}</span>
+          <ShellIcon name={zoomed ? 'zoom-out' : 'zoom-in'} />
         </button>
       </header>
 
       <div
+        ref={stageRef}
         className="gallery-lightbox-stage"
         data-zoomed={zoomed}
-        onTouchStart={(event) => {
-          if (zoomed) return;
-          const touch = event.touches[0];
-          if (touch) touchStartRef.current = { x: touch.clientX, y: touch.clientY };
-        }}
-        onTouchEnd={(event) => {
-          if (zoomed) return;
-          const start = touchStartRef.current;
-          touchStartRef.current = undefined;
-          const touch = event.changedTouches[0];
-          if (!start || !touch) return;
-          const dx = touch.clientX - start.x;
-          const dy = touch.clientY - start.y;
-          if (Math.abs(dx) > 48 && Math.abs(dx) > Math.abs(dy) * 1.35) {
-            move(dx < 0 ? 1 : -1);
-          }
-        }}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
       >
         <PhotoPrint
           key={photo.id}
@@ -136,7 +196,7 @@ export function SessionGalleryLightbox({
           disabled={photos.length < 2}
           onClick={() => move(-1)}
         >
-          ‹
+          <ShellIcon name="back" />
         </button>
         <button
           className="gallery-play-photo"
@@ -146,8 +206,12 @@ export function SessionGalleryLightbox({
             onPlayPhoto(photo.id);
           }}
         >
-          <span aria-hidden="true">✦</span>
-          Jogar com esta foto
+          <ShellIcon name="gamepad" />
+          <span className="gallery-play-photo-copy">
+            <strong>Jogar com esta foto</strong>
+            <small>Escolher o jogo no painel</small>
+          </span>
+          <ShellIcon name="next" />
         </button>
         <button
           className="gallery-lightbox-arrow"
@@ -156,7 +220,7 @@ export function SessionGalleryLightbox({
           disabled={photos.length < 2}
           onClick={() => move(1)}
         >
-          ›
+          <ShellIcon name="next" />
         </button>
       </footer>
     </dialog>

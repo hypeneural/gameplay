@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 34" fill="none">
+  <defs>
+    <linearGradient id="badgeGoldBorder" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fff5d9"/>
+      <stop offset="30%" stop-color="#e8be6d"/>
+      <stop offset="70%" stop-color="#bf8c39"/>
+      <stop offset="100%" stop-color="#fcedc7"/>
+    </linearGradient>
+    <linearGradient id="badgeRubyBack" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#691224" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#3d0713" stop-opacity="0.95"/>
+    </linearGradient>
+    <linearGradient id="badgeGlint" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0"/>
+      <stop offset="50%" stop-color="#ffffff" stop-opacity="0.35"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Outer Pill Shape with Drop Shadow -->
+  <rect x="2" y="2" width="116" height="30" rx="15" fill="url(#badgeRubyBack)" stroke="url(#badgeGoldBorder)" stroke-width="1.4"/>
+
+  <!-- Top Inner Specular Glint -->
+  <path d="M 18,5 Q 60,7 102,5" stroke="url(#badgeGlint)" stroke-width="1" stroke-linecap="round"/>
+
+  <!-- Left Accent Starlet -->
+  <g transform="translate(14, 17)">
+    <path d="M0,-4 L1,-1 L4,0 L1,1 L0,4 L-1,1 L-4,0 L-1,-1 Z" fill="#ffd88a"/>
+  </g>
+
+  <!-- Right Accent Starlet -->
+  <g transform="translate(106, 17)">
+    <path d="M0,-4 L1,-1 L4,0 L1,1 L0,4 L-1,1 L-4,0 L-1,-1 Z" fill="#ffd88a"/>
+  </g>
+</svg>

@@ -78,6 +78,23 @@ describe('multi-client media pipeline and source filter', () => {
     );
   });
 
+  it('rejects path traversal and malformed client aliases before creating storage', async () => {
+    const root = await mkdtemp(join(tmpdir(), 'christmas-test-client-slug-'));
+    const configPath = join(root, 'clients.invalid.json');
+    for (const alias of ['../escape', '..', 'nested/path', 'UPPER', 'client name']) {
+      await writeFile(
+        configPath,
+        JSON.stringify({
+          storageRoot: join(root, 'storage'),
+          clients: [{ alias, displayName: 'Teste', sourceDirectory: root }],
+        }),
+      );
+      await expect(prepareMultiLocalMedia({ configPath })).rejects.toThrow(
+        'Client alias must be a safe lowercase slug.',
+      );
+    }
+  });
+
   it('prepares multiple isolated clients and preserves tokens across re-runs', async () => {
     const root = await mkdtemp(join(tmpdir(), 'christmas-test-multi-'));
     const dirA = join(root, 'clientA');

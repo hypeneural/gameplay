@@ -1,0 +1,126 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 140" fill="none">
+  <defs>
+    <linearGradient id="pineGradDark" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0c2921"/>
+      <stop offset="100%" stop-color="#1b493c"/>
+    </linearGradient>
+    <linearGradient id="pineGradMid" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#184a3b"/>
+      <stop offset="100%" stop-color="#2d6e55"/>
+    </linearGradient>
+    <linearGradient id="pineGradLight" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#2c6953"/>
+      <stop offset="100%" stop-color="#4e9976"/>
+    </linearGradient>
+    <radialGradient id="berryRuby" cx="35%" cy="30%" r="70%">
+      <stop offset="0%" stop-color="#ff7b91"/>
+      <stop offset="28%" stop-color="#dc2849"/>
+      <stop offset="75%" stop-color="#8d122b"/>
+      <stop offset="100%" stop-color="#490615"/>
+    </radialGradient>
+    <radialGradient id="goldGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#fff2c2" stop-opacity="0.95"/>
+      <stop offset="40%" stop-color="#f5cb68" stop-opacity="0.75"/>
+      <stop offset="75%" stop-color="#e3a73b" stop-opacity="0.25"/>
+      <stop offset="100%" stop-color="#d49429" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="starCenter" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="40%" stop-color="#fcedb4"/>
+      <stop offset="100%" stop-color="#e5b452"/>
+    </radialGradient>
+    <linearGradient id="ribbonGold" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#c99540" stop-opacity="0"/>
+      <stop offset="25%" stop-color="#eed58b" stop-opacity="0.7"/>
+      <stop offset="50%" stop-color="#fff0be" stop-opacity="0.95"/>
+      <stop offset="75%" stop-color="#eed58b" stop-opacity="0.7"/>
+      <stop offset="100%" stop-color="#c99540" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Ambient Golden Ribbon Garland Arch -->
+  <path d="M 40,8 Q 380,38 720,8" stroke="url(#ribbonGold)" stroke-width="1.8" fill="none" opacity="0.85"/>
+  <path d="M 90,14 Q 380,48 670,14" stroke="url(#ribbonGold)" stroke-width="1" stroke-dasharray="4 6" fill="none" opacity="0.55"/>
+
+  <!-- Left Pine Garland Sprays -->
+  <g id="leftPine">
+    <!-- Base Layer Dark Branches -->
+    <path d="M-10,0 Q60,18 130,22 Q90,38 20,44 Z" fill="url(#pineGradDark)" opacity="0.9"/>
+    <path d="M20,-6 Q110,24 190,16 Q140,42 60,36 Z" fill="url(#pineGradDark)" opacity="0.85"/>
+    <path d="M90,-4 Q170,28 260,20 Q200,48 130,42 Z" fill="url(#pineGradDark)" opacity="0.8"/>
+    <path d="M180,-2 Q260,32 340,24 Q280,46 220,40 Z" fill="url(#pineGradDark)" opacity="0.75"/>
+
+    <!-- Mid Layer Evergreen Needles -->
+    <path d="M-8,4 C38,12 85,28 120,26 C85,34 32,32 0,22 Z" fill="url(#pineGradMid)"/>
+    <path d="M36,2 C88,18 148,32 186,22 C148,34 94,36 46,24 Z" fill="url(#pineGradMid)"/>
+    <path d="M104,2 C156,22 218,34 256,24 C218,36 162,38 116,24 Z" fill="url(#pineGradMid)"/>
+    <path d="M192,4 C244,24 298,32 334,22 C294,34 242,34 200,22 Z" fill="url(#pineGradMid)"/>
+
+    <!-- Foreground Fine Needles & Light Accents -->
+    <path d="M12,12 C52,22 92,34 116,32 C88,38 46,34 18,24 Z" fill="url(#pineGradLight)"/>
+    <path d="M78,14 C122,26 164,36 182,30 C152,38 112,38 82,26 Z" fill="url(#pineGradLight)"/>
+    <path d="M152,14 C198,28 240,36 254,28 C224,36 184,36 156,24 Z" fill="url(#pineGradLight)"/>
+  </g>
+
+  <!-- Right Pine Garland Sprays (Mirrored) -->
+  <g id="rightPine" transform="translate(760, 0) scale(-1, 1)">
+    <!-- Base Layer Dark Branches -->
+    <path d="M-10,0 Q60,18 130,22 Q90,38 20,44 Z" fill="url(#pineGradDark)" opacity="0.9"/>
+    <path d="M20,-6 Q110,24 190,16 Q140,42 60,36 Z" fill="url(#pineGradDark)" opacity="0.85"/>
+    <path d="M90,-4 Q170,28 260,20 Q200,48 130,42 Z" fill="url(#pineGradDark)" opacity="0.8"/>
+    <path d="M180,-2 Q260,32 340,24 Q280,46 220,40 Z" fill="url(#pineGradDark)" opacity="0.75"/>
+
+    <!-- Mid Layer Evergreen Needles -->
+    <path d="M-8,4 C38,12 85,28 120,26 C85,34 32,32 0,22 Z" fill="url(#pineGradMid)"/>
+    <path d="M36,2 C88,18 148,32 186,22 C148,34 94,36 46,24 Z" fill="url(#pineGradMid)"/>
+    <path d="M104,2 C156,22 218,34 256,24 C218,36 162,38 116,24 Z" fill="url(#pineGradMid)"/>
+    <path d="M192,4 C244,24 298,32 334,22 C294,34 242,34 200,22 Z" fill="url(#pineGradMid)"/>
+
+    <!-- Foreground Fine Needles & Light Accents -->
+    <path d="M12,12 C52,22 92,34 116,32 C88,38 46,34 18,24 Z" fill="url(#pineGradLight)"/>
+    <path d="M78,14 C122,26 164,36 182,30 C152,38 112,38 82,26 Z" fill="url(#pineGradLight)"/>
+    <path d="M152,14 C198,28 240,36 254,28 C224,36 184,36 156,24 Z" fill="url(#pineGradLight)"/>
+  </g>
+
+  <!-- Golden Fairy Glows (Light Halos) -->
+  <circle cx="85" cy="24" r="16" fill="url(#goldGlow)"/>
+  <circle cx="175" cy="34" r="14" fill="url(#goldGlow)"/>
+  <circle cx="270" cy="38" r="15" fill="url(#goldGlow)"/>
+  <circle cx="380" cy="42" r="18" fill="url(#goldGlow)"/>
+  <circle cx="490" cy="38" r="15" fill="url(#goldGlow)"/>
+  <circle cx="585" cy="34" r="14" fill="url(#goldGlow)"/>
+  <circle cx="675" cy="24" r="16" fill="url(#goldGlow)"/>
+
+  <!-- Warm Starlight Points (Center Lamps) -->
+  <circle cx="85" cy="24" r="3.2" fill="url(#starCenter)"/>
+  <circle cx="175" cy="34" r="2.8" fill="url(#starCenter)"/>
+  <circle cx="270" cy="38" r="3" fill="url(#starCenter)"/>
+  <circle cx="380" cy="42" r="3.6" fill="url(#starCenter)"/>
+  <circle cx="490" cy="38" r="3" fill="url(#starCenter)"/>
+  <circle cx="585" cy="34" r="2.8" fill="url(#starCenter)"/>
+  <circle cx="675" cy="24" r="3.2" fill="url(#starCenter)"/>
+
+  <!-- Rich Ruby Baubles & Berries -->
+  <!-- Left Clusters -->
+  <circle cx="46" cy="32" r="6.2" fill="url(#berryRuby)"/>
+  <circle cx="56" cy="38" r="4.8" fill="url(#berryRuby)"/>
+  <circle cx="132" cy="36" r="7" fill="url(#berryRuby)"/>
+  <circle cx="144" cy="43" r="5" fill="url(#berryRuby)"/>
+  <circle cx="226" cy="42" r="6.5" fill="url(#berryRuby)"/>
+  <circle cx="318" cy="40" r="5.8" fill="url(#berryRuby)"/>
+
+  <!-- Right Clusters -->
+  <circle cx="714" cy="32" r="6.2" fill="url(#berryRuby)"/>
+  <circle cx="704" cy="38" r="4.8" fill="url(#berryRuby)"/>
+  <circle cx="628" cy="36" r="7" fill="url(#berryRuby)"/>
+  <circle cx="616" cy="43" r="5" fill="url(#berryRuby)"/>
+  <circle cx="534" cy="42" r="6.5" fill="url(#berryRuby)"/>
+  <circle cx="442" cy="40" r="5.8" fill="url(#berryRuby)"/>
+
+  <!-- Center Noel Emblem / Festive Star -->
+  <g transform="translate(380, 22)">
+    <!-- Eight-point Star of Bethlehem Accent -->
+    <path d="M0,-12 L2.4,-3.2 L11,0 L2.4,3.2 L0,12 L-2.4,3.2 L-11,0 L-2.4,-3.2 Z" fill="#fff7d6"/>
+    <circle cx="0" cy="0" r="2" fill="#d99f36"/>
+  </g>
+</svg>

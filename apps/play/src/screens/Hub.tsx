@@ -5,6 +5,7 @@ import { ShellControls } from '../components/ShellControls.js';
 import type { ShellControlProps } from '../components/ShellControls.js';
 import { StudioSignature } from '../components/StudioSignature.js';
 import { GameCard } from './GameCard.js';
+import { orderHubGames } from './hubGameOrder.js';
 import { useChristmasMagic } from '../experience/useChristmasMagic.js';
 import { useShellInteractions } from '../experience/useShellInteractions.js';
 
@@ -40,7 +41,8 @@ export function Hub({
   const interactionsRef = useShellInteractions();
   const selectedPhoto =
     session.photos.find((photo) => photo.id === selectedPhotoId) ?? session.photos[0]!;
-  const familyGames = games.filter((game) => game.id !== 'dev-smoke');
+  const familyGames = orderHubGames(games.filter((game) => game.id !== 'dev-smoke'));
+
   const developmentGame = games.find((game) => game.id === 'dev-smoke');
   const photoCount = new Set(session.photos.map((photo) => photo.id)).size;
   return (

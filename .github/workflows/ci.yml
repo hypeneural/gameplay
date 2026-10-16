@@ -112,3 +112,6 @@ jobs:
 
       - name: Prove native-like Gallery route
         run: pnpm test:e2e:gallery
+
+      - name: Prove client A/B browser state isolation
+        run: pnpm test:e2e:gallery-multi

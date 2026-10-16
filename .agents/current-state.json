@@ -22,10 +22,10 @@
   "nextMilestone": {
     "id": "real-session-authority",
     "owner": "apps/catalog-server",
-    "goal": "Persist sessions, immutable revisions, photos and media metadata in SQLite/WAL with A/A2/B isolation tests, without enabling customer-facing pilot access.",
+    "goal": "Persist one photo session per CRM order with immutable A1/A2 revisions and isolation from another order B in SQLite/WAL, without enabling public pilot access.",
     "requiredEvidence": [
       "explicit migrations",
-      "repository tests with A/A2/B isolation",
+      "repository tests with A1/A2 revisions and different-order B isolation",
       "revision state STAGED -> VALIDATED -> ACTIVE",
       "compare-and-swap active revision",
       "idempotency contract",

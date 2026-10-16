@@ -18,19 +18,18 @@ Estas regras especializam a integração de photo sessions para o álbum fotogr�
 ## Modelo de galeria
 
 - No MVP, `photoSessionId` é também a identidade canônica de uma galeria pública.
-- O sistema deve suportar muitas galerias simultâneas e também mais de uma galeria vinculada ao mesmo pedido/CRM sem compartilhar revisão, token, seleção ou estado de browser.
-- Use `galleryKey` estável dentro do contexto CRM para diferenciar galerias do mesmo pedido. A constraint recomendada é `(crm_order_uuid, gallery_key)`, não `crm_order_uuid` isolado.
+- Uma galeria principal por pedido/CRM; todas as fotos pertencem a mesma lista vertical. Muitos pedidos podem coexistir, mas nao ha subgalerias por pedido.
+- Se um contrato legado exigir `galleryKey`, usar valor fixo `principal` ate auditoria de persistencia; nao introduzir mais de uma galeria por pedido.
 - Não crie uma segunda tabela/autoridade chamada `gallery` apenas para servir a UI. A galeria é uma projeção da sessão + revisão ativa.
 - Cada access token resolve uma única `photoSessionId`/galeria. Grants nunca autorizam "galeria atual" global.
 - Hub, Galeria Natalina e jogos usam a mesma `photoSessionId + activeRevisionId`.
 
 ## Layout mobile
 
-- Abaixo de 600 CSS px, use uma coluna e proporção natural: uma fotografia abaixo da outra.
+- Em todos os viewports, use uma coluna e proporcao natural: uma fotografia abaixo da outra.
 - Não force `aspect-ratio: 4/5` nem `object-fit: cover` no álbum.
 - A fotografia ocupa quase toda a largura útil, com margem pequena e estável.
-- Entre 600 e 899 CSS px, comece com duas colunas.
-- Em 900 CSS px ou mais, duas ou três colunas são aceitáveis conforme o container.
+- Em tablet e desktop, manter a coluna unica com largura maxima confortavel.
 - Browser Back/Forward e retorno do jogo devem restaurar a posição exata da galeria.
 - Preserve orientação natural de retratos e paisagens; `contain` é obrigatório em hero/lightbox.
 
@@ -71,7 +70,7 @@ Para álbum de uma coluna no mobile:
 
 ## Stack externa aprovada
 
-- Use `react-photo-album` para layout/responsive images e `yet-another-react-lightbox` + Zoom, lazy, como viewer primário quando o DTO de produção estiver fechado e o benchmark justificar a troca do fallback atual.
+- Manter `SessionGallery`/`PhotoPrint` em coluna única. Não instalar `react-photo-album` (masonry) somente para recriar esta coluna; YARL+Zoom só entra após comparação de gestos/performance com o viewer DOM atual em iPhone/Safari.
 - `PhotoSwipe` + wrapper React é challenger de benchmark somente se YARL falhar ou ficar marginal em aparelho físico.
 - Não mantenha dois viewers, dois engines de masonry ou dois virtualizers no produto.
 - Virtualização só entra após profiling; `lightGallery` e particle engines Canvas/WebGL ficam fora do primeiro corte.
@@ -103,3 +102,15 @@ Leia também:
 - `docs/integrations/photo-sessions/GALERIA_NATALINA_MULTI_GALERIAS.md`;
 - `docs/quality/GALLERY_MOBILE_PERFORMANCE_CONTRACT.md`;
 - `.agents/skills/christmas-gallery-album/SKILL.md`.
+
+## Decisao atual — 08/10/2026
+
+A galeria fotográfica fica em coluna unica inclusive tablet/desktop. Nao instalar um motor de masonry apenas para trocar este layout. A proposta anterior de A2 no mesmo pedido fica substituida por varias revisoes da mesma galeria principal. As bibliotecas de zoom continuam candidatas de benchmark, nao requisito imediato.
+
+Manual atualizado e ordem de execucao: `docs/integrations/photo-sessions/GALERIA_NATIVE_MOBILE_HANDOFF_2026-10-08.md`.
+
+## Fluxo canonico Lightbox -> Hub (v3)
+
+Ao escolher `Jogar com esta foto`, atualizar `selectedPhotoId` e navegar a `/s/:token`, com o Hub exibindo a foto escolhida. **Nao escolher `puzzle-swap` automaticamente.** O usuario toca no card do jogo que preferir. Browser Back pode voltar a galeria mantendo `scrollY`, foto e lotes. Os testes E2E devem cobrir essa jornada, inclusive a foto 11.
+
+Hero raster: `gallery-evergreen-hero-retina-v6.webp` (640x126 px) foi gerado com IA e incorporado ao manifesto de `christmas-shell` com canal alfa suave e densidade Retina 2x/3x; preserve fallback SVG, texto sem rasterizacao e reduced-motion. Rejeitar arte que contenha rostos, mockups, captions ou controls falsos.
