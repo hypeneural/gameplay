@@ -962,3 +962,231 @@
   .gallery-atmosphere-snow i, .gallery-lightbox-stage .photo-print img { animation: none !important; }
 }
 .christmas-gallery-shell[data-calm='true'] .gallery-atmosphere-snow i { animation: none !important; }
+
+/* Frame V2: the photo window has exactly the derivative's measured ratio. */
+.gallery-card {
+  padding: 0;
+  overflow: visible;
+  border: 0;
+  background: transparent;
+}
+.gallery-card::after {
+  content: none;
+}
+.gallery-frame {
+  position: relative;
+  isolation: isolate;
+  display: block;
+  width: 100%;
+  padding: clamp(11px, 3.2vw, 17px);
+  overflow: visible;
+  border: 2px solid #efcb87;
+  border-radius: 16px;
+  background:
+    linear-gradient(148deg, #fff0ce 0%, #d3a76a 19%, #fff6dc 34%, #b37836 70%, #efd3a4 100%);
+  box-shadow:
+    inset 0 0 0 2px #936125,
+    inset 0 0 0 5px rgb(255 249 223 / 50%),
+    0 12px 27px rgb(26 3 12 / 48%),
+    0 0 0 1px rgb(255 235 162 / 35%);
+}
+.gallery-frame::before {
+  position: absolute;
+  inset: 5px;
+  z-index: 1;
+  border: 1px solid #fff2c9;
+  border-radius: 10px;
+  box-shadow: 0 0 0 1px rgb(76 38 17 / 35%);
+  content: '';
+  pointer-events: none;
+}
+.gallery-frame-window {
+  position: relative;
+  display: block;
+  width: 100%;
+  min-height: 0;
+  overflow: hidden;
+  border: 0;
+  border-radius: 3px;
+  background: #32131c;
+  box-shadow: 0 0 0 1px rgb(71 25 21 / 55%);
+}
+.gallery-frame-window .photo-print {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: #32131c;
+}
+.gallery-frame-window .photo-print img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center;
+}
+.gallery-frame-ornament {
+  position: absolute;
+  z-index: 2;
+  width: clamp(9px, 2.6vw, 14px);
+  height: clamp(9px, 2.6vw, 14px);
+  border-radius: 2px;
+  background:
+    radial-gradient(circle at 30% 35%, #fff7c9 0 8%, transparent 12%),
+    radial-gradient(circle at 62% 66%, #b52b37 0 24%, transparent 28%),
+    radial-gradient(ellipse at 20% 80%, #23583a 0 28%, transparent 34%),
+    radial-gradient(ellipse at 80% 20%, #2f6b3d 0 34%, transparent 40%);
+  box-shadow: 0 0 5px rgb(255 211 130 / 35%);
+  pointer-events: none;
+}
+.gallery-frame-ornament--tl {
+  top: 3px;
+  left: 3px;
+}
+.gallery-frame-ornament--tr {
+  top: 3px;
+  right: 3px;
+  transform: rotate(90deg);
+}
+.gallery-frame-ornament--bl {
+  bottom: 3px;
+  left: 3px;
+  transform: rotate(-90deg);
+}
+.gallery-frame-ornament--br {
+  right: 3px;
+  bottom: 3px;
+  transform: rotate(180deg);
+}
+/* Cache-reuse the catalogued photoreal evergreen hero for the decorative rails. */
+.gallery-edge-rail {
+  width: clamp(11px, 3vw, 19px);
+  overflow: hidden;
+  background: #143625;
+}
+.gallery-edge-rail::before {
+  position: absolute;
+  top: 0;
+  left: 100%;
+  width: 110svh;
+  height: 56px;
+  transform: rotate(90deg);
+  transform-origin: top left;
+  background: url('/assets/christmas-shell/gallery/gallery-evergreen-hero-retina-v6.webp')
+    left top / 280px 56px repeat-x;
+  content: '';
+  opacity: 0.94;
+}
+.gallery-edge-rail::after {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 50% 15%, #fff6be 0 2px, transparent 3px),
+    radial-gradient(circle at 50% 65%, #ffe1a1 0 2px, transparent 3px);
+  background-size:
+    100% 118px,
+    100% 151px;
+  content: '';
+  opacity: 0.85;
+  animation: gallery-edge-twinkle 5.1s ease-in-out infinite alternate;
+}
+.gallery-edge-rail--right::after {
+  animation-delay: -2.9s;
+}
+@keyframes gallery-edge-twinkle {
+  from {
+    opacity: 0.48;
+  }
+  to {
+    opacity: 0.94;
+  }
+}
+/* A genuine accessible hit target on the existing decorative bow. */
+.gallery-magic-trigger {
+  position: absolute;
+  top: 5px;
+  left: 50%;
+  z-index: 4;
+  display: grid;
+  place-items: center;
+  width: 60px;
+  height: 49px;
+  padding: 0;
+  transform: translateX(-50%);
+  border: 0;
+  border-radius: 17px;
+  background: transparent;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+.gallery-magic-trigger:focus-visible {
+  outline: 3px solid #fff3b5;
+  outline-offset: 2px;
+}
+.gallery-magic-trigger:disabled {
+  cursor: default;
+}
+.gallery-magic-hit {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+}
+.gallery-magic-trigger:active .gallery-magic-hit {
+  background: rgb(255 241 190 / 22%);
+  box-shadow: 0 0 12px #f9d587;
+}
+.gallery-magic-burst {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+.gallery-magic-burst i {
+  position: absolute;
+  top: -3px;
+  left: -3px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #ffedb7;
+  box-shadow: 0 0 4px #e8b666;
+  animation: gallery-magic-spark 700ms ease-out both;
+}
+@keyframes gallery-magic-spark {
+  from {
+    opacity: 1;
+    translate: 0 0;
+    scale: 1;
+  }
+  to {
+    opacity: 0;
+    translate: 26px 0;
+    scale: 0.3;
+  }
+}
+.gallery-frame-window .photo-print-fallback {
+  background:
+    radial-gradient(circle at 50% 40%, rgb(206 154 82 / 18%), transparent 68%),
+    linear-gradient(140deg, #35121e, #692233);
+  color: #f7e7c7;
+}
+@media (max-width: 380px) {
+  .gallery-frame {
+    padding: 11px;
+  }
+  .gallery-frame-ornament {
+    width: 9px;
+    height: 9px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .gallery-edge-rail::after,
+  .gallery-magic-burst i {
+    animation: none;
+  }
+}
+.christmas-gallery-shell[data-calm='true'] .gallery-edge-rail::after,
+.christmas-gallery-shell[data-calm='true'] .gallery-magic-burst i {
+  animation: none;
+}
