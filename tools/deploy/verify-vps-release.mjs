@@ -1,10 +1,18 @@
 import { readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
-import { assertNoForbiddenReleaseFiles, inventoryReleaseFiles } from './release-utils.mjs';
+import {
+  assertNatalVelvetReleaseAssets,
+  assertNoForbiddenReleaseFiles,
+  inventoryReleaseFiles,
+} from './release-utils.mjs';
 
 const releaseRoot = resolve(process.argv[2] ?? '.release/vps');
 const releasePath = resolve(releaseRoot, 'RELEASE.json');
 const release = JSON.parse(await readFile(releasePath, 'utf8'));
+const expectedGitSha = process.env.CG_EXPECTED_GIT_SHA;
+if (expectedGitSha && !/^[a-f0-9]{40}$/.test(expectedGitSha)) {
+  throw new Error('CG_EXPECTED_GIT_SHA must be exactly 40 lowercase hex characters.');
+}
 
 if (
   !release ||
@@ -19,6 +27,10 @@ if (
   throw new Error('RELEASE.json is not a valid staging-demo release manifest.');
 }
 
+if (expectedGitSha && release.gitSha !== expectedGitSha) {
+  throw new Error('Release Git SHA does not match the approved commit.');
+}
+
 const releasePackage = JSON.parse(await readFile(resolve(releaseRoot, 'package.json'), 'utf8'));
 if (releasePackage?.type !== 'module' || releasePackage?.private !== true) {
   throw new Error('VPS release package.json must declare private=true and type=module.');
@@ -26,6 +38,7 @@ if (releasePackage?.type !== 'module' || releasePackage?.private !== true) {
 
 const actual = await inventoryReleaseFiles(releaseRoot, { excludePaths: ['RELEASE.json'] });
 assertNoForbiddenReleaseFiles(actual);
+assertNatalVelvetReleaseAssets(actual);
 
 const actualPaths = new Set(actual.map(({ path }) => path));
 for (const requiredPath of [

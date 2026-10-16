@@ -141,3 +141,46 @@ staging-demo verde
 ```
 
 O objetivo é colocar infraestrutura e experiência no ar cedo sem confundir “site acessível” com “piloto de cliente pronto”.
+
+## 8. Override Contabo Docker Compose (2026-10-16)
+
+O log do Antigravity confirmou containers `christmas-games-catalog` e `christmas-games-gateway` em Docker Compose; `current` fica em `/srv/runtime/christmas-games`, não no caminho histórico systemd das seções anteriores. **Nesta VPS use este procedimento; não crie outro serviço systemd, não altere gateway de outros apps e não crie symlink de compatibilidade sem necessidade comprovada.**
+
+### 8.1 Build e prova local
+
+No worktree limpo, em commit aprovado pelo CI: `pnpm agent:doctor`; `pnpm release:staging`; `pnpm release:verify`; `pnpm release:smoke-runtime`. Não executar build pesado na VPS. `RELEASE.json.gitSha` precisa ser igual ao Git SHA em checkout. Gerar um release novo e imutável. Se o diretório de ID escolhido já existir, abortar em vez de sobrescrever.
+
+### 8.2 Preflight remoto sem alterações
+
+Copiar e extrair `.release/vps` em `/srv/runtime/christmas-games/releases/<novo-id>`, mantendo o ativo. Na VPS executar:
+
+```bash
+cd /srv/runtime/christmas-games/releases/<novo-id>
+CG_EXPECTED_GIT_SHA=<sha-completo> node ops/tools/verify-vps-release.mjs .
+bash ops/tools/vps-docker-preflight.sh --check <novo-id> <sha-completo>
+```
+
+O script valida o inventário, SHA, symlink anterior, labels do projeto/serviços e configurações de bind do Compose. Se falhar, **não promover**. Guarde `previous` de sua saída; não assuma `20261012-0ef503b`. Confirme os parâmetros de Compose originais (`--env-file`, profiles, project directory) e reexecute preflight no mesmo contexto.
+
+### 8.3 Promoção controlada e rollback
+
+Na VPS, apenas após preflight e janela operacional, criar `current.next` sem sobrescrever nomes existentes, depois `mv -Tf current.next current` atomicamente. **Não confiar apenas em `docker restart` para atualizar bind mounts resolvidos de symlinks**. No diretório `/srv/platform/stacks/christmas-games`, execute `docker compose -p <project> -f compose.yaml up -d --no-deps --force-recreate --no-build <catalog-service> <gateway-service>` usando exatamente project e service labels retornados, com os mesmos arquivos de ambiente do deployment atual. A documentação oficial explica `--force-recreate`: https://docs.docker.com/reference/cli/docker/compose/up/
+
+Depois, `docker inspect` dos dois containers para confirmar mounts, `docker ps`, health local/público e smoke externo. Em falha: recriar `current.next` apontando para `releases/<previous>`, promover atomicamente e executar o **mesmo comando Compose com --force-recreate** para ambos. Não usar `docker compose down` nem `docker volume prune`.
+
+### 8.4 Smoke de frontend realmente novo
+
+`CG_STAGING_TOKEN=demo-token` do plano anterior é inválido: o smoke oficial exige **token opaco de 16–128 caracteres**. Obter o token sintético já ativo de configuração privada, sem revelá-lo em terminal/PR. Na workstation que contém o artefato exato transferido:
+
+```powershell
+$env:CG_STAGING_ORIGIN='https://jogos.fotosdenatal.com'
+$env:CG_STAGING_RELEASE_MANIFEST='.release/vps/RELEASE.json'
+# CG_STAGING_TOKEN: carregar por canal privado já provisionado.
+pnpm deploy:smoke
+```
+
+O smoke compara os quatro WebPs da galeria no domínio público com bytes e SHA-256 do manifesto, além de Hub, Galeria, Puzzle, policies e token inválido. Um health 200 **sozinho** não é critério de promoção. Depois confirmar loader, laço, neve, foto retrato/paisagem, lightbox e navegação num telefone.
+
+### 8.5 Limite de segurança
+
+Staging-demo só aceita fixtures sintéticas. `deploy/readiness.json` permanece `pilotReady=false`, `customerDataAllowed=false`, `automaticDeliveryAllowed=false`. Esta execução não libera fotos reais nem envia links para clientes.

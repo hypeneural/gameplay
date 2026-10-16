@@ -78,7 +78,12 @@ await cp(socialSource, join(outputRoot, 'public', 'social', basename(socialSourc
 await copyTree(opsSource, join(outputRoot, 'ops'), { excludeSourceMaps: true });
 await cp(socialConfigExampleSource, join(outputRoot, 'ops', 'social-preview.example.json'));
 await mkdir(join(outputRoot, 'ops', 'tools'), { recursive: true });
-for (const toolName of ['release-utils.mjs', 'verify-vps-release.mjs', 'smoke-staging.mjs']) {
+for (const toolName of [
+  'release-utils.mjs',
+  'verify-vps-release.mjs',
+  'smoke-staging.mjs',
+  'vps-docker-preflight.sh',
+]) {
   await cp(join(releaseToolsSource, toolName), join(outputRoot, 'ops', 'tools', toolName));
 }
 

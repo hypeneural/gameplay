@@ -3,6 +3,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import {
+  assertNatalVelvetReleaseAssets,
   assertNoForbiddenReleaseFiles,
   assertReleaseAllowed,
   inventoryReleaseFiles,
@@ -44,6 +45,22 @@ describe('release safety policy', () => {
         ]),
       ).toThrow();
     }
+  });
+
+  it('requires the four encoded Natal Velvet assets with measured sizes and hashes', () => {
+    const assetNames = ['side-left', 'frame-corners', 'frame-edges', 'bottom'];
+    const files = assetNames.map((name) => ({
+      path: `web/assets/christmas-shell/gallery/gallery-velvet-${name}-v1.webp`,
+      bytes: 2048,
+      sha256: 'a'.repeat(64),
+    }));
+    expect(() => assertNatalVelvetReleaseAssets(files)).not.toThrow();
+    expect(() => assertNatalVelvetReleaseAssets(files.slice(1))).toThrow(
+      /Natal Velvet release asset missing/,
+    );
+    expect(() =>
+      assertNatalVelvetReleaseAssets([{ ...files[0], bytes: 0 }, ...files.slice(1)]),
+    ).toThrow();
   });
 
   it('creates a deterministic path, byte and SHA-256 inventory', async () => {
