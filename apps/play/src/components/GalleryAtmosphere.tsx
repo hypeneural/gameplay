@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import type { CSSProperties } from 'react';
 
 const flakes = Array.from({ length: 14 }, (_, index) => ({
@@ -9,11 +10,19 @@ const flakes = Array.from({ length: 14 }, (_, index) => ({
 
 /** Pure CSS ambience, kept outside photo pixels and inactive in lightbox/LOW mode. */
 export function GalleryAtmosphere({ active }: { active: boolean }): React.JSX.Element {
+  const [visible, setVisible] = useState(() => !document.hidden);
+
+  useEffect(() => {
+    const updateVisibility = (): void => setVisible(!document.hidden);
+    document.addEventListener('visibilitychange', updateVisibility);
+    return () => document.removeEventListener('visibilitychange', updateVisibility);
+  }, []);
+
   return (
     <>
       <div className="gallery-edge-rail gallery-edge-rail--left" aria-hidden="true" />
       <div className="gallery-edge-rail gallery-edge-rail--right" aria-hidden="true" />
-      {active ? (
+      {active && visible ? (
         <div className="gallery-atmosphere-snow" aria-hidden="true">
           {flakes.map((flake, index) => (
             <i
