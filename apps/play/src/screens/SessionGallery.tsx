@@ -2,6 +2,7 @@ import { Suspense, lazy, useEffect, useLayoutEffect, useRef, useState } from 're
 import type { Session } from '@christmas-games/platform';
 import { playInterfaceTap } from '../audio/playInterfaceTap.js';
 import { GalleryAtmosphere } from '../components/GalleryAtmosphere.js';
+import { GalleryMagicButton } from '../components/GalleryMagicButton.js';
 import { GalleryFrame } from '../components/GalleryFrame.js';
 import { ShellIcon } from '../components/ShellIcon.js';
 import {
@@ -140,6 +141,7 @@ export function SessionGallery({
       <section className="gallery-hero" aria-labelledby="gallery-hero-title">
         <div className="gallery-hero-glow" aria-hidden="true" />
         <div className="gallery-hero-garland" aria-hidden="true" />
+        <GalleryMagicButton active={!calm && !lowQuality} />
         <div className="gallery-hero-content">
           <h1 id="gallery-hero-title">Seu Álbum de Natal</h1>
         </div>
