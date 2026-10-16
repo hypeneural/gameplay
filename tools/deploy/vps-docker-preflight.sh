@@ -56,8 +56,17 @@ docker compose -p "$project" -f "$compose" config --format json |
           if (host !== "0.0.0.0") {
             throw Error("Catalog must explicitly use HOST=0.0.0.0 inside Docker");
           }
-          if ((service.ports ?? []).length > 0) {
-            throw Error("Catalog must not publish direct host ports");
+          const isPrivateBind = (ip) => {
+            if (ip === "127.0.0.1" || ip === "::1") return true;
+            const parts=ip?.split(".").map(Number);
+            return parts?.length === 4 && parts.every(n => Number.isInteger(n) && n >= 0 && n <= 255) &&
+              parts[0] === 100 && parts[1] >= 64 && parts[1] <= 127;
+          };
+          for (const p of service.ports ?? []) {
+            if (Number(p.target) !== 4180 || (p.protocol ?? "tcp") !== "tcp" ||
+                !isPrivateBind(p.host_ip)) {
+              throw Error("Catalog port may bind only to loopback/Tailscale on TCP 4180");
+            }
           }
         }
       }
