@@ -1188,3 +1188,56 @@
 .christmas-gallery-shell[data-calm='true'] .gallery-magic-burst i {
   animation: none;
 }
+
+/* Accessible X / information / zoom controls with a compact native-like header. */
+.gallery-lightbox-header {
+  grid-template-columns: 46px minmax(0, 1fr) 46px 46px;
+}
+.gallery-lightbox-help {
+  position: relative;
+  pointer-events: auto;
+}
+.gallery-lightbox-help summary {
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  border: 1px solid rgb(245 210 148 / 60%);
+  border-radius: 15px;
+  background: linear-gradient(150deg, #164337, #082720);
+  list-style: none;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+.gallery-lightbox-help summary::-webkit-details-marker {
+  display: none;
+}
+.gallery-lightbox-help summary .shell-glyph {
+  width: 26px;
+  height: 26px;
+}
+.gallery-lightbox-help summary:focus-visible {
+  outline: 3px solid #ffe6a2;
+  outline-offset: 3px;
+}
+.gallery-lightbox-help-content {
+  position: absolute;
+  top: calc(100% + 9px);
+  right: 0;
+  width: min(275px, calc(100vw - 26px));
+  padding: 13px 14px;
+  border: 1px solid #e6c17b;
+  border-radius: 14px;
+  background: #301019;
+  box-shadow: 0 10px 24px rgb(0 0 0 / 43%);
+  color: #fff1d3;
+  font-size: 0.8rem;
+  line-height: 1.4;
+  text-align: left;
+}
+.gallery-lightbox-help-content p {
+  margin: 0;
+}
+.gallery-lightbox-help-content p + p {
+  margin-top: 8px;
+}
