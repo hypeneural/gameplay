@@ -172,6 +172,13 @@ export function SessionGalleryLightbox({
         >
           <ShellIcon name={zoomed ? 'zoom-out' : 'zoom-in'} />
         </button>
+        <details className="gallery-lightbox-help">
+          <summary aria-label="Como usar a galeria">
+            <ShellIcon name="info" />
+          </summary>
+          <p>Deslize para mudar de foto. Toque duas vezes para ampliar.</p>
+          <p>Em “Jogar com esta foto”, você escolhe o jogo na próxima tela.</p>
+        </details>
       </header>
 
       <div
