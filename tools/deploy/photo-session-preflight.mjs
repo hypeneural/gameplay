@@ -30,7 +30,7 @@ const allowedLogKeys = new Set([
   'durationMs',
 ]);
 
-export class PreflightError extends Error {
+class PreflightError extends Error {
   constructor(code) {
     super(code);
     this.code = code;
