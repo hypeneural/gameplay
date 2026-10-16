@@ -3,9 +3,10 @@ import { createFixtureSession } from '@christmas-games/platform';
 import type { GameContextSeed, GameDifficulty } from '@christmas-games/platform';
 import { memoryStandardPairCount } from '@christmas-games/memory/definition';
 import { PhaserHost } from '../phaser/PhaserHost.js';
-import type { PhaserHostStatus } from '../phaser/PhaserHost.js';
+import type { PhaserHostStatus, PhaserLoadDiagnostics } from '../phaser/PhaserHost.js';
 import { prefetchGame } from '../phaser/createGame.js';
 import { getInstalledGame, gameDefinitions } from '../phaser/gameRegistry.js';
+import { ChristmasLoadingExperience } from '../components/ChristmasLoadingExperience.js';
 import { AssetLab } from '../screens/AssetLab.js';
 import { ExperienceLab } from '../screens/ExperienceLab.js';
 import { GameCover } from '../screens/GameCover.js';
@@ -42,9 +43,15 @@ interface GameView {
   eventSequence: number;
   lastEvent: string;
   status: PhaserHostStatus;
+  diagnostics?: PhaserLoadDiagnostics | undefined;
 }
 
-const initialGameView: GameView = { eventSequence: 0, lastEvent: 'NONE', status: 'loading' };
+const initialGameView: GameView = {
+  eventSequence: 0,
+  lastEvent: 'NONE',
+  status: 'loading',
+  diagnostics: { phase: 'importing' },
+};
 const SessionGallery = lazy(async () => ({
   default: (await import('../screens/SessionGallery.js')).SessionGallery,
 }));
@@ -265,7 +272,7 @@ export function AppRouter(): React.JSX.Element {
 
   const prefetch = (gameId: string): void => {
     if (!getInstalledGame(gameId)) return;
-    prefetchGame(gameId as Parameters<typeof prefetchGame>[0]);
+    prefetchGame(gameId as Parameters<typeof prefetchGame>[0], selectedPhoto, quality === 'LOW');
   };
 
   const openGame = (gameId: string): void => {
@@ -405,8 +412,13 @@ export function AppRouter(): React.JSX.Element {
       <Suspense
         fallback={
           <main className="shell unavailable-game" role="status">
-            <p className="eyebrow">SEU ÁLBUM DE NATAL</p>
-            <h1>Preparando suas lembranças…</h1>
+            <ChristmasLoadingExperience
+              mode="session"
+              eyebrow="SEU ÁLBUM DE NATAL"
+              title="Preparando suas lembranças…"
+              calm={calm}
+              lowQuality={quality === 'LOW'}
+            />
           </main>
         }
       >
@@ -504,7 +516,10 @@ export function AppRouter(): React.JSX.Element {
   return (
     <GameScreen
       calm={calm || quality === 'LOW'}
+      lowQuality={quality === 'LOW'}
       definition={game.definition}
+      photo={selectedPhoto}
+      loadDiagnostics={gameView.diagnostics}
       eventSequence={gameView.eventSequence}
       lastEvent={gameView.lastEvent}
       onExit={() => goToSession(gameRoute.token)}
@@ -529,14 +544,17 @@ export function AppRouter(): React.JSX.Element {
           setInterfaceSoundEnabled(enabled);
           setSoundEnabled(enabled);
         }}
-        onStateChange={(status, lastEvent, eventSequence) => {
+        onStateChange={(status, lastEvent, eventSequence, diagnostics) => {
           setGameView((current) =>
             eventSequence < current.eventSequence ||
             (current.status === status &&
               current.lastEvent === lastEvent &&
-              current.eventSequence === eventSequence)
+              current.eventSequence === eventSequence &&
+              current.diagnostics?.phase === diagnostics?.phase &&
+              current.diagnostics?.progress === diagnostics?.progress &&
+              current.diagnostics?.retryAttempt === diagnostics?.retryAttempt)
               ? current
-              : { eventSequence, status, lastEvent },
+              : { eventSequence, status, lastEvent, diagnostics },
           );
         }}
       />

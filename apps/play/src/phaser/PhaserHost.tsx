@@ -15,8 +15,18 @@ import { PhaserMountCoordinator } from './PhaserMountCoordinator.js';
 import { loadGameRuntime, mountLoadedGame } from './createGame.js';
 import { createRunIdentity } from './createRunIdentity.js';
 import type { AvailableGameId } from './gameRegistry.js';
+import {
+  applyHostError,
+  applyHostPhase,
+  initialLoadState,
+  reduceLoadEvent,
+  type LoadTrackerState,
+  type PhaserHostStatus,
+  type PhaserLoadDiagnostics,
+  type PhaserLoadPhase,
+} from './loadStateMachine.js';
 
-export type PhaserHostStatus = 'loading' | 'ready' | 'error';
+export type { PhaserHostStatus, PhaserLoadDiagnostics, PhaserLoadPhase };
 
 interface PhaserHostProps {
   bridge: GameBridge;
@@ -26,9 +36,20 @@ interface PhaserHostProps {
   gameId: AvailableGameId;
   onExit(): void;
   onSoundChange?(enabled: boolean): void;
-  onStateChange(status: PhaserHostStatus, lastEvent: string, sequence: number): void;
+  onStateChange(
+    status: PhaserHostStatus,
+    lastEvent: string,
+    sequence: number,
+    diagnostics?: PhaserLoadDiagnostics,
+  ): void;
   /** Development labs can inject a seed to replay the same board exactly. */
   runSeed?: number;
+}
+
+function nowMs(): number {
+  return typeof performance !== 'undefined' && typeof performance.now === 'function'
+    ? performance.now()
+    : Date.now();
 }
 
 /** One coordinator is intentionally shared across route transitions. */
@@ -47,6 +68,7 @@ export function PhaserHost({
   const hostRef = useRef<HTMLDivElement>(null);
   const destroyRef = useRef<(() => Promise<void>) | undefined>(undefined);
   const activeRunIdRef = useRef<string | undefined>(undefined);
+  const runTrackerRef = useRef<LoadTrackerState>(initialLoadState());
   const onExitRef = useRef(onExit);
   const onSoundChangeRef = useRef(onSoundChange);
   const onStateChangeRef = useRef(onStateChange);
@@ -60,26 +82,45 @@ export function PhaserHost({
     onStateChangeRef.current = onStateChange;
   }, [onExit, onStateChange, onSoundChange]);
 
-  const publishBridgeEvent = useCallback((event: GameBridgeEvent): void => {
-    if (event.type === 'GAME_SOUND_CHANGED') {
-      onSoundChangeRef.current?.(event.enabled);
-      return;
-    }
-    const status: PhaserHostStatus =
-      event.type === 'GAME_ASSET_FAILED'
-        ? 'error'
-        : event.type === 'GAME_OPENED'
-          ? 'loading'
-          : 'ready';
-    onStateChangeRef.current(status, event.type, event.sequence);
-  }, []);
-
-  const publishLoading = useCallback(
-    (): void => onStateChangeRef.current('loading', 'NONE', 0),
+  const publishHostPhase = useCallback(
+    (
+      patch: Partial<PhaserLoadDiagnostics> & {
+        phase: 'importing' | 'waiting_mount' | 'loading_assets';
+      },
+    ): void => {
+      const transition = applyHostPhase(runTrackerRef.current, patch);
+      runTrackerRef.current = transition.state;
+      if (transition.publish) {
+        onStateChangeRef.current(transition.state.status, 'NONE', 0, transition.state.diagnostics);
+      }
+    },
     [],
   );
 
-  const publishError = useCallback((): void => onStateChangeRef.current('error', 'NONE', 0), []);
+  const publishBridgeEvent = useCallback((event: GameBridgeEvent): void => {
+    const transition = reduceLoadEvent(runTrackerRef.current, event);
+    runTrackerRef.current = transition.state;
+    if (transition.soundEnabled !== undefined) {
+      onSoundChangeRef.current?.(transition.soundEnabled);
+      return;
+    }
+    if (transition.publish) {
+      onStateChangeRef.current(
+        transition.state.status,
+        event.type,
+        event.sequence,
+        transition.state.diagnostics,
+      );
+    }
+  }, []);
+
+  const publishError = useCallback((): void => {
+    const transition = applyHostError(runTrackerRef.current);
+    runTrackerRef.current = transition.state;
+    if (transition.publish) {
+      onStateChangeRef.current(transition.state.status, 'NONE', 0, transition.state.diagnostics);
+    }
+  }, []);
 
   useEffect(() => {
     const receiveBridgeEvent = (event: GameBridgeEvent): void => {
@@ -98,6 +139,8 @@ export function PhaserHost({
     let detachVisibility: (() => void) | undefined;
     let releaseLease: (() => void) | undefined;
     let runId: string | undefined;
+
+    runTrackerRef.current = initialLoadState();
 
     /**
      * A create call can be asynchronous. Once a lease is acquired it remains
@@ -133,6 +176,7 @@ export function PhaserHost({
 
     const requestDestroy = async (): Promise<void> => {
       cancelled = true;
+      runTrackerRef.current.exited = true;
       await destroy();
     };
     // Expose cancellation before imports start so Back can safely leave a
@@ -140,6 +184,8 @@ export function PhaserHost({
     destroyRef.current = requestDestroy;
 
     const mount = async (): Promise<void> => {
+      publishHostPhase({ phase: 'importing' });
+
       let runtime;
       try {
         runtime = await loadGameRuntime(gameId);
@@ -152,6 +198,12 @@ export function PhaserHost({
       }
       if (cancelled) return;
 
+      const mountWaitStart = nowMs();
+      publishHostPhase({
+        phase: 'waiting_mount',
+        importMs: runtime.importMs,
+      });
+
       releaseLease = await mountCoordinator.acquire();
       if (cancelled || !hostRef.current) {
         releaseLease();
@@ -159,10 +211,15 @@ export function PhaserHost({
         return;
       }
 
+      const mountWaitMs = Math.max(0, Math.round(nowMs() - mountWaitStart));
       const identity = createRunIdentity(runSeed);
       runId = identity.runId;
       activeRunIdRef.current = runId;
-      publishLoading();
+      publishHostPhase({
+        phase: 'loading_assets',
+        importMs: runtime.importMs,
+        mountWaitMs,
+      });
 
       const activeClock = new ActiveGameClock(context.clock);
       const runtimeContext = {
@@ -201,9 +258,10 @@ export function PhaserHost({
     void mount();
     return () => {
       cancelled = true;
+      runTrackerRef.current.exited = true;
       void destroy().catch((error: unknown) => console.error('Unable to destroy Phaser.', error));
     };
-  }, [bridge, context, gameId, publishBridgeEvent, publishError, publishLoading, runSeed]);
+  }, [bridge, context, gameId, publishBridgeEvent, publishError, publishHostPhase, runSeed]);
 
   const exit = (): Promise<void> => {
     if (exitPromiseRef.current) return exitPromiseRef.current;

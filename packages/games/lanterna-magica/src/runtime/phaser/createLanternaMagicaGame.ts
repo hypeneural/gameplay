@@ -15,7 +15,7 @@ export function createLanternaMagicaGame(
   bridge: GameBridge,
 ): GameController {
   const scene = new LanternaScene(context, bridge);
-  if (typeof window !== 'undefined') {
+  if (typeof window !== 'undefined' && context.development !== undefined) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (window as any).__LANTERNA_MAGICA_SCENE__ = scene;
   }
@@ -51,6 +51,10 @@ export function createLanternaMagicaGame(
         const complete = (): void => {
           for (const [event, listener] of visibilityEvents) {
             game.events.off(event, listener);
+          }
+          if (typeof window !== 'undefined') {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            delete (window as any).__LANTERNA_MAGICA_SCENE__;
           }
           context.run.exit();
           resolve();

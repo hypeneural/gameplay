@@ -214,3 +214,71 @@ test('short phones keep the introduction action visible and preserve shell prefe
   await page.getByRole('button', { name: 'Fechar fotos' }).click();
   await expect(page.getByTestId('open-photo-picker')).toBeFocused();
 });
+
+test('retains the previous photo during switching and renders an interactive Christmas loading frame with real loader progress', async ({
+  page,
+}) => {
+  await page.goto('/s/local-demo-token');
+  const print = page.locator('.album-stack > .photo-print');
+  await expect(print).toHaveAttribute('data-status', 'ready');
+  await expect(print.locator('img')).toHaveAttribute('src', '/fixtures/portrait.svg');
+
+  // Hold the next photo (landscape.svg) pending to verify flicker-free retention
+  let releaseLandscape!: () => void;
+  const pendingLandscape = new Promise<void>((resolve) => {
+    releaseLandscape = resolve;
+  });
+  await page.route('**/fixtures/landscape.svg', async (route) => {
+    await pendingLandscape;
+    await route.continue();
+  });
+
+  await page.getByRole('button', { name: 'Próxima foto' }).click();
+  // While landscape.svg is decoding off-DOM, the single DOM img stays on portrait.svg
+  await expect(print).toHaveAttribute('data-status', 'ready');
+  await expect(print).toHaveAttribute('data-transitioning', 'true');
+  await expect(print.locator('img')).toHaveCount(1);
+  await expect(print.locator('img')).toHaveAttribute('src', '/fixtures/portrait.svg');
+
+  releaseLandscape();
+  await expect(print.locator('img')).toHaveAttribute('src', '/fixtures/landscape.svg');
+  await expect(print).not.toHaveAttribute('data-transitioning');
+  await page.unroute('**/fixtures/landscape.svg');
+
+  // Hold a Phaser-only preload asset so ChristmasLoadingExperience remains active mid-load
+  let releasePreloadAsset!: () => void;
+  const pendingPreloadAsset = new Promise<void>((resolve) => {
+    releasePreloadAsset = resolve;
+  });
+  await page.route('**/assets/puzzle-swap/ui/silenciar.svg', async (route) => {
+    await pendingPreloadAsset;
+    await route.continue();
+  });
+
+  await page.getByTestId('open-game-puzzle-swap').click();
+  await page.getByTestId('play-selected-game').click();
+
+  const loading = page.getByTestId('game-loading');
+  await expect(loading).toBeVisible();
+  await expect(loading.locator('.christmas-loading__corner')).toHaveCount(4);
+  await expect(loading.locator('.christmas-loading__snow i')).toHaveCount(6);
+  const progressBar = page.getByTestId('game-loading-progress');
+  await expect(progressBar).toBeVisible();
+  const valueNow = Number(await progressBar.getAttribute('aria-valuenow'));
+  expect(valueNow).toBeGreaterThan(0);
+  expect(valueNow).toBeLessThan(100);
+
+  const star0 = page.getByTestId('loading-star-0');
+  const starBox = await star0.boundingBox();
+  expect(starBox).not.toBeNull();
+  expect(starBox!.width).toBeGreaterThanOrEqual(52);
+  expect(starBox!.height).toBeGreaterThanOrEqual(52);
+  await star0.click();
+  await expect(star0).toHaveAttribute('data-lit', 'true');
+  await expect(page.getByTestId('loading-star-burst')).toHaveCount(1);
+
+  releasePreloadAsset();
+  await expect(page.getByTestId('game-status')).toHaveText('Pronto');
+  await expect(loading).toHaveCount(0);
+  await page.unroute('**/assets/puzzle-swap/ui/silenciar.svg');
+});

@@ -1,4 +1,8 @@
-import { estimateDecodedRgbaTextureBytes, SceneScope } from '@christmas-games/platform';
+import {
+  bindLoaderProgress,
+  estimateDecodedRgbaTextureBytes,
+  SceneScope,
+} from '@christmas-games/platform';
 import type { GameContext } from '@christmas-games/platform';
 import { christmasTheme } from '@christmas-games/theme';
 import type * as PhaserModule from 'phaser';
@@ -99,6 +103,7 @@ export function createMosaicTechnicalScene(
 
     init(): void {
       context.run.open();
+      bindLoaderProgress(this.load, this.scope, context.run);
       this.load.on(Phaser.Loader.Events.FILE_COMPLETE, this.handleFileComplete, this);
       this.scope.add(() =>
         this.load.off(Phaser.Loader.Events.FILE_COMPLETE, this.handleFileComplete, this),

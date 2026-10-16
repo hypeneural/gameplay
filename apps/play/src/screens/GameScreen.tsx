@@ -1,4 +1,4 @@
-import type { GameDefinition } from '@christmas-games/platform';
+import type { GameDefinition, Photo } from '@christmas-games/platform';
 import { useEffect, useState, type ReactNode } from 'react';
 import { playInterfaceTap } from '../audio/playInterfaceTap.js';
 import { CompletionActions } from '../components/CompletionActions.js';
@@ -7,11 +7,15 @@ import { GameErrorState } from './GameErrorState.js';
 import { LoadingState } from './LoadingState.js';
 import { ShellIcon } from '../components/ShellIcon.js';
 import { useShellInteractions } from '../experience/useShellInteractions.js';
+import type { PhaserLoadDiagnostics } from '../phaser/PhaserHost.js';
 
 type GameScreenStatus = 'loading' | 'ready' | 'error';
 
 const eventLabels: Record<string, string> = {
   NONE: 'Preparando jogo',
+  GAME_OPENED: 'Preparando jogo',
+  GAME_LOAD_PROGRESS: 'Carregando lembrança de Natal',
+  GAME_ASSET_RETRY: 'Tentando carregar novamente',
   GAME_READY: 'Pronto para brincar',
   GAME_STARTED: 'Brincadeira iniciada',
   GAME_INTERACTION_SETTLED: 'Brincadeira iniciada',
@@ -27,10 +31,13 @@ function playerEventLabel(event: string): string {
 }
 
 interface GameScreenProps {
-  calm?: boolean;
-  challengeLabel?: string;
+  calm?: boolean | undefined;
+  lowQuality?: boolean | undefined;
+  challengeLabel?: string | undefined;
   children: ReactNode;
   definition: GameDefinition;
+  photo?: Photo | undefined;
+  loadDiagnostics?: PhaserLoadDiagnostics | undefined;
   eventSequence: number;
   lastEvent: string;
   onBrowseGames(): void;
@@ -47,9 +54,12 @@ interface GameScreenProps {
  */
 export function GameScreen({
   calm = false,
+  lowQuality = false,
   children,
   challengeLabel,
   definition,
+  photo,
+  loadDiagnostics,
   eventSequence,
   lastEvent,
   onBrowseGames,
@@ -132,7 +142,15 @@ export function GameScreen({
       </header>
       <section className="game-stage" aria-label="Área do jogo">
         {children}
-        {status === 'loading' ? <LoadingState definition={definition} /> : null}
+        {status === 'loading' ? (
+          <LoadingState
+            definition={definition}
+            photo={photo}
+            diagnostics={loadDiagnostics}
+            calm={calm}
+            lowQuality={lowQuality}
+          />
+        ) : null}
         {status === 'error' ? <GameErrorState onBack={onExit} onRetry={onRetry} /> : null}
         {status === 'ready' &&
         lastEvent === 'GAME_COMPLETED' &&

@@ -1,4 +1,9 @@
-import { createPhotoSurface, createViewportLayout, SceneScope } from '@christmas-games/platform';
+import {
+  bindLoaderProgress,
+  createPhotoSurface,
+  createViewportLayout,
+  SceneScope,
+} from '@christmas-games/platform';
 import type {
   GameContext,
   GameController,
@@ -355,6 +360,7 @@ export function createTicTacToeGame(
     init(): void {
       setScenePauseReason = this.setPauseReasonFromGame;
       context.run.open();
+      bindLoaderProgress(this.load, this.scope, context.run);
       this.load.on(Phaser.Loader.Events.FILE_LOAD_ERROR, this.handleAssetFailure, this);
       this.scope.add(() =>
         this.load.off(Phaser.Loader.Events.FILE_LOAD_ERROR, this.handleAssetFailure, this),

@@ -3,11 +3,17 @@ import type { Photo } from '@christmas-games/platform';
 import { playInterfaceTap } from '../audio/playInterfaceTap.js';
 import { PhotoPrint } from './PhotoPrint.js';
 import { ShellIcon } from './ShellIcon.js';
-import { GALLERY_LIGHTBOX_SIZES, GALLERY_LIGHTBOX_VARIANTS } from '../gallery/galleryPolicy.js';
+import {
+  GALLERY_LIGHTBOX_SIZES,
+  GALLERY_LIGHTBOX_VARIANTS,
+  getLightboxPrefetchUrl,
+} from '../gallery/galleryPolicy.js';
 
 interface SessionGalleryLightboxProps {
   photos: readonly Photo[];
   index: number;
+  sessionKey?: string | undefined;
+  lowQuality?: boolean | undefined;
   onIndexChange(index: number): void;
   onSelectPhoto(photoId: string): void;
   onClose(): void;
@@ -17,6 +23,8 @@ interface SessionGalleryLightboxProps {
 export function SessionGalleryLightbox({
   photos,
   index,
+  sessionKey,
+  lowQuality = false,
   onIndexChange,
   onSelectPhoto,
   onClose,
@@ -28,6 +36,7 @@ export function SessionGalleryLightbox({
   const lastTapRef = useRef<{ x: number; y: number; time: number } | undefined>(undefined);
   const pinchStartDistRef = useRef<number | undefined>(undefined);
   const previouslyFocusedRef = useRef<HTMLElement | null>(null);
+  const prefetchedNeighborUrlsRef = useRef<Set<string>>(new Set());
   const [zoomed, setZoomed] = useState(false);
   const photo = photos[index];
 
@@ -48,6 +57,20 @@ export function SessionGalleryLightbox({
     setZoomed(false);
     stageRef.current?.scrollTo(0, 0);
   }, [index]);
+
+  useEffect(() => {
+    if (typeof window === 'undefined' || typeof window.Image !== 'function') return;
+    const nextCardUrl = getLightboxPrefetchUrl(photos, index, lowQuality);
+    if (!nextCardUrl || prefetchedNeighborUrlsRef.current.has(nextCardUrl)) return;
+    if (prefetchedNeighborUrlsRef.current.size >= 8) {
+      const oldest = prefetchedNeighborUrlsRef.current.values().next().value;
+      if (oldest) prefetchedNeighborUrlsRef.current.delete(oldest);
+    }
+    prefetchedNeighborUrlsRef.current.add(nextCardUrl);
+    const img = new window.Image();
+    img.decoding = 'async';
+    img.src = nextCardUrl;
+  }, [index, lowQuality, photos]);
 
   if (!photo) return <></>;
 
@@ -178,12 +201,13 @@ export function SessionGalleryLightbox({
         onTouchEnd={handleTouchEnd}
       >
         <PhotoPrint
-          key={photo.id}
           photo={photo}
           variant="game"
           eager
           sizes={GALLERY_LIGHTBOX_SIZES}
           srcSetVariants={GALLERY_LIGHTBOX_VARIANTS}
+          sessionKey={sessionKey}
+          allowRetry
           alt={`Lembrança de Natal ${index + 1}`}
         />
       </div>

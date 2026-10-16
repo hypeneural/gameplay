@@ -10,6 +10,7 @@ import {
   PageVisibilityController,
   PresentationFrameSampler,
   SceneScope,
+  bindLoaderProgress,
   createPhotoSurface,
   createTouchHitArea,
   estimateDecodedRgbaTextureBytes,
@@ -178,6 +179,113 @@ describe('ActiveGameClock and GameRunController', () => {
 
     expect(events).toEqual(['GAME_OPENED', 'GAME_ASSET_RETRY', 'GAME_ASSET_FAILED', 'GAME_EXITED']);
     expect(analytics.events.map((event) => event.type)).toEqual(['GAME_OPENED', 'GAME_EXITED']);
+  });
+
+  it('publishes monotonic, quantized loadProgress in idle or opened states without starting the clock or polluting analytics', () => {
+    let now = 500;
+    const clock = new ActiveGameClock({ now: () => now });
+    const analytics = new MemoryAnalytics();
+    const bridge = new GameBridge();
+    const bridgeEvents: Array<{ type: string; progress?: number; stage?: string }> = [];
+    bridge.subscribe((event) => {
+      if (event.type === 'GAME_LOAD_PROGRESS') {
+        bridgeEvents.push({ type: event.type, progress: event.progress, stage: event.stage });
+      } else {
+        bridgeEvents.push({ type: event.type });
+      }
+    });
+    const run = new GameRunController(
+      'globo-das-lembrancas',
+      'run-load-progress-idle',
+      clock,
+      analytics,
+      bridge,
+    );
+
+    // Preload progress before run.open() (idle state)
+    run.loadProgress(0.25, 'loading_assets');
+    now = 900;
+    expect(run.elapsedMs()).toBe(0); // Clock must not start during idle preload
+    run.loadProgress(0.26, 'loading_assets'); // Quantized away (< 0.04 delta)
+    run.loadProgress(0.1, 'loading_assets'); // Monotonic guard prevents regression
+    run.loadProgress(0.6, 'loading_assets');
+    run.loadProgress(0.96, 'preparing_scene');
+    // Stage must not regress back to loading_assets once preparing_scene is reached
+    run.loadProgress(0.98, 'loading_assets');
+
+    // Open arrives in create() after preload completed
+    run.open();
+    now = 1_150;
+    run.ready();
+    // Late progress after ready must be ignored
+    run.loadProgress(1, 'preparing_scene');
+    run.start();
+    now = 1_400;
+    expect(run.complete()).toBe(500);
+
+    expect(bridgeEvents).toEqual([
+      { type: 'GAME_LOAD_PROGRESS', progress: 0.25, stage: 'loading_assets' },
+      { type: 'GAME_LOAD_PROGRESS', progress: 0.6, stage: 'loading_assets' },
+      { type: 'GAME_LOAD_PROGRESS', progress: 0.96, stage: 'preparing_scene' },
+      { type: 'GAME_OPENED' },
+      { type: 'GAME_READY' },
+      { type: 'GAME_STARTED' },
+      { type: 'GAME_COMPLETED' },
+    ]);
+    expect(analytics.events.map((e) => e.type)).toEqual([
+      'GAME_OPENED',
+      'GAME_READY',
+      'GAME_STARTED',
+      'GAME_COMPLETED',
+    ]);
+  });
+
+  it('binds Phaser loader progress and detaches listeners cleanly on SceneScope dispose', () => {
+    const listeners = new Map<string, (...args: unknown[]) => void>();
+    const fakeLoader = {
+      on(event: string, fn: (...args: unknown[]) => void) {
+        listeners.set(event, fn);
+        return this;
+      },
+      off(event: string, fn: (...args: unknown[]) => void) {
+        if (listeners.get(event) === fn) listeners.delete(event);
+        return this;
+      },
+    };
+    const scope = new SceneScope();
+    const bridge = new GameBridge();
+    const recorded: Array<{ progress: number; stage: string }> = [];
+    bridge.subscribe((event) => {
+      if (event.type === 'GAME_LOAD_PROGRESS') {
+        recorded.push({ progress: event.progress, stage: event.stage });
+      }
+    });
+    const run = new GameRunController(
+      'puzzle-swap',
+      'run-loader-adapter',
+      new ActiveGameClock({ now: () => 0 }),
+      new MemoryAnalytics(),
+      bridge,
+    );
+
+    bindLoaderProgress(fakeLoader, scope, run);
+    expect(listeners.size).toBe(2);
+
+    listeners.get('progress')?.(0.5);
+    // COMPLETE can fire even with failed files: this is not "scene prepared".
+    listeners.get('complete')?.(fakeLoader, 0, 2);
+    expect(recorded).toEqual([{ progress: 0.475, stage: 'loading_assets' }]);
+    listeners.get('progress')?.(1);
+    listeners.get('complete')?.(fakeLoader, 3, 0);
+
+    expect(recorded).toEqual([
+      { progress: 0.475, stage: 'loading_assets' },
+      { progress: 0.95, stage: 'loading_assets' },
+      { progress: 0.96, stage: 'preparing_scene' },
+    ]);
+
+    scope.dispose();
+    expect(listeners.size).toBe(0);
   });
 });
 

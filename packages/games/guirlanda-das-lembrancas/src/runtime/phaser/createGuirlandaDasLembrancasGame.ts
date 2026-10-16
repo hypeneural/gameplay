@@ -1,4 +1,4 @@
-import { SceneScope } from '@christmas-games/platform';
+import { SceneScope, bindLoaderProgress } from '@christmas-games/platform';
 import type {
   GameBridge,
   GameContext,
@@ -123,6 +123,7 @@ export function createGuirlandaDasLembrancasGame(
     init(): void {
       setVisibilityPaused = this.setVisibilityPausedFromGame;
       context.run.open();
+      bindLoaderProgress(this.load, this.scope, context.run);
       this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => this.scope.dispose());
       this.scope.add(() => {
         if (setVisibilityPaused === this.setVisibilityPausedFromGame)

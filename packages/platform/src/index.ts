@@ -8,6 +8,7 @@ export * from './game-runtime/PerformanceMeasurements.js';
 export * from './game-runtime/GameRunController.js';
 export * from './game-runtime/HapticFeedback.js';
 export * from './game-runtime/PageVisibilityController.js';
+export * from './game-runtime/PhaserLoaderProgress.js';
 export * from './game-runtime/PhotoSurface.js';
 export * from './game-runtime/SceneScope.js';
 export * from './game-runtime/TouchTarget.js';

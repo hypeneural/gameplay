@@ -1,4 +1,4 @@
-import { SceneScope, createViewportLayout } from '@christmas-games/platform';
+import { SceneScope, bindLoaderProgress, createViewportLayout } from '@christmas-games/platform';
 import type {
   GameContext,
   GameController,
@@ -145,6 +145,7 @@ export function createPuzzleSwapGame(
 
     init(): void {
       context.run.open();
+      bindLoaderProgress(this.load, this.scope, context.run);
       this.load.on(Phaser.Loader.Events.FILE_LOAD_ERROR, this.handleAssetFailure, this);
       this.scope.add(() =>
         this.load.off(Phaser.Loader.Events.FILE_LOAD_ERROR, this.handleAssetFailure, this),

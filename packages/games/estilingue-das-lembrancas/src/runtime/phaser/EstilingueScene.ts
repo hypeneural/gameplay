@@ -1,5 +1,5 @@
 import * as Phaser from 'phaser';
-import { SceneScope } from '@christmas-games/platform';
+import { SceneScope, bindLoaderProgress } from '@christmas-games/platform';
 import type { GameBridge, GameContext } from '@christmas-games/platform';
 import { SlingshotStateMachine } from '../../domain/SlingshotStateMachine.js';
 import { SlingshotLayoutManager } from '../SlingshotLayoutManager.js';
@@ -57,6 +57,7 @@ export class EstilingueScene extends Phaser.Scene {
   }
 
   preload(): void {
+    bindLoaderProgress(this.load, this.scope, this.context.run);
     // 1. Audio files
     for (const audio of estilingueAudioFiles) {
       this.load.audio(audio.key, audio.urls);
@@ -119,6 +120,15 @@ export class EstilingueScene extends Phaser.Scene {
   }
 
   create(): void {
+    const cleanup = (): void => {
+      this.scope.dispose();
+      if (this.textures.exists(this.photoTextureKey)) {
+        this.textures.remove(this.photoTextureKey);
+      }
+    };
+    this.events.once(Phaser.Scenes.Events.SHUTDOWN, cleanup);
+    this.events.once(Phaser.Scenes.Events.DESTROY, cleanup);
+
     const width = this.scale.width;
     const height = this.scale.height;
 
@@ -330,16 +340,16 @@ export class EstilingueScene extends Phaser.Scene {
 
     if (isPaused) {
       this.context.run.pause(reason);
-      this.audioDir.setPaused(true);
-      this.pauseOverlay.setVisible(true);
-      this.pauseButton.setText('Seguir');
-      this.matter.world.pause();
+      this.audioDir?.setPaused(true);
+      this.pauseOverlay?.setVisible(true);
+      this.pauseButton?.setText('Seguir');
+      this.matter?.world?.pause();
     } else {
       this.context.run.resume(reason);
-      this.audioDir.setPaused(false);
-      this.pauseOverlay.setVisible(false);
-      this.pauseButton.setText('Pausa');
-      this.matter.world.resume();
+      this.audioDir?.setPaused(false);
+      this.pauseOverlay?.setVisible(false);
+      this.pauseButton?.setText('Pausa');
+      this.matter?.world?.resume();
     }
   }
 

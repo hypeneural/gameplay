@@ -179,6 +179,7 @@ export function SessionGallery({
             <span className="gallery-photo-frame" style={{ aspectRatio: photo.aspectRatio }}>
               <PhotoPrint
                 photo={photo}
+                sessionKey={session.id}
                 variant="card"
                 eager={index === 0}
                 sizes={GALLERY_FEED_SIZES}
@@ -266,6 +267,8 @@ export function SessionGallery({
           <SessionGalleryLightbox
             photos={session.photos}
             index={lightboxIndex}
+            sessionKey={session.id}
+            lowQuality={lowQuality}
             onIndexChange={setLightboxIndex}
             onSelectPhoto={onSelectPhoto}
             onClose={() => setLightboxIndex(undefined)}

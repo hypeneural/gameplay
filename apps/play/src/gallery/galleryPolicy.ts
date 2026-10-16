@@ -1,4 +1,4 @@
-import type { PhotoVariant } from '@christmas-games/platform';
+import type { Photo, PhotoVariant } from '@christmas-games/platform';
 
 export const GALLERY_INITIAL_PHOTO_COUNT = 8;
 export const GALLERY_BATCH_SIZE = 8;
@@ -17,4 +17,18 @@ export function nextGalleryVisibleCount(current: number, total: number): number 
   if (total <= 0) return 0;
   if (current <= 0) return Math.min(GALLERY_INITIAL_PHOTO_COUNT, total);
   return Math.min(current + GALLERY_BATCH_SIZE, total);
+}
+
+/**
+ * Returns at most 1 neighbor URL (`index + 1`, `card` derivative) to warm
+ * while the lightbox is open. Disabled on LOW quality profile.
+ */
+export function getLightboxPrefetchUrl(
+  photos: readonly Photo[],
+  index: number,
+  lowQuality = false,
+): string | undefined {
+  if (lowQuality || photos.length < 2 || index < 0) return undefined;
+  const nextPhoto = photos[(index + 1) % photos.length];
+  return nextPhoto?.variants.card;
 }

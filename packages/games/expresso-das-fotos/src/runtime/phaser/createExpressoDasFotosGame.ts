@@ -1,4 +1,9 @@
-import { createPhotoSurface, createViewportLayout, SceneScope } from '@christmas-games/platform';
+import {
+  bindLoaderProgress,
+  createPhotoSurface,
+  createViewportLayout,
+  SceneScope,
+} from '@christmas-games/platform';
 import type {
   GameContext,
   GameController,
@@ -217,6 +222,7 @@ export function createExpressoDasFotosGame(
     init(): void {
       setVisibilityPaused = this.setVisibilityPausedFromGame;
       context.run.open();
+      bindLoaderProgress(this.load, this.scope, context.run);
       this.load.on(Phaser.Loader.Events.FILE_COMPLETE, this.handleFileComplete, this);
       this.load.on(Phaser.Loader.Events.FILE_LOAD_ERROR, this.handleFileFailure, this);
       this.scope.add(() =>

@@ -16,7 +16,7 @@ export function createEstilingueDasLembrancasGame(
   bridge: GameBridge,
 ): GameController {
   const scene = new EstilingueScene(context, bridge);
-  if (typeof window !== 'undefined') {
+  if (typeof window !== 'undefined' && context.development !== undefined) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (window as any).__ESTILINGUE_SCENE__ = scene;
   }
@@ -59,6 +59,10 @@ export function createEstilingueDasLembrancasGame(
         const complete = (): void => {
           for (const [event, listener] of visibilityEvents) {
             game.events.off(event, listener);
+          }
+          if (typeof window !== 'undefined') {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            delete (window as any).__ESTILINGUE_SCENE__;
           }
           context.run.exit();
           resolve();

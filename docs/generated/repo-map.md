@@ -378,8 +378,10 @@
 │       │   ├── christmas-magic.css
 │       │   ├── components
 │       │   │   ├── ChristmasAtmosphere.tsx
+│       │   │   ├── ChristmasLoadingExperience.tsx
 │       │   │   ├── CompletionActions.tsx
 │       │   │   ├── MagicPhotoWinter.tsx
+│       │   │   ├── PhotoPrint.test.ts
 │       │   │   ├── PhotoPrint.tsx
 │       │   │   ├── SessionGalleryLightbox.tsx
 │       │   │   ├── SessionPhotoAlbum.tsx
@@ -410,7 +412,11 @@
 │       │   │   ├── createRunIdentity.test.ts
 │       │   │   ├── createRunIdentity.ts
 │       │   │   ├── gameRegistry.test.ts
-│       │   │   └── gameRegistry.ts
+│       │   │   ├── gameRegistry.ts
+│       │   │   ├── loadStateMachine.test.ts
+│       │   │   ├── loadStateMachine.ts
+│       │   │   ├── statusForBridgeEvent.test.ts
+│       │   │   └── statusForBridgeEvent.ts
 │       │   ├── screens
 │       │   │   ├── AssetLab.tsx
 │       │   │   ├── ExperienceLab.tsx
@@ -1125,6 +1131,7 @@
 │   │   │   │   ├── HapticFeedback.ts
 │   │   │   │   ├── PageVisibilityController.ts
 │   │   │   │   ├── PerformanceMeasurements.ts
+│   │   │   │   ├── PhaserLoaderProgress.ts
 │   │   │   │   ├── PhotoSurface.ts
 │   │   │   │   ├── SceneScope.ts
 │   │   │   │   └── TouchTarget.ts

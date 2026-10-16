@@ -1,4 +1,4 @@
-import { SceneScope } from '@christmas-games/platform';
+import { SceneScope, bindLoaderProgress } from '@christmas-games/platform';
 import type { GameContext, GameController, GameModule } from '@christmas-games/platform';
 import { attachCrystalControl, attachCrystalPause } from '@christmas-games/theme';
 import type * as PhaserModule from 'phaser';
@@ -91,6 +91,7 @@ function createMagicPhotoGame(
     }
     init(): void {
       context.run.open();
+      bindLoaderProgress(this.load, this.scope, context.run);
       this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => this.scope.dispose());
       this.scope.add(() => this.bus.clear());
       this.scope.add(() => {

@@ -1,5 +1,5 @@
 import * as Phaser from 'phaser';
-import { SceneScope } from '@christmas-games/platform';
+import { SceneScope, bindLoaderProgress } from '@christmas-games/platform';
 import type { GameBridge, GameContext } from '@christmas-games/platform';
 import { SnowGlobeStateMachine } from '../../domain/SnowGlobeStateMachine.js';
 import type { GloboDomainEvent } from '../../domain/SnowGlobeStateMachine.js';
@@ -64,6 +64,7 @@ export class GloboScene extends Phaser.Scene {
   }
 
   preload(): void {
+    bindLoaderProgress(this.load, this.scope, this.context.run);
     // 1. Visual assets
     this.load.image(
       'globo-bg-sala-natal-v1',
@@ -110,6 +111,7 @@ export class GloboScene extends Phaser.Scene {
 
   create(): void {
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => this.cleanup());
+    this.events.once(Phaser.Scenes.Events.DESTROY, () => this.cleanup());
 
     const width = this.scale.width;
     const height = this.scale.height;
@@ -130,8 +132,8 @@ export class GloboScene extends Phaser.Scene {
     this.audioDir = new GloboAudioDirector(this, this.soundEnabled);
     this.scope.add(() => this.audioDir.destroy());
 
-    // Expose for testing and visual automation
-    if (typeof window !== 'undefined') {
+    // Expose only in development and release on cleanup
+    if (typeof window !== 'undefined' && this.context.development !== undefined) {
       (window as unknown as { __globoScene?: GloboScene }).__globoScene = this;
     }
 
@@ -618,7 +620,15 @@ export class GloboScene extends Phaser.Scene {
   }
 
   private cleanup(): void {
+    if (typeof window !== 'undefined') {
+      const win = window as unknown as { __globoScene?: GloboScene };
+      if (win.__globoScene === this) {
+        delete win.__globoScene;
+      }
+    }
     this.scope.dispose();
-    this.textures.remove(this.photoKey);
+    if (this.textures.exists(this.photoKey)) {
+      this.textures.remove(this.photoKey);
+    }
   }
 }

@@ -79,7 +79,7 @@ export function SessionPhotoAlbum({
           >
             <span className="album-paper album-paper--back" />
             <span className="album-paper album-paper--middle" />
-            <PhotoPrint photo={photo} variant="card" eager />
+            <PhotoPrint photo={photo} variant="card" eager sessionKey={session.id} />
             <span className="album-photo-seal">✦</span>
           </div>
           <div className="album-copy">
@@ -230,7 +230,7 @@ function PhotoPicker({
                 onSelect(photo.id);
               }}
             >
-              <PhotoPrint photo={photo} />
+              <PhotoPrint photo={photo} sessionKey={session.id} />
               <span className="photo-check" aria-hidden="true">
                 {photo.id === selectedPhotoId ? '✓' : index + 1}
               </span>

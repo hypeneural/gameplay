@@ -1,10 +1,33 @@
-import type { GameDefinition } from '@christmas-games/platform';
+import type { GameDefinition, Photo } from '@christmas-games/platform';
+import { ChristmasLoadingExperience } from '../components/ChristmasLoadingExperience.js';
+import type { PhaserLoadDiagnostics } from '../phaser/PhaserHost.js';
 
-export function LoadingState({ definition }: { definition: GameDefinition }): React.JSX.Element {
+export interface LoadingStateProps {
+  definition: GameDefinition;
+  photo?: Photo | undefined;
+  diagnostics?: PhaserLoadDiagnostics | undefined;
+  calm?: boolean | undefined;
+  lowQuality?: boolean | undefined;
+}
+
+export function LoadingState({
+  definition,
+  photo,
+  diagnostics,
+  calm = false,
+  lowQuality = false,
+}: LoadingStateProps): React.JSX.Element {
   return (
-    <div className="game-loading" data-testid="game-loading" role="status">
-      <span aria-hidden="true">✦</span>
-      <p>Abrindo {definition.displayName}…</p>
-    </div>
+    <ChristmasLoadingExperience
+      mode="game"
+      title={`Abrindo ${definition.displayName}…`}
+      definition={definition}
+      photo={photo}
+      phase={diagnostics?.phase}
+      progress={diagnostics?.progress}
+      retryAttempt={diagnostics?.retryAttempt}
+      calm={calm}
+      lowQuality={lowQuality}
+    />
   );
 }
