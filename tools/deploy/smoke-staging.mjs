@@ -93,10 +93,7 @@ for (const assetPath of REQUIRED_NATAL_VELVET_ASSETS) {
   } catch {
     throw new Error('Failed to fetch an expected Natal Velvet asset from the public edge.');
   }
-  if (
-    response.status !== 200 ||
-    !response.headers.get('content-type')?.includes('image/webp')
-  ) {
+  if (response.status !== 200 || !response.headers.get('content-type')?.includes('image/webp')) {
     throw new Error('Natal Velvet artwork is not being served as a WebP at the public edge.');
   }
   const encoded = Buffer.from(await response.arrayBuffer());
