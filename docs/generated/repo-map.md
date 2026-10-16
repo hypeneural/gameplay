@@ -399,7 +399,9 @@
 │       │   │   ├── LocalTestSession.test.ts
 │       │   │   ├── LocalTestSession.ts
 │       │   │   ├── ReleaseMode.test.ts
-│       │   │   └── ReleaseMode.ts
+│       │   │   ├── ReleaseMode.ts
+│       │   │   ├── SessionDataLoader.test.ts
+│       │   │   └── SessionDataLoader.ts
 │       │   ├── audio
 │       │   │   ├── playInterfaceTap.test.ts
 │       │   │   ├── playInterfaceTap.ts
@@ -637,6 +639,7 @@
 │   │   ├── NATAL_2024_CORPUS_BASELINE.md
 │   │   └── PHOTO_CORPUS_BASELINE.md
 │   ├── ops
+│   │   ├── PRIVATE_GALLERY_PILOT_HANDOFF_20261016.md
 │   │   └── VPS_STAGING_DEMO_RUNBOOK.md
 │   ├── plan
 │   │   └── IMPLEMENTATION_PLAN.md
@@ -1218,6 +1221,9 @@
 ├── pnpm-lock.yaml
 ├── pnpm-workspace.yaml
 ├── prettier.config.mjs
+├── scripts
+│   └── agent
+│       └── verify-gameplay-private-candidate.ps1
 ├── tests
 │   ├── e2e
 │   │   ├── christmas-shell.spec.ts
@@ -1326,6 +1332,7 @@
 │   │   │   ├── prepareLocal.ts
 │   │   │   ├── prepareMultiLocal.ts
 │   │   │   ├── recipe.ts
+│   │   │   ├── sourceFilter.test.ts
 │   │   │   └── sourceFilter.ts
 │   │   └── tests
 │   │       ├── inspect.test.ts

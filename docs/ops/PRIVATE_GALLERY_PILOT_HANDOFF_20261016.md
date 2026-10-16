@@ -53,6 +53,7 @@ O script se recusa a executar se a árvore estiver suja ou a política de pronti
 Guardar relatório `SHA Gameplay / SHA EvydFlow / SHA CRM / release VPS / teste / resultado / evidência sanitizada`. Não usar links de capacidade, nomes, telefones, paths de cliente ou fotos em GitHub/CI. O status de demonstração publicado não é evidência de readiness para clientes.
 
 ### Documentação técnica
+
 - https://www.sqlite.org/backup.html — snapshot consistente para SQLite/WAL
 - https://www.sqlite.org/wal.html — WAL e checkpoint
 - https://docs.docker.com/compose/how-tos/networking/ — DNS interno e isolamento Compose
