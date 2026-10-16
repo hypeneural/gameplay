@@ -38,8 +38,11 @@ export function bindLoaderProgress(
     run.loadProgress?.(highestProgress, 'loading_assets');
   };
 
-  const onComplete = (): void => {
+  const onComplete = (_loader?: unknown, _totalComplete?: unknown, totalFailed?: unknown): void => {
     if (run.state !== 'idle' && run.state !== 'opened') return;
+    // Phaser's COMPLETE event also fires when queued files fail. Do not signal
+    // that resources are prepared until the failure/retry policy has handled them.
+    if (typeof totalFailed === 'number' && totalFailed > 0) return;
     highestProgress = Math.max(highestProgress, 0.96);
     run.loadProgress?.(highestProgress, 'preparing_scene');
   };
