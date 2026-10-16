@@ -1,5 +1,5 @@
 import { createHash, randomUUID } from 'node:crypto';
-import { mkdtemp, rm, writeFile } from 'node:fs/promises';
+import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { Readable } from 'node:stream';
@@ -255,6 +255,36 @@ describe('FileSystemStorageService & parseWebpMetadata', () => {
       });
 
       expect(first).toEqual(second);
+    });
+
+    it('never overwrites an existing immutable blob with different media', async () => {
+      const original = createSyntheticVp8Webp(800, 600);
+      const different = createSyntheticVp8Webp(700, 500);
+      const originalSha = createHash('sha256').update(original).digest('hex');
+      const differentSha = createHash('sha256').update(different).digest('hex');
+
+      await storage.storeBlob(original, { revisionId, blobId, expectedSha256: originalSha });
+      await expect(
+        storage.storeBlob(different, { revisionId, blobId, expectedSha256: differentSha }),
+      ).rejects.toThrowError(/Immutable blob ID already exists/);
+      expect((await readFile(storage.getBlobPath(revisionId, blobId))).equals(original)).toBe(true);
+    });
+
+    it('allows only one distinct payload when uploads race for the same blob ID', async () => {
+      const first = createSyntheticVp8Webp(800, 600);
+      const second = createSyntheticVp8Webp(800, 601);
+      const attempts = await Promise.allSettled(
+        [first, second].map((media) =>
+          storage.storeBlob(media, {
+            revisionId,
+            blobId,
+            expectedSha256: createHash('sha256').update(media).digest('hex'),
+          }),
+        ),
+      );
+      expect(attempts.filter((attempt) => attempt.status === 'fulfilled')).toHaveLength(1);
+      const stored = await readFile(storage.getBlobPath(revisionId, blobId));
+      expect(stored.equals(first) || stored.equals(second)).toBe(true);
     });
 
     it('deletes all blobs in a revision on cleanup', async () => {

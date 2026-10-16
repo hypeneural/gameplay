@@ -1,6 +1,6 @@
 import { createHash, randomUUID } from 'node:crypto';
 import { createReadStream, createWriteStream } from 'node:fs';
-import { mkdir, readFile, rename, rm, stat, unlink, writeFile } from 'node:fs/promises';
+import { link, mkdir, readFile, rm, stat, unlink, writeFile } from 'node:fs/promises';
 import { dirname, resolve } from 'node:path';
 import type { Readable } from 'node:stream';
 import { pipeline } from 'node:stream/promises';
@@ -256,8 +256,19 @@ export class FileSystemStorageService implements StorageService {
         );
       }
 
-      // Atomic promote: rename temp file to final destination
-      await rename(tempPath, finalPath);
+      // Exclusive publish: rename() can overwrite an existing blob on both
+      // NTFS and POSIX. Link from a temporary file within the same directory
+      // fails with EEXIST and leaves the original immutable.
+      try {
+        await link(tempPath, finalPath);
+      } catch (error) {
+        if ((error as NodeJS.ErrnoException).code !== 'EEXIST') throw error;
+        if (!(await this.hasBlob(params.revisionId, params.blobId, computedSha256, byteLength))) {
+          throw new PublicationDomainError('INVALID_MEDIA', 'Immutable blob ID already exists');
+        }
+        // Concurrent identical upload is idempotent.
+      }
+      await unlink(tempPath);
 
       return {
         revisionId: params.revisionId,
