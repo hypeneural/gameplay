@@ -73,8 +73,11 @@ checks.push({ name: 'fixture-static', status: fixture.response.status });
 let inventory;
 if (process.env.CG_STAGING_RELEASE_MANIFEST) {
   const release = JSON.parse(await readFile(process.env.CG_STAGING_RELEASE_MANIFEST, 'utf8'));
-  if (release?.stage !== 'staging-demo' || release?.customerDataAllowed !== false ||
-    !Array.isArray(release.files)) {
+  if (
+    release?.stage !== 'staging-demo' ||
+    release?.customerDataAllowed !== false ||
+    !Array.isArray(release.files)
+  ) {
     throw new Error('Local expected staging RELEASE.json is invalid.');
   }
   inventory = new Map(release.files.map((file) => [file.path, file]));
@@ -90,12 +93,18 @@ for (const assetPath of REQUIRED_NATAL_VELVET_ASSETS) {
   } catch {
     throw new Error('Failed to fetch an expected Natal Velvet asset from the public edge.');
   }
-  if (response.status !== 200 || !response.headers.get('content-type')?.includes('image/webp')) {
+  if (
+    response.status !== 200 ||
+    !response.headers.get('content-type')?.includes('image/webp')
+  ) {
     throw new Error('Natal Velvet artwork is not being served as a WebP at the public edge.');
   }
   const encoded = Buffer.from(await response.arrayBuffer());
-  if (encoded.length < 12 || encoded.toString('ascii', 0, 4) !== 'RIFF' ||
-      encoded.toString('ascii', 8, 12) !== 'WEBP') {
+  if (
+    encoded.length < 12 ||
+    encoded.toString('ascii', 0, 4) !== 'RIFF' ||
+    encoded.toString('ascii', 8, 12) !== 'WEBP'
+  ) {
     throw new Error('A public gallery asset is not a valid WebP container.');
   }
   if (inventory) {

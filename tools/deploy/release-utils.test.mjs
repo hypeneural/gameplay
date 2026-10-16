@@ -48,12 +48,7 @@ describe('release safety policy', () => {
   });
 
   it('requires the four encoded Natal Velvet assets with measured sizes and hashes', () => {
-    const assetNames = [
-      'side-left',
-      'frame-corners',
-      'frame-edges',
-      'bottom',
-    ];
+    const assetNames = ['side-left', 'frame-corners', 'frame-edges', 'bottom'];
     const files = assetNames.map((name) => ({
       path: `web/assets/christmas-shell/gallery/gallery-velvet-${name}-v1.webp`,
       bytes: 2048,
@@ -63,7 +58,9 @@ describe('release safety policy', () => {
     expect(() => assertNatalVelvetReleaseAssets(files.slice(1))).toThrow(
       /Natal Velvet release asset missing/,
     );
-    expect(() => assertNatalVelvetReleaseAssets([{ ...files[0], bytes: 0 }, ...files.slice(1)])).toThrow();
+    expect(() =>
+      assertNatalVelvetReleaseAssets([{ ...files[0], bytes: 0 }, ...files.slice(1)]),
+    ).toThrow();
   });
 
   it('creates a deterministic path, byte and SHA-256 inventory', async () => {

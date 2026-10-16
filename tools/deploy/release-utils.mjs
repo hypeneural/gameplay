@@ -14,8 +14,12 @@ export function assertNatalVelvetReleaseAssets(files) {
   const indexed = new Map(files.map((file) => [file.path, file]));
   for (const path of REQUIRED_NATAL_VELVET_ASSETS) {
     const file = indexed.get(path);
-    if (!file || !Number.isInteger(file.bytes) || file.bytes <= 0 ||
-      !/^[a-f0-9]{64}$/.test(file.sha256)) {
+    if (
+      !file ||
+      !Number.isInteger(file.bytes) ||
+      file.bytes <= 0 ||
+      !/^[a-f0-9]{64}$/.test(file.sha256)
+    ) {
       throw new Error(`Natal Velvet release asset missing or invalid: ${path}`);
     }
   }
