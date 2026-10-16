@@ -10,6 +10,7 @@ export interface CatalogRuntimeConfig {
   readonly applicationShellPath: string;
   readonly previewConfigPath: string;
   readonly port: number;
+  readonly host: string;
 }
 
 export function resolveCatalogRuntimeConfig(
@@ -41,6 +42,7 @@ export function resolveCatalogRuntimeConfig(
     applicationShellPath: resolve(configuredApplicationShell ?? defaultApplicationShellPath),
     previewConfigPath: resolve(previewConfigPath),
     port: parsePort(environment.PORT ?? '4180'),
+    host: parseHost(environment.HOST),
   };
 }
 
@@ -58,4 +60,17 @@ function parsePort(value: string): number {
     throw new Error('PORT deve ser uma porta TCP válida.');
   }
   return port;
+}
+
+/**
+ * Listen on loopback unless Docker Compose explicitly opts into an
+ * all-interface bind. Never inherit Node's implicit wildcard default.
+ * Container isolation (no published catalog port) is an ops gate.
+ */
+function parseHost(value: string | undefined): string {
+  const host = value ?? '127.0.0.1';
+  if (host !== '127.0.0.1' && host !== '0.0.0.0') {
+    throw new Error('HOST deve ser 127.0.0.1 ou 0.0.0.0 (Docker interno).');
+  }
+  return host;
 }

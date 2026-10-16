@@ -39,10 +39,26 @@ docker compose -p "$project" -f "$compose" config --format json |
     process.stdin.on("end", () => {
       const cfg = JSON.parse(s);
       for (const name of [process.argv[2], process.argv[3]]) {
-        const vols=cfg.services?.[name]?.volumes ?? [];
+        const service = cfg.services?.[name];
+        const vols = service?.volumes ?? [];
         if (!vols.some(v => typeof v.source === "string" &&
             (v.source === process.argv[1] || v.source.startsWith(process.argv[1]+"/")))) {
           throw Error("Service is not bound to current: " + name);
+        }
+        if (service.network_mode === "host") {
+          throw Error("Host networking is forbidden for the catalog deployment");
+        }
+        if (name === process.argv[2]) {
+          const env = service.environment ?? {};
+          const host = Array.isArray(env)
+            ? env.find(v => String(v).startsWith("HOST="))?.slice(5)
+            : env.HOST;
+          if (host !== "0.0.0.0") {
+            throw Error("Catalog must explicitly use HOST=0.0.0.0 inside Docker");
+          }
+          if ((service.ports ?? []).length > 0) {
+            throw Error("Catalog must not publish direct host ports");
+          }
         }
       }
     });
