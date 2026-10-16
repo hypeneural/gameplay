@@ -2,6 +2,25 @@ import { createHash } from 'node:crypto';
 import { readFile, readdir } from 'node:fs/promises';
 import { join, relative, sep } from 'node:path';
 
+export const REQUIRED_NATAL_VELVET_ASSETS = Object.freeze([
+  'web/assets/christmas-shell/gallery/gallery-velvet-side-left-v1.webp',
+  'web/assets/christmas-shell/gallery/gallery-velvet-frame-corners-v1.webp',
+  'web/assets/christmas-shell/gallery/gallery-velvet-frame-edges-v1.webp',
+  'web/assets/christmas-shell/gallery/gallery-velvet-bottom-v1.webp',
+]);
+
+/** Require the approved gallery artwork inside an immutable staging bundle. */
+export function assertNatalVelvetReleaseAssets(files) {
+  const indexed = new Map(files.map((file) => [file.path, file]));
+  for (const path of REQUIRED_NATAL_VELVET_ASSETS) {
+    const file = indexed.get(path);
+    if (!file || !Number.isInteger(file.bytes) || file.bytes <= 0 ||
+      !/^[a-f0-9]{64}$/.test(file.sha256)) {
+      throw new Error(`Natal Velvet release asset missing or invalid: ${path}`);
+    }
+  }
+}
+
 export function assertReleaseAllowed(readiness, stage) {
   if (!readiness || typeof readiness !== 'object' || Array.isArray(readiness)) {
     throw new Error('deploy/readiness.json must contain an object.');
