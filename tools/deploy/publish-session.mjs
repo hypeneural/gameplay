@@ -124,7 +124,7 @@ async function appendStructuredLog(logFile, event) {
 /**
  * Builds a PublicationManifestV1 from a local-test-session.json configuration file.
  */
-export async function buildManifestFromLocalConfig(
+async function buildManifestFromLocalConfig(
   configPath,
   storageRoot,
   sessionId,
