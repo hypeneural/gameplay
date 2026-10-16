@@ -1,4 +1,4 @@
-import { SceneScope, SeededRandom } from '@christmas-games/platform';
+import { SceneScope, SeededRandom, bindLoaderProgress } from '@christmas-games/platform';
 import type {
   GameBridge,
   GameContext,
@@ -95,6 +95,7 @@ export function createRenaDasLembrancasGame(
     init(): void {
       onVisibility = (kind, value) => this.visibility(kind, value);
       context.run.open();
+      bindLoaderProgress(this.load, this.scope, context.run);
       const dispose = () => {
         this.ready = false;
         onVisibility = undefined;

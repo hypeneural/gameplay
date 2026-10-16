@@ -218,6 +218,7 @@
   width: 100%;
   height: 100%;
   object-fit: contain;
+  transition: opacity 140ms ease-out;
 }
 .photo-print-fallback {
   position: absolute;
@@ -225,14 +226,30 @@
   width: 100%;
   height: 100%;
   display: grid;
-  place-items: center;
+  place-content: center;
+  justify-items: center;
+  gap: 6px;
   padding: 8px;
   color: #e6dfc8;
   font-size: 0.75rem;
   text-align: center;
 }
+.photo-print-retry {
+  min-height: 36px;
+  padding: 6px 12px;
+  border: 1px solid rgba(248, 223, 160, 0.65);
+  border-radius: 999px;
+  background: rgba(15, 48, 41, 0.92);
+  color: #fff3d6;
+  font-size: 0.72rem;
+  font-weight: 700;
+  cursor: pointer;
+}
 .photo-print[data-status='loading'] img {
   opacity: 0;
+}
+.photo-print[data-transitioning='true'] img {
+  opacity: 0.92;
 }
 .album-copy h2 {
   font-size: clamp(1.35rem, 5.6vw, 1.8rem);

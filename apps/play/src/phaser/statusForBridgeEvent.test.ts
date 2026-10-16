@@ -27,6 +27,7 @@ describe('Phaser bridge loading readiness', () => {
   }
 
   const nonReadinessEvents = [
+    'GAME_LOAD_PROGRESS',
     'GAME_SOUND_CHANGED',
     'GAME_ASSET_RETRY',
     'GAME_MILESTONE',

@@ -1,4 +1,5 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import { createFixtureSession } from '@christmas-games/platform';
 import { createChristmasEffects } from '@christmas-games/theme';
 import type {
   FeedbackCue,
@@ -7,6 +8,9 @@ import type {
   QualityProfile,
 } from '@christmas-games/theme';
 import { useExperienceSettings, type ExperiencePhotoShape } from '../app/ExperienceSettings.js';
+import { ChristmasLoadingExperience } from '../components/ChristmasLoadingExperience.js';
+import { gameDefinitions } from '../phaser/gameRegistry.js';
+import type { PhaserLoadPhase } from '../phaser/loadStateMachine.js';
 
 const feedbackCues: readonly FeedbackCue[] = [
   'tap',
@@ -26,6 +30,14 @@ const cueLabels: Record<FeedbackCue, string> = {
   celebrate: 'Comemoração',
 };
 
+const loadingPhaseOptions: readonly { readonly value: PhaserLoadPhase; readonly label: string }[] =
+  [
+    { value: 'importing', label: '1. Importando motor' },
+    { value: 'waiting_mount', label: '2. Aguardando montagem' },
+    { value: 'loading_assets', label: '3. Carregando recursos (%)' },
+    { value: 'preparing_scene', label: '4. Preparando cenário' },
+  ];
+
 function photoShapeLabel(shape: ExperiencePhotoShape): string {
   return shape === 'landscape' ? 'horizontal' : 'vertical';
 }
@@ -42,6 +54,50 @@ export function ExperienceLab(): React.JSX.Element {
   const [lastInstruction, setLastInstruction] = useState<FeedbackInstruction | undefined>(
     undefined,
   );
+  const [loadingGameId, setLoadingGameId] = useState<string>('puzzle-swap');
+  const [loadingPhase, setLoadingPhase] = useState<PhaserLoadPhase>('loading_assets');
+  const [loadingPercent, setLoadingPercent] = useState<number>(64);
+  const [simulatingLoading, setSimulatingLoading] = useState<boolean>(false);
+
+  const session = useMemo(() => createFixtureSession(12), []);
+  const selectedPhoto = useMemo(() => {
+    const base =
+      session.photos.find((photo) => photo.orientation === settings.photo) ?? session.photos[0]!;
+    return {
+      ...base,
+      variants: {
+        ...base.variants,
+        thumb: `${base.variants.thumb}#preview`,
+      },
+    };
+  }, [session.photos, settings.photo]);
+  const selectedGame = useMemo(
+    () => gameDefinitions.find((game) => game.id === loadingGameId),
+    [loadingGameId],
+  );
+
+  useEffect(() => {
+    if (!simulatingLoading) return;
+    let step = 0;
+    setLoadingPhase('importing');
+    setLoadingPercent(0);
+    const timer = window.setInterval(() => {
+      step += 1;
+      if (step === 1) {
+        setLoadingPhase('waiting_mount');
+      } else if (step >= 2 && step <= 11) {
+        setLoadingPhase('loading_assets');
+        setLoadingPercent(Math.min(99, (step - 1) * 10));
+      } else if (step === 12) {
+        setLoadingPhase('preparing_scene');
+        setLoadingPercent(99);
+      } else {
+        setSimulatingLoading(false);
+      }
+    }, 420);
+    return () => window.clearInterval(timer);
+  }, [simulatingLoading]);
+
   const feel = useMemo(
     () =>
       createChristmasEffects<string>(
@@ -146,6 +202,96 @@ export function ExperienceLab(): React.JSX.Element {
       <p className="hint" data-testid="experience-seed">
         Combinação fixa: {settings.seed}. O som é testado dentro do jogo depois do primeiro toque.
       </p>
+
+      <section
+        className="experience-loading-showcase"
+        aria-label="Prévia da Moldura Mágica de Carregamento"
+      >
+        <p className="eyebrow">MOLDURA MÁGICA DE NATAL</p>
+        <h2>Tela de carregamento interativa</h2>
+        <p className="intro">
+          Toque nas 3 estrelas de cristal douradas (≥ 52×52px) abaixo da moldura ou simule o avanço
+          das fases reais do Phaser.Loader.
+        </p>
+        <div className="experience-controls" aria-label="Controles do carregamento">
+          <label className="field">
+            Modo / Jogo
+            <select
+              value={loadingGameId}
+              onChange={(event) => setLoadingGameId(event.target.value)}
+            >
+              {gameDefinitions.map((game) => (
+                <option key={game.id} value={game.id}>
+                  {game.displayName}
+                </option>
+              ))}
+              <option value="__session__">Abertura do Álbum (Sessão)</option>
+            </select>
+          </label>
+          <label className="field">
+            Fase
+            <select
+              value={loadingPhase}
+              onChange={(event) => {
+                setSimulatingLoading(false);
+                setLoadingPhase(event.target.value as PhaserLoadPhase);
+              }}
+            >
+              {loadingPhaseOptions.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label className="field">
+            Progresso ({loadingPercent}%)
+            <input
+              type="range"
+              min={0}
+              max={99}
+              value={loadingPercent}
+              onChange={(event) => {
+                setSimulatingLoading(false);
+                setLoadingPhase('loading_assets');
+                setLoadingPercent(Number(event.target.value));
+              }}
+            />
+          </label>
+          <div className="field">
+            Simulação
+            <button
+              className="button secondary"
+              type="button"
+              onClick={() => setSimulatingLoading((current) => !current)}
+            >
+              {simulatingLoading ? 'Pausar ciclo' : 'Animar 0% → 99%'}
+            </button>
+          </div>
+        </div>
+        <div className="experience-loading-stage">
+          {loadingGameId === '__session__' ? (
+            <ChristmasLoadingExperience
+              mode="session"
+              eyebrow="SEU ÁLBUM DE NATAL"
+              title="Carregando suas lembranças de Natal…"
+              calm={settings.motion === 'reduced'}
+              lowQuality={settings.quality === 'LOW'}
+            />
+          ) : (
+            <ChristmasLoadingExperience
+              mode="game"
+              title={`Abrindo ${selectedGame?.displayName ?? 'Jogo'}…`}
+              definition={selectedGame}
+              photo={selectedPhoto}
+              phase={loadingPhase}
+              progress={loadingPhase === 'loading_assets' ? loadingPercent / 100 : undefined}
+              calm={settings.motion === 'reduced'}
+              lowQuality={settings.quality === 'LOW'}
+            />
+          )}
+        </div>
+      </section>
     </main>
   );
 }

@@ -1,4 +1,4 @@
-import { SceneScope } from '@christmas-games/platform';
+import { SceneScope, bindLoaderProgress } from '@christmas-games/platform';
 import type { GameBridge, GameContext } from '@christmas-games/platform';
 import { attachCrystalControl } from '@christmas-games/theme';
 import * as Phaser from 'phaser';
@@ -196,6 +196,7 @@ export class LanternaScene extends Phaser.Scene {
   }
 
   preload(): void {
+    bindLoaderProgress(this.load, this.scope, this.context.run);
     for (const audio of lanternaAudioFiles) {
       if (!this.cache.audio.exists(audio.key)) {
         this.load.audio(audio.key, audio.urls);
@@ -2218,11 +2219,13 @@ export class LanternaScene extends Phaser.Scene {
 
   setVisibilityPaused(paused: boolean): void {
     this.visibilityPaused = paused;
-    this.audioDir.setPaused(paused);
+    this.audioDir?.setPaused(paused);
     if (paused) {
-      this.sm.pause();
+      this.context.run.pause('visibility');
+      this.sm?.pause();
     } else {
-      this.sm.resume();
+      this.context.run.resume('visibility');
+      this.sm?.resume();
     }
   }
 
@@ -2234,6 +2237,9 @@ export class LanternaScene extends Phaser.Scene {
     this.confettiParticles = [];
     if (this.tableMaskGraphics) {
       this.tableMaskGraphics.destroy();
+    }
+    if (this.textures.exists(this.photoTextureKey)) {
+      this.textures.remove(this.photoTextureKey);
     }
     this.scope.dispose();
   }

@@ -77,8 +77,15 @@ export type AnalyticsEvent =
   | (GameEventIdentity & { type: 'GAME_COMPLETED'; durationMs: number })
   | (GameEventIdentity & { type: 'GAME_EXITED' });
 
+export type GameLoadStage = 'loading_assets' | 'preparing_scene';
+
 export type GameBridgeEvent =
   | (GameEventIdentity & { type: 'GAME_SOUND_CHANGED'; enabled: boolean })
+  | (GameEventIdentity & {
+      type: 'GAME_LOAD_PROGRESS';
+      progress: number;
+      stage: GameLoadStage;
+    })
   | AnalyticsEvent
   | (GameEventIdentity & { type: 'GAME_INTERACTION_SETTLED' })
   | (GameEventIdentity & { type: 'GAME_ASSET_RETRY'; attempt: number })
@@ -108,6 +115,8 @@ export interface GameRun {
   readonly runId: string;
   readonly state: GameRunState;
   open(): void;
+  /** Emits bounded, monotonic loader progress while in idle or opened state without affecting analytics. */
+  loadProgress?(progress: number, stage?: GameLoadStage): void;
   ready(): void;
   start(): void;
   /** Signals that a player interaction has completed its visible game-side work. */

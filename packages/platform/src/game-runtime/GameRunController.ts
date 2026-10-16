@@ -3,6 +3,7 @@ import type {
   GameBridgeEvent,
   GameEventIdentity,
   GameId,
+  GameLoadStage,
   GameRun,
   GameRunState,
 } from '../contracts/index.js';
@@ -20,6 +21,10 @@ export class GameRunController implements GameRun {
   private currentState: GameRunState = 'idle';
   private eventSequence = 0;
   private lastSoundEnabled: boolean | undefined;
+  private lastLoadProgress = -1;
+  private lastPublishedProgress = -1;
+  private lastLoadStage: GameLoadStage | undefined;
+  private hasAssetFailed = false;
   private readonly pauseReasons = new Set<'game' | 'visibility'>();
   private readonly milestones = new Set<string>();
 
@@ -40,6 +45,34 @@ export class GameRunController implements GameRun {
     this.currentState = 'opened';
     this.clock.start();
     this.emit('GAME_OPENED');
+  }
+
+  loadProgress(progress: number, stage: GameLoadStage = 'loading_assets'): void {
+    if (this.hasAssetFailed) return;
+    if (this.currentState !== 'idle' && this.currentState !== 'opened') return;
+    if (!Number.isFinite(progress)) return;
+
+    const clamped = Math.max(0, Math.min(1, progress));
+    const effectiveStage: GameLoadStage =
+      this.lastLoadStage === 'preparing_scene' ? 'preparing_scene' : stage;
+    const monotonicProgress = Math.max(this.lastLoadProgress, clamped);
+    const stageChanged = effectiveStage !== this.lastLoadStage;
+    const delta = monotonicProgress - this.lastPublishedProgress;
+
+    if (!stageChanged && this.lastPublishedProgress >= 0 && delta < 0.04 && monotonicProgress < 1) {
+      this.lastLoadProgress = monotonicProgress;
+      return;
+    }
+
+    this.lastLoadProgress = monotonicProgress;
+    this.lastPublishedProgress = monotonicProgress;
+    this.lastLoadStage = effectiveStage;
+    this.bridge.emit({
+      type: 'GAME_LOAD_PROGRESS',
+      ...this.nextIdentity(),
+      progress: Number(monotonicProgress.toFixed(3)),
+      stage: effectiveStage,
+    });
   }
 
   ready(): void {
@@ -106,7 +139,7 @@ export class GameRunController implements GameRun {
   }
 
   assetRetry(attempt: number): void {
-    if (this.currentState === 'exited') return;
+    if (this.currentState === 'exited' || this.hasAssetFailed) return;
     if (!Number.isInteger(attempt) || attempt < 1) {
       throw new Error('Asset retry attempts must be positive integers.');
     }
@@ -118,6 +151,7 @@ export class GameRunController implements GameRun {
     if (!/^[a-z0-9][a-z0-9-]{0,79}$/.test(reason)) {
       throw new Error('Asset failure reasons must be privacy-safe kebab-case codes.');
     }
+    this.hasAssetFailed = true;
     this.bridge.emit({ type: 'GAME_ASSET_FAILED', ...this.nextIdentity(), reason });
   }
 
