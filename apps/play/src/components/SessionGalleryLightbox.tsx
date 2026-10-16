@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import type { Photo } from '@christmas-games/platform';
 import { playInterfaceTap } from '../audio/playInterfaceTap.js';
-import { PhotoPrint } from './PhotoPrint.js';
+import { GalleryFrame } from './GalleryFrame.js';
 import { ShellIcon } from './ShellIcon.js';
 import { GALLERY_LIGHTBOX_SIZES, GALLERY_LIGHTBOX_VARIANTS } from '../gallery/galleryPolicy.js';
 
@@ -191,14 +191,14 @@ export function SessionGalleryLightbox({
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
       >
-        <PhotoPrint
+        <GalleryFrame
           key={photo.id}
           photo={photo}
           variant="game"
+          index={index}
           eager
           sizes={GALLERY_LIGHTBOX_SIZES}
           srcSetVariants={GALLERY_LIGHTBOX_VARIANTS}
-          alt={`Lembrança de Natal ${index + 1}`}
         />
       </div>
 
