@@ -1,3 +1,4 @@
+import type { CSSProperties } from 'react';
 import type { Photo, PhotoVariant } from '@christmas-games/platform';
 import { galleryFrameAspectRatio } from '../gallery/galleryFrameGeometry.js';
 import { PhotoPrint } from './PhotoPrint.js';
@@ -20,12 +21,15 @@ export function GalleryFrame({
   sizes,
   srcSetVariants,
 }: GalleryFrameProps): React.JSX.Element {
+  const ratio = galleryFrameAspectRatio(photo, variant);
+
   return (
-    <span className="gallery-frame" data-frame-orientation={photo.orientation}>
-      <span
-        className="gallery-photo-frame gallery-frame-window"
-        style={{ aspectRatio: galleryFrameAspectRatio(photo, variant) }}
-      >
+    <span
+      className="gallery-frame"
+      data-frame-orientation={photo.orientation}
+      style={{ '--gallery-frame-ratio': ratio } as CSSProperties}
+    >
+      <span className="gallery-photo-frame gallery-frame-window" style={{ aspectRatio: ratio }}>
         <PhotoPrint
           photo={photo}
           variant={variant}
