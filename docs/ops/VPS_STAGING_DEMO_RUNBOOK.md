@@ -189,7 +189,7 @@ Staging-demo só aceita fixtures sintéticas. `deploy/readiness.json` permanece 
 
 O build `6781c0f` foi verificado e instalado, mas retornou 502 no gateway: `apps/catalog-server/src/main.ts` fazia `listen(..., '127.0.0.1')` dentro do container `catalog`. O `gateway` usa `http://catalog:4180` em uma rede bridge **separada**. O teste local `docker exec catalog wget http://127.0.0.1:4180/healthz` não valida o caminho gateway → catalog. Rollback para `20261012-0ef503b` foi registrado no log do Antigravity; verificar o estado atual novamente antes de promover.
 
-**Correção canônica:** `runtimeConfig.host` aceita apenas `127.0.0.1` (padrão) ou `0.0.0.0` quando explícito via `HOST`; `main.ts` faz bind nesse endereço. Na VPS Docker Compose, somente `catalog` deve receber `HOST=0.0.0.0`, em rede bridge privada. Não expor `4180` pelo Docker via `ports:` nem permitir conexão pública direta; o `gateway` é a borda permitida. Esse requisito é **bloqueador de promoção**.
+**Correção canônica:** `runtimeConfig.host` aceita apenas `127.0.0.1` (padrão) ou `0.0.0.0` quando explícito via `HOST`; `main.ts` faz bind nesse endereço. Na VPS Docker Compose, somente `catalog` deve receber `HOST=0.0.0.0`, em rede bridge privada. Não expor `4180` publicamente. Um bind opcional de `4180/tcp` somente em `127.0.0.1`, `::1` ou interface Tailscale `100.64.0.0/10` é aceito pelo preflight para monitoramento privado; verificar também as ACLs Tailscale e firewall do host. Rejeitar qualquer publicação em `0.0.0.0`, `::` ou endereço público. O `gateway` continua sendo a única borda pública. Esse requisito é **bloqueador de promoção**.
 
 ### Prova adicional obrigatória
 

@@ -33,9 +33,19 @@ docker inspect "$catalog" --format '{{json .HostConfig.PortBindings}}' |
     process.stdin.on("data",c=>s+=c);
     process.stdin.on("end",()=>{
       const ports=JSON.parse(s);
-      if (ports && Object.keys(ports).length) {
-        process.stderr.write("NO_GO_DIRECT_CATALOG_PORT\\n");
-        process.exitCode=1;
+      const isPrivateBind = (ip) => {
+        if (ip === "127.0.0.1" || ip === "::1") return true;
+        const parts=ip?.split(".").map(Number);
+        return parts?.length === 4 && parts.every(n => Number.isInteger(n) && n >= 0 && n <= 255) &&
+          parts[0] === 100 && parts[1] >= 64 && parts[1] <= 127;
+      };
+      for (const [port, bindings] of Object.entries(ports ?? {})) {
+        if (!bindings) continue;
+        if (port !== "4180/tcp" || !Array.isArray(bindings) ||
+            bindings.some(b => !isPrivateBind(b.HostIp) || !/^[0-9]+$/.test(b.HostPort))) {
+          process.stderr.write("NO_GO_UNSAFE_CATALOG_PORT\\n");
+          process.exitCode=1;
+        }
       }
     });
   '
