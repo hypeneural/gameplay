@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import type { CSSProperties } from 'react';
 import { playInterfaceTap } from '../audio/playInterfaceTap.js';
 
 /** Tiny, user-triggered celebration behind the hero bow. Never covers a photo. */
@@ -22,7 +23,7 @@ export function GalleryMagicButton({ active }: { active: boolean }): React.JSX.E
           {Array.from({ length: 8 }, (_, index) => (
             <i
               key={index}
-              style={{ transform: `rotate(${index * 45}deg)` }}
+              style={{ '--burst-angle': `${index * 45}deg` } as CSSProperties}
             />
           ))}
         </span>
