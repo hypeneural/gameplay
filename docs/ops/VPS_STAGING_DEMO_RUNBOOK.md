@@ -184,3 +184,31 @@ O smoke compara os quatro WebPs da galeria no domínio público com bytes e SHA-
 ### 8.5 Limite de segurança
 
 Staging-demo só aceita fixtures sintéticas. `deploy/readiness.json` permanece `pilotReady=false`, `customerDataAllowed=false`, `automaticDeliveryAllowed=false`. Esta execução não libera fotos reais nem envia links para clientes.
+
+## 9. Incidente 502 no Docker após Natal Velvet (16/10/2026)
+
+O build `6781c0f` foi verificado e instalado, mas retornou 502 no gateway: `apps/catalog-server/src/main.ts` fazia `listen(..., '127.0.0.1')` dentro do container `catalog`. O `gateway` usa `http://catalog:4180` em uma rede bridge **separada**. O teste local `docker exec catalog wget http://127.0.0.1:4180/healthz` não valida o caminho gateway → catalog. Rollback para `20261012-0ef503b` foi registrado no log do Antigravity; verificar o estado atual novamente antes de promover.
+
+**Correção canônica:** `runtimeConfig.host` aceita apenas `127.0.0.1` (padrão) ou `0.0.0.0` quando explícito via `HOST`; `main.ts` faz bind nesse endereço. Na VPS Docker Compose, somente `catalog` deve receber `HOST=0.0.0.0`, em rede bridge privada. Não expor `4180` pelo Docker via `ports:` nem permitir conexão pública direta; o `gateway` é a borda permitida. Esse requisito é **bloqueador de promoção**.
+
+### Prova adicional obrigatória
+
+Após recriar containers, teste o caminho **a partir do gateway**, não somente dentro do catalog:
+
+```bash
+docker exec christmas-games-catalog node -e \
+  'if (process.env.HOST !== "0.0.0.0") process.exit(1)'
+docker exec christmas-games-gateway sh -c \
+  'wget -q -O /dev/null http://catalog:4180/healthz'
+```
+
+Se `wget` não estiver instalado na imagem gateway, usar `curl` disponível ou `docker run --rm --network <rede-privada> curlimages/curl ...` **somente com imagem já disponível** e autorização. Não instalar ferramentas no container em produção. Confirmar que `catalog` não publica porta diretamente via `docker inspect` e que o bind mount da versão nova realmente está ativo.
+
+Para testar o candidato **antes de trocar `current`**, é preferível criar um canário Compose isolado com porta e rede de teste sem tocar o gateway ativo. Não criar o canário se depender de redefinir secrets, redes compartilhadas ou de alterar o Compose da produção. Se não houver canário seguro, executar smoke gateway→catalog imediatamente após promoção e rollback em caso de falha.
+
+### Fonte oficial
+
+- https://nodejs.org/api/net.html#serverlistenport-host-backlog-callback
+- https://docs.docker.com/compose/how-tos/networking/
+
+**Não alterar `deploy/readiness.json`:** apenas staging-demo com fixtures sintéticas. A existência de PRs de publicação real não torna o piloto aprovado.

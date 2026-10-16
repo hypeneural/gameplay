@@ -14,6 +14,7 @@ describe('resolveCatalogRuntimeConfig', () => {
         CATALOG_SOCIAL_PREVIEW_FILE: '/etc/christmas-games/social-preview.json',
         CATALOG_APPLICATION_SHELL: shell,
         PORT: '4180',
+        HOST: '0.0.0.0',
       },
       '/unused/index.html',
     );
@@ -22,6 +23,7 @@ describe('resolveCatalogRuntimeConfig', () => {
     expect(config.publicOrigin.href).toBe('https://jogos.example.test/');
     expect(config.applicationShellPath).toBe(shell);
     expect(config.port).toBe(4180);
+    expect(config.host).toBe('0.0.0.0');
   });
 
   it.each([
@@ -63,6 +65,28 @@ describe('resolveCatalogRuntimeConfig', () => {
     ).toThrow();
   });
 
+  it.each(['localhost', '::', '::1', '192.168.0.20', '0.0.0.0:4180', ''])(
+    'rejects unsupported HOST value %j',
+    (HOST) => {
+      expect(() =>
+        resolveCatalogRuntimeConfig(
+          'development',
+          { HOST, CATALOG_SOCIAL_PREVIEW_FILE: '/tmp/preview.json' },
+          '/repo/apps/play/dist/index.html',
+        ),
+      ).toThrow(/HOST/);
+    },
+  );
+
+  it('keeps explicit all-interface bind opt-in rather than implicit', () => {
+    const config = resolveCatalogRuntimeConfig(
+      'development',
+      { HOST: '0.0.0.0', CATALOG_SOCIAL_PREVIEW_FILE: '/tmp/preview.json' },
+      '/repo/apps/play/dist/index.html',
+    );
+    expect(config.host).toBe('0.0.0.0');
+  });
+
   it('keeps local development HTTP-only defaults explicit', () => {
     const config = resolveCatalogRuntimeConfig(
       'development',
@@ -73,5 +97,6 @@ describe('resolveCatalogRuntimeConfig', () => {
     expect(config.releaseStage).toBe('development');
     expect(config.publicOrigin.href).toBe('http://127.0.0.1:4180/');
     expect(config.applicationShellPath).toBe(resolve('/repo/apps/play/dist/index.html'));
+    expect(config.host).toBe('127.0.0.1');
   });
 });

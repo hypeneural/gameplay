@@ -39,6 +39,7 @@ const child = spawn(process.execPath, [serverEntry], {
   env: {
     ...process.env,
     NODE_ENV: 'production',
+    HOST: '127.0.0.1',
     CATALOG_RELEASE_STAGE: 'staging-demo',
     CATALOG_PUBLIC_ORIGIN: origin,
     CATALOG_SOCIAL_PREVIEW_FILE: previewPath,

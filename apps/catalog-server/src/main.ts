@@ -41,7 +41,7 @@ const server = createCatalogServer({
   },
 });
 
-server.listen(runtime.port, '127.0.0.1', () => {
+server.listen(runtime.port, runtime.host, () => {
   console.info(
     JSON.stringify({
       event: 'catalog-started',
