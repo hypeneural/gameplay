@@ -1241,3 +1241,25 @@
 .gallery-lightbox-help-content p + p {
   margin-top: 8px;
 }
+
+/* The frame scales by image geometry; the aperture itself remains uncropped. */
+.gallery-lightbox-stage .gallery-frame {
+  flex: none;
+  width: min(
+    calc(100vw - 24px),
+    calc((100dvh - 220px) * var(--gallery-frame-ratio) + 34px)
+  );
+  max-width: 720px;
+}
+.gallery-lightbox-stage .gallery-frame .photo-print,
+.gallery-lightbox-stage[data-zoomed='true'] .gallery-frame .photo-print {
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+}
+.gallery-lightbox-stage[data-zoomed='true'] .gallery-frame {
+  width: 180%;
+  min-width: 180%;
+  max-width: none;
+}
