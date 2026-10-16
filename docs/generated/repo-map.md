@@ -381,6 +381,7 @@
 │       │   │   ├── ChristmasLoadingExperience.tsx
 │       │   │   ├── CompletionActions.tsx
 │       │   │   ├── MagicPhotoWinter.tsx
+│       │   │   ├── PhotoPrint.test.ts
 │       │   │   ├── PhotoPrint.tsx
 │       │   │   ├── SessionGalleryLightbox.tsx
 │       │   │   ├── SessionPhotoAlbum.tsx
