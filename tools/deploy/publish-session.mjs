@@ -112,7 +112,7 @@ function findVariantFile(storageRoot, parsed, photo, variantName) {
   );
 }
 
-export async function appendStructuredLog(logFile, event) {
+async function appendStructuredLog(logFile, event) {
   if (!logFile) return;
   const entry = JSON.stringify({
     timestamp: new Date().toISOString(),
