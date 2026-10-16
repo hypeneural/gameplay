@@ -42,6 +42,7 @@ A lista Prettier deve ser obtida novamente do HEAD atual, pois novos arquivos fo
 Direção fiel aos mockups: veludo bordô escuro, lâminas de latão champagne, creme aquecido, candy-cane fino, galhos de abeto com agulhas reais, pinhas, frutos vermelhos e fontes de luz minúsculas âmbar. **Os screenshots não são assets; são alvos de comparação.**
 
 Geração de masters **sem** pessoas, fotos, textos, mockups ou fundos. 100% transparency fora das formas:
+
 - Guirlanda vertical left: tile sem emenda, preferencialmente 128x512 RGBA; borda interna transparente, cantos sem grandes laços repetidos.
 - Topo: preservar `gallery-evergreen-hero-retina-v6.webp` quando fizer sentido; variante nova opcional, medir benefício real antes de duplicar.
 - Moldura: 9-slice completo ou 4 cantos + 4 tiras. Centro com **alpha=0** e safety inset; cantos fora da janela real, raio interno alinhado; não esticar atlas portrait para landscape.
@@ -70,7 +71,7 @@ Pipeline: masters fora do browser -> Sharp alpha cleanup, crop, resize WebP/AVIF
 3. `pnpm asset:validate:all`, `pnpm asset:budget` para assets novos.
 4. Uma rodada `pnpm check` + `pnpm build` só quando estáveis.
 5. Galeria Lab com 15×21 e 21×15, testes em 320/360/390/412/430/768; Playwright e **Safari iPhone/Chrome Android físicos**; fotos claras/escuras com bokeh para provar não-overlap; medir LCP/INP/CLS, bytes, memory, GPU/scroll, requests Phaser=0, CLS <=0.1 lab; campo p75 LCP<=2.5s, INP<=200ms, CLS<=0.1 (metas).
-6. Relatório: *ANTES/DEPOIS* real da branch, outputs PNG, tabela de assets SHA/bytes/alpha, prova de proporção e clipping, gates e arquivos; lacunas explícitas. Não afirmar produção antes desses resultados.
+6. Relatório: _ANTES/DEPOIS_ real da branch, outputs PNG, tabela de assets SHA/bytes/alpha, prova de proporção e clipping, gates e arquivos; lacunas explícitas. Não afirmar produção antes desses resultados.
 
 ## Referências oficiais
 
