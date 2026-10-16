@@ -106,12 +106,11 @@
 │       │   │   │   └── gallery
 │       │   │   │       ├── cta-album-icon-v1.svg
 │       │   │   │       ├── cta-open-album-ribbon-v1.svg
-│       │   │   │       ├── gallery-badge-photo-count-v1.svg
-│       │   │   │       ├── gallery-divider-starlight-v2.svg
 │       │   │   │       ├── gallery-evergreen-hero-retina-v6.webp
-│       │   │   │       ├── gallery-evergreen-hero-v2.svg
-│       │   │   │       ├── gallery-header-glow-v1.svg
-│       │   │   │       └── gallery-starlight-footer-v1.svg
+│       │   │   │       ├── gallery-velvet-bottom-v1.webp
+│       │   │   │       ├── gallery-velvet-frame-corners-v1.webp
+│       │   │   │       ├── gallery-velvet-frame-edges-v1.webp
+│       │   │   │       └── gallery-velvet-side-left-v1.webp
 │       │   │   ├── estilingue-das-lembrancas
 │       │   │   │   ├── art
 │       │   │   │   │   ├── alvo-bola-natal-v1.webp
@@ -380,6 +379,9 @@
 │       │   │   ├── ChristmasAtmosphere.tsx
 │       │   │   ├── ChristmasLoadingExperience.tsx
 │       │   │   ├── CompletionActions.tsx
+│       │   │   ├── GalleryAtmosphere.tsx
+│       │   │   ├── GalleryFrame.tsx
+│       │   │   ├── GalleryMagicButton.tsx
 │       │   │   ├── MagicPhotoWinter.tsx
 │       │   │   ├── PhotoPrint.test.ts
 │       │   │   ├── PhotoPrint.tsx
@@ -400,6 +402,8 @@
 │       │   │   ├── useShellInteractions.ts
 │       │   │   └── useSnowfall.ts
 │       │   ├── gallery
+│       │   │   ├── galleryFrameGeometry.test.ts
+│       │   │   ├── galleryFrameGeometry.ts
 │       │   │   ├── galleryPolicy.test.ts
 │       │   │   └── galleryPolicy.ts
 │       │   ├── gallery.css
@@ -579,6 +583,8 @@
 │   │       ├── AUDITORIA_WORKFLOW_SESSOES_E_JOGOS.md
 │   │       ├── GALERIA_NATALINA_MULTI_GALERIAS.md
 │   │       ├── GALERIA_NATIVE_MOBILE_HANDOFF_2026-10-08.md
+│   │       ├── GALLERY_NATAL_VELVET_FORENSIC_PLAN_2026-10-16.md
+│   │       ├── GALLERY_NATAL_VELVET_HANDOFF_2026-10-16.md
 │   │       ├── MVP_RAPIDO.md
 │   │       ├── PLANO_IMPLEMENTACAO_GALERIA_JOGOS_EVYDFLOW.md
 │   │       ├── PROMPT_VALIDACAO_CHATGPT.md
@@ -1234,6 +1240,7 @@
 │   │   ├── scripts
 │   │   │   ├── prepare-estilingue-art.mjs
 │   │   │   ├── prepare-estilingue-audio.mjs
+│   │   │   ├── prepare-gallery-velvet-art.mjs
 │   │   │   ├── prepare-magic-photo-art.mjs
 │   │   │   ├── prepare-magic-photo-audio.mjs
 │   │   │   ├── prepare-rudolph-art.mjs

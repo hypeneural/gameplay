@@ -46,4 +46,24 @@ describe('LocalTestSession', () => {
 
     vi.unstubAllGlobals();
   });
+
+  it('fails closed when local session endpoint returns non-OK or invalid contract', async () => {
+    const fetchSpy = vi
+      .fn()
+      .mockResolvedValueOnce({ ok: false, status: 403 })
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ id: 'bad-session', photos: [] }),
+      });
+    vi.stubGlobal('fetch', fetchSpy);
+
+    await expect(fetchLocalTestSession('token-abc')).rejects.toThrow(
+      'A sessão local de teste ainda não está preparada.',
+    );
+    await expect(fetchLocalTestSession('token-abc')).rejects.toThrow(
+      'A sessão local de teste retornou um contrato inválido.',
+    );
+
+    vi.unstubAllGlobals();
+  });
 });

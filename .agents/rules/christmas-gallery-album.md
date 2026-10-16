@@ -91,9 +91,10 @@ Direção:
 - header e footer podem ter ambientação natalina mais rica;
 - o meio da rolagem é calmo e fotográfico;
 - ramo/pinho, estrela, luzes e textura podem enquadrar, nunca atravessar a fotografia;
-- moldura pesada repetida em toda foto é proibida;
-- neve contínua sobre o álbum é proibida;
-- LOW e `prefers-reduced-motion` removem animação decorativa.
+- molduras ornamentais são permitidas como kit compartilhado, com bordas e cantos fora da janela da foto, sem WebP pesado individual por cartão; medir bytes, GPU/memória e tempo de scroll;
+- neve CSS **somente atrás das fotos**, com população limitada, pode ser usada em NORMAL após profiling; nunca cruzar imagens, rostos, controles ou textos; desativar/pausar no lightbox, LOW, aba oculta e movimento reduzido;
+- guirlandas realistas laterais e luminárias têm `pointer-events: none`, respeitam safe areas, não reduzem excessivamente a largura útil e têm fallback estático;
+- LOW e `prefers-reduced-motion` removem animação decorativa sem esconder fotos ou controles.
 
 Leia também:
 
@@ -114,3 +115,7 @@ Manual atualizado e ordem de execucao: `docs/integrations/photo-sessions/GALERIA
 Ao escolher `Jogar com esta foto`, atualizar `selectedPhotoId` e navegar a `/s/:token`, com o Hub exibindo a foto escolhida. **Nao escolher `puzzle-swap` automaticamente.** O usuario toca no card do jogo que preferir. Browser Back pode voltar a galeria mantendo `scrollY`, foto e lotes. Os testes E2E devem cobrir essa jornada, inclusive a foto 11.
 
 Hero raster: `gallery-evergreen-hero-retina-v6.webp` (640x126 px) foi gerado com IA e incorporado ao manifesto de `christmas-shell` com canal alfa suave e densidade Retina 2x/3x; preserve fallback SVG, texto sem rasterizacao e reduced-motion. Rejeitar arte que contenha rostos, mockups, captions ou controls falsos.
+
+## Exceção visual experimental aprovada — Natal Velvet (16/10/2026)
+
+A PR #33 é um **laboratório visual**, não autorização de produção. A direção aprovada pelo gestor contém fundo bordô, frisos em ouro/champanhe, guirlanda luminosa nas laterais e no topo, moldura natalina em cada foto e neve discreta no plano de fundo. Somente os elementos decorativos, nunca a imagem do cliente, podem usar aparências hiper-realistas. Efeitos permanentes são condicionados aos budgets de `docs/quality/GALLERY_MOBILE_PERFORMANCE_CONTRACT.md`, ao manifesto/proveniência de `christmas-shell` e a uma comparação física mobile. A geometria da foto deve derivar da variante realmente renderizada (`srcset/currentSrc/naturalWidth`), não de um preset de papel. **Não** usar duas colunas do mockup como contrato funcional: conservar coluna única, como decidido anteriormente.
