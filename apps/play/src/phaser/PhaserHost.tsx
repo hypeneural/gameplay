@@ -15,8 +15,10 @@ import { PhaserMountCoordinator } from './PhaserMountCoordinator.js';
 import { loadGameRuntime, mountLoadedGame } from './createGame.js';
 import { createRunIdentity } from './createRunIdentity.js';
 import type { AvailableGameId } from './gameRegistry.js';
+import { statusForBridgeEvent } from './statusForBridgeEvent.js';
+import type { HostBridgeStatus } from './statusForBridgeEvent.js';
 
-export type PhaserHostStatus = 'loading' | 'ready' | 'error';
+export type PhaserHostStatus = HostBridgeStatus;
 
 interface PhaserHostProps {
   bridge: GameBridge;
@@ -65,13 +67,8 @@ export function PhaserHost({
       onSoundChangeRef.current?.(event.enabled);
       return;
     }
-    const status: PhaserHostStatus =
-      event.type === 'GAME_ASSET_FAILED'
-        ? 'error'
-        : event.type === 'GAME_OPENED'
-          ? 'loading'
-          : 'ready';
-    onStateChangeRef.current(status, event.type, event.sequence);
+    const status = statusForBridgeEvent(event.type);
+    if (status) onStateChangeRef.current(status, event.type, event.sequence);
   }, []);
 
   const publishLoading = useCallback(
