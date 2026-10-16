@@ -7,9 +7,7 @@ export type HostBridgeStatus = 'loading' | 'ready' | 'error';
  * disappear. Keep the event-to-status policy exhaustive when new bridge event
  * types are added, without exposing Phaser state to React.
  */
-export function statusForBridgeEvent(
-  type: GameBridgeEvent['type'],
-): HostBridgeStatus | undefined {
+export function statusForBridgeEvent(type: GameBridgeEvent['type']): HostBridgeStatus | undefined {
   switch (type) {
     case 'GAME_OPENED':
       return 'loading';
