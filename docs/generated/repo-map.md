@@ -50,21 +50,51 @@
 │   │   ├── README.md
 │   │   ├── config
 │   │   │   └── social-preview.example.json
+│   │   ├── migrations
+│   │   │   ├── 001_mvp_photo_sessions.sql
+│   │   │   ├── 002_photo_revisions_superseded_state.sql
+│   │   │   └── 002_social_previews.sql
 │   │   ├── nginx
 │   │   │   └── catalog-social-preview.conf.example
 │   │   ├── package.json
 │   │   ├── public
 │   │   │   └── social
-│   │   │       └── evydencia-christmas-v1.webp
+│   │   │       ├── evydencia-christmas-v1.webp
+│   │   │       ├── evydencia-christmas-v2.jpg
+│   │   │       └── evydencia-christmas-v2.webp
+│   │   ├── scripts
+│   │   │   └── copy-migrations.mjs
 │   │   ├── src
 │   │   │   ├── CatalogServer.test.ts
 │   │   │   ├── CatalogServer.ts
+│   │   │   ├── crm
+│   │   │   │   ├── CrmEligibilityService.test.ts
+│   │   │   │   └── CrmEligibilityService.ts
 │   │   │   ├── filePreviewRepository.test.ts
 │   │   │   ├── filePreviewRepository.ts
 │   │   │   ├── main.ts
+│   │   │   ├── publication
+│   │   │   │   ├── PublicationService.ts
+│   │   │   │   ├── SessionRepository.ts
+│   │   │   │   ├── corte2Http.test.ts
+│   │   │   │   ├── hardeningRegression.test.ts
+│   │   │   │   ├── mvpContract.test.ts
+│   │   │   │   ├── mvpSqliteSchema.test.ts
+│   │   │   │   ├── publicationLogger.ts
+│   │   │   │   ├── publicationManifest.test.ts
+│   │   │   │   ├── publicationManifest.ts
+│   │   │   │   ├── sessionRepository.test.ts
+│   │   │   │   ├── sqliteDatabase.ts
+│   │   │   │   ├── sqlitePreviewRepository.test.ts
+│   │   │   │   ├── sqlitePreviewRepository.ts
+│   │   │   │   ├── syntheticCrossSessionIntegration.test.ts
+│   │   │   │   └── tokenSecurity.ts
 │   │   │   ├── runtimeConfig.test.ts
 │   │   │   ├── runtimeConfig.ts
-│   │   │   └── socialPreview.ts
+│   │   │   ├── socialPreview.ts
+│   │   │   └── storage
+│   │   │       ├── FileSystemStorageService.test.ts
+│   │   │       └── FileSystemStorageService.ts
 │   │   └── tsconfig.build.json
 │   └── play
 │       ├── AGENTS.md
@@ -1255,8 +1285,14 @@
 │   │       └── asset-factory.test.ts
 │   ├── clean.mjs
 │   ├── deploy
+│   │   ├── backup-restore-catalog.mjs
+│   │   ├── backup-restore-catalog.test.mjs
 │   │   ├── create-staging-preview-config.mjs
+│   │   ├── photo-session-preflight.mjs
+│   │   ├── photo-session-preflight.test.mjs
 │   │   ├── prepare-vps-release.mjs
+│   │   ├── publish-session.mjs
+│   │   ├── publish-session.test.mjs
 │   │   ├── release-utils.mjs
 │   │   ├── release-utils.test.mjs
 │   │   ├── smoke-release-runtime.mjs
