@@ -2,6 +2,7 @@ import { createServer } from 'node:http';
 import type { IncomingMessage, Server, ServerResponse } from 'node:http';
 import {
   isOpaquePublicToken,
+  publicDemoSocialMetadata,
   renderSessionHtml,
   resolvePreview,
   socialMetadata,
@@ -11,6 +12,8 @@ import type {
   SocialPreviewClock,
   SocialPreviewRepository,
 } from './socialPreview.js';
+
+import type { PublicationService } from './publication/PublicationService.js';
 
 export interface CatalogServerDependencies {
   readonly publicOrigin: URL;
@@ -22,6 +25,9 @@ export interface CatalogServerDependencies {
     readonly releaseStage: string;
   };
   readonly readiness?: () => Promise<void>;
+  readonly publicationService?: PublicationService;
+  /** Database authority: validates ACTIVE session, not just the OG preview config. */
+  readonly sessionIsActive?: (token: string) => Promise<boolean>;
 }
 
 /**
@@ -43,12 +49,6 @@ async function handleRequest(
   response: ServerResponse,
   dependencies: CatalogServerDependencies,
 ): Promise<void> {
-  if (request.method !== 'GET' && request.method !== 'HEAD') {
-    response.setHeader('Allow', 'GET, HEAD');
-    send(response, 405, 'Método não permitido.');
-    return;
-  }
-
   const requestUrl = new URL(request.url ?? '/', 'http://catalog.invalid');
   if (requestUrl.pathname === '/healthz') {
     let status = 'ok';
@@ -70,6 +70,35 @@ async function handleRequest(
     return;
   }
 
+  if (dependencies.publicationService) {
+    const handled = await dependencies.publicationService.handleHttpRequest(request, response);
+    if (handled) return;
+  }
+
+  if (request.method !== 'GET' && request.method !== 'HEAD') {
+    response.setHeader('Allow', 'GET, HEAD');
+    send(response, 405, 'Método não permitido.');
+    return;
+  }
+
+  // WhatsApp/Meta crawlers do not execute React. The public demo gets server
+  // HTML Open Graph tags without ever resolving a customer capability token.
+  const demoPath = parsePublicDemoPath(requestUrl.pathname);
+  if (demoPath) {
+    const shell = await dependencies.loadApplicationShell();
+    const html = renderSessionHtml(
+      shell,
+      publicDemoSocialMetadata(dependencies.publicOrigin, demoPath),
+    );
+    response.setHeader('Content-Type', 'text/html; charset=utf-8');
+    response.setHeader('Cache-Control', 'no-store');
+    response.setHeader('Referrer-Policy', 'no-referrer');
+    response.setHeader('X-Robots-Tag', 'noindex, nofollow, noarchive');
+    response.setHeader('X-Content-Type-Options', 'nosniff');
+    send(response, 200, html, request.method === 'HEAD');
+    return;
+  }
+
   const route = parseSocialRoute(requestUrl.pathname);
   if (!route) {
     sendNotFound(response);
@@ -79,6 +108,16 @@ async function handleRequest(
   const record = await dependencies.previews.getByPublicToken(route.token);
   const preview = record ? resolvePreview(record) : undefined;
   if (!preview) {
+    sendNotFound(response);
+    return;
+  }
+
+  // A mutable preview config is NOT proof that the underlying private
+  // customer session exists and remains ACTIVE. Revoke both together.
+  if (
+    preview.kind === 'customer-photo' &&
+    (!dependencies.sessionIsActive || !(await dependencies.sessionIsActive(route.token)))
+  ) {
     sendNotFound(response);
     return;
   }
@@ -119,6 +158,12 @@ async function handleRequest(
   response.setHeader('X-Robots-Tag', 'noindex, nofollow, noarchive');
   response.setHeader('X-Content-Type-Options', 'nosniff');
   send(response, 200, html, request.method === 'HEAD');
+}
+
+function parsePublicDemoPath(pathname: string): string | undefined {
+  if (pathname === '/' || pathname === '/demo/fotos') return pathname;
+  if (/^\/demo\/game\/[a-z0-9-]{1,64}$/.test(pathname)) return pathname;
+  return undefined;
 }
 
 type SocialRoute = {
