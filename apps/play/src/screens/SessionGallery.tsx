@@ -1,6 +1,7 @@
 import { Suspense, lazy, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import type { Session } from '@christmas-games/platform';
 import { playInterfaceTap } from '../audio/playInterfaceTap.js';
+import { GalleryAtmosphere } from '../components/GalleryAtmosphere.js';
 import { PhotoPrint } from '../components/PhotoPrint.js';
 import { ShellIcon } from '../components/ShellIcon.js';
 import {
@@ -112,6 +113,7 @@ export function SessionGallery({
       data-calm={calm || lowQuality}
       data-testid="session-gallery"
     >
+      <GalleryAtmosphere active={!calm && !lowQuality && lightboxIndex === undefined} />
       <header className="gallery-topbar">
         <button
           className="gallery-icon-button"
@@ -139,19 +141,7 @@ export function SessionGallery({
         <div className="gallery-hero-glow" aria-hidden="true" />
         <div className="gallery-hero-garland" aria-hidden="true" />
         <div className="gallery-hero-content">
-          <div className="gallery-hero-meta">
-            <p className="eyebrow">ESTÚDIO EVYDÊNCIA • NATAL EM FAMÍLIA</p>
-            <span
-              className="gallery-photo-badge"
-              aria-label={`${session.photos.length} fotos no álbum`}
-            >
-              {session.photos.length} fotos
-            </span>
-          </div>
           <h1 id="gallery-hero-title">Seu Álbum de Natal</h1>
-          <p className="gallery-hero-subtitle">Reviva cada lembrança com carinho</p>
-          <div className="gallery-hero-divider" aria-hidden="true" />
-          <p className="gallery-hero-instruction">Toque em uma foto para ver de perto</p>
         </div>
       </section>
 
@@ -165,6 +155,7 @@ export function SessionGallery({
         {visiblePhotos.map((photo, index) => (
           <button
             className="gallery-card"
+            data-orientation={photo.orientation}
             data-photo-id={photo.id}
             type="button"
             key={photo.id}
@@ -232,6 +223,9 @@ export function SessionGallery({
       ) : null}
 
       <footer className="gallery-brand-dock" data-testid="gallery-brand-dock">
+        <span className="gallery-footer-photo-count" aria-label={`${session.photos.length} fotos no álbum`}>
+          <ShellIcon name="photos" /> {session.photos.length} fotos
+        </span>
         <a
           className="gallery-brand-link"
           href="https://fotosdenatal.com/"
