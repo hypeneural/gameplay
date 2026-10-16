@@ -139,6 +139,13 @@ export function SessionGalleryLightbox({
       onClick={(event) => {
         if (event.target === dialogRef.current) onClose();
       }}
+      onKeyDown={(event) => {
+        if (zoomed || event.altKey || event.ctrlKey || event.metaKey) return;
+        if (event.key === 'ArrowRight' || event.key === 'ArrowLeft') {
+          event.preventDefault();
+          move(event.key === 'ArrowRight' ? 1 : -1);
+        }
+      }}
     >
       <header className="gallery-lightbox-header">
         <button
@@ -152,9 +159,7 @@ export function SessionGalleryLightbox({
         >
           <ShellIcon name="close" />
         </button>
-        <span aria-live="polite">
-          {index + 1} de {photos.length}
-        </span>
+        <span className="gallery-lightbox-title">Suas fotos</span>
         <button
           className="gallery-icon-button"
           type="button"
@@ -189,6 +194,9 @@ export function SessionGalleryLightbox({
       </div>
 
       <footer className="gallery-lightbox-footer">
+        <span className="gallery-lightbox-count" aria-live="polite">
+          {index + 1} de {photos.length}
+        </span>
         <button
           className="gallery-lightbox-arrow"
           type="button"
