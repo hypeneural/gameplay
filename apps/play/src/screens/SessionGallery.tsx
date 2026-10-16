@@ -55,6 +55,7 @@ export function SessionGallery({
   );
   const [lightboxIndex, setLightboxIndex] = useState<number>();
   const [shareStatus, setShareStatus] = useState('');
+  const [magicPulse, setMagicPulse] = useState(false);
   const sentinelRef = useRef<HTMLDivElement>(null);
 
   // Restore after Suspense has mounted the actual cards, avoiding fallback clamping.
@@ -118,7 +119,10 @@ export function SessionGallery({
       data-calm={calm || lowQuality}
       data-testid="session-gallery"
     >
-      <GalleryAtmosphere active={!calm && !lowQuality && lightboxIndex === undefined} />
+      <GalleryAtmosphere
+        active={!calm && !lowQuality && lightboxIndex === undefined}
+        magicPulse={magicPulse}
+      />
       <header className="gallery-topbar">
         <button
           className="gallery-icon-button"
@@ -151,12 +155,34 @@ export function SessionGallery({
         </button>
       </header>
 
-      <section className="gallery-hero" aria-labelledby="gallery-hero-title">
+      <section
+        className="gallery-hero"
+        data-magic-pulse={magicPulse}
+        aria-labelledby="gallery-hero-title"
+      >
         <div className="gallery-hero-glow" aria-hidden="true" />
         <div className="gallery-hero-garland" aria-hidden="true" />
-        <GalleryMagicButton active={!calm && !lowQuality} />
+        <GalleryMagicButton active={!calm && !lowQuality} onCelebrate={setMagicPulse} />
         <div className="gallery-hero-content">
           <h1 id="gallery-hero-title">Seu Álbum de Natal</h1>
+          <span className="gallery-hero-flourish" aria-hidden="true">
+            <svg viewBox="0 0 180 22" focusable="false">
+              <path
+                d="M12 12c22 0 34-6 52-6 10 0 14 4 26 4s16-4 26-4c18 0 30 6 52 6"
+                fill="none"
+                stroke="#eec97f"
+                strokeWidth="1.3"
+                strokeLinecap="round"
+                opacity="0.85"
+              />
+              <path
+                d="M90 2l3.2 5.5h-2l2.6 4.5h-2.2l2.8 4.8H85.6l2.8-4.8h-2.2l2.6-4.5h-2L90 2Z"
+                fill="#ffe5a3"
+              />
+              <circle cx="52" cy="11" r="1.6" fill="#ffd98a" />
+              <circle cx="128" cy="11" r="1.6" fill="#ffd98a" />
+            </svg>
+          </span>
         </div>
       </section>
 
@@ -236,7 +262,10 @@ export function SessionGallery({
       ) : null}
 
       <footer className="gallery-brand-dock" data-testid="gallery-brand-dock">
-        <span className="gallery-footer-photo-count" aria-label={`${session.photos.length} fotos no álbum`}>
+        <span
+          className="gallery-footer-photo-count"
+          aria-label={`${session.photos.length} fotos no álbum`}
+        >
           <ShellIcon name="photos" /> {session.photos.length} fotos
         </span>
         <a

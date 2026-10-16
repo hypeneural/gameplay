@@ -3,7 +3,13 @@ import type { CSSProperties } from 'react';
 import { playInterfaceTap } from '../audio/playInterfaceTap.js';
 
 /** Tiny, user-triggered celebration behind the hero bow. Never covers a photo. */
-export function GalleryMagicButton({ active }: { active: boolean }): React.JSX.Element {
+export function GalleryMagicButton({
+  active,
+  onCelebrate,
+}: {
+  active: boolean;
+  onCelebrate?(activeBurst: boolean): void;
+}): React.JSX.Element {
   const [burst, setBurst] = useState(0);
 
   return (
@@ -16,6 +22,7 @@ export function GalleryMagicButton({ active }: { active: boolean }): React.JSX.E
         playInterfaceTap('bells');
         if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
           setBurst((value) => value + 1);
+          onCelebrate?.(true);
         }
       }}
     >
@@ -25,13 +32,13 @@ export function GalleryMagicButton({ active }: { active: boolean }): React.JSX.E
           key={burst}
           className="gallery-magic-burst"
           aria-hidden="true"
-          onAnimationEnd={() => setBurst(0)}
+          onAnimationEnd={() => {
+            setBurst(0);
+            onCelebrate?.(false);
+          }}
         >
           {Array.from({ length: 8 }, (_, index) => (
-            <i
-              key={index}
-              style={{ '--burst-angle': `${index * 45}deg` } as CSSProperties}
-            />
+            <i key={index} style={{ '--burst-angle': `${index * 45}deg` } as CSSProperties} />
           ))}
         </span>
       ) : null}

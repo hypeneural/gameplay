@@ -26,10 +26,26 @@ export function SessionGalleryLightbox({
   const stageRef = useRef<HTMLDivElement>(null);
   const touchStartRef = useRef<{ x: number; y: number; time: number } | undefined>(undefined);
   const lastTapRef = useRef<{ x: number; y: number; time: number } | undefined>(undefined);
-  const pinchStartDistRef = useRef<number | undefined>(undefined);
+  const pinchStartRef = useRef<{ dist: number; scale: number } | undefined>(undefined);
+  const panStartRef = useRef<{ x: number; y: number } | undefined>(undefined);
   const previouslyFocusedRef = useRef<HTMLElement | null>(null);
-  const [zoomed, setZoomed] = useState(false);
+  const [zoomScale, setZoomScale] = useState(1);
+  const [panOffset, setPanOffset] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
+  const zoomed = zoomScale > 1.02;
   const photo = photos[index];
+
+  const clampPan = (x: number, y: number, scale: number): { x: number; y: number } => {
+    if (scale <= 1.02) return { x: 0, y: 0 };
+    const stage = stageRef.current;
+    const width = stage?.clientWidth ?? 360;
+    const height = stage?.clientHeight ?? 520;
+    const maxX = Math.max(0, ((scale - 1) * width) / 2);
+    const maxY = Math.max(0, ((scale - 1) * height) / 2);
+    return {
+      x: Math.min(maxX, Math.max(-maxX, x)),
+      y: Math.min(maxY, Math.max(-maxY, y)),
+    };
+  };
 
   useEffect(() => {
     previouslyFocusedRef.current = document.activeElement as HTMLElement | null;
@@ -45,11 +61,23 @@ export function SessionGalleryLightbox({
   }, []);
 
   useEffect(() => {
-    setZoomed(false);
+    setZoomScale(1);
+    setPanOffset({ x: 0, y: 0 });
     stageRef.current?.scrollTo(0, 0);
   }, [index]);
 
   if (!photo) return <></>;
+
+  const toggleZoom = (): void => {
+    playInterfaceTap('toggle');
+    if (zoomed) {
+      setZoomScale(1);
+      setPanOffset({ x: 0, y: 0 });
+    } else {
+      setZoomScale(2);
+      setPanOffset({ x: 0, y: 0 });
+    }
+  };
 
   const move = (offset: number): void => {
     if (photos.length < 2) return;
@@ -65,7 +93,12 @@ export function SessionGalleryLightbox({
     if (event.touches.length === 2) {
       const t0 = event.touches[0]!;
       const t1 = event.touches[1]!;
-      pinchStartDistRef.current = Math.hypot(t0.clientX - t1.clientX, t0.clientY - t1.clientY);
+      const dist = Math.hypot(t0.clientX - t1.clientX, t0.clientY - t1.clientY);
+      if (dist > 8) {
+        pinchStartRef.current = { dist, scale: zoomScale };
+      }
+      panStartRef.current = undefined;
+      touchStartRef.current = undefined;
       return;
     }
     if (event.touches.length === 1) {
@@ -80,39 +113,64 @@ export function SessionGalleryLightbox({
         Math.hypot(touch.clientX - lastTap.x, touch.clientY - lastTap.y) < 28
       ) {
         lastTapRef.current = undefined;
-        playInterfaceTap('toggle');
-        setZoomed((z) => !z);
+        panStartRef.current = undefined;
+        touchStartRef.current = undefined;
+        toggleZoom();
         return;
       }
 
       lastTapRef.current = { x: touch.clientX, y: touch.clientY, time: now };
-      if (!zoomed) {
+      if (zoomed) {
+        panStartRef.current = {
+          x: touch.clientX - panOffset.x,
+          y: touch.clientY - panOffset.y,
+        };
+        touchStartRef.current = undefined;
+      } else {
         touchStartRef.current = { x: touch.clientX, y: touch.clientY, time: now };
+        panStartRef.current = undefined;
       }
     }
   };
 
   const handleTouchMove = (event: React.TouchEvent<HTMLDivElement>): void => {
-    if (event.touches.length === 2 && pinchStartDistRef.current !== undefined) {
+    if (event.touches.length === 2 && pinchStartRef.current !== undefined) {
       const t0 = event.touches[0]!;
       const t1 = event.touches[1]!;
       const dist = Math.hypot(t0.clientX - t1.clientX, t0.clientY - t1.clientY);
-      const ratio = dist / pinchStartDistRef.current;
-      if (!zoomed && ratio > 1.25) {
+      const nextScale = Math.min(
+        3,
+        Math.max(1, (pinchStartRef.current.scale * dist) / pinchStartRef.current.dist),
+      );
+      if (
+        (pinchStartRef.current.scale <= 1.02 && nextScale > 1.18) ||
+        (pinchStartRef.current.scale > 1.02 && nextScale <= 1.02)
+      ) {
         playInterfaceTap('toggle');
-        setZoomed(true);
-        pinchStartDistRef.current = dist;
-      } else if (zoomed && ratio < 0.8) {
-        playInterfaceTap('toggle');
-        setZoomed(false);
-        pinchStartDistRef.current = dist;
+        pinchStartRef.current = { dist, scale: nextScale };
       }
+      setZoomScale(nextScale);
+      setPanOffset((prev) => clampPan(prev.x, prev.y, nextScale));
+      return;
+    }
+    if (event.touches.length === 1 && zoomed && panStartRef.current !== undefined) {
+      const touch = event.touches[0]!;
+      const nextX = touch.clientX - panStartRef.current.x;
+      const nextY = touch.clientY - panStartRef.current.y;
+      setPanOffset(clampPan(nextX, nextY, zoomScale));
     }
   };
 
   const handleTouchEnd = (event: React.TouchEvent<HTMLDivElement>): void => {
     if (event.touches.length < 2) {
-      pinchStartDistRef.current = undefined;
+      pinchStartRef.current = undefined;
+    }
+    if (event.touches.length === 0) {
+      panStartRef.current = undefined;
+      if (zoomScale < 1.08 && (zoomScale !== 1 || panOffset.x !== 0 || panOffset.y !== 0)) {
+        setZoomScale(1);
+        setPanOffset({ x: 0, y: 0 });
+      }
     }
     if (zoomed) return;
     const start = touchStartRef.current;
@@ -165,10 +223,7 @@ export function SessionGalleryLightbox({
           type="button"
           aria-pressed={zoomed}
           aria-label={zoomed ? 'Ajustar foto à tela' : 'Ampliar foto'}
-          onClick={() => {
-            playInterfaceTap('toggle');
-            setZoomed((value) => !value);
-          }}
+          onClick={toggleZoom}
         >
           <ShellIcon name={zoomed ? 'zoom-out' : 'zoom-in'} />
         </button>
@@ -177,7 +232,7 @@ export function SessionGalleryLightbox({
             <ShellIcon name="info" />
           </summary>
           <div className="gallery-lightbox-help-content">
-            <p>Deslize para mudar de foto. Toque duas vezes para ampliar.</p>
+            <p>Deslize para mudar de foto. Toque duas vezes ou faça pinça para ampliar.</p>
             <p>Em “Jogar com esta foto”, você escolhe o jogo na próxima tela.</p>
           </div>
         </details>
@@ -187,6 +242,13 @@ export function SessionGalleryLightbox({
         ref={stageRef}
         className="gallery-lightbox-stage"
         data-zoomed={zoomed}
+        style={
+          {
+            '--lightbox-zoom': zoomScale.toFixed(3),
+            '--lightbox-pan-x': `${Math.round(panOffset.x)}px`,
+            '--lightbox-pan-y': `${Math.round(panOffset.y)}px`,
+          } as React.CSSProperties
+        }
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
