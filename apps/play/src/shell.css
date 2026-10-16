@@ -1271,12 +1271,57 @@
 }
 
 /* Gallery route loading is eager to avoid a flash of unstyled lazy content. */
-.gallery-loading-screen { min-height: 100svh; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:16px; padding:24px; text-align:center; color:#fff2d2; background:radial-gradient(circle at 50% 42%,#a44c2f 0%,#650d1b 42%,#1c0c17 100%); }
-.gallery-loading-screen h1 { font-family:Georgia,serif; font-size:clamp(1.2rem,5vw,1.8rem); }
-.gallery-loading-star { font-size:42px; color:#f7d897; animation:gallery-loader-breathe 1.8s ease-in-out infinite alternate; }
-.gallery-loading-dots { display:flex; gap:10px; }
-.gallery-loading-dots i { width:7px; height:7px; background:#f0c77c; border-radius:50%; animation:gallery-loader-breathe 1.4s ease-in-out infinite alternate; }
-.gallery-loading-dots i:nth-child(2) { animation-delay:.3s; }
-.gallery-loading-dots i:nth-child(3) { animation-delay:.6s; }
-@keyframes gallery-loader-breathe { from { opacity:.35; transform:scale(.84); } to { opacity:1; transform:scale(1); } }
-@media (prefers-reduced-motion:reduce) { .gallery-loading-star,.gallery-loading-dots i { animation:none; } }
+.gallery-loading-screen {
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 24px;
+  text-align: center;
+  color: #fff2d2;
+  background: radial-gradient(circle at 50% 42%, #a44c2f 0%, #650d1b 42%, #1c0c17 100%);
+}
+.gallery-loading-screen h1 {
+  font-family: Georgia, serif;
+  font-size: clamp(1.2rem, 5vw, 1.8rem);
+}
+.gallery-loading-star {
+  font-size: 42px;
+  color: #f7d897;
+  animation: gallery-loader-breathe 1.8s ease-in-out infinite alternate;
+}
+.gallery-loading-dots {
+  display: flex;
+  gap: 10px;
+}
+.gallery-loading-dots i {
+  width: 7px;
+  height: 7px;
+  background: #f0c77c;
+  border-radius: 50%;
+  animation: gallery-loader-breathe 1.4s ease-in-out infinite alternate;
+}
+.gallery-loading-dots i:nth-child(2) {
+  animation-delay: 0.3s;
+}
+.gallery-loading-dots i:nth-child(3) {
+  animation-delay: 0.6s;
+}
+@keyframes gallery-loader-breathe {
+  from {
+    opacity: 0.35;
+    transform: scale(0.84);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .gallery-loading-star,
+  .gallery-loading-dots i {
+    animation: none;
+  }
+}

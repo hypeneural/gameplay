@@ -113,9 +113,11 @@
   position: absolute;
   inset: 0;
   pointer-events: none;
-  background: url('/assets/christmas-shell/gallery/gallery-header-glow-v1.svg') center top / 100%
-    100% no-repeat;
-  opacity: 0.85;
+  background:
+    radial-gradient(ellipse at 50% 0%, rgb(255 214 133 / 34%), transparent 64%),
+    radial-gradient(circle at 20% 25%, rgb(255 184 92 / 18%), transparent 45%),
+    radial-gradient(circle at 80% 25%, rgb(255 184 92 / 18%), transparent 45%);
+  opacity: 0.9;
 }
 
 .gallery-hero-garland {
@@ -126,11 +128,7 @@
   height: 77px;
   z-index: 2;
   pointer-events: none;
-  background-image: url('/assets/christmas-shell/gallery/gallery-evergreen-hero-v2.svg');
-  background-image: image-set(
-    url('/assets/christmas-shell/gallery/gallery-evergreen-hero-retina-v6.webp') type('image/webp'),
-    url('/assets/christmas-shell/gallery/gallery-evergreen-hero-v2.svg') type('image/svg+xml')
-  );
+  background-image: url('/assets/christmas-shell/gallery/gallery-evergreen-hero-retina-v6.webp');
   background-position: center top;
   background-repeat: no-repeat;
   background-size: 100% auto;
@@ -170,9 +168,7 @@
   padding: 3px 12px;
   border: 1px solid rgba(246, 219, 160, 0.6);
   border-radius: 999px;
-  background:
-    url('/assets/christmas-shell/gallery/gallery-badge-photo-count-v1.svg') center / cover no-repeat,
-    linear-gradient(135deg, #78172c, #480a17);
+  background: linear-gradient(135deg, #78172c, #480a17);
   color: #fff2d2;
   font-size: 0.68rem;
   font-weight: 800;
@@ -207,8 +203,7 @@
   max-width: 320px;
   height: 12px;
   margin: 1px 0 5px;
-  background: url('/assets/christmas-shell/gallery/gallery-divider-starlight-v2.svg') center /
-    contain no-repeat;
+  background: radial-gradient(ellipse at 50% 50%, rgb(245 208 138 / 65%), transparent 72%);
 }
 
 .gallery-hero-instruction {
@@ -555,10 +550,10 @@
   border: 1px solid rgb(225 190 121 / 30%);
   border-radius: 22px;
   background:
-    url('/assets/christmas-shell/gallery/gallery-starlight-footer-v1.svg') center bottom / 100% auto
+    url('/assets/christmas-shell/gallery/gallery-velvet-bottom-v1.webp') center bottom / 100% auto
       no-repeat,
     radial-gradient(circle at 50% 0, rgb(194 149 68 / 19%), transparent 55%),
-    linear-gradient(160deg, #0d4135 0%, #05221d 100%);
+    linear-gradient(160deg, #5d1022 0%, #310712 100%);
   box-shadow: inset 0 1px rgb(255 250 220 / 9%);
   text-align: center;
 }
@@ -845,74 +840,385 @@
   }
 }
 
-/* Natal Velvet: decorate the album shell, never the customer's photo pixels. */
+/* Natal Velvet: photorealistic Christmas album shell; customer photo pixels remain untouched. */
 .christmas-gallery-shell {
   position: relative;
   isolation: isolate;
-  padding-bottom: max(180px, calc(env(safe-area-inset-bottom) + 160px));
-  background: radial-gradient(ellipse at 50% 0, rgb(226 127 65 / 22%), transparent 340px),
-    linear-gradient(180deg, #500b1b, #741428 45%, #390b1b);
+  padding-right: max(16px, env(safe-area-inset-right));
+  padding-bottom: max(188px, calc(env(safe-area-inset-bottom) + 168px));
+  padding-left: max(16px, env(safe-area-inset-left));
+  background:
+    radial-gradient(ellipse at 50% -20px, rgb(255 186 98 / 26%), transparent 320px),
+    radial-gradient(ellipse at 12% 35%, rgb(179 29 56 / 28%), transparent 280px),
+    radial-gradient(ellipse at 88% 65%, rgb(179 29 56 / 28%), transparent 280px),
+    radial-gradient(ellipse at 50% 100%, rgb(232 146 68 / 18%), transparent 340px),
+    linear-gradient(180deg, #420614 0%, #6d1024 38%, #520a1a 74%, #2c040e 100%);
 }
-.gallery-topbar { background: linear-gradient(180deg, rgb(63 7 21 / 97%), rgb(84 13 27 / 93%)); }
+
+.gallery-topbar {
+  margin-right: calc(-1 * max(16px, env(safe-area-inset-right)));
+  margin-left: calc(-1 * max(16px, env(safe-area-inset-left)));
+  padding: max(8px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) 10px
+    max(16px, env(safe-area-inset-left));
+  grid-template-columns: 46px minmax(0, 1fr) 44px 46px;
+  background:
+    radial-gradient(ellipse at 50% 0%, rgb(255 198 112 / 16%), transparent 70%),
+    linear-gradient(180deg, rgb(48 5 16 / 96%), rgb(74 10 24 / 92%));
+  border-bottom: 1px solid rgb(244 206 135 / 34%);
+  box-shadow:
+    inset 0 -1px 0 rgb(255 236 189 / 14%),
+    0 10px 24px rgb(18 1 7 / 52%);
+}
+
+.gallery-topbar-label {
+  min-width: 0;
+  color: #fff2d4;
+  text-shadow: 0 2px 6px rgb(20 2 8 / 65%);
+}
+
+/* Circular emerald-and-gold 3D medallion controls matching manager reference. */
+.gallery-icon-button,
+.gallery-lightbox-arrow,
+.gallery-lightbox-help summary {
+  border-radius: 50%;
+  border: 2px solid #f0ca7d;
+  color: #fff4d6;
+  background:
+    radial-gradient(circle at 32% 24%, rgb(255 239 194 / 32%), transparent 48%),
+    radial-gradient(circle at 50% 35%, #2b6f5a 0%, #123e32 58%, #061d17 100%);
+  box-shadow:
+    inset 0 1px 2px rgb(255 250 224 / 58%),
+    inset 0 -2px 4px rgb(0 0 0 / 56%),
+    0 5px 14px rgb(16 1 7 / 58%),
+    0 0 0 1px rgb(135 88 31 / 68%);
+  transition:
+    transform 120ms cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 120ms ease,
+    border-color 120ms ease;
+}
+
+.gallery-icon-button:active,
+.gallery-lightbox-arrow:active,
+.gallery-lightbox-help summary:active {
+  transform: translateY(1px) scale(0.93);
+  border-color: #ffe3a3;
+  box-shadow:
+    inset 0 1px 2px rgb(255 245 205 / 42%),
+    0 2px 6px rgb(16 1 7 / 52%);
+}
+
 .gallery-hero {
-  padding: 58px 12px 12px;
-  min-height: 92px;
-  background: linear-gradient(155deg, #701326, #420b1c);
+  margin: 10px 0 16px;
+  padding: 66px 14px 12px;
+  min-height: 108px;
+  border: 1.5px solid rgb(243 204 132 / 58%);
+  border-radius: 22px;
+  background:
+    radial-gradient(ellipse at 50% 0%, rgb(255 196 108 / 28%), transparent 66%),
+    radial-gradient(circle at 50% 100%, rgb(219 145 64 / 15%), transparent 60%),
+    linear-gradient(160deg, #7c1429 0%, #520b1b 58%, #380612 100%);
+  box-shadow:
+    inset 0 0 0 1px rgb(255 241 204 / 22%),
+    inset 0 -2px 8px rgb(25 2 9 / 55%),
+    0 12px 26px rgb(20 1 8 / 54%);
+  transition:
+    box-shadow 360ms ease,
+    border-color 360ms ease;
 }
-.gallery-hero-content { padding-top: 0; }
-.gallery-hero-content h1 { margin: 0; font-size: clamp(1.18rem, 5vw, 1.55rem); }
-.gallery-grid { gap: 20px; }
-.gallery-card {
-  padding: 7px;
-  border: 2px solid #d9ae64;
-  border-radius: 18px;
-  background: linear-gradient(132deg, #fff4db, #d5a969 28%, #ffedc3 46%, #a36c2d 72%, #fff0c7);
-  box-shadow: inset 0 0 0 2px rgb(255 247 224 / 65%), 0 8px 19px rgb(17 1 9 / 41%);
+
+.christmas-gallery-shell[data-magic-pulse='true'] .gallery-hero {
+  border-color: #ffe7a8;
+  box-shadow:
+    inset 0 0 18px rgb(255 221 138 / 38%),
+    0 0 24px rgb(255 198 92 / 46%),
+    0 12px 26px rgb(20 1 8 / 54%);
 }
-.gallery-card::after {
-  content: '';
-  position: absolute;
-  inset: 3px;
-  pointer-events: none;
-  border: 1px solid rgb(255 251 219 / 65%);
-  border-radius: 13px;
+
+.gallery-hero-garland {
+  height: 78px;
+  background-size: min(100%, 440px) auto;
+  -webkit-mask-image: linear-gradient(180deg, #000 0%, #000 76%, transparent 100%);
+  mask-image: linear-gradient(180deg, #000 0%, #000 76%, transparent 100%);
+  filter: drop-shadow(0 6px 12px rgb(18 2 7 / 58%));
 }
-.gallery-card:active { transform: scale(.986); }
-.gallery-photo-frame { border-radius: 10px; }
-.gallery-brand-dock { display: flex; flex-direction: column; align-items: center; gap: 7px; }
-.gallery-brand-link { width: 100%; }
-.gallery-footer-photo-count {
-  display: inline-flex;
+
+.gallery-hero-content {
+  padding-top: 0;
+}
+
+.gallery-hero-content h1 {
+  margin: 0;
+  font-size: clamp(1.26rem, 5.2vw, 1.62rem);
+  color: #fff6e0;
+  text-shadow:
+    0 2px 10px rgb(24 2 9 / 78%),
+    0 0 18px rgb(255 204 112 / 26%);
+}
+
+.gallery-hero-flourish {
+  display: flex;
+  justify-content: center;
   align-items: center;
-  gap: 7px;
-  padding: 6px 14px;
-  border: 1px solid #e5ba75;
-  border-radius: 999px;
-  color: #ffedc2;
-  background: linear-gradient(135deg, #9b1632, #570c21);
-  box-shadow: 0 5px 14px rgb(0 0 0 / 22%);
-  font-size: .75rem;
-  font-weight: 800;
+  margin-top: 3px;
   pointer-events: none;
 }
-.gallery-footer-photo-count .shell-glyph { width: 18px; height: 18px; }
+
+.gallery-hero-flourish svg {
+  display: block;
+  width: min(176px, 56vw);
+  height: auto;
+  filter: drop-shadow(0 2px 4px rgb(20 2 8 / 55%));
+}
+
+.gallery-grid {
+  gap: 22px;
+}
+
+/* Frame V3: photorealistic 9-slice molding + 4 independent corner ornaments outside photo aperture. */
+.gallery-card {
+  padding: 0;
+  overflow: visible;
+  border: 0;
+  border-radius: 18px;
+  background: transparent;
+  box-shadow: none;
+}
+
+.gallery-card::after {
+  content: none;
+}
+
+.gallery-card:active {
+  transform: scale(0.988);
+}
+
+.gallery-card[aria-current='true'] .gallery-frame {
+  border-color: #ffe59e;
+  box-shadow:
+    0 0 0 3px rgb(255 222 140 / 46%),
+    0 16px 32px rgb(20 2 9 / 64%);
+}
+
+.gallery-frame {
+  position: relative;
+  isolation: isolate;
+  display: block;
+  width: 100%;
+  padding: clamp(13px, 3.6vw, 18px);
+  overflow: visible;
+  border: 2px solid #f2cc82;
+  border-radius: 16px;
+  background:
+    radial-gradient(ellipse at 25% 15%, rgb(255 252 240 / 70%), transparent 55%),
+    linear-gradient(145deg, #fcf4e1 0%, #ecd7b0 24%, #fff8e8 48%, #dcc08e 76%, #f8ebd0 100%);
+  box-shadow:
+    inset 0 0 0 2px #9e6b2b,
+    inset 0 0 0 5px rgb(255 250 232 / 72%),
+    0 14px 30px rgb(20 2 9 / 62%),
+    0 4px 10px rgb(0 0 0 / 42%);
+}
+
+.gallery-frame::before {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border-style: solid;
+  border-width: clamp(13px, 3.6vw, 18px);
+  border-radius: 14px;
+  border-image-source: url('/assets/christmas-shell/gallery/gallery-velvet-frame-edges-v1.webp');
+  border-image-slice: 48;
+  border-image-width: clamp(13px, 3.6vw, 18px);
+  border-image-outset: 0;
+  border-image-repeat: round;
+  content: '';
+  pointer-events: none;
+}
+
+.gallery-frame-window {
+  position: relative;
+  z-index: 1;
+  display: block;
+  width: 100%;
+  min-height: 0;
+  overflow: hidden;
+  border: 1px solid #d8a852;
+  border-radius: 4px;
+  background: #2b0d16;
+  box-shadow:
+    0 0 0 2px rgb(164 28 46 / 36%),
+    inset 0 0 0 1px rgb(255 244 214 / 32%);
+}
+
+.gallery-frame-window .photo-print {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: #2b0d16;
+}
+
+.gallery-frame-window .photo-print[data-status='loading'] {
+  background: linear-gradient(
+    110deg,
+    #380d19 22%,
+    #5e182b 38%,
+    #7d293b 48%,
+    #5e182b 58%,
+    #380d19 76%
+  );
+  background-size: 220% 100%;
+  animation: gallery-velvet-shimmer 1.8s ease-in-out infinite;
+}
+
+@keyframes gallery-velvet-shimmer {
+  0% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.gallery-frame-window .photo-print img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center;
+}
+
+.gallery-frame-window .photo-print[data-status='ready'] img {
+  opacity: 1;
+}
+
+.gallery-frame-window .photo-print-fallback {
+  background:
+    radial-gradient(circle at 50% 40%, rgb(206 154 82 / 18%), transparent 68%),
+    linear-gradient(140deg, #35121e, #692233);
+  color: #f7e7c7;
+}
+
+/* 4 independent photorealistic corner clusters from 2x2 RGBA WebP atlas; inner photo quadrants have alpha === 0. */
+.gallery-frame-ornament {
+  position: absolute;
+  z-index: 3;
+  width: clamp(36px, 10.2vw, 50px);
+  height: clamp(36px, 10.2vw, 50px);
+  border-radius: 0;
+  background-image: url('/assets/christmas-shell/gallery/gallery-velvet-frame-corners-v1.webp');
+  background-repeat: no-repeat;
+  background-size: 200% 200%;
+  box-shadow: none;
+  filter: drop-shadow(0 3px 6px rgb(16 1 7 / 52%));
+  transform: none;
+  pointer-events: none;
+}
+
+.gallery-frame-ornament--tl {
+  top: -6px;
+  left: -6px;
+  background-position: 0% 0%;
+}
+
+.gallery-frame-ornament--tr {
+  top: -5px;
+  right: -5px;
+  width: clamp(32px, 9.2vw, 44px);
+  height: clamp(32px, 9.2vw, 44px);
+  background-position: 100% 0%;
+}
+
+.gallery-frame-ornament--bl {
+  bottom: -5px;
+  left: -5px;
+  width: clamp(32px, 9.2vw, 44px);
+  height: clamp(32px, 9.2vw, 44px);
+  background-position: 0% 100%;
+}
+
+.gallery-frame-ornament--br {
+  right: -6px;
+  bottom: -6px;
+  background-position: 100% 100%;
+}
+
+/* Seamless vertical side wrap garlands + individual warm twinkling lights. */
 .gallery-edge-rail {
   position: fixed;
   top: 0;
   bottom: 0;
-  z-index: 1;
-  width: clamp(9px, 3vw, 17px);
+  z-index: 3;
+  width: clamp(14px, 4.2vw, 24px);
+  overflow: visible;
   pointer-events: none;
-  background:
-    radial-gradient(circle at 48% 9%, #ffe8a0 0 2px, transparent 3px),
-    radial-gradient(circle at 54% 43%, #ffdf95 0 2px, transparent 4px),
-    radial-gradient(circle at 36% 72%, #ffce80 0 2px, transparent 4px),
-    repeating-linear-gradient(155deg, #193e2a 0 4px, #32633c 5px 7px, #132b24 8px 13px);
-  background-size: 100% 92px, 100% 115px, 100% 144px, 100% 100%;
-  box-shadow: 0 0 8px rgb(248 194 105 / 30%);
+  background-color: transparent;
+  background-image: url('/assets/christmas-shell/gallery/gallery-velvet-side-left-v1.webp');
+  background-position: left top;
+  background-repeat: repeat-y;
+  background-size: 100% auto;
+  box-shadow: none;
+  filter: drop-shadow(0 2px 6px rgb(14 1 6 / 55%));
 }
-.gallery-edge-rail--left { left: max(0px, env(safe-area-inset-left)); }
-.gallery-edge-rail--right { right: max(0px, env(safe-area-inset-right)); transform: scaleX(-1); }
+
+.gallery-edge-rail::before,
+.gallery-edge-rail::after {
+  content: none;
+}
+
+.gallery-edge-rail--left {
+  left: max(0px, env(safe-area-inset-left));
+}
+
+.gallery-edge-rail--right {
+  right: max(0px, env(safe-area-inset-right));
+  transform: scaleX(-1);
+  background-position: left -112px;
+}
+
+.gallery-edge-light {
+  position: absolute;
+  left: var(--light-x, 52%);
+  top: var(--light-y, 20%);
+  width: var(--light-size, 5px);
+  height: var(--light-size, 5px);
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: radial-gradient(circle, #fffef2 0%, #ffe08c 48%, rgb(255 166 48 / 0%) 76%);
+  box-shadow:
+    0 0 6px #ffd470,
+    0 0 12px rgb(255 178 64 / 65%);
+  opacity: 0.78;
+  animation: gallery-fairy-twinkle var(--light-duration, 4.2s) ease-in-out var(--light-delay, 0s)
+    infinite alternate;
+}
+
+.christmas-gallery-shell[data-magic-pulse='true'] .gallery-edge-light {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1.45);
+  box-shadow:
+    0 0 10px #fff4be,
+    0 0 18px #ffbe4f;
+}
+
+.gallery-edge-rail[data-ambient-active='false'] .gallery-edge-light {
+  animation: none;
+  opacity: 0.55;
+}
+
+@keyframes gallery-fairy-twinkle {
+  0% {
+    opacity: 0.38;
+    transform: translate(-50%, -50%) scale(0.82);
+  }
+  60% {
+    opacity: 0.88;
+    transform: translate(-50%, -50%) scale(1.04);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.18);
+  }
+}
+
 .gallery-atmosphere-snow {
   position: fixed;
   inset: 0;
@@ -920,6 +1226,7 @@
   overflow: hidden;
   pointer-events: none;
 }
+
 .gallery-atmosphere-snow i {
   position: absolute;
   display: block;
@@ -929,178 +1236,98 @@
   top: -16px;
   opacity: 0;
   border-radius: 50%;
-  background: #fff4cf;
+  background: radial-gradient(circle, #fffdf5 0%, #ffe9b3 65%, transparent 100%);
   animation: gallery-snowfall var(--snow-duration) linear var(--snow-delay) infinite;
 }
-@keyframes gallery-snowfall {
-  0% { transform: translate3d(0, -12px, 0); opacity: 0; }
-  12% { opacity: .48; }
-  82% { opacity: .3; }
-  100% { transform: translate3d(12px, 104svh, 0); opacity: 0; }
-}
-.gallery-hero, .gallery-grid, .gallery-sentinel, .gallery-finale, .gallery-share-status { position: relative; z-index: 2; }
-.gallery-lightbox-title { font-family: Georgia, serif; color: #ffedc8; font-weight: 700; }
-.gallery-lightbox-count {
-  position: absolute;
-  bottom: calc(100% + 10px);
-  left: 50%;
-  transform: translateX(-50%);
-  border: 1px solid #d8b575;
-  border-radius: 999px;
-  padding: 5px 14px;
-  background: #540e20;
-  color: #fff0cb;
-  font-size: .78rem;
-  white-space: nowrap;
-}
-.gallery-lightbox-stage .photo-print img { animation: gallery-photo-arrive 220ms ease-out both; }
-@keyframes gallery-photo-arrive {
-  from { opacity: .6; transform: translateX(9px); }
-  to { opacity: 1; transform: translateX(0); }
-}
-@media (prefers-reduced-motion: reduce) {
-  .gallery-atmosphere-snow i, .gallery-lightbox-stage .photo-print img { animation: none !important; }
-}
-.christmas-gallery-shell[data-calm='true'] .gallery-atmosphere-snow i { animation: none !important; }
 
-/* Frame V2: the photo window has exactly the derivative's measured ratio. */
-.gallery-card {
-  padding: 0;
-  overflow: visible;
-  border: 0;
-  background: transparent;
+@keyframes gallery-snowfall {
+  0% {
+    transform: translate3d(0, -12px, 0);
+    opacity: 0;
+  }
+  12% {
+    opacity: 0.52;
+  }
+  82% {
+    opacity: 0.34;
+  }
+  100% {
+    transform: translate3d(12px, 104svh, 0);
+    opacity: 0;
+  }
 }
-.gallery-card::after {
-  content: none;
-}
-.gallery-frame {
+
+.gallery-hero,
+.gallery-grid,
+.gallery-sentinel,
+.gallery-finale,
+.gallery-share-status {
   position: relative;
-  isolation: isolate;
-  display: block;
-  width: 100%;
-  padding: clamp(11px, 3.2vw, 17px);
-  overflow: visible;
-  border: 2px solid #efcb87;
-  border-radius: 16px;
-  background:
-    linear-gradient(148deg, #fff0ce 0%, #d3a76a 19%, #fff6dc 34%, #b37836 70%, #efd3a4 100%);
-  box-shadow:
-    inset 0 0 0 2px #936125,
-    inset 0 0 0 5px rgb(255 249 223 / 50%),
-    0 12px 27px rgb(26 3 12 / 48%),
-    0 0 0 1px rgb(255 235 162 / 35%);
-}
-.gallery-frame::before {
-  position: absolute;
-  inset: 5px;
-  z-index: 1;
-  border: 1px solid #fff2c9;
-  border-radius: 10px;
-  box-shadow: 0 0 0 1px rgb(76 38 17 / 35%);
-  content: '';
-  pointer-events: none;
-}
-.gallery-frame-window {
-  position: relative;
-  display: block;
-  width: 100%;
-  min-height: 0;
-  overflow: hidden;
-  border: 0;
-  border-radius: 3px;
-  background: #32131c;
-  box-shadow: 0 0 0 1px rgb(71 25 21 / 55%);
-}
-.gallery-frame-window .photo-print {
-  display: block;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-  background: #32131c;
-}
-.gallery-frame-window .photo-print img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  object-position: center;
-}
-.gallery-frame-ornament {
-  position: absolute;
   z-index: 2;
-  width: clamp(9px, 2.6vw, 14px);
-  height: clamp(9px, 2.6vw, 14px);
-  border-radius: 2px;
-  background:
-    radial-gradient(circle at 30% 35%, #fff7c9 0 8%, transparent 12%),
-    radial-gradient(circle at 62% 66%, #b52b37 0 24%, transparent 28%),
-    radial-gradient(ellipse at 20% 80%, #23583a 0 28%, transparent 34%),
-    radial-gradient(ellipse at 80% 20%, #2f6b3d 0 34%, transparent 40%);
-  box-shadow: 0 0 5px rgb(255 211 130 / 35%);
+}
+
+/* Bottom garland cradle + fixed studio brand dock. */
+.gallery-brand-dock {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 7px;
+}
+
+.gallery-brand-dock::before {
+  position: absolute;
+  right: 0;
+  bottom: 6px;
+  left: 0;
+  z-index: -1;
+  height: 52px;
+  opacity: 0.92;
+  background: url('/assets/christmas-shell/gallery/gallery-velvet-bottom-v1.webp') center bottom /
+    min(100%, 480px) auto no-repeat;
+  -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 8%, #000 92%, transparent 100%);
+  mask-image: linear-gradient(90deg, transparent 0%, #000 8%, #000 92%, transparent 100%);
+  filter: drop-shadow(0 4px 10px rgb(16 1 7 / 58%));
+  content: '';
   pointer-events: none;
 }
-.gallery-frame-ornament--tl {
-  top: 3px;
-  left: 3px;
-}
-.gallery-frame-ornament--tr {
-  top: 3px;
-  right: 3px;
-  transform: rotate(90deg);
-}
-.gallery-frame-ornament--bl {
-  bottom: 3px;
-  left: 3px;
-  transform: rotate(-90deg);
-}
-.gallery-frame-ornament--br {
-  right: 3px;
-  bottom: 3px;
-  transform: rotate(180deg);
-}
-/* Cache-reuse the catalogued photoreal evergreen hero for the decorative rails. */
-.gallery-edge-rail {
-  width: clamp(11px, 3vw, 19px);
-  overflow: hidden;
-  background: #143625;
-}
-.gallery-edge-rail::before {
-  position: absolute;
-  top: 0;
-  left: 100%;
-  width: 110svh;
-  height: 56px;
-  transform: rotate(90deg);
-  transform-origin: top left;
-  background: url('/assets/christmas-shell/gallery/gallery-evergreen-hero-retina-v6.webp')
-    left top / 280px 56px repeat-x;
-  content: '';
-  opacity: 0.94;
-}
-.gallery-edge-rail::after {
-  position: absolute;
-  inset: 0;
+
+.gallery-brand-link {
+  width: 100%;
+  border: 1.5px solid rgb(246 208 134 / 82%);
   background:
-    radial-gradient(circle at 50% 15%, #fff6be 0 2px, transparent 3px),
-    radial-gradient(circle at 50% 65%, #ffe1a1 0 2px, transparent 3px);
-  background-size:
-    100% 118px,
-    100% 151px;
-  content: '';
-  opacity: 0.85;
-  animation: gallery-edge-twinkle 5.1s ease-in-out infinite alternate;
+    radial-gradient(ellipse at 18% 0%, rgb(255 214 138 / 22%), transparent 56%),
+    linear-gradient(145deg, #16483b 0%, #092e26 62%, #051c19 100%);
+  box-shadow:
+    inset 0 1px 1px rgb(255 247 216 / 32%),
+    0 10px 26px rgb(12 1 6 / 68%);
 }
-.gallery-edge-rail--right::after {
-  animation-delay: -2.9s;
+
+.gallery-footer-photo-count {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 6px 16px;
+  border: 1.5px solid #eec67c;
+  border-radius: 999px;
+  color: #fff2cf;
+  background:
+    radial-gradient(circle at 50% 0%, rgb(255 218 150 / 28%), transparent 65%),
+    linear-gradient(145deg, #a81835 0%, #6d0d24 62%, #480616 100%);
+  box-shadow:
+    inset 0 1px 1px rgb(255 245 214 / 38%),
+    0 6px 16px rgb(16 1 7 / 56%);
+  font-size: 0.76rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  pointer-events: none;
 }
-@keyframes gallery-edge-twinkle {
-  from {
-    opacity: 0.48;
-  }
-  to {
-    opacity: 0.94;
-  }
+
+.gallery-footer-photo-count .shell-glyph {
+  width: 18px;
+  height: 18px;
 }
-/* A genuine accessible hit target on the existing decorative bow. */
+
+/* Interactive velvet bow celebration button. */
 .gallery-magic-trigger {
   position: absolute;
   top: 5px;
@@ -1118,22 +1345,31 @@
   cursor: pointer;
   touch-action: manipulation;
 }
+
 .gallery-magic-trigger:focus-visible {
   outline: 3px solid #fff3b5;
   outline-offset: 2px;
 }
+
 .gallery-magic-trigger:disabled {
   cursor: default;
 }
+
 .gallery-magic-hit {
-  width: 20px;
-  height: 20px;
+  width: 22px;
+  height: 22px;
   border-radius: 50%;
+  transition:
+    transform 140ms ease,
+    box-shadow 140ms ease;
 }
+
 .gallery-magic-trigger:active .gallery-magic-hit {
-  background: rgb(255 241 190 / 22%);
-  box-shadow: 0 0 12px #f9d587;
+  transform: scale(0.92);
+  background: rgb(255 241 190 / 28%);
+  box-shadow: 0 0 14px #f9d587;
 }
+
 .gallery-magic-burst {
   position: absolute;
   top: 50%;
@@ -1142,6 +1378,7 @@
   height: 0;
   pointer-events: none;
 }
+
 .gallery-magic-burst i {
   position: absolute;
   top: -3px;
@@ -1149,77 +1386,75 @@
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: #ffedb7;
-  box-shadow: 0 0 4px #e8b666;
+  background: #fff2c2;
+  box-shadow:
+    0 0 6px #ffd475,
+    0 0 12px #e8a848;
   animation: gallery-magic-spark 700ms ease-out both;
 }
+
 @keyframes gallery-magic-spark {
   from {
     opacity: 1;
-    transform: rotate(var(--burst-angle)) translateX(0) scale(1);
+    transform: rotate(var(--burst-angle)) translateX(0) scale(1.1);
   }
   to {
     opacity: 0;
-    transform: rotate(var(--burst-angle)) translateX(27px) scale(0.3);
+    transform: rotate(var(--burst-angle)) translateX(30px) scale(0.25);
   }
-}
-.gallery-frame-window .photo-print-fallback {
-  background:
-    radial-gradient(circle at 50% 40%, rgb(206 154 82 / 18%), transparent 68%),
-    linear-gradient(140deg, #35121e, #692233);
-  color: #f7e7c7;
-}
-@media (max-width: 380px) {
-  .gallery-frame {
-    padding: 11px;
-  }
-  .gallery-frame-ornament {
-    width: 9px;
-    height: 9px;
-  }
-}
-@media (prefers-reduced-motion: reduce) {
-  .gallery-edge-rail::after,
-  .gallery-magic-burst i {
-    animation: none;
-  }
-}
-.christmas-gallery-shell[data-calm='true'] .gallery-edge-rail::after,
-.christmas-gallery-shell[data-calm='true'] .gallery-magic-burst i {
-  animation: none;
 }
 
-/* Accessible X / information / zoom controls with a compact native-like header. */
+/* Native-like Lightbox with continuous 1x-3x pinch-zoom & clamped pan. */
+.gallery-lightbox {
+  background:
+    radial-gradient(ellipse at 50% 15%, rgb(138 22 44 / 32%), transparent 55%),
+    linear-gradient(180deg, #28040d 0%, #440918 48%, #1d0209 100%);
+}
+
+.gallery-lightbox::backdrop {
+  background: rgb(16 1 6 / 94%);
+}
+
 .gallery-lightbox-header {
   grid-template-columns: 46px minmax(0, 1fr) 46px 46px;
+  background: linear-gradient(180deg, rgb(32 3 11 / 92%), transparent);
 }
+
+.gallery-lightbox-title {
+  font-family: Georgia, serif;
+  color: #ffedc8;
+  font-weight: 700;
+}
+
 .gallery-lightbox-help {
   position: relative;
   pointer-events: auto;
 }
+
 .gallery-lightbox-help summary {
   display: grid;
   place-items: center;
   width: 46px;
   height: 46px;
-  border: 1px solid rgb(245 210 148 / 60%);
-  border-radius: 15px;
-  background: linear-gradient(150deg, #164337, #082720);
   list-style: none;
   cursor: pointer;
   touch-action: manipulation;
 }
+
 .gallery-lightbox-help summary::-webkit-details-marker {
   display: none;
 }
+
 .gallery-lightbox-help summary .shell-glyph {
   width: 26px;
   height: 26px;
 }
+
 .gallery-lightbox-help summary:focus-visible {
   outline: 3px solid #ffe6a2;
   outline-offset: 3px;
 }
+
 .gallery-lightbox-help-content {
   position: absolute;
   top: calc(100% + 9px);
@@ -1229,28 +1464,36 @@
   border: 1px solid #e6c17b;
   border-radius: 14px;
   background: #301019;
-  box-shadow: 0 10px 24px rgb(0 0 0 / 43%);
+  box-shadow: 0 10px 24px rgb(0 0 0 / 48%);
   color: #fff1d3;
   font-size: 0.8rem;
   line-height: 1.4;
   text-align: left;
 }
+
 .gallery-lightbox-help-content p {
   margin: 0;
 }
+
 .gallery-lightbox-help-content p + p {
   margin-top: 8px;
 }
 
-/* The frame scales by image geometry; the aperture itself remains uncropped. */
+.gallery-lightbox-stage {
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 50% 50%, rgb(156 30 52 / 24%), transparent 56%), transparent;
+  touch-action: pan-y pinch-zoom;
+}
+
 .gallery-lightbox-stage .gallery-frame {
   flex: none;
-  width: min(
-    calc(100vw - 24px),
-    calc((100dvh - 220px) * var(--gallery-frame-ratio) + 34px)
-  );
+  width: min(calc(100vw - 28px), calc((100dvh - 220px) * var(--gallery-frame-ratio) + 36px));
   max-width: 720px;
+  transition: transform 140ms cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform;
 }
+
 .gallery-lightbox-stage .gallery-frame .photo-print,
 .gallery-lightbox-stage[data-zoomed='true'] .gallery-frame .photo-print {
   width: 100%;
@@ -1258,25 +1501,38 @@
   min-width: 0;
   min-height: 0;
 }
-.gallery-lightbox-stage[data-zoomed='true'] .gallery-frame {
-  width: 180%;
-  min-width: 180%;
-  max-width: none;
+
+.gallery-lightbox-stage[data-zoomed='true'] {
+  align-items: center;
+  justify-content: center;
+  touch-action: none;
 }
 
-/* 2026-10-16: ergonomic four-control header; same Hub mute state. */
-.gallery-topbar {
-  grid-template-columns: 48px minmax(0, 1fr) 44px 48px;
-}
-.gallery-topbar-label {
+.gallery-lightbox-stage[data-zoomed='true'] .gallery-frame {
+  width: min(calc(100vw - 28px), calc((100dvh - 220px) * var(--gallery-frame-ratio) + 36px));
   min-width: 0;
+  max-width: 720px;
+  transform: translate3d(var(--lightbox-pan-x, 0px), var(--lightbox-pan-y, 0px), 0)
+    scale(var(--lightbox-zoom, 2));
+  transform-origin: center center;
+  transition: none;
 }
-.gallery-edge-rail[data-ambient-active='false']::after {
-  animation: none;
+
+.gallery-lightbox-stage .photo-print img {
+  animation: gallery-photo-arrive 220ms ease-out both;
 }
-.gallery-frame-window .photo-print[data-status='ready'] img {
-  opacity: 1;
+
+@keyframes gallery-photo-arrive {
+  from {
+    opacity: 0.6;
+    transform: translateX(9px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
+
 .gallery-lightbox-stage .photo-print-retry {
   min-height: 44px;
   padding: 10px 16px;
@@ -1288,14 +1544,84 @@
   font-weight: 700;
   cursor: pointer;
 }
+
 .gallery-lightbox-stage .photo-print-retry:focus-visible {
   outline: 3px solid #ffe0a3;
   outline-offset: 2px;
 }
+
+.gallery-lightbox-footer {
+  grid-template-columns: 46px minmax(0, 1fr) 46px;
+  gap: 8px;
+  background: linear-gradient(0deg, rgb(28 2 10 / 95%), rgb(28 2 10 / 62%), transparent);
+}
+
+.gallery-lightbox-arrow {
+  width: 46px;
+  height: 46px;
+}
+
+.gallery-lightbox-count {
+  position: absolute;
+  bottom: calc(100% + 10px);
+  left: 50%;
+  transform: translateX(-50%);
+  border: 1px solid #e5be78;
+  border-radius: 999px;
+  padding: 5px 15px;
+  background: linear-gradient(145deg, #741227, #460817);
+  box-shadow: 0 4px 12px rgb(14 1 6 / 52%);
+  color: #fff2cf;
+  font-size: 0.78rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+@media (max-width: 380px) {
+  .gallery-frame {
+    padding: 12px;
+  }
+
+  .gallery-frame::before {
+    border-width: 12px;
+    border-image-width: 12px;
+  }
+
+  .gallery-frame-ornament {
+    width: 32px;
+    height: 32px;
+  }
+
+  .gallery-frame-ornament--tr,
+  .gallery-frame-ornament--bl {
+    width: 28px;
+    height: 28px;
+  }
+}
+
 @media (max-width: 340px) {
   .gallery-topbar {
     grid-template-columns: 44px minmax(0, 1fr) 42px 44px;
     gap: 5px;
-    padding-inline: 8px;
+    padding-inline: 10px;
   }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gallery-atmosphere-snow i,
+  .gallery-edge-light,
+  .gallery-magic-burst i,
+  .gallery-frame-window .photo-print[data-status='loading'],
+  .gallery-lightbox-stage .photo-print img {
+    animation: none !important;
+  }
+}
+
+.christmas-gallery-shell[data-calm='true'] .gallery-atmosphere-snow i,
+.christmas-gallery-shell[data-calm='true'] .gallery-edge-light,
+.christmas-gallery-shell[data-calm='true'] .gallery-magic-burst i,
+.christmas-gallery-shell[data-calm='true']
+  .gallery-frame-window
+  .photo-print[data-status='loading'] {
+  animation: none !important;
 }

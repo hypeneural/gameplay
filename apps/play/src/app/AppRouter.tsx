@@ -405,9 +405,15 @@ export function AppRouter(): React.JSX.Element {
       <Suspense
         fallback={
           <main className="shell unavailable-game gallery-loading-screen" role="status">
-            <span className="gallery-loading-star" aria-hidden="true">✦</span>
+            <span className="gallery-loading-star" aria-hidden="true">
+              ✦
+            </span>
             <h1>Preparando suas lembranças…</h1>
-            <span className="gallery-loading-dots" aria-hidden="true"><i /><i /><i /></span>
+            <span className="gallery-loading-dots" aria-hidden="true">
+              <i />
+              <i />
+              <i />
+            </span>
           </main>
         }
       >
