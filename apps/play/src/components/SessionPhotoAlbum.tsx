@@ -230,7 +230,7 @@ function PhotoPicker({
                 onSelect(photo.id);
               }}
             >
-              <PhotoPrint photo={photo} />
+              <PhotoPrint photo={photo} sessionKey={session.id} />
               <span className="photo-check" aria-hidden="true">
                 {photo.id === selectedPhotoId ? '✓' : index + 1}
               </span>
