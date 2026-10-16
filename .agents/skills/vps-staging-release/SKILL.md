@@ -105,3 +105,7 @@ Pare e registre o bloqueio se:
 - o merge target não tiver proteção/status checks e a mudança estiver sendo promovida sem revisão humana explícita.
 
 Não transforme staging em piloto por atalho.
+
+## Override operacional (Contabo Docker, 16/10/2026)
+
+A instalação atual usa Docker Compose, **não** serviço systemd direto. Seguir exclusivamente a seção 8 do `VPS_STAGING_DEMO_RUNBOOK.md`. O bundle inclui `ops/tools/vps-docker-preflight.sh --check <id> <sha>`: somente leitura, verifica o release, as labels do Compose e o bind mount de `current`. Recriar apenas os serviços específicos via `docker compose up -d --no-deps --force-recreate --no-build` após troca do symlink e novamente no rollback. Token sintético válido para smoke tem 16–128 caracteres, nunca `demo-token`. Não alterar readiness.
