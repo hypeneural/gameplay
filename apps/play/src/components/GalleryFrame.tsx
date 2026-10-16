@@ -30,8 +30,8 @@ export function GalleryFrame({
           photo={photo}
           variant={variant}
           eager={eager}
-          sizes={sizes}
-          srcSetVariants={srcSetVariants}
+          {...(sizes ? { sizes } : {})}
+          {...(srcSetVariants ? { srcSetVariants } : {})}
           alt={`Lembrança de Natal ${index + 1}`}
         />
       </span>
