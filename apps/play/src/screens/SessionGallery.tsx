@@ -2,7 +2,7 @@ import { Suspense, lazy, useEffect, useLayoutEffect, useRef, useState } from 're
 import type { Session } from '@christmas-games/platform';
 import { playInterfaceTap } from '../audio/playInterfaceTap.js';
 import { GalleryAtmosphere } from '../components/GalleryAtmosphere.js';
-import { PhotoPrint } from '../components/PhotoPrint.js';
+import { GalleryFrame } from '../components/GalleryFrame.js';
 import { ShellIcon } from '../components/ShellIcon.js';
 import {
   GALLERY_AUTOLOAD_ROOT_MARGIN,
@@ -167,16 +167,14 @@ export function SessionGallery({
               setLightboxIndex(index);
             }}
           >
-            <span className="gallery-photo-frame" style={{ aspectRatio: photo.aspectRatio }}>
-              <PhotoPrint
-                photo={photo}
-                variant="card"
-                eager={index === 0}
-                sizes={GALLERY_FEED_SIZES}
-                srcSetVariants={GALLERY_FEED_VARIANTS}
-                alt={`Lembrança de Natal ${index + 1}`}
-              />
-            </span>
+            <GalleryFrame
+              photo={photo}
+              variant="card"
+              index={index}
+              eager={index === 0}
+              sizes={GALLERY_FEED_SIZES}
+              srcSetVariants={GALLERY_FEED_VARIANTS}
+            />
           </button>
         ))}
       </div>
