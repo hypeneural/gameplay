@@ -272,8 +272,11 @@ describe('ActiveGameClock and GameRunController', () => {
     expect(listeners.size).toBe(2);
 
     listeners.get('progress')?.(0.5);
+    // COMPLETE can fire even with failed files: this is not "scene prepared".
+    listeners.get('complete')?.(fakeLoader, 0, 2);
+    expect(recorded).toEqual([{ progress: 0.475, stage: 'loading_assets' }]);
     listeners.get('progress')?.(1);
-    listeners.get('complete')?.();
+    listeners.get('complete')?.(fakeLoader, 3, 0);
 
     expect(recorded).toEqual([
       { progress: 0.475, stage: 'loading_assets' },
