@@ -844,3 +844,121 @@
     letter-spacing: 0.025em;
   }
 }
+
+/* Natal Velvet: decorate the album shell, never the customer's photo pixels. */
+.christmas-gallery-shell {
+  position: relative;
+  isolation: isolate;
+  padding-bottom: max(180px, calc(env(safe-area-inset-bottom) + 160px));
+  background: radial-gradient(ellipse at 50% 0, rgb(226 127 65 / 22%), transparent 340px),
+    linear-gradient(180deg, #500b1b, #741428 45%, #390b1b);
+}
+.gallery-topbar { background: linear-gradient(180deg, rgb(63 7 21 / 97%), rgb(84 13 27 / 93%)); }
+.gallery-hero {
+  padding: 58px 12px 12px;
+  min-height: 92px;
+  background: linear-gradient(155deg, #701326, #420b1c);
+}
+.gallery-hero-content { padding-top: 0; }
+.gallery-hero-content h1 { margin: 0; font-size: clamp(1.18rem, 5vw, 1.55rem); }
+.gallery-grid { gap: 20px; }
+.gallery-card {
+  padding: 7px;
+  border: 2px solid #d9ae64;
+  border-radius: 18px;
+  background: linear-gradient(132deg, #fff4db, #d5a969 28%, #ffedc3 46%, #a36c2d 72%, #fff0c7);
+  box-shadow: inset 0 0 0 2px rgb(255 247 224 / 65%), 0 8px 19px rgb(17 1 9 / 41%);
+}
+.gallery-card::after {
+  content: '';
+  position: absolute;
+  inset: 3px;
+  pointer-events: none;
+  border: 1px solid rgb(255 251 219 / 65%);
+  border-radius: 13px;
+}
+.gallery-card:active { transform: scale(.986); }
+.gallery-photo-frame { border-radius: 10px; }
+.gallery-brand-dock { display: flex; flex-direction: column; align-items: center; gap: 7px; }
+.gallery-brand-link { width: 100%; }
+.gallery-footer-photo-count {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 6px 14px;
+  border: 1px solid #e5ba75;
+  border-radius: 999px;
+  color: #ffedc2;
+  background: linear-gradient(135deg, #9b1632, #570c21);
+  box-shadow: 0 5px 14px rgb(0 0 0 / 22%);
+  font-size: .75rem;
+  font-weight: 800;
+  pointer-events: none;
+}
+.gallery-footer-photo-count .shell-glyph { width: 18px; height: 18px; }
+.gallery-edge-rail {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  z-index: 1;
+  width: clamp(9px, 3vw, 17px);
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 48% 9%, #ffe8a0 0 2px, transparent 3px),
+    radial-gradient(circle at 54% 43%, #ffdf95 0 2px, transparent 4px),
+    radial-gradient(circle at 36% 72%, #ffce80 0 2px, transparent 4px),
+    repeating-linear-gradient(155deg, #193e2a 0 4px, #32633c 5px 7px, #132b24 8px 13px);
+  background-size: 100% 92px, 100% 115px, 100% 144px, 100% 100%;
+  box-shadow: 0 0 8px rgb(248 194 105 / 30%);
+}
+.gallery-edge-rail--left { left: max(0px, env(safe-area-inset-left)); }
+.gallery-edge-rail--right { right: max(0px, env(safe-area-inset-right)); transform: scaleX(-1); }
+.gallery-atmosphere-snow {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+.gallery-atmosphere-snow i {
+  position: absolute;
+  display: block;
+  width: var(--snow-size);
+  height: var(--snow-size);
+  left: var(--snow-x);
+  top: -16px;
+  opacity: 0;
+  border-radius: 50%;
+  background: #fff4cf;
+  animation: gallery-snowfall var(--snow-duration) linear var(--snow-delay) infinite;
+}
+@keyframes gallery-snowfall {
+  0% { transform: translate3d(0, -12px, 0); opacity: 0; }
+  12% { opacity: .48; }
+  82% { opacity: .3; }
+  100% { transform: translate3d(12px, 104svh, 0); opacity: 0; }
+}
+.gallery-hero, .gallery-grid, .gallery-sentinel, .gallery-finale, .gallery-share-status { position: relative; z-index: 2; }
+.gallery-lightbox-title { font-family: Georgia, serif; color: #ffedc8; font-weight: 700; }
+.gallery-lightbox-count {
+  position: absolute;
+  bottom: calc(100% + 10px);
+  left: 50%;
+  transform: translateX(-50%);
+  border: 1px solid #d8b575;
+  border-radius: 999px;
+  padding: 5px 14px;
+  background: #540e20;
+  color: #fff0cb;
+  font-size: .78rem;
+  white-space: nowrap;
+}
+.gallery-lightbox-stage .photo-print img { animation: gallery-photo-arrive 220ms ease-out both; }
+@keyframes gallery-photo-arrive {
+  from { opacity: .6; transform: translateX(9px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .gallery-atmosphere-snow i, .gallery-lightbox-stage .photo-print img { animation: none !important; }
+}
+.christmas-gallery-shell[data-calm='true'] .gallery-atmosphere-snow i { animation: none !important; }
