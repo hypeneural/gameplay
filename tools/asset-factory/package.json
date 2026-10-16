@@ -11,6 +11,7 @@
     "prepare:magic-photo-art": "node scripts/prepare-magic-photo-art.mjs",
     "prepare:magic-photo-audio": "node scripts/prepare-magic-photo-audio.mjs",
     "prepare:shell-audio": "node scripts/prepare-shell-audio.mjs",
+    "prepare:gallery-velvet-art": "node scripts/prepare-gallery-velvet-art.mjs",
     "doctor": "tsx src/index.ts doctor",
     "validate": "tsx src/index.ts validate",
     "audit": "tsx src/index.ts audit",
