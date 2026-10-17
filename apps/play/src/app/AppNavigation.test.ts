@@ -2,6 +2,29 @@ import { describe, expect, it } from 'vitest';
 import { parseAppRoute, routePath, sameRoute } from './AppNavigation.js';
 
 describe('AppNavigation', () => {
+  it('keeps the public synthetic homepage, gallery and games on server routes', () => {
+    const home = parseAppRoute('/');
+    const album = parseAppRoute('/demo/fotos');
+    const game = parseAppRoute('/demo/game/puzzle-swap');
+    expect(home).toEqual({ kind: 'session', token: 'local-demo-token', demo: true });
+    expect(album).toEqual({ kind: 'gallery', token: 'local-demo-token', demo: true });
+    expect(game).toEqual({
+      kind: 'game-cover',
+      token: 'local-demo-token',
+      gameId: 'puzzle-swap',
+      demo: true,
+    });
+    expect(routePath({ kind: 'session', token: 'local-demo-token', demo: true })).toBe('/');
+    expect(routePath({ kind: 'gallery', token: 'local-demo-token', demo: true })).toBe(
+      '/demo/fotos',
+    );
+    expect(
+      routePath({ kind: 'game-cover', token: 'local-demo-token', gameId: 'puzzle-swap', demo: true }),
+    ).toBe('/demo/game/puzzle-swap');
+    expect(sameRoute(album, parseAppRoute('/s/local-demo-token/fotos'))).toBe(false);
+  });
+
+
   it('keeps the public session, gallery and selected game in stable paths', () => {
     expect(parseAppRoute('/s/local-demo-token')).toEqual({
       kind: 'session',
