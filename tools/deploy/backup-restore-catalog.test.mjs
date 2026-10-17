@@ -84,6 +84,41 @@ describe('backup-restore-catalog', () => {
     }
   });
 
+  it('does not overwrite existing DB or media and refuses backup directory reuse', async () => {
+    const dir = await mkdtemp(join(tmpdir(), 'backup-safety-test-'));
+    try {
+      const liveDb = join(dir, 'live.sqlite');
+      const backupDir = join(dir, 'backup');
+      const existingDb = join(dir, 'existing.sqlite');
+      const db = new DatabaseSync(liveDb);
+      db.exec('CREATE TABLE demo (id INTEGER); INSERT INTO demo VALUES (1);');
+      db.close();
+      await backupCatalog({ dbPath: liveDb, backupDir });
+      await expect(backupCatalog({ dbPath: liveDb, backupDir })).rejects.toThrow(
+        'BACKUP_TARGET_NOT_EMPTY',
+      );
+      await writeFile(existingDb, Buffer.from('UNCHANGED'));
+      await expect(
+        restoreCatalog({ backupDir, targetDbPath: existingDb }),
+      ).rejects.toThrow('RESTORE_TARGET_NOT_EMPTY');
+      expect((await readFile(existingDb)).toString()).toBe('UNCHANGED');
+
+      const emptyTarget = join(dir, 'new.sqlite');
+      const existingStorage = join(dir, 'existing-media');
+      await mkdir(existingStorage);
+      await expect(
+        restoreCatalog({
+          backupDir,
+          targetDbPath: emptyTarget,
+          targetStorageDir: existingStorage,
+        }),
+      ).rejects.toThrow('RESTORE_TARGET_NOT_EMPTY');
+      expect(await readFile(existingDb, 'utf8')).toBe('UNCHANGED');
+    } finally {
+      await rm(dir, { recursive: true, force: true });
+    }
+  });
+
   it('rejects restore if backup checksum is corrupted', async () => {
     const tempDir = await mkdtemp(join(tmpdir(), 'backup-corrupt-test-'));
 
