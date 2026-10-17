@@ -1,0 +1,1112 @@
+import { createHash, randomUUID } from 'node:crypto';
+import { once } from 'node:events';
+import { mkdtemp, rm } from 'node:fs/promises';
+import type { Server } from 'node:http';
+import type { AddressInfo } from 'node:net';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { createCatalogServer } from '../CatalogServer.js';
+import {
+  FileSystemStorageService,
+  MAX_BLOB_BYTE_LENGTH,
+} from '../storage/FileSystemStorageService.js';
+import { PublicationService } from './PublicationService.js';
+import { SqliteSessionRepository } from './SessionRepository.js';
+import { applyMigrations, openSqliteDatabase } from './sqliteDatabase.js';
+import { StructuredPublicationLogger } from './publicationLogger.js';
+import type { PublicationLogEntry } from './publicationLogger.js';
+import { InMemoryCrmClient } from '../crm/CrmEligibilityService.js';
+
+function createSyntheticVp8Webp(width: number, height: number): Buffer {
+  const vp8Payload = Buffer.alloc(10);
+  vp8Payload[0] = 0x00;
+  vp8Payload[1] = 0x00;
+  vp8Payload[2] = 0x00;
+  vp8Payload[3] = 0x9d;
+  vp8Payload[4] = 0x01;
+  vp8Payload[5] = 0x2a;
+  vp8Payload.writeUInt16LE(width & 0x3fff, 6);
+  vp8Payload.writeUInt16LE(height & 0x3fff, 8);
+
+  const vp8ChunkSize = vp8Payload.length;
+  const riffSize = 4 + 8 + vp8ChunkSize;
+
+  const buffer = Buffer.alloc(8 + riffSize);
+  buffer.write('RIFF', 0, 4, 'ascii');
+  buffer.writeUInt32LE(riffSize, 4);
+  buffer.write('WEBP', 8, 4, 'ascii');
+  buffer.write('VP8 ', 12, 4, 'ascii');
+  buffer.writeUInt32LE(vp8ChunkSize, 16);
+  vp8Payload.copy(buffer, 20);
+
+  return buffer;
+}
+
+const PUBLISHER_SECRET = 'super-secret-publisher-token-test-12345';
+const SERVER_SECRET = 'server-secret-for-tokens-12345678901234567890';
+
+describe('Corte 2 HTTP Endpoints & Storage Flow', () => {
+  let tempStorageDir: string;
+  let server: Server;
+  let baseUrl: string;
+  let logs: PublicationLogEntry[];
+
+  beforeEach(async () => {
+    logs = [];
+    tempStorageDir = await mkdtemp(join(tmpdir(), 'corte2-test-'));
+
+    const db = openSqliteDatabase(':memory:');
+    applyMigrations(db);
+
+    const sessionRepository = new SqliteSessionRepository({
+      db,
+      serverSecret: SERVER_SECRET,
+      publicBaseUrl: 'http://127.0.0.1',
+    });
+
+    const storageService = new FileSystemStorageService({
+      storageDir: tempStorageDir,
+    });
+
+    const logger = new StructuredPublicationLogger({
+      sink: (line) => logs.push(JSON.parse(line) as PublicationLogEntry),
+    });
+
+    const publicationService = new PublicationService({
+      sessionRepository,
+      storageService,
+      publisherSecret: PUBLISHER_SECRET,
+      logger,
+      publicBaseUrl: 'http://127.0.0.1',
+    });
+
+    server = createCatalogServer({
+      publicOrigin: new URL('http://127.0.0.1'),
+      loadApplicationShell: async () => '<html></html>',
+      previews: {
+        async getByPublicToken() {
+          return undefined;
+        },
+      },
+      audit: { async record() {} },
+      clock: { now: () => new Date() },
+      runtime: { releaseStage: 'development' },
+      publicationService,
+    });
+
+    server.listen(0, '127.0.0.1');
+    await once(server, 'listening');
+    const port = (server.address() as AddressInfo).port;
+    baseUrl = `http://127.0.0.1:${port}`;
+  });
+
+  afterEach(async () => {
+    server.close();
+    await once(server, 'close');
+    await rm(tempStorageDir, { recursive: true, force: true });
+  });
+
+  it('rejects publisher endpoints with 401 when Authorization header is missing or invalid', async () => {
+    const resNoAuth = await fetch(`${baseUrl}/internal/v1/sessions/resolve`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ crmOrderUuid: randomUUID() }),
+    });
+    expect(resNoAuth.status).toBe(401);
+    const bodyNoAuth = (await resNoAuth.json()) as { code: string };
+    expect(bodyNoAuth.code).toBe('PUBLISHER_UNAUTHORIZED');
+
+    const resBadAuth = await fetch(`${baseUrl}/internal/v1/sessions/resolve`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer wrong-secret',
+      },
+      body: JSON.stringify({ crmOrderUuid: randomUUID() }),
+    });
+    expect(resBadAuth.status).toBe(401);
+  });
+
+  it('executes full end-to-end publication flow with synthetic images and verified storage', async () => {
+    const crmOrderUuid = randomUUID();
+
+    // 1. Resolve Session
+    const resolveRes = await fetch(`${baseUrl}/internal/v1/sessions/resolve`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${PUBLISHER_SECRET}`,
+      },
+      body: JSON.stringify({ crmOrderUuid }),
+    });
+    expect(resolveRes.status).toBe(201);
+    const resolvedSession = (await resolveRes.json()) as {
+      sessionId: string;
+      activeRevisionId: string | null;
+      status: string;
+    };
+    expect(resolvedSession.sessionId).toMatch(/^[0-9a-f-]{36}$/);
+    expect(resolvedSession.activeRevisionId).toBeNull();
+    expect(resolvedSession.status).toBe('ACTIVE');
+
+    // Idempotent resolve returns 200
+    const resolveAgain = await fetch(`${baseUrl}/internal/v1/sessions/resolve`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${PUBLISHER_SECRET}`,
+      },
+      body: JSON.stringify({ crmOrderUuid }),
+    });
+    expect(resolveAgain.status).toBe(200);
+    expect(((await resolveAgain.json()) as typeof resolvedSession).sessionId).toBe(
+      resolvedSession.sessionId,
+    );
+
+    // 2. Prepare synthetic WebP variants for 1 photo
+    const thumbBuf = createSyntheticVp8Webp(480, 360);
+    const cardBuf = createSyntheticVp8Webp(800, 600);
+    const gameBuf = createSyntheticVp8Webp(1600, 1200);
+
+    const thumbSha256 = createHash('sha256').update(thumbBuf).digest('hex');
+    const cardSha256 = createHash('sha256').update(cardBuf).digest('hex');
+    const gameSha256 = createHash('sha256').update(gameBuf).digest('hex');
+
+    const thumbBlobId = randomUUID();
+    const cardBlobId = randomUUID();
+    const gameBlobId = randomUUID();
+    const requestId = randomUUID();
+
+    const manifest = {
+      schemaVersion: 1,
+      requestId,
+      sessionId: resolvedSession.sessionId,
+      expectedActiveRevisionId: null,
+      recipeKey: 'recipe-1-webp82-srgb-inside',
+      photos: [
+        {
+          photoId: 'photo-test-01',
+          contentHash: 'a'.repeat(64),
+          sortIndex: 0,
+          width: 1600,
+          height: 1200,
+          variants: {
+            thumb: {
+              blobId: thumbBlobId,
+              sha256: thumbSha256,
+              byteLength: thumbBuf.length,
+              width: 480,
+              height: 360,
+            },
+            card: {
+              blobId: cardBlobId,
+              sha256: cardSha256,
+              byteLength: cardBuf.length,
+              width: 800,
+              height: 600,
+            },
+            game: {
+              blobId: gameBlobId,
+              sha256: gameSha256,
+              byteLength: gameBuf.length,
+              width: 1600,
+              height: 1200,
+            },
+          },
+        },
+      ],
+    };
+
+    // 3. Begin Publication (POST /internal/v1/publications)
+    const beginRes = await fetch(`${baseUrl}/internal/v1/publications`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${PUBLISHER_SECRET}`,
+      },
+      body: JSON.stringify(manifest),
+    });
+    expect(beginRes.status).toBe(201);
+    const stagedPub = (await beginRes.json()) as {
+      revisionId: string;
+      sessionId: string;
+      state: string;
+      expectedBlobs: number;
+      readyBlobs: number;
+      pendingBlobIds: string[];
+    };
+    expect(stagedPub.state).toBe('STAGED');
+    expect(stagedPub.expectedBlobs).toBe(3);
+    expect(stagedPub.readyBlobs).toBe(0);
+    expect(stagedPub.pendingBlobIds).toHaveLength(3);
+
+    const revisionId = stagedPub.revisionId;
+
+    // Idempotent begin replay returns 200
+    const beginReplay = await fetch(`${baseUrl}/internal/v1/publications`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${PUBLISHER_SECRET}`,
+      },
+      body: JSON.stringify(manifest),
+    });
+    expect(beginReplay.status).toBe(200);
+
+    // 4. GET Publication Status
+    const statusRes = await fetch(`${baseUrl}/internal/v1/publications/${revisionId}`, {
+      headers: { Authorization: `Bearer ${PUBLISHER_SECRET}` },
+    });
+    expect(statusRes.status).toBe(200);
+    const currentStatus = (await statusRes.json()) as typeof stagedPub;
+    expect(currentStatus.pendingBlobIds).toContain(thumbBlobId);
+
+    // 5. Attempt activate before blobs are uploaded -> 422 UPLOAD_INCOMPLETE
+    const prematureActivate = await fetch(
+      `${baseUrl}/internal/v1/publications/${revisionId}/activate`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${PUBLISHER_SECRET}`,
+        },
+        body: JSON.stringify({ expectedActiveRevisionId: null }),
+      },
+    );
+    expect(prematureActivate.status).toBe(422);
+    expect(((await prematureActivate.json()) as { code: string }).code).toBe('UPLOAD_INCOMPLETE');
+
+    // 6. Upload Blobs
+    // 6a. Upload thumb blob
+    const thumbUpload = await fetch(
+      `${baseUrl}/internal/v1/publications/${revisionId}/blobs/${thumbBlobId}`,
+      {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'image/webp',
+          'X-Content-SHA256': thumbSha256,
+          Authorization: `Bearer ${PUBLISHER_SECRET}`,
+        },
+        body: new Uint8Array(thumbBuf),
+      },
+    );
+    expect(thumbUpload.status).toBe(201);
+    const thumbUploadJson = (await thumbUpload.json()) as { blobId: string; state: string };
+    expect(thumbUploadJson.blobId).toBe(thumbBlobId);
+    expect(thumbUploadJson.state).toBe('READY');
+
+    // Idempotent retry of thumb upload -> 200
+    const thumbRetry = await fetch(
+      `${baseUrl}/internal/v1/publications/${revisionId}/blobs/${thumbBlobId}`,
+      {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'image/webp',
+          'X-Content-SHA256': thumbSha256,
+          Authorization: `Bearer ${PUBLISHER_SECRET}`,
+        },
+        body: new Uint8Array(thumbBuf),
+      },
+    );
+    expect(thumbRetry.status).toBe(200);
+
+    // 6b. Upload with hash mismatch -> 409 INVALID_MEDIA
+    const badHashUpload = await fetch(
+      `${baseUrl}/internal/v1/publications/${revisionId}/blobs/${cardBlobId}`,
+      {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'image/webp',
+          'X-Content-SHA256': '0'.repeat(64),
+          Authorization: `Bearer ${PUBLISHER_SECRET}`,
+        },
+        body: new Uint8Array(cardBuf),
+      },
+    );
+    expect(badHashUpload.status).toBe(409);
+
+    // 6c. Upload card blob properly -> 201
+    const cardUpload = await fetch(
+      `${baseUrl}/internal/v1/publications/${revisionId}/blobs/${cardBlobId}`,
+      {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'image/webp',
+          'X-Content-SHA256': cardSha256,
+          Authorization: `Bearer ${PUBLISHER_SECRET}`,
+        },
+        body: new Uint8Array(cardBuf),
+      },
+    );
+    expect(cardUpload.status).toBe(201);
+
+    // 6d. Upload game blob properly -> 201
+    const gameUpload = await fetch(
+      `${baseUrl}/internal/v1/publications/${revisionId}/blobs/${gameBlobId}`,
+      {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'image/webp',
+          'X-Content-SHA256': gameSha256,
+          Authorization: `Bearer ${PUBLISHER_SECRET}`,
+        },
+        body: new Uint8Array(gameBuf),
+      },
+    );
+    expect(gameUpload.status).toBe(201);
+
+    // Verify status now has 3 ready blobs, 0 pending
+    const statusAllReady = await fetch(`${baseUrl}/internal/v1/publications/${revisionId}`, {
+      headers: { Authorization: `Bearer ${PUBLISHER_SECRET}` },
+    });
+    const statusJson = (await statusAllReady.json()) as typeof stagedPub;
+    expect(statusJson.readyBlobs).toBe(3);
+    expect(statusJson.pendingBlobIds).toHaveLength(0);
+
+    // 7. Activate Publication (POST /internal/v1/publications/:revisionId/activate)
+    const activateRes = await fetch(`${baseUrl}/internal/v1/publications/${revisionId}/activate`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${PUBLISHER_SECRET}`,
+      },
+      body: JSON.stringify({ expectedActiveRevisionId: null }),
+    });
+    expect(activateRes.status).toBe(200);
+    const receipt = (await activateRes.json()) as {
+      sessionId: string;
+      revisionId: string;
+      state: string;
+      photoCount: number;
+      accessUrl: string;
+    };
+    expect(receipt.state).toBe('ACTIVE');
+    expect(receipt.photoCount).toBe(1);
+    expect(receipt.accessUrl).toMatch(/^http:\/\/127\.0\.0\.1\/s\//);
+
+    const publicToken = receipt.accessUrl.split('/s/')[1]!;
+
+    // 8. Public Read Endpoints
+    // 8a. GET /s/:token/data
+    const sessionDataRes = await fetch(`${baseUrl}/s/${publicToken}/data`);
+    expect(sessionDataRes.status).toBe(200);
+    const sessionData = (await sessionDataRes.json()) as {
+      id: string;
+      publicToken: string;
+      displayName: string;
+      photos: Array<{
+        id: string;
+        variants: { thumb: string; card: string; game: string };
+      }>;
+    };
+    expect(sessionData.id).toBe(resolvedSession.sessionId);
+    expect(sessionData.photos).toHaveLength(1);
+    expect(sessionData.photos[0]!.id).toBe('photo-test-01');
+
+    // 8b. GET media derivative /s/:token/media/:revisionId/:photoId/:variant
+    const mediaThumbRes = await fetch(
+      `${baseUrl}/s/${publicToken}/media/${revisionId}/photo-test-01/thumb`,
+    );
+    expect(mediaThumbRes.status).toBe(200);
+    expect(mediaThumbRes.headers.get('content-type')).toBe('image/webp');
+    const receivedThumbBytes = Buffer.from(await mediaThumbRes.arrayBuffer());
+    expect(receivedThumbBytes).toEqual(thumbBuf);
+
+    const mediaCardRes = await fetch(
+      `${baseUrl}/s/${publicToken}/media/${revisionId}/photo-test-01/card`,
+    );
+    expect(mediaCardRes.status).toBe(200);
+    const receivedCardBytes = Buffer.from(await mediaCardRes.arrayBuffer());
+    expect(receivedCardBytes).toEqual(cardBuf);
+
+    // 8c. Stale or invalid media requests -> 404
+    const badMediaRes = await fetch(
+      `${baseUrl}/s/${publicToken}/media/${revisionId}/nonexistent-photo/thumb`,
+    );
+    expect(badMediaRes.status).toBe(404);
+
+    // 9. Structured Logs audit
+    expect(logs.length).toBeGreaterThan(5);
+    const eventNames = logs.map((l) => l.event);
+    expect(eventNames).toContain('session_resolved');
+    expect(eventNames).toContain('publication_staged');
+    expect(eventNames).toContain('blob_uploaded_and_verified');
+    expect(eventNames).toContain('publication_activated');
+    expect(eventNames).toContain('session_data_served');
+    expect(eventNames).toContain('private_media_served');
+
+    // Check no tokens or secrets in logs
+    const allLogText = JSON.stringify(logs);
+    expect(allLogText).not.toContain(PUBLISHER_SECRET);
+    expect(allLogText).not.toContain(SERVER_SECRET);
+  });
+
+  it('rejects beginPublication with 404 if sessionId does not exist', async () => {
+    const res = await fetch(`${baseUrl}/internal/v1/publications`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${PUBLISHER_SECRET}`,
+      },
+      body: JSON.stringify({
+        schemaVersion: 1,
+        requestId: randomUUID(),
+        sessionId: randomUUID(),
+        expectedActiveRevisionId: null,
+        recipeKey: 'recipe-1-webp82-srgb-inside',
+        photos: [
+          {
+            photoId: 'photo-test',
+            contentHash: 'a'.repeat(64),
+            sortIndex: 0,
+            width: 800,
+            height: 600,
+            variants: {
+              thumb: {
+                blobId: randomUUID(),
+                sha256: 'b'.repeat(64),
+                byteLength: 100,
+                width: 480,
+                height: 360,
+              },
+              card: {
+                blobId: randomUUID(),
+                sha256: 'c'.repeat(64),
+                byteLength: 200,
+                width: 800,
+                height: 600,
+              },
+              game: {
+                blobId: randomUUID(),
+                sha256: 'd'.repeat(64),
+                byteLength: 300,
+                width: 800,
+                height: 600,
+              },
+            },
+          },
+        ],
+      }),
+    });
+    expect(res.status).toBe(404);
+    const body = (await res.json()) as { code: string };
+    expect(body.code).toBe('SESSION_NOT_FOUND');
+  });
+
+  it('rejects beginPublication with 409 if requestId is reused with different manifest', async () => {
+    const crmOrderUuid = randomUUID();
+    const resolveRes = await fetch(`${baseUrl}/internal/v1/sessions/resolve`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${PUBLISHER_SECRET}`,
+      },
+      body: JSON.stringify({ crmOrderUuid }),
+    });
+    const { sessionId } = (await resolveRes.json()) as { sessionId: string };
+
+    const fixedRequestId = randomUUID();
+    const firstManifest = {
+      schemaVersion: 1,
+      requestId: fixedRequestId,
+      sessionId,
+      expectedActiveRevisionId: null,
+      recipeKey: 'recipe-1-webp82-srgb-inside',
+      photos: [
+        {
+          photoId: 'photo-01',
+          contentHash: 'a'.repeat(64),
+          sortIndex: 0,
+          width: 1000,
+          height: 800,
+          variants: {
+            thumb: {
+              blobId: randomUUID(),
+              sha256: 'b'.repeat(64),
+              byteLength: 100,
+              width: 480,
+              height: 360,
+            },
+            card: {
+              blobId: randomUUID(),
+              sha256: 'c'.repeat(64),
+              byteLength: 200,
+              width: 800,
+              height: 600,
+            },
+            game: {
+              blobId: randomUUID(),
+              sha256: 'd'.repeat(64),
+              byteLength: 300,
+              width: 1000,
+              height: 800,
+            },
+          },
+        },
+      ],
+    };
+
+    const firstRes = await fetch(`${baseUrl}/internal/v1/publications`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${PUBLISHER_SECRET}`,
+      },
+      body: JSON.stringify(firstManifest),
+    });
+    expect(firstRes.status).toBe(201);
+
+    const conflictingManifest = {
+      ...firstManifest,
+      recipeKey: 'different-recipe-key',
+    };
+
+    const conflictRes = await fetch(`${baseUrl}/internal/v1/publications`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${PUBLISHER_SECRET}`,
+      },
+      body: JSON.stringify(conflictingManifest),
+    });
+    expect(conflictRes.status).toBe(409);
+    const body = (await conflictRes.json()) as { code: string };
+    expect(body.code).toBe('IDEMPOTENCY_CONFLICT');
+  });
+
+  it('rejects beginPublication with 422 if manifest is malformed', async () => {
+    const res = await fetch(`${baseUrl}/internal/v1/publications`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${PUBLISHER_SECRET}`,
+      },
+      body: JSON.stringify({ invalid: 'garbage' }),
+    });
+    expect(res.status).toBe(422);
+    const body = (await res.json()) as { code: string };
+    expect(body.code).toBe('INVALID_MANIFEST');
+  });
+
+  it('returns 404 for nonexistent revision in GET /internal/v1/publications/:revisionId', async () => {
+    const res = await fetch(`${baseUrl}/internal/v1/publications/${randomUUID()}`, {
+      headers: { Authorization: `Bearer ${PUBLISHER_SECRET}` },
+    });
+    expect(res.status).toBe(404);
+    const body = (await res.json()) as { code: string };
+    expect(body.code).toBe('REVISION_NOT_FOUND');
+  });
+
+  it('rejects PUT blob exceeding 12 MiB with 413 QUOTA_EXCEEDED', async () => {
+    const crmOrderUuid = randomUUID();
+    const resolveRes = await fetch(`${baseUrl}/internal/v1/sessions/resolve`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${PUBLISHER_SECRET}`,
+      },
+      body: JSON.stringify({ crmOrderUuid }),
+    });
+    const { sessionId } = (await resolveRes.json()) as { sessionId: string };
+
+    const blobId = randomUUID();
+    const oversizedBuffer = Buffer.alloc(MAX_BLOB_BYTE_LENGTH + 1);
+    const hash = createHash('sha256').update(oversizedBuffer).digest('hex');
+
+    const manifest = {
+      schemaVersion: 1,
+      requestId: randomUUID(),
+      sessionId,
+      expectedActiveRevisionId: null,
+      recipeKey: 'recipe-1-webp82-srgb-inside',
+      photos: [
+        {
+          photoId: 'photo-large',
+          contentHash: 'e'.repeat(64),
+          sortIndex: 0,
+          width: 800,
+          height: 600,
+          variants: {
+            thumb: { blobId, sha256: hash, byteLength: 1000, width: 480, height: 360 },
+            card: {
+              blobId: randomUUID(),
+              sha256: '1'.repeat(64),
+              byteLength: 50,
+              width: 800,
+              height: 600,
+            },
+            game: {
+              blobId: randomUUID(),
+              sha256: '2'.repeat(64),
+              byteLength: 50,
+              width: 800,
+              height: 600,
+            },
+          },
+        },
+      ],
+    };
+
+    const beginRes = await fetch(`${baseUrl}/internal/v1/publications`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${PUBLISHER_SECRET}`,
+      },
+      body: JSON.stringify(manifest),
+    });
+    const { revisionId } = (await beginRes.json()) as { revisionId: string };
+
+    const uploadRes = await fetch(
+      `${baseUrl}/internal/v1/publications/${revisionId}/blobs/${blobId}`,
+      {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'image/webp',
+          'X-Content-SHA256': hash,
+          Authorization: `Bearer ${PUBLISHER_SECRET}`,
+        },
+        body: new Uint8Array(oversizedBuffer),
+      },
+    );
+    expect(uploadRes.status).toBe(413);
+    const body = (await uploadRes.json()) as { code: string };
+    expect(body.code).toBe('QUOTA_EXCEEDED');
+  });
+
+  it('returns 404 for nonexistent public token in GET /s/:token/data', async () => {
+    const res = await fetch(`${baseUrl}/s/nonexistent-token-12345/data`);
+    expect(res.status).toBe(404);
+    const body = (await res.json()) as { code: string };
+    expect(body.code).toBe('SESSION_NOT_FOUND');
+  });
+
+  it('revokes an active session via POST /internal/v1/sessions/:sessionId/revoke and invalidates public token, session data and private media', async () => {
+    const crmOrderUuid = randomUUID();
+
+    // 1. Resolve Session
+    const resolveRes = await fetch(`${baseUrl}/internal/v1/sessions/resolve`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${PUBLISHER_SECRET}`,
+      },
+      body: JSON.stringify({ crmOrderUuid }),
+    });
+    expect(resolveRes.status).toBe(201);
+    const { sessionId } = (await resolveRes.json()) as { sessionId: string };
+
+    // 2. Prepare synthetic WebP variants
+    const thumbBuf = createSyntheticVp8Webp(480, 360);
+    const thumbSha256 = createHash('sha256').update(thumbBuf).digest('hex');
+    const thumbBlobId = randomUUID();
+    const cardBlobId = randomUUID();
+    const gameBlobId = randomUUID();
+
+    const manifest = {
+      schemaVersion: 1,
+      requestId: randomUUID(),
+      sessionId,
+      expectedActiveRevisionId: null,
+      recipeKey: 'recipe-1-webp82-srgb-inside',
+      photos: [
+        {
+          photoId: 'photo-revoke-01',
+          contentHash: 'd'.repeat(64),
+          sortIndex: 0,
+          width: 480,
+          height: 360,
+          variants: {
+            thumb: {
+              blobId: thumbBlobId,
+              sha256: thumbSha256,
+              byteLength: thumbBuf.length,
+              width: 480,
+              height: 360,
+            },
+            card: {
+              blobId: cardBlobId,
+              sha256: thumbSha256,
+              byteLength: thumbBuf.length,
+              width: 480,
+              height: 360,
+            },
+            game: {
+              blobId: gameBlobId,
+              sha256: thumbSha256,
+              byteLength: thumbBuf.length,
+              width: 480,
+              height: 360,
+            },
+          },
+        },
+      ],
+    };
+
+    // 3. Stage and upload
+    const beginRes = await fetch(`${baseUrl}/internal/v1/publications`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${PUBLISHER_SECRET}`,
+      },
+      body: JSON.stringify(manifest),
+    });
+    expect(beginRes.status).toBe(201);
+    const { revisionId } = (await beginRes.json()) as { revisionId: string };
+
+    for (const bId of [thumbBlobId, cardBlobId, gameBlobId]) {
+      const uploadRes = await fetch(
+        `${baseUrl}/internal/v1/publications/${revisionId}/blobs/${bId}`,
+        {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'image/webp',
+            'X-Content-SHA256': thumbSha256,
+            Authorization: `Bearer ${PUBLISHER_SECRET}`,
+          },
+          body: new Uint8Array(thumbBuf),
+        },
+      );
+      expect(uploadRes.status).toBe(201);
+    }
+
+    // 4. Activate
+    const activateRes = await fetch(`${baseUrl}/internal/v1/publications/${revisionId}/activate`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${PUBLISHER_SECRET}`,
+      },
+      body: JSON.stringify({ expectedActiveRevisionId: null }),
+    });
+    expect(activateRes.status).toBe(200);
+    const { accessUrl } = (await activateRes.json()) as { accessUrl: string };
+    const publicToken = accessUrl.split('/s/')[1]!;
+
+    // 5. Verify active public endpoints return 200
+    const dataBefore = await fetch(`${baseUrl}/s/${publicToken}/data`);
+    expect(dataBefore.status).toBe(200);
+
+    const mediaBefore = await fetch(
+      `${baseUrl}/s/${publicToken}/media/${revisionId}/photo-revoke-01/thumb`,
+    );
+    expect(mediaBefore.status).toBe(200);
+
+    // 6. Unauthorized revocation rejected with 401
+    const unauthRevoke = await fetch(`${baseUrl}/internal/v1/sessions/${sessionId}/revoke`, {
+      method: 'POST',
+      headers: { Authorization: 'Bearer bad-secret' },
+    });
+    expect(unauthRevoke.status).toBe(401);
+
+    // 7. Revoke session with valid publisher secret -> 200
+    const revokeRes = await fetch(`${baseUrl}/internal/v1/sessions/${sessionId}/revoke`, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${PUBLISHER_SECRET}` },
+    });
+    expect(revokeRes.status).toBe(200);
+    const revokeBody = (await revokeRes.json()) as { sessionId: string; status: string };
+    expect(revokeBody.sessionId).toBe(sessionId);
+    expect(revokeBody.status).toBe('REVOKED');
+
+    // 8. Public access is immediately closed (404)
+    const dataAfter = await fetch(`${baseUrl}/s/${publicToken}/data`);
+    expect(dataAfter.status).toBe(404);
+
+    const mediaAfter = await fetch(
+      `${baseUrl}/s/${publicToken}/media/${revisionId}/photo-revoke-01/thumb`,
+    );
+    expect(mediaAfter.status).toBe(404);
+
+    // 9. Re-revoking (or revoking by crmOrderUuid) is idempotent
+    const idempotentRevoke = await fetch(`${baseUrl}/internal/v1/sessions/${crmOrderUuid}/revoke`, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${PUBLISHER_SECRET}` },
+    });
+    expect(idempotentRevoke.status).toBe(200);
+
+    // 10. Nonexistent session returns 404
+    const unknownRevoke = await fetch(`${baseUrl}/internal/v1/sessions/${randomUUID()}/revoke`, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${PUBLISHER_SECRET}` },
+    });
+    expect(unknownRevoke.status).toBe(404);
+  });
+});
+
+describe('Publication logger capability privacy regression', () => {
+  it('never logs the bearer link, query string, CRM IDs or untrusted details', () => {
+    const entries: PublicationLogEntry[] = [];
+    const logger = new StructuredPublicationLogger({
+      sink: (line) => entries.push(JSON.parse(line) as PublicationLogEntry),
+    });
+    const token = 'a'.repeat(43);
+    logger.log('session_data_served', {
+      requestId: randomUUID(),
+      method: 'GET',
+      path: `/s/${token}/data?unexpected=secret-value`,
+      status: 200,
+      details: {
+        sessionId: randomUUID(),
+        accessUrl: `https://jogos.fotosdenatal.com/s/${token}`,
+        photosCount: 4,
+      },
+    });
+    const serialized = JSON.stringify(entries);
+    expect(entries[0]?.path).toBe('/s/:token/data');
+    expect(serialized).not.toContain(token);
+    expect(serialized).not.toContain('secret-value');
+    expect(serialized).not.toContain('accessUrl');
+    expect(serialized).not.toContain('sessionId');
+    expect(entries[0]?.details).toEqual({ photosCount: 4 });
+  });
+});
+
+describe('CRM Server-to-Server Eligibility Gate', () => {
+  it('denies a CRM-eligible order and a pre-staged revision outside the pilot allowlist', async () => {
+    const db = openSqliteDatabase(':memory:');
+    applyMigrations(db);
+    const repo = new SqliteSessionRepository({
+      db,
+      serverSecret: SERVER_SECRET,
+      publicBaseUrl: 'http://127.0.0.1',
+    });
+    const order = randomUUID();
+    const session = await repo.resolveOrCreateSession(order);
+    const revision = randomUUID();
+    db.prepare(
+      `INSERT INTO photo_revisions
+       (id, session_id, sequence, request_id, manifest_sha256, manifest_json, state)
+       VALUES (?, ?, 1, ?, ?, '{}', 'STAGED')`,
+    ).run(revision, session.sessionId, randomUUID(), 'a'.repeat(64));
+
+    const tmpStorage = await mkdtemp(join(tmpdir(), 'pilot-guard-'));
+    const crm = new InMemoryCrmClient();
+    crm.setEligibility({
+      orderUuid: order,
+      status: 'CONFIRMED',
+      isEligibleForGallery: true,
+      revoked: false,
+    });
+    const server = createCatalogServer({
+      publicOrigin: new URL('http://127.0.0.1'),
+      loadApplicationShell: async () => '<html></html>',
+      previews: {
+        async getByPublicToken() {
+          return undefined;
+        },
+      },
+      audit: { async record() {} },
+      clock: { now: () => new Date() },
+      runtime: { releaseStage: 'development' },
+      publicationService: new PublicationService({
+        sessionRepository: repo,
+        storageService: new FileSystemStorageService({ storageDir: tmpStorage }),
+        publisherSecret: PUBLISHER_SECRET,
+        crmClient: crm,
+        isOrderAllowedForPublication: () => false,
+      }),
+    });
+    server.listen(0, '127.0.0.1');
+    await once(server, 'listening');
+    const port = (server.address() as AddressInfo).port;
+    const base = `http://127.0.0.1:${port}`;
+    const headers = {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${PUBLISHER_SECRET}`,
+    };
+    try {
+      const resolve = await fetch(`${base}/internal/v1/sessions/resolve`, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({ crmOrderUuid: order }),
+      });
+      expect(resolve.status).toBe(403);
+      const activate = await fetch(`${base}/internal/v1/publications/${revision}/activate`, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({ expectedActiveRevisionId: null }),
+      });
+      expect(activate.status).toBe(403);
+      const state = db.prepare('SELECT state FROM photo_revisions WHERE id = ?').get(revision) as {
+        state: string;
+      };
+      expect(state.state).toBe('STAGED');
+    } finally {
+      server.close();
+      await once(server, 'close');
+      db.close();
+      await rm(tmpStorage, { recursive: true, force: true });
+    }
+  });
+
+  it('does not activate a staged revision after CRM cancellation or CRM outage', async () => {
+    const tempDir = await mkdtemp(join(tmpdir(), 'crm-activate-'));
+    const db = openSqliteDatabase(':memory:');
+    applyMigrations(db);
+    const repo = new SqliteSessionRepository({
+      db,
+      serverSecret: SERVER_SECRET,
+      publicBaseUrl: 'http://127.0.0.1',
+    });
+    const order = randomUUID();
+    const session = await repo.resolveOrCreateSession(order);
+    const revisionId = randomUUID();
+    db.prepare(
+      `INSERT INTO photo_revisions
+      (id, session_id, sequence, request_id, manifest_sha256, manifest_json, state)
+      VALUES (?, ?, 1, ?, ?, '{}', 'STAGED')`,
+    ).run(revisionId, session.sessionId, randomUUID(), 'a'.repeat(64));
+    const crm = new InMemoryCrmClient();
+    crm.setEligibility({
+      orderUuid: order,
+      status: 'CANCELLED',
+      isEligibleForGallery: false,
+      revoked: true,
+    });
+    const server = createCatalogServer({
+      publicOrigin: new URL('http://127.0.0.1'),
+      loadApplicationShell: async () => '<html></html>',
+      previews: {
+        async getByPublicToken() {
+          return undefined;
+        },
+      },
+      audit: { async record() {} },
+      clock: { now: () => new Date() },
+      runtime: { releaseStage: 'development' },
+      publicationService: new PublicationService({
+        sessionRepository: repo,
+        storageService: new FileSystemStorageService({ storageDir: tempDir }),
+        publisherSecret: PUBLISHER_SECRET,
+        crmClient: crm,
+      }),
+    });
+    server.listen(0, '127.0.0.1');
+    await once(server, 'listening');
+    const port = (server.address() as AddressInfo).port;
+    const activate = () =>
+      fetch(`http://127.0.0.1:${port}/internal/v1/publications/${revisionId}/activate`, {
+        method: 'POST',
+        headers: {
+          Authorization: 'Bearer ' + PUBLISHER_SECRET,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ expectedActiveRevisionId: null }),
+      });
+    try {
+      expect((await activate()).status).toBe(403);
+      crm.removeEligibility(order);
+      expect((await activate()).status).toBe(404);
+      const state = db
+        .prepare('SELECT state FROM photo_revisions WHERE id = ?')
+        .get(revisionId) as { state: string };
+      expect(state.state).toBe('STAGED');
+    } finally {
+      server.close();
+      await once(server, 'close');
+      db.close();
+      await rm(tempDir, { recursive: true, force: true });
+    }
+  });
+
+  it('enforces CRM eligibility checks when CrmClient is configured', async () => {
+    const tempDir = await mkdtemp(join(tmpdir(), 'crm-test-'));
+    const db = openSqliteDatabase(':memory:');
+    applyMigrations(db);
+
+    const sessionRepository = new SqliteSessionRepository({
+      db,
+      serverSecret: SERVER_SECRET,
+      publicBaseUrl: 'http://127.0.0.1',
+    });
+
+    const storageService = new FileSystemStorageService({
+      storageDir: tempDir,
+    });
+
+    const inMemoryCrm = new InMemoryCrmClient();
+    const authorizedOrder = randomUUID();
+    inMemoryCrm.setEligibility({
+      orderUuid: authorizedOrder,
+      status: 'CONFIRMED',
+      isEligibleForGallery: true,
+      revoked: false,
+    });
+
+    const cancelledOrder = randomUUID();
+    inMemoryCrm.setEligibility({
+      orderUuid: cancelledOrder,
+      status: 'CANCELLED',
+      isEligibleForGallery: false,
+      revoked: false,
+    });
+
+    const publicationService = new PublicationService({
+      sessionRepository,
+      storageService,
+      publisherSecret: PUBLISHER_SECRET,
+      crmClient: inMemoryCrm,
+    });
+
+    const catalogServer = createCatalogServer({
+      publicOrigin: new URL('http://127.0.0.1'),
+      loadApplicationShell: async () => '<html></html>',
+      previews: {
+        async getByPublicToken() {
+          return undefined;
+        },
+      },
+      audit: { async record() {} },
+      clock: { now: () => new Date() },
+      runtime: { releaseStage: 'development' },
+      publicationService,
+    });
+
+    catalogServer.listen(0, '127.0.0.1');
+    await once(catalogServer, 'listening');
+    const port = (catalogServer.address() as AddressInfo).port;
+    const testBaseUrl = `http://127.0.0.1:${port}`;
+
+    try {
+      // 1. Authorized order resolves successfully (201)
+      const resOk = await fetch(`${testBaseUrl}/internal/v1/sessions/resolve`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${PUBLISHER_SECRET}`,
+        },
+        body: JSON.stringify({ crmOrderUuid: authorizedOrder }),
+      });
+      expect(resOk.status).toBe(201);
+
+      // 2. Cancelled/ineligible order is rejected with 403
+      const resCancelled = await fetch(`${testBaseUrl}/internal/v1/sessions/resolve`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${PUBLISHER_SECRET}`,
+        },
+        body: JSON.stringify({ crmOrderUuid: cancelledOrder }),
+      });
+      expect(resCancelled.status).toBe(403);
+
+      // 3. Unknown order in CRM is rejected with 404
+      const resUnknown = await fetch(`${testBaseUrl}/internal/v1/sessions/resolve`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${PUBLISHER_SECRET}`,
+        },
+        body: JSON.stringify({ crmOrderUuid: randomUUID() }),
+      });
+      expect(resUnknown.status).toBe(404);
+    } finally {
+      catalogServer.close();
+      await once(catalogServer, 'close');
+      await rm(tempDir, { recursive: true, force: true });
+    }
+  });
+});

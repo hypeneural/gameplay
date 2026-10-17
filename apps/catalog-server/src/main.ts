@@ -2,7 +2,16 @@ import { readFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import { createCatalogServer } from './CatalogServer.js';
 import { createFilePreviewRepository, parsePreviewConfiguration } from './filePreviewRepository.js';
+import type { SocialPreviewRepository } from './socialPreview.js';
+import { SqlitePreviewRepository } from './publication/sqlitePreviewRepository.js';
+import { CrmClientError, HttpCrmClient } from './crm/CrmEligibilityService.js';
+import type { CrmClient } from './crm/CrmEligibilityService.js';
 import { resolveCatalogRuntimeConfig } from './runtimeConfig.js';
+import { PublicationService } from './publication/PublicationService.js';
+import { SqliteSessionRepository } from './publication/SessionRepository.js';
+import { applyMigrations, openSqliteDatabase } from './publication/sqliteDatabase.js';
+import { StructuredPublicationLogger } from './publication/publicationLogger.js';
+import { FileSystemStorageService } from './storage/FileSystemStorageService.js';
 
 const environment = process.env.NODE_ENV ?? 'development';
 const defaultApplicationShellPath = fileURLToPath(
@@ -10,20 +19,87 @@ const defaultApplicationShellPath = fileURLToPath(
 );
 const runtime = resolveCatalogRuntimeConfig(environment, process.env, defaultApplicationShellPath);
 
-const [applicationShell, previewSource] = await Promise.all([
-  readFile(runtime.applicationShellPath, 'utf8'),
-  readFile(runtime.previewConfigPath, 'utf8'),
-]);
-parsePreviewConfiguration(JSON.parse(previewSource), {
+const applicationShell = await readFile(runtime.applicationShellPath, 'utf8');
+if (runtime.previewAuthority === 'file-demo') {
+  const previewSource = await readFile(runtime.previewConfigPath, 'utf8');
+  parsePreviewConfiguration(JSON.parse(previewSource), {
+    rejectExampleTokens: environment === 'production',
+  });
+}
+
+let publicationService: PublicationService | undefined;
+let sessionIsActive: ((token: string) => Promise<boolean>) | undefined;
+let previews: SocialPreviewRepository = createFilePreviewRepository(runtime.previewConfigPath, {
   rejectExampleTokens: environment === 'production',
 });
+let readinessDatabase: ReturnType<typeof openSqliteDatabase> | undefined;
+
+if (runtime.databasePath && runtime.publisherApiSecret) {
+  if (!runtime.serverSecret) {
+    throw new Error('CATALOG_SERVER_SECRET_MISSING');
+  }
+  const db = openSqliteDatabase(runtime.databasePath);
+  applyMigrations(db);
+  readinessDatabase = db;
+  const sessionRepository = new SqliteSessionRepository({
+    db,
+    serverSecret: runtime.serverSecret,
+    publicBaseUrl: runtime.publicOrigin.origin,
+  });
+  sessionIsActive = async (token) => sessionRepository.isSessionActive(token);
+  if (runtime.previewAuthority === 'sqlite') {
+    previews = new SqlitePreviewRepository({ db });
+  }
+
+  // In persistent mode a missing CRM connection must deny session resolution.
+  // Staging HTML/OG remains accessible, but no unknown customer UUID is accepted.
+  const crmClient: CrmClient =
+    runtime.crmEligibilityOrigin && runtime.crmApiSecret
+      ? new HttpCrmClient({
+          crmEndpointUrl: runtime.crmEligibilityOrigin,
+          apiSecret: runtime.crmApiSecret,
+          ...(runtime.crmEndpointStyle ? { endpointStyle: runtime.crmEndpointStyle } : {}),
+        })
+      : {
+          async verifyEligibility() {
+            throw new CrmClientError('CRM_ELIGIBILITY_NOT_CONFIGURED', true);
+          },
+        };
+  const storageService = new FileSystemStorageService({
+    storageDir: runtime.storageDir ?? './data/media',
+  });
+  const logger = new StructuredPublicationLogger();
+  // Customer publication is a separate authorization from CRM eligibility.
+  // staging-demo never permits arbitrary order UUIDs, even with a valid
+  // publisher secret. Only an explicitly configured, single-order pilot
+  // can publish while broader production-stage gates remain unavailable.
+  const pilotOrderUuid = process.env.CATALOG_PILOT_ORDER_UUID?.trim().toLowerCase();
+  const pilotEnabled =
+    runtime.releaseStage === 'staging-demo' &&
+    process.env.CATALOG_CUSTOMER_PILOT_ENABLED === '1' &&
+    process.env.CATALOG_CUSTOMER_DATA_ALLOWED === '1' &&
+    Boolean(
+      pilotOrderUuid &&
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/.test(
+        pilotOrderUuid,
+      ),
+    );
+  publicationService = new PublicationService({
+    sessionRepository,
+    storageService,
+    publisherSecret: runtime.publisherApiSecret,
+    crmClient,
+    isOrderAllowedForPublication: (orderUuid) =>
+      pilotEnabled && orderUuid.toLowerCase() === pilotOrderUuid,
+    logger,
+    publicBaseUrl: runtime.publicOrigin.origin,
+  });
+}
 
 const server = createCatalogServer({
   publicOrigin: runtime.publicOrigin,
   loadApplicationShell: async () => applicationShell,
-  previews: createFilePreviewRepository(runtime.previewConfigPath, {
-    rejectExampleTokens: environment === 'production',
-  }),
+  previews,
   audit: {
     async record(entry) {
       // A integração de auditoria só recebe decisão, versão e data. Nunca
@@ -34,11 +110,20 @@ const server = createCatalogServer({
   clock: { now: () => new Date() },
   runtime: { releaseStage: runtime.releaseStage },
   readiness: async () => {
+    if (runtime.previewAuthority === 'sqlite') {
+      // Lightweight indexed DB connection health; no customer rows are logged.
+      const check = readinessDatabase?.prepare('SELECT 1 AS ok').get() as
+        { ok?: number } | undefined;
+      if (check?.ok !== 1) throw new Error('CATALOG_SQLITE_UNAVAILABLE');
+      return;
+    }
     const currentSource = await readFile(runtime.previewConfigPath, 'utf8');
     parsePreviewConfiguration(JSON.parse(currentSource), {
       rejectExampleTokens: environment === 'production',
     });
   },
+  ...(publicationService ? { publicationService } : {}),
+  ...(sessionIsActive ? { sessionIsActive } : {}),
 });
 
 server.listen(runtime.port, runtime.host, () => {

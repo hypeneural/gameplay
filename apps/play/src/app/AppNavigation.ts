@@ -1,17 +1,20 @@
 export interface SessionRoute {
   kind: 'session';
   token: string;
+  demo?: true;
 }
 
 interface GalleryRoute {
   kind: 'gallery';
   token: string;
+  demo?: true;
 }
 
 export interface GameCoverRoute {
   kind: 'game-cover';
   token: string;
   gameId: string;
+  demo?: true;
 }
 
 interface ThemeLabRoute {
@@ -45,6 +48,20 @@ const fallbackSessionRoute: SessionRoute = { kind: 'session', token: 'local-demo
 
 /** Parses only public route identifiers; run ids and photo paths never enter the URL. */
 export function parseAppRoute(pathname: string): AppRoute {
+  // Explicit synthetic routes never reuse private session capabilities.
+  if (pathname === '/') return { kind: 'session', token: 'local-demo-token', demo: true };
+  if (pathname === '/demo/fotos') {
+    return { kind: 'gallery', token: 'local-demo-token', demo: true };
+  }
+  const demoGame = /^\/demo\/game\/([a-z0-9-]{1,64})$/.exec(pathname);
+  if (demoGame) {
+    return {
+      kind: 'game-cover',
+      token: 'local-demo-token',
+      gameId: demoGame[1]!,
+      demo: true,
+    };
+  }
   const segments = pathname.split('/').filter(Boolean);
   if (segments[0] === '__dev' && segments[1] === 'theme') return { kind: 'theme-lab' };
   if (segments[0] === '__dev' && segments[1] === 'experience') return { kind: 'experience-lab' };
@@ -61,6 +78,11 @@ export function parseAppRoute(pathname: string): AppRoute {
 }
 
 export function routePath(route: PublicRoute): string {
+  if (route.demo) {
+    if (route.kind === 'session') return '/';
+    if (route.kind === 'gallery') return '/demo/fotos';
+    return `/demo/game/${encodeURIComponent(route.gameId)}`;
+  }
   const token = encodeURIComponent(route.token);
   if (route.kind === 'session') return `/s/${token}`;
   if (route.kind === 'gallery') return `/s/${token}/fotos`;
@@ -81,7 +103,7 @@ export function sameRoute(first: AppRoute, second: AppRoute): boolean {
   ) {
     return true;
   }
-  if (first.token !== second.token) return false;
+  if (first.token !== second.token || Boolean(first.demo) !== Boolean(second.demo)) return false;
   if (first.kind === 'game-cover' && second.kind === 'game-cover') {
     return first.gameId === second.gameId;
   }

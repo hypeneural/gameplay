@@ -50,21 +50,51 @@
 │   │   ├── README.md
 │   │   ├── config
 │   │   │   └── social-preview.example.json
+│   │   ├── migrations
+│   │   │   ├── 001_mvp_photo_sessions.sql
+│   │   │   ├── 002_photo_revisions_superseded_state.sql
+│   │   │   └── 002_social_previews.sql
 │   │   ├── nginx
 │   │   │   └── catalog-social-preview.conf.example
 │   │   ├── package.json
 │   │   ├── public
 │   │   │   └── social
-│   │   │       └── evydencia-christmas-v1.webp
+│   │   │       ├── evydencia-christmas-v1.webp
+│   │   │       ├── evydencia-christmas-v2.jpg
+│   │   │       └── evydencia-christmas-v2.webp
+│   │   ├── scripts
+│   │   │   └── copy-migrations.mjs
 │   │   ├── src
 │   │   │   ├── CatalogServer.test.ts
 │   │   │   ├── CatalogServer.ts
+│   │   │   ├── crm
+│   │   │   │   ├── CrmEligibilityService.test.ts
+│   │   │   │   └── CrmEligibilityService.ts
 │   │   │   ├── filePreviewRepository.test.ts
 │   │   │   ├── filePreviewRepository.ts
 │   │   │   ├── main.ts
+│   │   │   ├── publication
+│   │   │   │   ├── PublicationService.ts
+│   │   │   │   ├── SessionRepository.ts
+│   │   │   │   ├── corte2Http.test.ts
+│   │   │   │   ├── hardeningRegression.test.ts
+│   │   │   │   ├── mvpContract.test.ts
+│   │   │   │   ├── mvpSqliteSchema.test.ts
+│   │   │   │   ├── publicationLogger.ts
+│   │   │   │   ├── publicationManifest.test.ts
+│   │   │   │   ├── publicationManifest.ts
+│   │   │   │   ├── sessionRepository.test.ts
+│   │   │   │   ├── sqliteDatabase.ts
+│   │   │   │   ├── sqlitePreviewRepository.test.ts
+│   │   │   │   ├── sqlitePreviewRepository.ts
+│   │   │   │   ├── syntheticCrossSessionIntegration.test.ts
+│   │   │   │   └── tokenSecurity.ts
 │   │   │   ├── runtimeConfig.test.ts
 │   │   │   ├── runtimeConfig.ts
-│   │   │   └── socialPreview.ts
+│   │   │   ├── socialPreview.ts
+│   │   │   └── storage
+│   │   │       ├── FileSystemStorageService.test.ts
+│   │   │       └── FileSystemStorageService.ts
 │   │   └── tsconfig.build.json
 │   └── play
 │       ├── AGENTS.md
@@ -359,6 +389,7 @@
 │       │   │   ├── App.tsx
 │       │   │   ├── AppNavigation.test.ts
 │       │   │   ├── AppNavigation.ts
+│       │   │   ├── AppRouter.test.ts
 │       │   │   ├── AppRouter.tsx
 │       │   │   ├── AppServices.ts
 │       │   │   ├── ExperienceSettings.test.ts
@@ -369,7 +400,9 @@
 │       │   │   ├── LocalTestSession.test.ts
 │       │   │   ├── LocalTestSession.ts
 │       │   │   ├── ReleaseMode.test.ts
-│       │   │   └── ReleaseMode.ts
+│       │   │   ├── ReleaseMode.ts
+│       │   │   ├── SessionDataLoader.test.ts
+│       │   │   └── SessionDataLoader.ts
 │       │   ├── audio
 │       │   │   ├── playInterfaceTap.test.ts
 │       │   │   ├── playInterfaceTap.ts
@@ -516,6 +549,9 @@
 │   │   └── SHARING_AND_SOCIAL_PREVIEW.md
 │   ├── assets
 │   │   └── ASSET_MANIFEST_CONTRACT.md
+│   ├── contracts
+│   │   ├── mvp-photo-publication-v1.openapi.json
+│   │   └── photo-publication-manifest-v1.schema.json
 │   ├── design
 │   │   ├── PUZZLE_SWAP_EXPERIENCE_REVIEW.md
 │   │   └── THEME_DIRECTION.md
@@ -604,6 +640,7 @@
 │   │   ├── NATAL_2024_CORPUS_BASELINE.md
 │   │   └── PHOTO_CORPUS_BASELINE.md
 │   ├── ops
+│   │   ├── PRIVATE_GALLERY_PILOT_HANDOFF_20261016.md
 │   │   └── VPS_STAGING_DEMO_RUNBOOK.md
 │   ├── plan
 │   │   └── IMPLEMENTATION_PLAN.md
@@ -1185,6 +1222,9 @@
 ├── pnpm-lock.yaml
 ├── pnpm-workspace.yaml
 ├── prettier.config.mjs
+├── scripts
+│   └── agent
+│       └── verify-gameplay-private-candidate.ps1
 ├── tests
 │   ├── e2e
 │   │   ├── christmas-shell.spec.ts
@@ -1255,8 +1295,14 @@
 │   │       └── asset-factory.test.ts
 │   ├── clean.mjs
 │   ├── deploy
+│   │   ├── backup-restore-catalog.mjs
+│   │   ├── backup-restore-catalog.test.mjs
 │   │   ├── create-staging-preview-config.mjs
+│   │   ├── photo-session-preflight.mjs
+│   │   ├── photo-session-preflight.test.mjs
 │   │   ├── prepare-vps-release.mjs
+│   │   ├── publish-session.mjs
+│   │   ├── publish-session.test.mjs
 │   │   ├── release-utils.mjs
 │   │   ├── release-utils.test.mjs
 │   │   ├── smoke-release-runtime.mjs
@@ -1287,6 +1333,7 @@
 │   │   │   ├── prepareLocal.ts
 │   │   │   ├── prepareMultiLocal.ts
 │   │   │   ├── recipe.ts
+│   │   │   ├── sourceFilter.test.ts
 │   │   │   └── sourceFilter.ts
 │   │   └── tests
 │   │       ├── inspect.test.ts
