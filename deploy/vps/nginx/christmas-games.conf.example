@@ -33,7 +33,7 @@ location ~ "^/showcase/v1/(demo_[0-9]{3})/(thumb|card|game)\.webp$" {
     add_header X-Content-Type-Options "nosniff" always;
 }
 
-location ^~ /showcase/ {
+location ~ "^/showcase/" {
     return 404;
 }
 
