@@ -1,6 +1,6 @@
 import { createHash } from 'node:crypto';
 import { existsSync } from 'node:fs';
-import { cp, mkdir, readdir, readFile, rm, stat, unlink, writeFile } from 'node:fs/promises';
+import { cp, mkdir, readdir, readFile, stat, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { DatabaseSync } from 'node:sqlite';
 
@@ -13,13 +13,12 @@ export async function backupCatalog({ dbPath, storageDir, backupDir }) {
     throw new Error(`DATABASE_NOT_FOUND: ${dbPath}`);
   }
 
+  // Refuse to mix a new DB snapshot with files from an earlier backup.
+  if (existsSync(backupDir) && (await readdir(backupDir)).length !== 0) {
+    throw new Error('BACKUP_TARGET_NOT_EMPTY');
+  }
   await mkdir(backupDir, { recursive: true });
   const backupDbPath = join(backupDir, 'catalog.sqlite');
-
-  // Remove previous backup db if present
-  if (existsSync(backupDbPath)) {
-    await unlink(backupDbPath);
-  }
 
   // 1. Consistent SQLite snapshot via VACUUM INTO
   const sourceDb = new DatabaseSync(dbPath);
@@ -113,10 +112,20 @@ export async function restoreCatalog({ backupDir, targetDbPath, targetStorageDir
     throw new Error('BACKUP_CHECKSUM_MISMATCH');
   }
 
-  // 1. Clean existing WAL, SHM and target DB before restore
-  await unlink(targetDbPath).catch(() => undefined);
-  await unlink(`${targetDbPath}-wal`).catch(() => undefined);
-  await unlink(`${targetDbPath}-shm`).catch(() => undefined);
+  // Never replace a DB, WAL, SHM or media directory in use.
+  // Restore into a fresh path with all writers stopped, then validate before
+  // an operator-controlled cutover. This is not a production restore command.
+  if (
+    existsSync(targetDbPath) ||
+    existsSync(`${targetDbPath}-wal`) ||
+    existsSync(`${targetDbPath}-shm`) ||
+    (targetStorageDir && existsSync(targetStorageDir))
+  ) {
+    throw new Error('RESTORE_TARGET_NOT_EMPTY');
+  }
+  if (metadata.blobsCount > 0 && !existsSync(join(backupDir, 'storage'))) {
+    throw new Error('BACKUP_STORAGE_MISSING');
+  }
 
   // 2. Copy clean database
   await cp(backupDbPath, targetDbPath);
@@ -124,7 +133,6 @@ export async function restoreCatalog({ backupDir, targetDbPath, targetStorageDir
   // 3. Restore storage directory if present
   const backupStorageDir = join(backupDir, 'storage');
   if (targetStorageDir && existsSync(backupStorageDir)) {
-    await rm(targetStorageDir, { recursive: true, force: true });
     await cp(backupStorageDir, targetStorageDir, { recursive: true });
   }
 
