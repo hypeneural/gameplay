@@ -1,5 +1,6 @@
 .reference/
 .local-private-media/
+.local-showcase/
 .local-test-media/
 **/.local-test-media/
 .release/

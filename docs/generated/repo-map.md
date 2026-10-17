@@ -399,6 +399,8 @@
 │       │   │   ├── GameQuality.ts
 │       │   │   ├── LocalTestSession.test.ts
 │       │   │   ├── LocalTestSession.ts
+│       │   │   ├── PublicShowcaseSession.test.ts
+│       │   │   ├── PublicShowcaseSession.ts
 │       │   │   ├── ReleaseMode.test.ts
 │       │   │   ├── ReleaseMode.ts
 │       │   │   ├── SessionDataLoader.test.ts
@@ -1332,13 +1334,15 @@
 │   │   │   ├── inspect.ts
 │   │   │   ├── prepareLocal.ts
 │   │   │   ├── prepareMultiLocal.ts
+│   │   │   ├── prepareShowcase.ts
 │   │   │   ├── recipe.ts
 │   │   │   ├── sourceFilter.test.ts
 │   │   │   └── sourceFilter.ts
 │   │   └── tests
 │   │       ├── inspect.test.ts
 │   │       ├── media-pipeline.test.ts
-│   │       └── multi-client-pipeline.test.ts
+│   │       ├── multi-client-pipeline.test.ts
+│   │       └── prepareShowcase.test.ts
 │   └── repo-map.mjs
 ├── tsconfig.base.json
 ├── tsconfig.json

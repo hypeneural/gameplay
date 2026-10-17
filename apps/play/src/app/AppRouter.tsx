@@ -25,6 +25,7 @@ import {
 } from '../audio/playInterfaceTap.js';
 import type { AppRoute, GameCoverRoute, PublicRoute, SessionRoute } from './AppNavigation.js';
 import { fetchLocalTestSession, shouldUseLocalTestMedia } from './LocalTestSession.js';
+import { fetchPublicShowcaseSession, PublicShowcaseLoadError } from './PublicShowcaseSession.js';
 import { fetchSessionData, SessionLoadError } from './SessionDataLoader.js';
 import type { Session } from '@christmas-games/platform';
 
@@ -86,6 +87,8 @@ export function AppRouter(): React.JSX.Element {
   const [selectedPhotoId, setSelectedPhotoId] = useState('ph_001');
   const [localSession, setLocalSession] = useState<{ token: string; value: Session }>();
   const [localSessionError, setLocalSessionError] = useState<string>();
+  const [showcaseSession, setShowcaseSession] = useState<Session>();
+  const [showcaseSessionError, setShowcaseSessionError] = useState<string>();
   const [remoteSession, setRemoteSession] = useState<{ token: string; value: Session }>();
   const [remoteSessionError, setRemoteSessionError] = useState<string>();
   const [playing, setPlaying] = useState(false);
@@ -104,6 +107,7 @@ export function AppRouter(): React.JSX.Element {
   const [exitRequest, setExitRequest] = useState(0);
 
   const currentToken = 'token' in route ? route.token : undefined;
+  const isPublicShowcaseRoute = Boolean('demo' in route && route.demo && !usesLocalTestMedia);
   const isRemoteSessionRoute = Boolean(
     currentToken && currentToken !== 'local-demo-token' && !usesLocalTestMedia,
   );
@@ -119,9 +123,11 @@ export function AppRouter(): React.JSX.Element {
   const session =
     usesLocalTestMedia && validLocalSession
       ? validLocalSession
-      : validRemoteSession
-        ? validRemoteSession
-        : fixtureSession;
+      : isPublicShowcaseRoute && showcaseSession
+        ? showcaseSession
+        : validRemoteSession
+          ? validRemoteSession
+          : fixtureSession;
   const selectedPhoto =
     session.photos.find((photo) => photo.id === selectedPhotoId) ?? session.photos[0]!;
   const context = useMemo<GameContextSeed>(
@@ -259,6 +265,36 @@ export function AppRouter(): React.JSX.Element {
       controller.abort();
     };
   }, [currentToken, isRemoteSessionRoute]);
+
+  useEffect(() => {
+    if (!isPublicShowcaseRoute) return;
+    if (showcaseSession) return;
+
+    const controller = new AbortController();
+    setShowcaseSessionError(undefined);
+
+    fetchPublicShowcaseSession(controller.signal)
+      .then((loadedShowcase) => {
+        setShowcaseSession(loadedShowcase);
+        setSelectedPhotoId((current) =>
+          loadedShowcase.photos.some((photo) => photo.id === current)
+            ? current
+            : (loadedShowcase.photos[0]?.id ?? current),
+        );
+      })
+      .catch((error: unknown) => {
+        if (controller.signal.aborted) return;
+        setShowcaseSessionError(
+          error instanceof PublicShowcaseLoadError || error instanceof Error
+            ? error.message
+            : 'Não foi possível carregar a vitrine pública.',
+        );
+      });
+
+    return () => {
+      controller.abort();
+    };
+  }, [isPublicShowcaseRoute, showcaseSession]);
 
   const writeRoute = useCallback(
     (nextRoute: PublicRoute, mode: Exclude<HistoryMode, 'none'>) => {
@@ -493,6 +529,30 @@ export function AppRouter(): React.JSX.Element {
     );
   }
 
+  if (isPublicShowcaseRoute && showcaseSessionError) {
+    return (
+      <main className="shell unavailable-game" role="alert">
+        <p className="eyebrow">VITRINE INDISPONÍVEL</p>
+        <h1>{showcaseSessionError}</h1>
+        <p>Tente atualizar a página em instantes.</p>
+      </main>
+    );
+  }
+
+  if (isPublicShowcaseRoute && !showcaseSession) {
+    return (
+      <main className="shell unavailable-game" role="status">
+        <ChristmasLoadingExperience
+          mode="session"
+          eyebrow="VITRINE DE NATAL"
+          title="Preparando nossas lembranças…"
+          calm={calm}
+          lowQuality={quality === 'LOW'}
+        />
+      </main>
+    );
+  }
+
   if (route.kind === 'gallery') {
     return (
       <Suspense
@@ -557,7 +617,9 @@ export function AppRouter(): React.JSX.Element {
         onSelectPhoto={setSelectedPhotoId}
         selectedPhotoId={selectedPhoto.id}
         session={session}
-        showFixtureSelector={releaseMode === 'development' && !usesLocalTestMedia}
+        showFixtureSelector={
+          releaseMode === 'development' && !usesLocalTestMedia && !isPublicShowcaseRoute
+        }
       />
     );
   }

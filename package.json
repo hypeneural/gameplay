@@ -29,6 +29,7 @@
     "media:process": "pnpm --filter @christmas-games/media-pipeline process",
     "media:inspect": "pnpm --filter @christmas-games/media-pipeline inspect",
     "media:prepare-local": "pnpm --filter @christmas-games/media-pipeline prepare-local",
+    "showcase:prepare": "pnpm --filter @christmas-games/media-pipeline prepare-showcase",
     "gallery:prepare": "pnpm --filter @christmas-games/media-pipeline gallery-lab --prepare-only",
     "gallery:prepare:multi": "pnpm --filter @christmas-games/media-pipeline gallery-lab-multi --prepare-only",
     "gallery:lab": "pnpm --filter @christmas-games/media-pipeline gallery-lab",

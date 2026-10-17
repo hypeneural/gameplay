@@ -3,16 +3,35 @@ import { expect, test } from '@playwright/test';
 test('public demo navigation preserves gallery, selection and games without a private token', async ({
   page,
 }) => {
+  const requested: string[] = [];
+  page.on('request', (request) => requested.push(request.url()));
+
   await page.goto('/');
+  await expect(page.getByTestId('photo-selection')).toHaveAttribute(
+    'data-selected-photo-id',
+    'demo_001',
+  );
   await page.getByTestId('open-full-gallery').click();
   await expect(page).toHaveURL(/\/demo\/fotos$/);
   await expect(page.getByTestId('session-gallery')).toBeVisible();
-  await page.locator('.gallery-card').first().click();
+  await expect(page.locator('.gallery-card').first().locator('img')).toHaveAttribute(
+    'src',
+    /^\/showcase\/v1\/demo_001\/card\.webp/,
+  );
+
+  await page.locator('.gallery-card').nth(1).click();
   await expect(page.locator('.gallery-lightbox')).toBeVisible();
   await page.getByRole('button', { name: /Jogar com esta foto/ }).click();
   await expect(page).toHaveURL(/\/$/);
+  await expect(page.getByTestId('photo-selection')).toHaveAttribute(
+    'data-selected-photo-id',
+    'demo_002',
+  );
   await page.getByTestId('open-game-puzzle-swap').click();
   await expect(page).toHaveURL(/\/demo\/game\/puzzle-swap$/);
+
+  expect(requested.some((url) => /\/fixtures\/(?:portrait|landscape)\.svg/i.test(url))).toBe(false);
+  expect(requested.some((url) => url.includes('/showcase/v1/manifest.json'))).toBe(true);
 });
 
 test('gallery is a bounded mobile album and stays engine-free before gameplay', async ({

@@ -123,7 +123,8 @@ export function assertNoForbiddenReleaseFiles(files) {
       lower.includes('/originals/') ||
       lower.startsWith('originals/') ||
       lower.includes('local-test-media') ||
-      lower.includes('local-private-media')
+      lower.includes('local-private-media') ||
+      lower.includes('local-showcase')
     );
   });
   if (forbidden.length > 0) {
