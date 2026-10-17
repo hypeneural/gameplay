@@ -1,5 +1,20 @@
 import { expect, test } from '@playwright/test';
 
+test('public demo navigation preserves gallery, selection and games without a private token', async ({
+  page,
+}) => {
+  await page.goto('/');
+  await page.getByTestId('open-full-gallery').click();
+  await expect(page).toHaveURL(/\/demo\/fotos$/);
+  await expect(page.getByTestId('session-gallery')).toBeVisible();
+  await page.locator('.gallery-card').first().click();
+  await expect(page.locator('.gallery-lightbox')).toBeVisible();
+  await page.getByRole('button', { name: /Jogar com esta foto/ }).click();
+  await expect(page).toHaveURL(/\/$/);
+  await page.getByTestId('open-game-puzzle-swap').click();
+  await expect(page).toHaveURL(/\/demo\/game\/puzzle-swap$/);
+});
+
 test('gallery is a bounded mobile album and stays engine-free before gameplay', async ({
   page,
 }) => {
