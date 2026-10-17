@@ -50,11 +50,16 @@ const fallbackSessionRoute: SessionRoute = { kind: 'session', token: 'local-demo
 export function parseAppRoute(pathname: string): AppRoute {
   // Explicit synthetic routes never reuse private session capabilities.
   if (pathname === '/') return { kind: 'session', token: 'local-demo-token', demo: true };
-  if (pathname === '/demo/fotos') return { kind: 'gallery', token: 'local-demo-token', demo: true };
+  if (pathname === '/demo/fotos') {
+    return { kind: 'gallery', token: 'local-demo-token', demo: true };
+  }
   const demoGame = /^\/demo\/game\/([a-z0-9-]{1,64})$/.exec(pathname);
   if (demoGame) {
     return {
-      kind: 'game-cover', token: 'local-demo-token', gameId: demoGame[1]!, demo: true,
+      kind: 'game-cover',
+      token: 'local-demo-token',
+      gameId: demoGame[1]!,
+      demo: true,
     };
   }
   const segments = pathname.split('/').filter(Boolean);

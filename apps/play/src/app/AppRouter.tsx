@@ -332,20 +332,26 @@ export function AppRouter(): React.JSX.Element {
       return;
     if (route.kind === 'session') hubScrollRef.current = window.scrollY;
     if (route.kind === 'gallery') galleryScrollRef.current = window.scrollY;
-    writeRoute({ kind: 'game-cover', token: route.token, gameId, ...(route.demo ? { demo: true as const } : {}) }, 'push');
+    writeRoute(
+      { kind: 'game-cover', token: route.token, gameId, ...(route.demo ? { demo: true as const } : {}) },
+      'push',
+    );
   };
 
   const openGallery = (): void => {
     if (route.kind !== 'session') return;
     hubScrollRef.current = window.scrollY;
-    writeRoute({ kind: 'gallery', token: route.token, ...(route.demo ? { demo: true as const } : {}) }, 'push');
+    writeRoute(
+      { kind: 'gallery', token: route.token, ...(route.demo ? { demo: true as const } : {}) },
+      'push',
+    );
   };
 
   const goToSession = (token: string): void => {
     const sessionRoute: SessionRoute = {
       kind: 'session',
       token,
-      ...(('demo' in route && route.demo) ? { demo: true as const } : {}),
+      ...('demo' in route && route.demo ? { demo: true as const } : {}),
     };
     if (route.kind === 'gallery') galleryScrollRef.current = window.scrollY;
     if (playingRef.current) {
@@ -518,7 +524,10 @@ export function AppRouter(): React.JSX.Element {
             setSelectedPhotoId(photoId);
             galleryScrollRef.current = window.scrollY;
             hubScrollRef.current = 0;
-            writeRoute({ kind: 'session', token: route.token, ...(route.demo ? { demo: true as const } : {}) }, 'push');
+            writeRoute(
+              { kind: 'session', token: route.token, ...(route.demo ? { demo: true as const } : {}) },
+              'push',
+            );
           }}
         />
       </Suspense>

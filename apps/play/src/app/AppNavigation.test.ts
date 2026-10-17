@@ -19,11 +19,15 @@ describe('AppNavigation', () => {
       '/demo/fotos',
     );
     expect(
-      routePath({ kind: 'game-cover', token: 'local-demo-token', gameId: 'puzzle-swap', demo: true }),
+      routePath({
+        kind: 'game-cover',
+        token: 'local-demo-token',
+        gameId: 'puzzle-swap',
+        demo: true,
+      }),
     ).toBe('/demo/game/puzzle-swap');
     expect(sameRoute(album, parseAppRoute('/s/local-demo-token/fotos'))).toBe(false);
   });
-
 
   it('keeps the public session, gallery and selected game in stable paths', () => {
     expect(parseAppRoute('/s/local-demo-token')).toEqual({
