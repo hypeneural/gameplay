@@ -333,7 +333,12 @@ export function AppRouter(): React.JSX.Element {
     if (route.kind === 'session') hubScrollRef.current = window.scrollY;
     if (route.kind === 'gallery') galleryScrollRef.current = window.scrollY;
     writeRoute(
-      { kind: 'game-cover', token: route.token, gameId, ...(route.demo ? { demo: true as const } : {}) },
+      {
+        kind: 'game-cover',
+        token: route.token,
+        gameId,
+        ...(route.demo ? { demo: true as const } : {}),
+      },
       'push',
     );
   };
@@ -525,7 +530,11 @@ export function AppRouter(): React.JSX.Element {
             galleryScrollRef.current = window.scrollY;
             hubScrollRef.current = 0;
             writeRoute(
-              { kind: 'session', token: route.token, ...(route.demo ? { demo: true as const } : {}) },
+              {
+                kind: 'session',
+                token: route.token,
+                ...(route.demo ? { demo: true as const } : {}),
+              },
               'push',
             );
           }}
