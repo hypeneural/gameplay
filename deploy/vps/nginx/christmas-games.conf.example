@@ -18,6 +18,25 @@ location ^~ /fixtures/ {
     add_header X-Content-Type-Options "nosniff" always;
 }
 
+# Persistent versioned public showcase library (manifest + approved WebP derivatives only).
+location = /showcase/v1/manifest.json {
+    alias /srv/christmas-games/showcase/v1/manifest.json;
+    default_type application/json;
+    add_header Cache-Control "public, max-age=60, must-revalidate" always;
+    add_header X-Content-Type-Options "nosniff" always;
+}
+
+location ~ "^/showcase/v1/(demo_[0-9]{3})/(thumb|card|game)\.webp$" {
+    alias /srv/christmas-games/showcase/v1/$1/$2.webp;
+    default_type image/webp;
+    add_header Cache-Control "public, max-age=31536000, immutable" always;
+    add_header X-Content-Type-Options "nosniff" always;
+}
+
+location ~ "^/showcase/" {
+    return 404;
+}
+
 location = /favicon.svg {
     try_files $uri =404;
     add_header Cache-Control "public, max-age=86400" always;

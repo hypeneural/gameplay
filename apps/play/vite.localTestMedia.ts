@@ -1,8 +1,17 @@
+import { createHash } from 'node:crypto';
 import { createReadStream } from 'node:fs';
 import { access, readFile } from 'node:fs/promises';
 import { join, resolve, sep } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import type { IncomingMessage, ServerResponse } from 'node:http';
 import type { Plugin } from 'vite';
+
+const repositoryRoot = fileURLToPath(new URL('../../', import.meta.url));
+const fallbackWebpBytes = Buffer.from(
+  'UklGRiQAAABXRUJQVlA4IBgAAAAwAQCdASoBAAEAAwA0JaQAA3AA/vuUAAA=',
+  'base64',
+);
+const fallbackWebpSha256 = createHash('sha256').update(fallbackWebpBytes).digest('hex');
 
 const opaquePhotoId = /^[a-z0-9][a-z0-9-]{0,63}$/i;
 const opaqueRecipeKey = /^[a-z0-9][a-z0-9._-]{0,255}$/i;
@@ -86,20 +95,99 @@ export function localTestMediaPlugin(): Plugin {
   const configuredRoot = process.env.LOCAL_TEST_MEDIA_ROOT;
   const configuredRegistry = process.env.LOCAL_TEST_MEDIA_MULTI_REGISTRY;
   const storageRoot = resolve(configuredRoot ?? '.');
+  const showcaseRoot = resolve(
+    process.env.PUBLIC_SHOWCASE_DIR ?? join(repositoryRoot, '.local-showcase', 'v1'),
+  );
 
   return {
     name: 'local-test-media',
     apply: 'serve',
     configureServer(server): void {
       server.middlewares.use((request, response, next) => {
-        void handleRequest(storageRoot, configuredRegistry, request, response, next);
+        void handleRequest(storageRoot, showcaseRoot, configuredRegistry, request, response, next);
       });
     },
   };
 }
 
+async function handleShowcaseRequest(
+  showcaseRoot: string,
+  pathname: string,
+  response: ServerResponse,
+): Promise<void> {
+  if (pathname === '/showcase/v1/manifest.json') {
+    try {
+      const manifestRaw = await readFile(join(showcaseRoot, 'manifest.json'), 'utf8');
+      response.statusCode = 200;
+      response.setHeader('Content-Type', 'application/json; charset=utf-8');
+      response.setHeader('Cache-Control', 'no-cache');
+      response.setHeader('X-Content-Type-Options', 'nosniff');
+      response.end(manifestRaw);
+      return;
+    } catch {
+      const versionTag = fallbackWebpSha256.slice(0, 12);
+      const photos = Array.from({ length: 12 }, (_, idx) => {
+        const photoId = `demo_${String(idx + 1).padStart(3, '0')}`;
+        const isPortrait = idx % 3 === 1;
+        return {
+          photoId,
+          orientation: isPortrait ? 'portrait' : 'landscape',
+          width: isPortrait ? 1000 : 1400,
+          height: isPortrait ? 1400 : 1000,
+          variants: {
+            thumb: `/showcase/v1/${photoId}/thumb.webp?v=${versionTag}`,
+            card: `/showcase/v1/${photoId}/card.webp?v=${versionTag}`,
+            game: `/showcase/v1/${photoId}/game.webp?v=${versionTag}`,
+          },
+          sha256: {
+            thumb: fallbackWebpSha256,
+            card: fallbackWebpSha256,
+            game: fallbackWebpSha256,
+          },
+        };
+      });
+      sendJson(response, 200, {
+        schemaVersion: 1,
+        collectionId: 'christmas-2026-public-showcase-v1',
+        generatedAt: '2026-10-17T00:00:00.000Z',
+        photos,
+      });
+      return;
+    }
+  }
+
+  const mediaMatch = /^\/showcase\/v1\/(demo_[0-9]{3})\/(thumb|card|game)\.webp$/.exec(pathname);
+  if (mediaMatch) {
+    const [, photoId, variant] = mediaMatch;
+    if (photoId && variant) {
+      const candidatePath = resolve(showcaseRoot, photoId, `${variant}.webp`);
+      if (candidatePath.startsWith(`${showcaseRoot}${sep}`)) {
+        try {
+          const bytes = await readFile(candidatePath);
+          response.statusCode = 200;
+          response.setHeader('Content-Type', 'image/webp');
+          response.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+          response.setHeader('X-Content-Type-Options', 'nosniff');
+          response.end(bytes);
+          return;
+        } catch {
+          response.statusCode = 200;
+          response.setHeader('Content-Type', 'image/webp');
+          response.setHeader('Cache-Control', 'no-store');
+          response.setHeader('X-Content-Type-Options', 'nosniff');
+          response.end(fallbackWebpBytes);
+          return;
+        }
+      }
+    }
+  }
+
+  sendJson(response, 404, { code: 'showcase_not_found' });
+}
+
 async function handleRequest(
   storageRoot: string,
+  showcaseRoot: string,
   configuredRegistryPath: string | undefined,
   request: IncomingMessage,
   response: ServerResponse,
@@ -107,6 +195,10 @@ async function handleRequest(
 ): Promise<void> {
   const urlObj = new URL(request.url ?? '/', 'http://127.0.0.1');
   const pathname = urlObj.pathname;
+  if (pathname.startsWith('/showcase/')) {
+    await handleShowcaseRequest(showcaseRoot, pathname, response);
+    return;
+  }
   if (!pathname.startsWith('/__local-test/')) {
     next();
     return;

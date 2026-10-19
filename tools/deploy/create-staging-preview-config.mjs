@@ -19,7 +19,7 @@ const config = {
     {
       token: activeToken,
       status: 'active',
-      preview: { kind: 'generic', version: 'evydencia-christmas-v1' },
+      preview: { kind: 'generic', version: 'evydencia-christmas-v2' },
     },
     {
       token: revokedToken,

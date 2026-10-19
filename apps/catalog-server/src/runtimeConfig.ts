@@ -1,4 +1,5 @@
-import type { URL } from 'node:url';
+import { URL } from 'node:url';
+import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { parsePublicOrigin } from './socialPreview.js';
 
@@ -11,6 +12,16 @@ export interface CatalogRuntimeConfig {
   readonly previewConfigPath: string;
   readonly port: number;
   readonly host: string;
+  readonly databasePath?: string;
+  readonly storageDir?: string;
+  readonly publisherApiSecret?: string;
+  readonly serverSecret?: string;
+  /** HTTPS CRM origin; never a URL containing customer data or query parameters. */
+  readonly crmEligibilityOrigin?: string;
+  readonly crmApiSecret?: string;
+  readonly crmEndpointStyle?: 'eligibility' | 'laravel-detail';
+  /** Explicit cutover; staging demos retain the legacy file adapter until approved. */
+  readonly previewAuthority: 'file-demo' | 'sqlite';
 }
 
 export function resolveCatalogRuntimeConfig(
@@ -36,6 +47,55 @@ export function resolveCatalogRuntimeConfig(
     throw new Error('CATALOG_APPLICATION_SHELL é obrigatório em produção.');
   }
 
+  const publisherApiSecret = resolveSecret(
+    environment.PUBLISHER_API_SECRET,
+    environment.PUBLISHER_API_SECRET_FILE,
+  );
+  const serverSecret = resolveSecret(
+    environment.CATALOG_SERVER_SECRET,
+    environment.CATALOG_SERVER_SECRET_FILE,
+  );
+  const crmApiSecret = resolveSecret(
+    environment.CATALOG_CRM_API_SECRET,
+    environment.CATALOG_CRM_API_SECRET_FILE,
+  );
+  const crmEligibilityOrigin = environment.CATALOG_CRM_ELIGIBILITY_ORIGIN;
+  if (crmEligibilityOrigin) {
+    const crmUrl = new URL(crmEligibilityOrigin);
+    const loopback = ['127.0.0.1', 'localhost', '[::1]'].includes(crmUrl.hostname);
+    if (
+      (crmUrl.protocol !== 'https:' && !(crmUrl.protocol === 'http:' && loopback)) ||
+      crmUrl.username ||
+      crmUrl.password ||
+      crmUrl.search ||
+      crmUrl.hash ||
+      crmUrl.pathname !== '/'
+    ) {
+      throw new Error('CATALOG_CRM_ELIGIBILITY_ORIGIN_INVALID');
+    }
+  }
+  if (Boolean(crmEligibilityOrigin) !== Boolean(crmApiSecret)) {
+    throw new Error('CATALOG_CRM_CREDENTIALS_INCOMPLETE');
+  }
+  const crmEndpointStyle = environment.CATALOG_CRM_ENDPOINT_STYLE;
+  if (
+    crmEndpointStyle !== undefined &&
+    crmEndpointStyle !== 'eligibility' &&
+    crmEndpointStyle !== 'laravel-detail'
+  ) {
+    throw new Error('CATALOG_CRM_ENDPOINT_STYLE_INVALID');
+  }
+  const previewAuthority = environment.CATALOG_PREVIEW_AUTHORITY ?? 'file-demo';
+  if (previewAuthority !== 'file-demo' && previewAuthority !== 'sqlite') {
+    throw new Error('CATALOG_PREVIEW_AUTHORITY_INVALID');
+  }
+  if (
+    previewAuthority === 'sqlite' &&
+    (!environment.CATALOG_DATABASE_PATH || !publisherApiSecret || !serverSecret)
+  ) {
+    throw new Error('CATALOG_SQLITE_PREVIEW_REQUIRES_PERSISTENCE');
+  }
+
   return {
     releaseStage,
     publicOrigin,
@@ -43,7 +103,29 @@ export function resolveCatalogRuntimeConfig(
     previewConfigPath: resolve(previewConfigPath),
     port: parsePort(environment.PORT ?? '4180'),
     host: parseHost(environment.HOST),
+    previewAuthority,
+    ...(environment.CATALOG_DATABASE_PATH
+      ? { databasePath: resolve(environment.CATALOG_DATABASE_PATH) }
+      : {}),
+    ...(environment.CATALOG_STORAGE_DIR
+      ? { storageDir: resolve(environment.CATALOG_STORAGE_DIR) }
+      : {}),
+    ...(publisherApiSecret !== undefined ? { publisherApiSecret } : {}),
+    ...(serverSecret !== undefined ? { serverSecret } : {}),
+    ...(crmEligibilityOrigin ? { crmEligibilityOrigin } : {}),
+    ...(crmApiSecret ? { crmApiSecret } : {}),
+    ...(crmEndpointStyle ? { crmEndpointStyle } : {}),
   };
+}
+
+function resolveSecret(directValue?: string, filePath?: string): string | undefined {
+  if (directValue) return directValue;
+  if (!filePath) return undefined;
+  try {
+    return readFileSync(resolve(filePath), 'utf-8').trim();
+  } catch {
+    return undefined;
+  }
 }
 
 function resolveReleaseStage(production: boolean, value: string | undefined): CatalogReleaseStage {
@@ -62,11 +144,7 @@ function parsePort(value: string): number {
   return port;
 }
 
-/**
- * Listen on loopback unless Docker Compose explicitly opts into an
- * all-interface bind. Never inherit Node's implicit wildcard default.
- * Container isolation (no published catalog port) is an ops gate.
- */
+/** Docker may opt into all-interface bind; local development defaults to loopback. */
 function parseHost(value: string | undefined): string {
   const host = value ?? '127.0.0.1';
   if (host !== '127.0.0.1' && host !== '0.0.0.0') {
