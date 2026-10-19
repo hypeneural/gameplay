@@ -76,7 +76,7 @@ if (runtime.databasePath && runtime.publisherApiSecret) {
   logger.log('publication_rollout_policy', {
     requestId: 'bootstrap',
     path: '/internal/v1/sessions/resolve',
-    details: {mode: rollout.mode},
+    details: {status: rollout.mode === 'crm-eligible-rollout' ? 2 : (rollout.mode === 'single-pilot' ? 1 : 0)},
   });
   publicationService = new PublicationService({
     sessionRepository,
