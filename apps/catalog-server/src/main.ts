@@ -11,6 +11,7 @@ import { PublicationService } from './publication/PublicationService.js';
 import { SqliteSessionRepository } from './publication/SessionRepository.js';
 import { applyMigrations, openSqliteDatabase } from './publication/sqliteDatabase.js';
 import { StructuredPublicationLogger } from './publication/publicationLogger.js';
+import { resolvePublicationOrderPolicy } from './publication/publicationRolloutPolicy.js';
 import { FileSystemStorageService } from './storage/FileSystemStorageService.js';
 
 const environment = process.env.NODE_ENV ?? 'development';
@@ -69,28 +70,20 @@ if (runtime.databasePath && runtime.publisherApiSecret) {
     storageDir: runtime.storageDir ?? './data/media',
   });
   const logger = new StructuredPublicationLogger();
-  // Customer publication is a separate authorization from CRM eligibility.
-  // staging-demo never permits arbitrary order UUIDs, even with a valid
-  // publisher secret. Only an explicitly configured, single-order pilot
-  // can publish while broader production-stage gates remain unavailable.
-  const pilotOrderUuid = process.env.CATALOG_PILOT_ORDER_UUID?.trim().toLowerCase();
-  const pilotEnabled =
-    runtime.releaseStage === 'staging-demo' &&
-    process.env.CATALOG_CUSTOMER_PILOT_ENABLED === '1' &&
-    process.env.CATALOG_CUSTOMER_DATA_ALLOWED === '1' &&
-    Boolean(
-      pilotOrderUuid &&
-      /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/.test(
-        pilotOrderUuid,
-      ),
-    );
+  // An order must pass BOTH explicit publication rollout policy and fresh
+  // CRM eligibility/revocation checks in PublicationService. Never use '*'.
+  const rollout = resolvePublicationOrderPolicy(runtime, process.env, environment);
+  logger.log('publication_rollout_policy', {
+    requestId: 'bootstrap',
+    path: '/internal/v1/sessions/resolve',
+    details: {mode: rollout.mode},
+  });
   publicationService = new PublicationService({
     sessionRepository,
     storageService,
     publisherSecret: runtime.publisherApiSecret,
     crmClient,
-    isOrderAllowedForPublication: (orderUuid) =>
-      pilotEnabled && orderUuid.toLowerCase() === pilotOrderUuid,
+    isOrderAllowedForPublication: rollout.isAllowed,
     logger,
     publicBaseUrl: runtime.publicOrigin.origin,
   });
