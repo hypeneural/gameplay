@@ -18,9 +18,14 @@ function assertAllowedPath(env) {
   const dbPath = realpathSync(path);
   const root = realpathSync(directory);
   const offset = relative(root, dbPath);
-  if (!offset || offset === '..' || offset.startsWith('../') ||
-      offset.startsWith('..\\') || isAbsolute(offset) ||
-      !statSync(dbPath).isFile()) {
+  if (
+    !offset ||
+    offset === '..' ||
+    offset.startsWith('../') ||
+    offset.startsWith('..\\') ||
+    isAbsolute(offset) ||
+    !statSync(dbPath).isFile()
+  ) {
     throw Error('DB_OUTSIDE_APPROVED_DIRECTORY');
   }
   return dbPath;
@@ -28,17 +33,20 @@ function assertAllowedPath(env) {
 function manifestPhotoIds(json, sessionId) {
   try {
     const m = JSON.parse(json);
-    if (m.sessionId !== sessionId ||
-        !Array.isArray(m.photos) || m.photos.length < 1 || m.photos.length > 200) {
+    if (
+      m.sessionId !== sessionId ||
+      !Array.isArray(m.photos) ||
+      m.photos.length < 1 ||
+      m.photos.length > 200
+    ) {
       return null;
     }
-    const ids = m.photos.flatMap(p => [
+    const ids = m.photos.flatMap((p) => [
       p.variants?.thumb?.blobId,
       p.variants?.card?.blobId,
       p.variants?.game?.blobId,
     ]);
-    if (ids.some(v => typeof v !== 'string') ||
-        new Set(ids).size !== ids.length) return null;
+    if (ids.some((v) => typeof v !== 'string') || new Set(ids).size !== ids.length) return null;
     return { photos: m.photos.length, ids };
   } catch {
     return null;
@@ -49,9 +57,9 @@ export function auditRealCatalogDatabase(db, { maxSessions = 5000 } = {}) {
   if (!Number.isSafeInteger(maxSessions) || maxSessions < 1 || maxSessions > 5000) {
     throw Error('INVALID_POPULATION_LIMIT');
   }
-  const sessions = db.prepare(
-    'SELECT id, status, active_revision_id FROM photo_sessions ORDER BY id',
-  ).all();
+  const sessions = db
+    .prepare('SELECT id, status, active_revision_id FROM photo_sessions ORDER BY id')
+    .all();
   if (sessions.length > maxSessions) throw Error('CATALOG_POPULATION_LIMIT');
   const getActive = db.prepare(
     'SELECT id, state, manifest_json FROM photo_revisions WHERE id = ? AND session_id = ?',
@@ -59,9 +67,7 @@ export function auditRealCatalogDatabase(db, { maxSessions = 5000 } = {}) {
   const getStaged = db.prepare(
     "SELECT id, manifest_json FROM photo_revisions WHERE session_id = ? AND state = 'STAGED' ORDER BY sequence DESC LIMIT 1",
   );
-  const getBlobs = db.prepare(
-    'SELECT blob_id, state FROM revision_blobs WHERE revision_id = ?',
-  );
+  const getBlobs = db.prepare('SELECT blob_id, state FROM revision_blobs WHERE revision_id = ?');
   const counts = {
     sessions_total: sessions.length,
     sessions_revoked: 0,
@@ -94,11 +100,14 @@ export function auditRealCatalogDatabase(db, { maxSessions = 5000 } = {}) {
     const m = revision ? manifestPhotoIds(revision.manifest_json, session.id) : null;
     if (m) counts.active_album_declared_photos += m.photos;
     const blobs = revision ? getBlobs.all(revision.id) : [];
-    const actual = new Map(blobs.map(x => [x.blob_id, x.state]));
-    if (revision?.state === 'ACTIVE' && m &&
-        blobs.length === m.ids.length &&
-        actual.size === m.ids.length &&
-        m.ids.every(id => actual.get(id) === 'READY')) {
+    const actual = new Map(blobs.map((x) => [x.blob_id, x.state]));
+    if (
+      revision?.state === 'ACTIVE' &&
+      m &&
+      blobs.length === m.ids.length &&
+      actual.size === m.ids.length &&
+      m.ids.every((id) => actual.get(id) === 'READY')
+    ) {
       counts.active_album_metadata_ready_without_token_check++;
       counts.ready_active_album_photos += m.photos;
     } else {
