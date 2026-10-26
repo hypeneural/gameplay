@@ -129,10 +129,25 @@ export function auditRealCatalogDatabase(db, { maxSessions = 5000 } = {}) {
 export function runAuditRealCatalog({ env = process.env } = {}) {
   const path = assertAllowedPath(env);
   const db = new DatabaseSync(path, { readOnly: true, timeout: 1000 });
+  let transactionOpen = false;
   try {
     db.exec('PRAGMA query_only = ON');
-    return auditRealCatalogDatabase(db);
+    // A single read transaction holds the same SQLite snapshot while another
+    // connection stages or activates revisions in WAL mode.
+    db.exec('BEGIN DEFERRED');
+    transactionOpen = true;
+    const report = auditRealCatalogDatabase(db);
+    db.exec('ROLLBACK');
+    transactionOpen = false;
+    return { ...report, consistent_sqlite_read_transaction: true };
   } finally {
+    if (transactionOpen) {
+      try {
+        db.exec('ROLLBACK');
+      } catch {
+        // Preserve the original read error; this connection is closing.
+      }
+    }
     db.close();
   }
 }
