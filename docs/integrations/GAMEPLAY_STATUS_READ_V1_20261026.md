@@ -37,3 +37,12 @@ A PR está baseada na branch da PR #30, não na branch padrão do jogo, que aind
 6. Provar bloqueio externo no gateway Caddy, SHA ativo, backup/restore do SQLite WAL e rollback por segredo ausente.
 
 **Não promover cliente real**: `pilotReady=false`, `customerDataAllowed=false` e `automaticDeliveryAllowed=false` no readiness. Resolver PRs de publicação, autorização de mídia, navegador, backup e piloto primeiro.
+
+
+## Photo counts and creation phase (additive v1 fields)
+- `photo_count` is **only the active publication manifest's photo count**. It is 0 if there is no active revision; 0 does **not** prove that the original CRM shoot, Drive folder or selection has no photos.
+- `preparation`: `{state:'none'|'staged'|'invalid',revision_id,photo_count,expected_blobs,ready_blobs}` describes the most recent STAGED revision **separately**. `photo_count=null` on invalid or unknown. The three blob variants per photo are thumb/card/game, not three different customer photos.
+- `state='not_published'` plus `preparation.state='staged'` means photos are being prepared, not available to the customer. `state='published_unverified'` means the active manifest and all required blob metadata are ready; it does not prove that all Phaser games loaded in a real browser.
+- The same session may contain an active published revision and a newer STAGED revision. Both counts are independent and MUST NOT be added as distinct photos.
+- The private API still takes `crm_order_uuid` only; the CRM owns ID-to-UUID identity. A single order has one session, potentially multiple revisions over time.
+- Tests: `GameplayStatusLookup.integration.test.ts` verifies 0 active/1 staged/3 variants and 1 active after activation. This is only the synthetic DB contract, not actual mobile-runtime verification.
