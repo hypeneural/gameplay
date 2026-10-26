@@ -1341,6 +1341,10 @@
 ├── pnpm-lock.yaml
 ├── pnpm-workspace.yaml
 ├── prettier.config.mjs
+├── scripts
+│   └── forensic
+│       ├── audit-real-catalog-readonly.mjs
+│       └── audit-real-catalog-readonly.test.mjs
 ├── tests
 │   ├── e2e
 │   │   ├── christmas-shell.spec.ts
