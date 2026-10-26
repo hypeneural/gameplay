@@ -14,6 +14,7 @@ import type {
 } from './socialPreview.js';
 
 import type { PublicationService } from './publication/PublicationService.js';
+import type { GameplayStatusLookup } from './publication/GameplayStatusLookup.js';
 
 export interface CatalogServerDependencies {
   readonly publicOrigin: URL;
@@ -26,6 +27,7 @@ export interface CatalogServerDependencies {
   };
   readonly readiness?: () => Promise<void>;
   readonly publicationService?: PublicationService;
+  readonly gameplayStatusLookup?: GameplayStatusLookup;
   /** Database authority: validates ACTIVE session, not just the OG preview config. */
   readonly sessionIsActive?: (token: string) => Promise<boolean>;
 }
@@ -68,6 +70,10 @@ async function handleRequest(
     response.setHeader('Referrer-Policy', 'no-referrer');
     send(response, statusCode, body, request.method === 'HEAD');
     return;
+  }
+
+  if (dependencies.gameplayStatusLookup) {
+    if (await dependencies.gameplayStatusLookup.handleHttpRequest(request, response)) return;
   }
 
   if (dependencies.publicationService) {
