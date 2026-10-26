@@ -49,7 +49,7 @@ export class GameplayStatusLookup {
     this.readSecret = Buffer.from(options.readSecret);
   }
 
-  lookup(crmOrderUuid: string): GameplayLookupRecord {
+  lookup(crmOrderUuid: string, includeLinks = false): GameplayLookupRecord {
     if (!UUID.test(crmOrderUuid)) throw new Error('INVALID_ORDER_UUID');
     const id = crmOrderUuid.toLowerCase();
     const base = (state: State, sessionId: string | null = null,
@@ -80,21 +80,31 @@ export class GameplayStatusLookup {
       return base('partial', session.id, session.active_revision_id);
     }
     let photoCount: number;
+    let expectedBlobIds: string[];
     try {
       const parsed = parsePublicationManifestV1(JSON.parse(revision.manifest_json));
       if (parsed.sessionId !== session.id) throw new Error('SESSION_MISMATCH');
       photoCount = parsed.photos.length;
+      expectedBlobIds = parsed.photos.flatMap(p =>
+        [p.variants.thumb.blobId, p.variants.card.blobId, p.variants.game.blobId]
+      );
     } catch {
       return base('partial', session.id, revision.id);
     }
-    const counts = this.db.prepare(`
-      SELECT COUNT(*) AS total, SUM(CASE WHEN state = 'READY' THEN 1 ELSE 0 END) AS ready
-      FROM revision_blobs WHERE revision_id = ?`
-    ).get(revision.id) as { total: number; ready: number | null };
-    const expected = photoCount * 3;
-    const ready = Number(counts.ready || 0);
-    if (Number(counts.total) !== expected || ready !== expected) {
+    const blobs = this.db.prepare(
+      'SELECT blob_id, state FROM revision_blobs WHERE revision_id = ?'
+    ).all(revision.id) as Array<{blob_id: string; state: string}>;
+    const expected = expectedBlobIds.length;
+    const ready = blobs.filter(b => b.state === 'READY').length;
+    const seen = new Set(blobs.map(b => b.blob_id));
+    if (seen.size !== expected || blobs.length !== expected || ready !== expected ||
+        expectedBlobIds.some(id => !seen.has(id))) {
       return base('partial', session.id, revision.id, photoCount, expected, ready);
+    }
+    // Bulk audits never materialize customer capability URLs in their responses.
+    // An explicit single-order request is required to release a customer link.
+    if (!includeLinks) {
+      return base('published_unverified', session.id, revision.id, photoCount, expected, ready);
     }
     const token = derivePublicToken(this.sessionSecret, session.id, session.access_version);
     if (computeTokenHash(token) !== session.public_token_hash) {
@@ -135,7 +145,14 @@ export class GameplayStatusLookup {
         if (bytes > 8192) { reply(413, {error:'BODY_TOO_LARGE'}); return true; }
         chunks.push(b);
       }
-      const input = JSON.parse(Buffer.concat(chunks).toString('utf8')) as Record<string, unknown>;
+      let input: Record<string, unknown>;
+      try {
+        const parsed: unknown = JSON.parse(Buffer.concat(chunks).toString('utf8'));
+        if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) throw Error();
+        input = parsed as Record<string, unknown>;
+      } catch {
+        reply(422, {error:'INVALID_JSON'}); return true;
+      }
       const batch = path.endsWith('lookup-batch');
       const uuids = batch ? input.crm_order_uuids : [input.crm_order_uuid];
       if (!Array.isArray(uuids) || uuids.length === 0 || uuids.length > LIMIT ||
@@ -143,7 +160,9 @@ export class GameplayStatusLookup {
         reply(422, {error:'INVALID_ORDER_UUIDS'}); return true;
       }
       const unique = [...new Set((uuids as string[]).map(v => v.toLowerCase()))];
-      const results = unique.map(v => this.lookup(v));
+      // Only the single-order route may return URLs. The batch route always
+      // returns status/counts (even if the caller attempts include_links=true).
+      const results = unique.map(v => this.lookup(v, !batch && input.include_links === true));
       reply(200, {schema_version:1, source:'gameplay_catalog',
         verified_at:new Date().toISOString(), results});
     } catch {
