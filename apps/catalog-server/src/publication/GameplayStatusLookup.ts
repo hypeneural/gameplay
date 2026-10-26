@@ -119,18 +119,26 @@ export class GameplayStatusLookup {
       try {
         const pending = parsePublicationManifestV1(JSON.parse(staged.manifest_json));
         if (pending.sessionId !== session.id) throw Error('staged_session_mismatch');
-        const counts = this.db
-          .prepare(
-            "SELECT COUNT(*) AS total, SUM(CASE WHEN state = 'READY' THEN 1 ELSE 0 END) AS ready FROM revision_blobs WHERE revision_id = ?",
-          )
-          .get(staged.id) as { total: number; ready: number | null };
-        const expected = pending.photos.length * 3;
+        const expectedBlobIds = pending.photos.flatMap((photo) => [
+          photo.variants.thumb.blobId,
+          photo.variants.card.blobId,
+          photo.variants.game.blobId,
+        ]);
+        const blobRows = this.db
+          .prepare('SELECT blob_id, state FROM revision_blobs WHERE revision_id = ?')
+          .all(staged.id) as Array<{ blob_id: string; state: string }>;
+        const registeredIds = new Set(blobRows.map((blob) => blob.blob_id));
+        const expected = expectedBlobIds.length;
+        const valid =
+          blobRows.length === expected &&
+          registeredIds.size === expected &&
+          expectedBlobIds.every((blobId) => registeredIds.has(blobId));
         preparation = {
-          state: Number(counts.total) === expected ? 'staged' : 'invalid',
+          state: valid ? 'staged' : 'invalid',
           revision_id: staged.id,
-          photo_count: pending.photos.length,
+          photo_count: valid ? pending.photos.length : null,
           expected_blobs: expected,
-          ready_blobs: Number(counts.ready || 0),
+          ready_blobs: valid ? blobRows.filter((blob) => blob.state === 'READY').length : 0,
         };
       } catch {
         preparation = {
