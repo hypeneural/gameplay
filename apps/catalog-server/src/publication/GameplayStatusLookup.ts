@@ -18,6 +18,14 @@ export interface GameplayLookupRecord {
   readonly photo_count: number;
   readonly expected_blobs: number;
   readonly ready_blobs: number;
+  /** Most recent STAGED revision, separate from the published photo count. */
+  readonly preparation: {
+    readonly state: 'none' | 'staged' | 'invalid';
+    readonly revision_id: string | null;
+    readonly photo_count: number | null;
+    readonly expected_blobs: number;
+    readonly ready_blobs: number;
+  };
   readonly hub_url: string | null;
   readonly gallery_url: string | null;
   // Publishing an album is not proof that Phaser successfully ran in a mobile browser.
@@ -54,6 +62,11 @@ export class GameplayStatusLookup {
   lookup(crmOrderUuid: string, includeLinks = false): GameplayLookupRecord {
     if (!UUID.test(crmOrderUuid)) throw new Error('INVALID_ORDER_UUID');
     const id = crmOrderUuid.toLowerCase();
+    // A photo in a staging manifest is NOT a published or playable photo.
+    let preparation: GameplayLookupRecord['preparation'] = {
+      state: 'none', revision_id: null, photo_count: null,
+      expected_blobs: 0, ready_blobs: 0,
+    };
     const base = (
       state: State,
       sessionId: string | null = null,
@@ -70,6 +83,7 @@ export class GameplayStatusLookup {
       photo_count: photoCount,
       expected_blobs: expected,
       ready_blobs: ready,
+      preparation,
       hub_url: hub,
       gallery_url: hub ? hub + '/fotos' : null,
       games_runtime_verified: false,
@@ -91,6 +105,31 @@ export class GameplayStatusLookup {
       | undefined;
     if (!session) return base('not_found');
     if (session.status !== 'ACTIVE') return base('revoked', session.id);
+    const staged = this.db.prepare(
+      `SELECT id, manifest_json FROM photo_revisions
+       WHERE session_id = ? AND state = 'STAGED'
+       ORDER BY sequence DESC LIMIT 1`,
+    ).get(session.id) as { id: string; manifest_json: string } | undefined;
+    if (staged) {
+      try {
+        const pending = parsePublicationManifestV1(JSON.parse(staged.manifest_json));
+        if (pending.sessionId !== session.id) throw Error('staged_session_mismatch');
+        const counts = this.db.prepare(
+          "SELECT COUNT(*) AS total, SUM(CASE WHEN state = 'READY' THEN 1 ELSE 0 END) AS ready FROM revision_blobs WHERE revision_id = ?",
+        ).get(staged.id) as { total: number; ready: number | null };
+        const expected = pending.photos.length * 3;
+        preparation = {
+          state: Number(counts.total) === expected ? 'staged' : 'invalid',
+          revision_id: staged.id, photo_count: pending.photos.length,
+          expected_blobs: expected, ready_blobs: Number(counts.ready || 0),
+        };
+      } catch {
+        preparation = {
+          state: 'invalid', revision_id: staged.id, photo_count: null,
+          expected_blobs: 0, ready_blobs: 0,
+        };
+      }
+    }
     if (!session.active_revision_id) return base('not_published', session.id);
     const revision = this.db
       .prepare(
