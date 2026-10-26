@@ -75,6 +75,21 @@ describe('read-only Gameplay contract against real SQLite repository', () => {
       expect(preparing.preparation.expected_blobs).toBe(3);
       expect(preparing.preparation.ready_blobs).toBe(0);
       expect(preparing.hub_url).toBeNull();
+      // Three rows alone do not prove that they belong to the manifest.
+      const originalBlobId = m.photos[0]!.variants.thumb.blobId;
+      const substitutedId = '55555555-5555-4555-8555-555555555555';
+      db.prepare('UPDATE revision_blobs SET blob_id = ? WHERE blob_id = ?').run(
+        substitutedId,
+        originalBlobId,
+      );
+      const tampered = reader.lookup(ORDER_A);
+      expect(tampered.preparation.state).toBe('invalid');
+      expect(tampered.preparation.photo_count).toBeNull();
+      db.prepare('UPDATE revision_blobs SET blob_id = ? WHERE blob_id = ?').run(
+        originalBlobId,
+        substitutedId,
+      );
+      expect(reader.lookup(ORDER_A).preparation.state).toBe('staged');
       for (const v of Object.values(m.photos[0]!.variants)) {
         await repository.recordVerifiedBlob({
           revisionId: staged.revisionId,
