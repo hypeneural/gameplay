@@ -1,6 +1,12 @@
 import { describe, expect, it } from 'vitest';
 import { DatabaseSync } from 'node:sqlite';
-import { auditRealCatalogDatabase } from './audit-real-catalog-readonly.mjs';
+import { mkdtempSync, rmSync } from 'node:fs';
+import { join } from 'node:path';
+import { tmpdir } from 'node:os';
+import {
+  auditRealCatalogDatabase,
+  runAuditRealCatalog,
+} from './audit-real-catalog-readonly.mjs';
 
 const A = '11111111-1111-4111-8111-111111111111';
 const R = '22222222-2222-4222-8222-222222222222';
@@ -10,8 +16,8 @@ const blobs = [
   '44444444-4444-4444-8444-444444444442',
   '44444444-4444-4444-8444-444444444443',
 ];
-function dbFixture() {
-  const db = new DatabaseSync(':memory:');
+function dbFixture(path = ':memory:') {
+  const db = new DatabaseSync(path);
   db.exec(`
     CREATE TABLE photo_sessions(id TEXT, status TEXT, active_revision_id TEXT);
     CREATE TABLE photo_revisions(id TEXT,session_id TEXT,state TEXT,sequence INTEGER,manifest_json TEXT);
@@ -51,6 +57,27 @@ describe('real Gameplay SQLite metadata diagnostic (read-only contract)', () => 
       expect(JSON.stringify(r)).not.toContain(R);
     } finally {
       db.close();
+    }
+  });
+  it('runs authorized file-based audit in a consistent read-only transaction', () => {
+    const directory = mkdtempSync(join(tmpdir(), 'gameplay-forensic-'));
+    const path = join(directory, 'catalog.sqlite');
+    try {
+      const db = dbFixture(path);
+      db.close();
+      const result = runAuditRealCatalog({
+        env: {
+          CATALOG_REAL_DB_AUDIT_AUTHORIZED: '1',
+          CATALOG_DATABASE_PATH: path,
+          CATALOG_REAL_DB_ALLOWED_DIR: directory,
+        },
+      });
+      expect(result.consistent_sqlite_read_transaction).toBe(true);
+      expect(result.db_opened_read_only).toBe(true);
+      expect(result.ready_active_album_photos).toBe(1);
+      expect(result.production_dataset_binding_verified).toBe(false);
+    } finally {
+      rmSync(directory, { recursive: true, force: true });
     }
   });
   it('incomplete blob registration must not count as ready photos', () => {
