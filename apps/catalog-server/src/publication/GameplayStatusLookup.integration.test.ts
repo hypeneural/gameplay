@@ -67,7 +67,14 @@ describe('read-only Gameplay contract against real SQLite repository', () => {
       expect(reader.lookup(ORDER_B).state).toBe('not_found');
       const m = manifest(a.sessionId);
       const staged = await repository.beginPublication(m);
-      expect(reader.lookup(ORDER_A).state).toBe('not_published');
+      const preparing = reader.lookup(ORDER_A);
+      expect(preparing.state).toBe('not_published');
+      expect(preparing.photo_count).toBe(0);
+      expect(preparing.preparation.state).toBe('staged');
+      expect(preparing.preparation.photo_count).toBe(1);
+      expect(preparing.preparation.expected_blobs).toBe(3);
+      expect(preparing.preparation.ready_blobs).toBe(0);
+      expect(preparing.hub_url).toBeNull();
       for (const v of Object.values(m.photos[0]!.variants)) {
         await repository.recordVerifiedBlob({
           revisionId: staged.revisionId,
@@ -79,10 +86,16 @@ describe('read-only Gameplay contract against real SQLite repository', () => {
           storageConfirmed: true,
         });
       }
+      const prepared = reader.lookup(ORDER_A);
+      expect(prepared.photo_count).toBe(0);
+      expect(prepared.preparation.photo_count).toBe(1);
+      expect(prepared.preparation.ready_blobs).toBe(3);
       await repository.activatePublication(staged.revisionId, null);
       const audited = reader.lookup(ORDER_A);
       expect(audited.state).toBe('published_unverified');
       expect(audited.ready_blobs).toBe(3);
+      expect(audited.photo_count).toBe(1);
+      expect(audited.preparation.state).toBe('none');
       expect(audited.hub_url).toBeNull();
       const individual = reader.lookup(ORDER_A, true);
       expect(individual.hub_url).toContain('/s/');
