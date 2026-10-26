@@ -8,6 +8,7 @@ import { CrmClientError, HttpCrmClient } from './crm/CrmEligibilityService.js';
 import type { CrmClient } from './crm/CrmEligibilityService.js';
 import { resolveCatalogRuntimeConfig } from './runtimeConfig.js';
 import { PublicationService } from './publication/PublicationService.js';
+import { GameplayStatusLookup } from './publication/GameplayStatusLookup.js';
 import { SqliteSessionRepository } from './publication/SessionRepository.js';
 import { applyMigrations, openSqliteDatabase } from './publication/sqliteDatabase.js';
 import { StructuredPublicationLogger } from './publication/publicationLogger.js';
@@ -28,6 +29,7 @@ if (runtime.previewAuthority === 'file-demo') {
 }
 
 let publicationService: PublicationService | undefined;
+let gameplayStatusLookup: GameplayStatusLookup | undefined;
 let sessionIsActive: ((token: string) => Promise<boolean>) | undefined;
 let previews: SocialPreviewRepository = createFilePreviewRepository(runtime.previewConfigPath, {
   rejectExampleTokens: environment === 'production',
@@ -47,6 +49,11 @@ if (runtime.databasePath && runtime.publisherApiSecret) {
     publicBaseUrl: runtime.publicOrigin.origin,
   });
   sessionIsActive = async (token) => sessionRepository.isSessionActive(token);
+  const readSecret = process.env.CATALOG_INTERNAL_READ_SECRET;
+  if (readSecret) gameplayStatusLookup = new GameplayStatusLookup({
+    db, publicOrigin: runtime.publicOrigin, sessionSecret: runtime.serverSecret,
+    readSecret
+  });
   if (runtime.previewAuthority === 'sqlite') {
     previews = new SqlitePreviewRepository({ db });
   }
@@ -123,6 +130,7 @@ const server = createCatalogServer({
     });
   },
   ...(publicationService ? { publicationService } : {}),
+  ...(gameplayStatusLookup ? { gameplayStatusLookup } : {}),
   ...(sessionIsActive ? { sessionIsActive } : {}),
 });
 
