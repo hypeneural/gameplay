@@ -1,22 +1,34 @@
-# Gameplay status lookup v1 — 26/10/2026
+# Gameplay Catalog — status lookup v1 (26/10/2026)
 
-## Architecture
-- Gameplay is the only photo-session and publication authority.
-- CRM is the only source for customer, Natal 2026 classification and current order status.
-- MCP and EvydFlow are **consumers**. Do not replicate session state in another DB.
-- `POST /internal/v1/sessions/lookup` and `POST /internal/v1/sessions/lookup-batch` accept order UUID(s) and never perform `resolveOrCreateSession`.
-- `CATALOG_INTERNAL_READ_SECRET` (32+ chars) is separate from `PUBLISHER_API_SECRET`; configure only server-side. Private routes must be blocked at public Caddy edge and reachable solely over private trusted network.
-- Default is disabled when no secret exists or SQLite publication is not configured. Never change `pilotReady=false` solely to enable the lookup.
+## Contrato para MCP e EvydFlow
+O Gameplay é autoridade da sessão e revisão. O CRM determina a identidade do pedido e se está operacionalmente pronto (somente status atuais 10 e 12, Natal 2026). Este endpoint **não busca por nome** e nunca executa resolveOrCreateSession, upload, publicação ou envio.
 
-## Payload
-Single: `{"crm_order_uuid":"<UUID>"}`. Batch (1–50 unique orders): `{"crm_order_uuids":["<UUID>"]}`.
-Response: `{"schema_version":1,"source":"gameplay_catalog","verified_at":"...","results":[{"crm_order_uuid":"...","state":"published_unverified","photo_count":20,"expected_blobs":60,"ready_blobs":60,"hub_url":"https://.../s/<opaque>","gallery_url":"https://.../s/<opaque>/fotos","games_runtime_verified":false}]}`.
-Other states: `not_found`, `not_published`, `revoked`, `partial`. A server failure is **not** `not_found`.
+### API autenticada
+- `POST /internal/v1/sessions/lookup`: body `{"crm_order_uuid":"UUID","include_links":true}`.
+- `POST /internal/v1/sessions/lookup-batch`: body `{"crm_order_uuids":["UUID",...]}` (1 a 50).
+- O endpoint batch **sempre omite links**, mesmo que se forneça `include_links=true`.
+- Envelope: `{"schema_version":1,"source":"gameplay_catalog","verified_at":"ISO","results":[...]}`.
+- Estado da sessão: `not_found`, `not_published`, `partial`, `revoked`, `published_unverified`.
+- Campos: `crm_order_uuid`, `state`, `session_id`, `active_revision_id`, `photo_count`, `expected_blobs`, `ready_blobs`, `hub_url`, `gallery_url`, `games_runtime_verified:false`.
+- Em lote, `hub_url` e `gallery_url` são **sempre null**; quando solicitado por UUID individual ACTIVE/READY, URLs públicos são gerados pelo token canônico da sessão.
+- `published_unverified` significa ACTIVE/ACTIVE, manifesto válido e os exatos três blobs por foto registrados READY; não prova legibilidade real do WebP ou execução do Phaser.
 
-## Important caveats
-- A READY blob register is not proof that a browser has successfully decoded or rendered the image.
-- `published_unverified` is deliberately not labelled 'all games working'; automatic validation needs a separate browser/runtime receipt.
-- No search by names on Gameplay: CRM resolves exact order UUID.
-- Do not log secret bearer or capability URL; suppress request body logs.
-- Before pilot, reconcile open publication PRs and verify SHA on VPS. This branch is based on PR #30 and cannot land safely on default branch until prerequisites merge.
-- Test locally: `pnpm agent:doctor`, `pnpm check:fast`, `pnpm check`, `pnpm validate`. No real customer media in staging demo.
+### Limites e autorização
+- `CATALOG_INTERNAL_READ_SECRET` >=32 caracteres, privado e diferente de `PUBLISHER_API_SECRET` e `CATALOG_SERVER_SECRET`.
+- Sem SQLite configurado, a API de leitura não é iniciada. Sem segredo de leitura ela permanece desabilitada.
+- O Caddy deve bloquear a rota `/internal/*` pela interface pública e liberá-la só pela rede interna (Tailscale ou túnel) para as aplicações autorizadas. Validar no ingress além do Bearer.
+- Payload máximo 8192 bytes, 50 UUIDs, resposta `private,no-store`, nenhuma query com token.
+- Erro do servidor: nunca representar 503 como `not_found`; JSON inválido retorna 422.
+- Não publicar tokens capability, nomes de fotos, filesystem paths, segredo ou payloads privados em logs/commits.
+- Não modificar `deploy/readiness.json` somente para ativar este endpoint; publicação real de cliente está bloqueada pelo estágio atual.
+
+### Validação da PR #43
+A PR está baseada na branch da PR #30, não na branch padrão do jogo, que ainda não inclui todas as dependências de publicação.
+1. `pnpm agent:doctor`
+2. `pnpm exec vitest run apps/catalog-server/src/publication/GameplayStatusLookup.test.ts apps/catalog-server/src/publication/GameplayStatusLookup.integration.test.ts`
+3. `pnpm check:fast`, `pnpm check`
+4. `pnpm validate` quando Playwright e assets estiverem disponíveis.
+5. Smoke privado sintético para um pedido A publicado e pedido B inexistente/revogado, usando a API real sem dados de clientes.
+6. Provar bloqueio externo no gateway Caddy, SHA ativo, backup/restore do SQLite WAL e rollback por segredo ausente.
+
+**Não promover cliente real**: `pilotReady=false`, `customerDataAllowed=false` e `automaticDeliveryAllowed=false` no readiness. Resolver PRs de publicação, autorização de mídia, navegador, backup e piloto primeiro.
