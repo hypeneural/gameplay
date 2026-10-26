@@ -55,7 +55,9 @@
     "deploy:staging-config": "node tools/deploy/create-staging-preview-config.mjs",
     "asset:validate:all": "pnpm --filter @christmas-games/asset-factory run validate-all",
     "session:publish": "node tools/deploy/publish-session.mjs",
-    "release:smoke-runtime": "node tools/deploy/smoke-release-runtime.mjs"
+    "release:smoke-runtime": "node tools/deploy/smoke-release-runtime.mjs",
+    "forensic:catalog:read-only": "node scripts/forensic/audit-real-catalog-readonly.mjs",
+    "test:forensic:catalog": "vitest run scripts/forensic/audit-real-catalog-readonly.test.mjs"
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",
