@@ -131,14 +131,16 @@ export class GameplayStatusLookup {
     ) {
       return base('partial', session.id, revision.id, photoCount, expected, ready);
     }
-    // Bulk audits never materialize customer capability URLs in their responses.
-    // An explicit single-order request is required to release a customer link.
-    if (!includeLinks) {
-      return base('published_unverified', session.id, revision.id, photoCount, expected, ready);
-    }
+    // Verify the stored capability even when the caller requested only
+    // metadata. Otherwise batch would incorrectly claim publication valid after
+    // accidental session-secret rotation while single lookup returned partial.
     const token = derivePublicToken(this.sessionSecret, session.id, session.access_version);
     if (computeTokenHash(token) !== session.public_token_hash) {
       return base('partial', session.id, revision.id, photoCount, expected, ready);
+    }
+    // Batch audits never materialize customer capability URLs in responses.
+    if (!includeLinks) {
+      return base('published_unverified', session.id, revision.id, photoCount, expected, ready);
     }
     return base(
       'published_unverified',
