@@ -3,10 +3,7 @@ import { DatabaseSync } from 'node:sqlite';
 import { mkdtempSync, rmSync } from 'node:fs';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
-import {
-  auditRealCatalogDatabase,
-  runAuditRealCatalog,
-} from './audit-real-catalog-readonly.mjs';
+import { auditRealCatalogDatabase, runAuditRealCatalog } from './audit-real-catalog-readonly.mjs';
 
 const A = '11111111-1111-4111-8111-111111111111';
 const R = '22222222-2222-4222-8222-222222222222';
