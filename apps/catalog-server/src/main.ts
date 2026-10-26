@@ -50,12 +50,18 @@ if (runtime.databasePath && runtime.publisherApiSecret) {
   });
   sessionIsActive = async (token) => sessionRepository.isSessionActive(token);
   const readSecret = process.env.CATALOG_INTERNAL_READ_SECRET;
-  if (readSecret && (readSecret === runtime.publisherApiSecret || readSecret === runtime.serverSecret))
+  if (
+    readSecret &&
+    (readSecret === runtime.publisherApiSecret || readSecret === runtime.serverSecret)
+  )
     throw new Error('CATALOG_READ_SECRET_MUST_BE_DISTINCT');
-  if (readSecret) gameplayStatusLookup = new GameplayStatusLookup({
-    db, publicOrigin: runtime.publicOrigin, sessionSecret: runtime.serverSecret,
-    readSecret
-  });
+  if (readSecret)
+    gameplayStatusLookup = new GameplayStatusLookup({
+      db,
+      publicOrigin: runtime.publicOrigin,
+      sessionSecret: runtime.serverSecret,
+      readSecret,
+    });
   if (runtime.previewAuthority === 'sqlite') {
     previews = new SqlitePreviewRepository({ db });
   }
