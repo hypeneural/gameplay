@@ -78,6 +78,9 @@
 │   │   │   ├── filePreviewRepository.ts
 │   │   │   ├── main.ts
 │   │   │   ├── publication
+│   │   │   │   ├── GameplayStatusLookup.integration.test.ts
+│   │   │   │   ├── GameplayStatusLookup.test.ts
+│   │   │   │   ├── GameplayStatusLookup.ts
 │   │   │   │   ├── PublicationService.ts
 │   │   │   │   ├── SessionRepository.ts
 │   │   │   │   ├── corte2Http.test.ts
@@ -722,6 +725,7 @@
 │   │   └── repo-map.md
 │   ├── index.md
 │   ├── integrations
+│   │   ├── GAMEPLAY_STATUS_READ_V1_20261026.md
 │   │   └── photo-sessions
 │   │       ├── AUDITORIA_FORENSE_ANTIGRAVITY_MOBILE_2026-10-06.md
 │   │       ├── AUDITORIA_GITHUB_GALERIA_NATALINA_MOBILE_2026-10-06.md
