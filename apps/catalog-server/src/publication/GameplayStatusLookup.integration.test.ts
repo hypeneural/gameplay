@@ -88,6 +88,20 @@ describe('read-only Gameplay contract against real SQLite repository', () => {
       expect(individual.hub_url).toContain('/s/');
       expect(individual.gallery_url).toBe(individual.hub_url + '/fotos');
       expect(individual.games_runtime_verified).toBe(false);
+      // A rotated/corrupted capability hash must fail the audit in bulk as well.
+      const tokenHash = db
+        .prepare('SELECT public_token_hash FROM photo_sessions WHERE id = ?')
+        .get(a.sessionId) as { public_token_hash: string };
+      db.prepare('UPDATE photo_sessions SET public_token_hash = ? WHERE id = ?').run(
+        'f'.repeat(64),
+        a.sessionId,
+      );
+      expect(reader.lookup(ORDER_A).state).toBe('partial');
+      expect(reader.lookup(ORDER_A, true).hub_url).toBeNull();
+      db.prepare('UPDATE photo_sessions SET public_token_hash = ? WHERE id = ?').run(
+        tokenHash.public_token_hash,
+        a.sessionId,
+      );
       // No lookup creates a second session for an unrelated CRM order.
       expect(reader.lookup(ORDER_B).state).toBe('not_found');
       expect((db.prepare('SELECT COUNT(*) n FROM photo_sessions').get() as { n: number }).n).toBe(
