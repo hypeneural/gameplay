@@ -17,6 +17,9 @@ services:
       - /tmp:size=16m,noexec,nosuid
     user: '${CATALOG_READER_UID:?preprovision_reader_uid}:${CATALOG_READER_GID:?preprovision_reader_gid}'
     working_dir: /app
+    # This service does not inherit catalog.command from compose.persistence.yaml.
+    # Without an explicit command node:24-alpine would only run its default CMD.
+    command: ['node', 'server/main.js']
     environment:
       NODE_ENV: production
       CATALOG_RELEASE_STAGE: staging-demo
