@@ -37,6 +37,8 @@ export interface GameplayLookupDependencies {
   readonly publicOrigin: URL;
   readonly sessionSecret: string;
   readonly readSecret: string;
+  /** Metadata-only sidecars never issue live customer capability URLs. */
+  readonly allowCapabilityLinks?: boolean;
 }
 
 export class GameplayStatusLookup {
@@ -44,6 +46,7 @@ export class GameplayStatusLookup {
   private readonly origin: string;
   private readonly sessionSecret: string;
   private readonly readSecret: Buffer;
+  private readonly allowCapabilityLinks: boolean;
 
   constructor(options: GameplayLookupDependencies) {
     if (options.readSecret.length < 32) throw new Error('GAMEPLAY_READ_SECRET_TOO_SHORT');
@@ -57,6 +60,7 @@ export class GameplayStatusLookup {
     this.origin = options.publicOrigin.origin;
     this.sessionSecret = options.sessionSecret;
     this.readSecret = Buffer.from(options.readSecret);
+    this.allowCapabilityLinks = options.allowCapabilityLinks ?? true;
   }
 
   lookup(crmOrderUuid: string, includeLinks = false): GameplayLookupRecord {
@@ -197,8 +201,9 @@ export class GameplayStatusLookup {
     if (computeTokenHash(token) !== session.public_token_hash) {
       return base('partial', session.id, revision.id, photoCount, expected, ready);
     }
-    // Batch audits never materialize customer capability URLs in responses.
-    if (!includeLinks) {
+    // Batch audits and metadata-only sidecars never materialize customer
+    // capability URLs. This includes a single-order include_links request.
+    if (!includeLinks || !this.allowCapabilityLinks) {
       return base('published_unverified', session.id, revision.id, photoCount, expected, ready);
     }
     return base(
@@ -265,6 +270,10 @@ export class GameplayStatusLookup {
         !uuids.every((v) => typeof v === 'string' && UUID.test(v))
       ) {
         reply(422, { error: 'INVALID_ORDER_UUIDS' });
+        return true;
+      }
+      if (!batch && input.include_links === true && !this.allowCapabilityLinks) {
+        reply(409, { error: 'CUSTOMER_LINKS_NOT_ENABLED' });
         return true;
       }
       const unique = [...new Set((uuids as string[]).map((v) => v.toLowerCase()))];
