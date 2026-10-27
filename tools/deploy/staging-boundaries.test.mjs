@@ -28,7 +28,9 @@ describe('staging Docker boundary', () => {
     expect(overlay).toContain("CATALOG_PRIVATE_METADATA_READ_ONLY: '1'");
     expect(overlay).toContain('read_only: true');
     expect(overlay).toContain('no-new-privileges:true');
-    expect(overlay).toContain('CATALOG_INTERNAL_READ_SECRET_FILE: /run/catalog-secrets/reader.secret');
+    expect(overlay).toContain(
+      'CATALOG_INTERNAL_READ_SECRET_FILE: /run/catalog-secrets/reader.secret',
+    );
     expect(overlay).toContain("'127.0.0.1:${CATALOG_READER_HOST_PORT:-4182}:4180'");
     expect(overlay).not.toContain('100.116.8.109:4180');
     expect(overlay).not.toContain(' - edge');
