@@ -7,7 +7,7 @@ import type { SocialPreviewRepository } from './socialPreview.js';
 import { SqlitePreviewRepository } from './publication/sqlitePreviewRepository.js';
 import { CrmClientError, HttpCrmClient } from './crm/CrmEligibilityService.js';
 import type { CrmClient } from './crm/CrmEligibilityService.js';
-import { resolveCatalogRuntimeConfig } from './runtimeConfig.js';
+import { assertPrivateMetadataReadOnlyConfiguration, resolveCatalogRuntimeConfig } from './runtimeConfig.js';
 import { PublicationService } from './publication/PublicationService.js';
 import { GameplayStatusLookup } from './publication/GameplayStatusLookup.js';
 import { SqliteSessionRepository } from './publication/SessionRepository.js';
@@ -55,19 +55,8 @@ const readSecret = process.env.CATALOG_INTERNAL_READ_SECRET_FILE
   : process.env.CATALOG_INTERNAL_READ_SECRET;
 
 if (privateReadOnly) {
-  if (
-    !runtime.databasePath ||
-    !runtime.serverSecret ||
-    !readSecret ||
-    readSecret === runtime.serverSecret ||
-    runtime.publisherApiSecret ||
-    runtime.previewAuthority !== 'file-demo' ||
-    process.env.CATALOG_CUSTOMER_PILOT_ENABLED === '1' ||
-    process.env.CATALOG_CUSTOMER_DATA_ALLOWED === '1'
-  ) {
-    throw new Error('CATALOG_PRIVATE_READ_ONLY_CONFIG_INVALID');
-  }
-  const db = new DatabaseSync(runtime.databasePath, { readOnly: true });
+  assertPrivateMetadataReadOnlyConfiguration(runtime, process.env, readSecret);
+  const db = new DatabaseSync(runtime.databasePath!, { readOnly: true });
   db.exec('PRAGMA query_only = ON;');
   // Don't silently initialize an empty database. Require the deployed
   // publisher schema and its indexes before exposing the reader.
