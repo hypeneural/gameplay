@@ -1,6 +1,9 @@
 import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
-import { resolveCatalogRuntimeConfig } from './runtimeConfig.js';
+import {
+  assertPrivateMetadataReadOnlyConfiguration,
+  resolveCatalogRuntimeConfig,
+} from './runtimeConfig.js';
 
 const shell = resolve('/srv/christmas-games/current/web/index.html');
 
@@ -166,5 +169,43 @@ describe('resolveCatalogRuntimeConfig', () => {
     expect(config.storageDir).toBe(resolve('/tmp/media'));
     expect(config.publisherApiSecret).toBe('direct-publisher-secret');
     expect(config.serverSecret).toBe('direct-server-secret');
+  });
+
+  it('permits only safe readonly metadata sidecars with separated secrets and no publisher', () => {
+    const env = {
+      CATALOG_RELEASE_STAGE: 'staging-demo',
+      CATALOG_PUBLIC_ORIGIN: 'https://jogos.example.test',
+      CATALOG_SOCIAL_PREVIEW_FILE: '/tmp/private-preview.json',
+      CATALOG_APPLICATION_SHELL: shell,
+      CATALOG_DATABASE_PATH: '/tmp/catalog.db',
+      CATALOG_SERVER_SECRET: 'signing-secret-not-a-publisher',
+      CATALOG_PRIVATE_METADATA_READ_ONLY: '1',
+    };
+    const config = resolveCatalogRuntimeConfig('production', env, shell);
+    expect(() =>
+      assertPrivateMetadataReadOnlyConfiguration(config, env, 'separate-32-character-read-token-for-testing'),
+    ).not.toThrow();
+    expect(() =>
+      assertPrivateMetadataReadOnlyConfiguration(config, env, config.serverSecret),
+    ).toThrow('CATALOG_PRIVATE_READ_ONLY_CONFIG_INVALID');
+    expect(() =>
+      assertPrivateMetadataReadOnlyConfiguration(
+        config,
+        { ...env, CATALOG_CUSTOMER_DATA_ALLOWED: '1' },
+        'separate-32-character-read-token-for-testing',
+      ),
+    ).toThrow('CATALOG_PRIVATE_READ_ONLY_CONFIG_INVALID');
+    const publisherConfig = resolveCatalogRuntimeConfig(
+      'production',
+      { ...env, PUBLISHER_API_SECRET: 'publisher-must-be-disabled' },
+      shell,
+    );
+    expect(() =>
+      assertPrivateMetadataReadOnlyConfiguration(
+        publisherConfig,
+        env,
+        'separate-32-character-read-token-for-testing',
+      ),
+    ).toThrow('CATALOG_PRIVATE_READ_ONLY_CONFIG_INVALID');
   });
 });
