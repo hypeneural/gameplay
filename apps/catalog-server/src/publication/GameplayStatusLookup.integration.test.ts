@@ -116,6 +116,18 @@ describe('read-only Gameplay contract against real SQLite repository', () => {
       expect(individual.hub_url).toContain('/s/');
       expect(individual.gallery_url).toBe(individual.hub_url + '/fotos');
       expect(individual.games_runtime_verified).toBe(false);
+      const privateReader = new GameplayStatusLookup({
+        db,
+        publicOrigin: new URL('https://jogos.fotosdenatal.com'),
+        sessionSecret: SERVER_SECRET,
+        readSecret: READ_SECRET,
+        allowCapabilityLinks: false,
+      });
+      const privateMetadata = privateReader.lookup(ORDER_A, true);
+      expect(privateMetadata.state).toBe('published_unverified');
+      expect(privateMetadata.photo_count).toBe(1);
+      expect(privateMetadata.hub_url).toBeNull();
+      expect(privateMetadata.gallery_url).toBeNull();
       // A rotated/corrupted capability hash must fail the audit in bulk as well.
       const tokenHash = db
         .prepare('SELECT public_token_hash FROM photo_sessions WHERE id = ?')
