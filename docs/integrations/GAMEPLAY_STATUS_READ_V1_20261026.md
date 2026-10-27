@@ -64,7 +64,7 @@ A PR está baseada na branch da PR #30, não na branch padrão do jogo, que aind
 Arquivo de configuração opt-in:
 `deploy/vps/docker/compose.private-audit.yaml`.
 
-**Importante:** a composição principal de staging `deploy/vps/docker/compose.yaml` continua inalterada; o overlay adiciona apenas o serviço `catalog-reader` com `profiles:['audit-private']`. Ele:
+**Importante:** o overlay deve ser combinado com `deploy/vps/docker/compose.persistence.yaml` (rede `backend` e volume SQLite reais). A composição básica `deploy/vps/docker/compose.yaml` continua inalterada; o overlay adiciona apenas o serviço `catalog-reader` com `profiles:['audit-private']`. Ele:
 
 - monta `/srv/runtime/christmas-games/data/sqlite` com `:ro`, incluindo `catalog.db`, `-wal` e `-shm`, e exige usuário UID:GID que possa ler esses arquivos, sem conceder escrita;
 - liga a porta **somente** em `127.0.0.1:4182` na **Media VPS**, e somente na rede Docker `internal`, sem ligação com `edge`/Caddy público; nunca remover bloqueio público `/internal/*`;
@@ -76,7 +76,7 @@ Arquivo de configuração opt-in:
 
 1. Confirmar versão REAL do contêiner, mounts e integridade do banco/WAL; efetuar backup online consistente com ensaio de restauração **antes de qualquer alteração do serviço existente**. Manter `readiness.json` com `pilotReady=false`, `customerDataAllowed=false`, `automaticDeliveryAllowed=false`.
 2. Gerar artefato imutável da PR #43, incluindo seu _ancestral_ PR #30, através de `pnpm release:staging` e `pnpm release:verify`, com Node24/pnpm11; verificar `RELEASE.json` e `server/main.js`. **Atenção:** a execução da versão compilada depende de como a release empacota o bundle server; não presumir que o checkout fonte seja o serviço em execução.
-3. No diretório de Compose já usado pelo `stackctl`, aplicar overlay usando os meios oficialmente autorizados pelo `stackctl` e Compose. O comando conceitual de inspeção é `docker compose -f compose.yaml -f compose.private-audit.yaml --profile audit-private config --quiet`, seguido de criação **apenas** do serviço `catalog-reader` com `up -d --no-deps catalog-reader` (se o wrapper permitir; não executar comandos Docker root fora da governança).
+3. No diretório de Compose já usado pelo `stackctl`, aplicar overlay usando os meios oficialmente autorizados pelo `stackctl` e Compose. O comando conceitual de inspeção é `docker compose -f compose.persistence.yaml -f compose.private-audit.yaml --profile audit-private config --quiet`, seguido de criação **apenas** do serviço `catalog-reader` com `up -d --no-deps catalog-reader` (se o wrapper permitir; não executar comandos Docker root fora da governança).
 4. Do **host da Media VPS**, provar que `POST http://127.0.0.1:4182/internal/v1/sessions/lookup-batch` devolve o contrato com UUID sintético e bearer privado e que um Bearer inválido obtém 401. Nunca incluir JWT, segredos ou tokens em logs.
 5. Criar canal seguro persistente (via infraestrutura autorizada) do **MCP VPS** para `127.0.0.1:4182` na Media VPS: HTTPS privado com identidade TLS validada, ou SSH tunnel com saída no **loopback do MCP VPS**. O cliente MCP só aceita HTTP em loopback e HTTPS em outros hosts. Não usar `http://100.116.8.109:4180` como `EVYD_GAMEPLAY_READ_ORIGIN`.
 6. Confirmar `crm_capacidades(verificar_gameplay=true)` -> `private_contract_ok`, então `crm_gameplay_auditoria` (status 10 e 12) no ChatGPT. Só consultar IDs reais quando o operador e o transporte estiverem autorizados. `not_found` não significa ausência de fotos no CRM.
