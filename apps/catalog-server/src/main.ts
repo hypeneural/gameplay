@@ -72,7 +72,9 @@ if (privateReadOnly) {
     publicOrigin: runtime.publicOrigin,
     sessionSecret: runtime.serverSecret!,
     readSecret: readSecret!,
-    allowCapabilityLinks: false,
+    // The private reader is read-only even with approved customer links.
+    // Approval is checked fail-closed at startup in runtimeConfig.ts.
+    allowCapabilityLinks: process.env.CATALOG_PRIVATE_CUSTOMER_LINKS_ENABLED === '1',
   });
 }
 
