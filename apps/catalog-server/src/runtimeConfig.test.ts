@@ -199,6 +199,43 @@ describe('resolveCatalogRuntimeConfig', () => {
         'separate-32-character-read-token-for-testing',
       ),
     ).toThrow('CATALOG_PRIVATE_READ_ONLY_CONFIG_INVALID');
+    // Capability URLs can be derived only when all independently reviewed
+    // customer-data and public-route gates were explicitly recorded.
+    const approvedReadLinks = {
+      ...env,
+      CATALOG_PRIVATE_CUSTOMER_LINKS_ENABLED: '1',
+      CATALOG_LINKS_OPERATOR_APPROVED: '1',
+      CATALOG_PUBLIC_CUSTOMER_ROUTES_VERIFIED: '1',
+      CATALOG_CUSTOMER_DATA_ALLOWED: '1',
+    };
+    expect(() =>
+      assertPrivateMetadataReadOnlyConfiguration(
+        config,
+        approvedReadLinks,
+        'separate-32-character-read-token-for-testing',
+      ),
+    ).not.toThrow();
+    for (const missing of [
+      'CATALOG_LINKS_OPERATOR_APPROVED',
+      'CATALOG_PUBLIC_CUSTOMER_ROUTES_VERIFIED',
+      'CATALOG_CUSTOMER_DATA_ALLOWED',
+    ] as const) {
+      const invalid = { ...approvedReadLinks, [missing]: '0' };
+      expect(() =>
+        assertPrivateMetadataReadOnlyConfiguration(
+          config,
+          invalid,
+          'separate-32-character-read-token-for-testing',
+        ),
+      ).toThrow('CATALOG_PRIVATE_READ_ONLY_CONFIG_INVALID');
+    }
+    expect(() =>
+      assertPrivateMetadataReadOnlyConfiguration(
+        config,
+        { ...env, CATALOG_PRIVATE_CUSTOMER_LINKS_ENABLED: 'unexpected' },
+        'separate-32-character-read-token-for-testing',
+      ),
+    ).toThrow('CATALOG_PRIVATE_CUSTOMER_LINKS_FLAG_INVALID');
     const publisherConfig = resolveCatalogRuntimeConfig(
       'production',
       { ...env, PUBLISHER_API_SECRET: 'publisher-must-be-disabled' },
