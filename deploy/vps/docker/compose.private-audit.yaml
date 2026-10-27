@@ -15,7 +15,7 @@ services:
     security_opt: ['no-new-privileges:true']
     tmpfs:
       - /tmp:size=16m,noexec,nosuid
-    user: "${CATALOG_READER_UID:?preprovision_reader_uid}:${CATALOG_READER_GID:?preprovision_reader_gid}"
+    user: '${CATALOG_READER_UID:?preprovision_reader_uid}:${CATALOG_READER_GID:?preprovision_reader_gid}'
     working_dir: /app
     environment:
       NODE_ENV: production
