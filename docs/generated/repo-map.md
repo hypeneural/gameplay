@@ -641,6 +641,7 @@
 │       ├── docker
 │       │   ├── Caddyfile.fragment
 │       │   ├── compose.persistence.yaml
+│       │   ├── compose.private-audit.yaml
 │       │   ├── compose.yaml
 │       │   ├── nginx.conf
 │       │   └── stack.yaml
