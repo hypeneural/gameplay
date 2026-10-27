@@ -118,6 +118,27 @@ export function resolveCatalogRuntimeConfig(
   };
 }
 
+/** Enforces metadata-only isolation separately from staging-demo publication. */
+export function assertPrivateMetadataReadOnlyConfiguration(
+  runtime: CatalogRuntimeConfig,
+  environment: NodeJS.ProcessEnv,
+  readSecret: string | undefined,
+): void {
+  if (environment.CATALOG_PRIVATE_METADATA_READ_ONLY !== '1') return;
+  if (
+    !runtime.databasePath ||
+    !runtime.serverSecret ||
+    !readSecret ||
+    readSecret === runtime.serverSecret ||
+    runtime.publisherApiSecret ||
+    runtime.previewAuthority !== 'file-demo' ||
+    environment.CATALOG_CUSTOMER_PILOT_ENABLED === '1' ||
+    environment.CATALOG_CUSTOMER_DATA_ALLOWED === '1'
+  ) {
+    throw new Error('CATALOG_PRIVATE_READ_ONLY_CONFIG_INVALID');
+  }
+}
+
 function resolveSecret(directValue?: string, filePath?: string): string | undefined {
   if (directValue) return directValue;
   if (!filePath) return undefined;
