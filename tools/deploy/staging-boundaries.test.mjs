@@ -25,6 +25,11 @@ describe('staging Docker boundary', () => {
       'utf8',
     );
     expect(overlay).toContain("command: ['node', 'server/main.js']");
+    // The public catalog continues on its own RELEASE_DIR after a reader-only cut.
+    expect(overlay).toContain('${CATALOG_READER_RELEASE_DIR:?preapproved_immutable_reader_release_dir}');
+    expect(overlay).not.toContain('${RELEASE_DIR:');
+    expect(persistent).toContain('${RELEASE_DIR:-/srv/runtime/christmas-games/current}');
+
     expect(overlay).toContain("CATALOG_PRIVATE_METADATA_READ_ONLY: '1'");
     expect(overlay).toContain('read_only: true');
     expect(overlay).toContain('no-new-privileges:true');
