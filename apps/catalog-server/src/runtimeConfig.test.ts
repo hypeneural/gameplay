@@ -183,7 +183,11 @@ describe('resolveCatalogRuntimeConfig', () => {
     };
     const config = resolveCatalogRuntimeConfig('production', env, shell);
     expect(() =>
-      assertPrivateMetadataReadOnlyConfiguration(config, env, 'separate-32-character-read-token-for-testing'),
+      assertPrivateMetadataReadOnlyConfiguration(
+        config,
+        env,
+        'separate-32-character-read-token-for-testing',
+      ),
     ).not.toThrow();
     expect(() =>
       assertPrivateMetadataReadOnlyConfiguration(config, env, config.serverSecret),
