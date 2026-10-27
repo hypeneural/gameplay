@@ -91,7 +91,6 @@ Arquivo de configuração opt-in:
 - Nginx `internal` media grants: https://nginx.org/en/docs/http/ngx_http_core_module.html#internal
 - Caddy path matchers: https://caddyserver.com/docs/caddyfile/matchers
 
-
 ## Private sidecar deployment correction (2026-10-27)
 
 The `catalog-reader` Compose overlay now explicitly starts `node server/main.js`.
