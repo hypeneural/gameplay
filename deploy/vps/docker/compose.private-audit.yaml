@@ -1,6 +1,7 @@
 # Opt-in overlay, never part of default staging-demo deployment.
 # Run with compose.persistence.yaml (the active persistent/host-tailnet topology)
 # and only through the already-approved stackctl workflow.
+# Reader release is independently pinned: never change RELEASE_DIR for the public catalog.
 # This is a SEPARATE internal metadata reader: it cannot publish sessions,
 # cannot mutate SQLite, and never produces customer capability URLs.
 services:
@@ -34,9 +35,9 @@ services:
       HOST: 0.0.0.0
       PORT: '4180'
     volumes:
-      - ${RELEASE_DIR:?preapproved_immutable_release_dir}/server:/app/server:ro
-      - ${RELEASE_DIR:?preapproved_immutable_release_dir}/package.json:/app/package.json:ro
-      - ${RELEASE_DIR:?preapproved_immutable_release_dir}/web:/var/www/html/web:ro
+      - ${CATALOG_READER_RELEASE_DIR:?preapproved_immutable_reader_release_dir}/server:/app/server:ro
+      - ${CATALOG_READER_RELEASE_DIR:?preapproved_immutable_reader_release_dir}/package.json:/app/package.json:ro
+      - ${CATALOG_READER_RELEASE_DIR:?preapproved_immutable_reader_release_dir}/web:/var/www/html/web:ro
       - /srv/secrets/christmas-games/social-preview.json:/srv/secrets/christmas-games/social-preview.json:ro
       - /srv/runtime/christmas-games/data/sqlite:/data/sqlite:ro
       - ${CATALOG_SERVER_SECRET_HOST_PATH:?preprovision_server_secret}:/run/catalog-secrets/server.secret:ro
