@@ -7,7 +7,10 @@ import type { SocialPreviewRepository } from './socialPreview.js';
 import { SqlitePreviewRepository } from './publication/sqlitePreviewRepository.js';
 import { CrmClientError, HttpCrmClient } from './crm/CrmEligibilityService.js';
 import type { CrmClient } from './crm/CrmEligibilityService.js';
-import { assertPrivateMetadataReadOnlyConfiguration, resolveCatalogRuntimeConfig } from './runtimeConfig.js';
+import {
+  assertPrivateMetadataReadOnlyConfiguration,
+  resolveCatalogRuntimeConfig,
+} from './runtimeConfig.js';
 import { PublicationService } from './publication/PublicationService.js';
 import { GameplayStatusLookup } from './publication/GameplayStatusLookup.js';
 import { SqliteSessionRepository } from './publication/SessionRepository.js';
@@ -147,8 +150,7 @@ if (!privateReadOnly && runtime.databasePath && runtime.publisherApiSecret) {
   });
 }
 
-if (readSecret && !gameplayStatusLookup)
-  throw new Error('CATALOG_READ_API_REQUIRES_ACTIVE_SQLITE');
+if (readSecret && !gameplayStatusLookup) throw new Error('CATALOG_READ_API_REQUIRES_ACTIVE_SQLITE');
 
 const server = createCatalogServer({
   publicOrigin: runtime.publicOrigin,
