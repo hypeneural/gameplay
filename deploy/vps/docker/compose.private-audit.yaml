@@ -1,5 +1,6 @@
 # Opt-in overlay, never part of default staging-demo deployment.
-# Run only alongside the existing compose file by an authorized stack operator.
+# Run with compose.persistence.yaml (the active persistent/host-tailnet topology)
+# and only through the already-approved stackctl workflow.
 # This is a SEPARATE internal metadata reader: it cannot publish sessions,
 # cannot mutate SQLite, and never produces customer capability URLs.
 services:
@@ -42,7 +43,7 @@ services:
       # terminate on this port without exposing /internal to public HTTPS.
       - '127.0.0.1:${CATALOG_READER_HOST_PORT:-4182}:4180'
     networks:
-      - internal
+      - backend
     healthcheck:
       test: ['CMD', 'wget', '-q', '--spider', 'http://127.0.0.1:4180/healthz']
       interval: 15s
