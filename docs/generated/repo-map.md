@@ -727,6 +727,7 @@
 │   ├── index.md
 │   ├── integrations
 │   │   ├── GAMEPLAY_STATUS_READ_V1_20261026.md
+│   │   ├── READER_ONLY_CUT_PREFLIGHT_20261027.md
 │   │   └── photo-sessions
 │   │       ├── AUDITORIA_FORENSE_ANTIGRAVITY_MOBILE_2026-10-06.md
 │   │       ├── AUDITORIA_GITHUB_GALERIA_NATALINA_MOBILE_2026-10-06.md
