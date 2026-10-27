@@ -59,6 +59,7 @@ if (privateReadOnly) {
     !runtime.databasePath ||
     !runtime.serverSecret ||
     !readSecret ||
+    readSecret === runtime.serverSecret ||
     runtime.publisherApiSecret ||
     runtime.previewAuthority !== 'file-demo' ||
     process.env.CATALOG_CUSTOMER_PILOT_ENABLED === '1' ||
