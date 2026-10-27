@@ -1,0 +1,50 @@
+# Opt-in overlay, never part of default staging-demo deployment.
+# Run only alongside the existing compose file by an authorized stack operator.
+# This is a SEPARATE internal metadata reader: it cannot publish sessions,
+# cannot mutate SQLite, and never produces customer capability URLs.
+services:
+  catalog-reader:
+    profiles: ['audit-private']
+    image: node:24-alpine
+    container_name: christmas-games-catalog-reader
+    restart: unless-stopped
+    read_only: true
+    init: true
+    cap_drop: [ALL]
+    security_opt: ['no-new-privileges:true']
+    tmpfs:
+      - /tmp:size=16m,noexec,nosuid
+    user: "${CATALOG_READER_UID:?preprovision_reader_uid}:${CATALOG_READER_GID:?preprovision_reader_gid}"
+    working_dir: /app
+    environment:
+      NODE_ENV: production
+      CATALOG_RELEASE_STAGE: staging-demo
+      CATALOG_PRIVATE_METADATA_READ_ONLY: '1'
+      CATALOG_DATABASE_PATH: /data/sqlite/catalog.db
+      CATALOG_SERVER_SECRET_FILE: /run/catalog-secrets/server.secret
+      CATALOG_INTERNAL_READ_SECRET_FILE: /run/catalog-secrets/reader.secret
+      CATALOG_SOCIAL_PREVIEW_FILE: /srv/secrets/christmas-games/social-preview.json
+      CATALOG_APPLICATION_SHELL: /var/www/html/web/index.html
+      CATALOG_PREVIEW_AUTHORITY: file-demo
+      CATALOG_PUBLIC_ORIGIN: https://jogos.fotosdenatal.com
+      HOST: 0.0.0.0
+      PORT: '4180'
+    volumes:
+      - ${RELEASE_DIR:?preapproved_immutable_release_dir}/server:/app/server:ro
+      - ${RELEASE_DIR:?preapproved_immutable_release_dir}/package.json:/app/package.json:ro
+      - ${RELEASE_DIR:?preapproved_immutable_release_dir}/web:/var/www/html/web:ro
+      - /srv/secrets/christmas-games/social-preview.json:/srv/secrets/christmas-games/social-preview.json:ro
+      - /srv/runtime/christmas-games/data/sqlite:/data/sqlite:ro
+      - ${CATALOG_SERVER_SECRET_HOST_PATH:?preprovision_server_secret}:/run/catalog-secrets/server.secret:ro
+      - ${CATALOG_READ_SECRET_HOST_PATH:?preprovision_read_secret}:/run/catalog-secrets/reader.secret:ro
+    ports:
+      # Host-only, never edge network. An approved SSH tunnel from MCP can
+      # terminate on this port without exposing /internal to public HTTPS.
+      - '127.0.0.1:${CATALOG_READER_HOST_PORT:-4182}:4180'
+    networks:
+      - internal
+    healthcheck:
+      test: ['CMD', 'wget', '-q', '--spider', 'http://127.0.0.1:4180/healthz']
+      interval: 15s
+      timeout: 5s
+      retries: 3
