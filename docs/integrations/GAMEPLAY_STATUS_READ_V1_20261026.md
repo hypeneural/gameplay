@@ -91,22 +91,20 @@ Arquivo de configuração opt-in:
 - Nginx `internal` media grants: https://nginx.org/en/docs/http/ngx_http_core_module.html#internal
 - Caddy path matchers: https://caddyserver.com/docs/caddyfile/matchers
 
-## Adendo forense de deploy sidecar — 27/10/2026 (PR #43)
 
-**P0 detectado no overlay:** `compose.private-audit.yaml` inicialmente não tinha `command` para o serviço `catalog-reader`. O `command: ['node','server/main.js']` de `catalog` no overlay `compose.persistence.yaml` **não é herdado** por outro serviço. Corrigido explicitamente em `catalog-reader`, com regressão em `tools/deploy/staging-boundaries.test.mjs`. Não tentar deploy do YAML antigo sem esta correção.
+## Private sidecar deployment correction (2026-10-27)
 
-**Estado observado do host (relato Antigravity, não reexecutado nesta auditoria):** o leitor na Media VPS respondeu GET `/` com HTTP 200, indicando que executava o binário intermediário `37190a8` sem bloqueio público 404. A imagem atual local `c7526bf` contém o bloqueio e precisará de **nova compilação com a correção Compose** antes do corte. Não usar o SHA do código-fonte como prova de quais bytes o contêiner está executando.
+The `catalog-reader` Compose overlay now explicitly starts `node server/main.js`.
+Services do not inherit commands from a different service in the persistence overlay.
+The isolated reader must be recreated by the approved `stackctl` procedure when
+its command, release mount or environment changes; `docker compose restart` is
+insufficient. Never update the public catalog or deploy customer links as part
+of this correction.
 
-**Sequência pré-operacional obrigatória (sem comandos mutáveis até autorização separada):**
-1. No Avell, registrar SHA atualizado, `pnpm check`, `pnpm release:staging`, `pnpm release:verify`, `RELEASE.json`, SHA256 da release/manifest. Exigir `server/main.js` e a configuração efetiva do overlay com `command`, `profiles`, redes, mounts e bind `127.0.0.1:4182`. Resolver `RELEASE_DIR` como diretório imutável **novo**, nunca symlink `current`.
-2. No host Media VPS, coletar **somente metadados**, sem valores de segredos: versão/ID/imagem/entrypoint/cmd/mounts/porta do contêiner `catalog-reader`, `read_only`, `no-new-privileges`, UID/GID e reachability; comparar os hashes do artefato com o local. Verificar rota ingress `/internal/*` negada externamente.
-3. Validar a configuração Compose combinada e o diff contra o serviço atual com o wrapper `stackctl` autorizado; não supor que editar overlay no checkout efetivo altere o serviço ativo. `docker compose restart` **não aplica** mudanças de `command`, environment, mounts ou `RELEASE_DIR`. Se aprovado, o **único** serviço a recriar é `catalog-reader` via operação equivalente a `docker compose ... up --no-deps -d catalog-reader` no wrapper; jamais `up -d` sem seleção de serviço, `down`, `--remove-orphans`, nem intervenção sobre o catálogo público.
-4. Antes da ação, provar backup SQLite online WAL-consistente **e restaurá-lo em diretório temporário isolado**, rodando `PRAGMA integrity_check`, conferindo SHA/metadados e o procedimento de retorno. `catalog.db` sozinho e um arquivo com nome de backup são insuficientes para afirmar recuperação. Não executar `tools/deploy/backup-restore-catalog.mjs` em caminhos LIVE de restauração.
-5. Após futura recriação autorizada do leitor: `/healthz` = 200; `GET /`, `GET/HEAD /s/:token` sintético e `GET /demo/fotos` = 404; POST sem Bearer = 401; POST com Bearer autorizado e UUID reservado = 200 com `state=not_found`, sem URL; `include_links:true` = 409 com `error=CUSTOMER_LINKS_NOT_ENABLED`. Não colocar Bearer em CLI/argv ou logs, usar segredo aprovisionado no host por arquivo com ACL. O probe remoto do MCP aceita **somente** loopback e requer túnel seguro ou execução no host; `SIDE_NETWORK_UNAVAILABLE` no Avell sem túnel não demonstra falha nem sucesso do lado VPS.
-6. Confirmar `crm_capacidades(verificar_gameplay=true)` no ChatGPT e registrar build/gateway/quantidade de ferramentas sem PII. `private_contract_ok` sinaliza somente contrato de leitura, não vinculação comprovada com a base real nem acesso a WebP/jogos.
+Run `pnpm check`, `pnpm release:staging` and `pnpm release:verify` on the new
+HEAD. Before a reader-only deployment, verify the merged Compose configuration,
+the immutable bundle, loopback port, correct bearer behavior, blocked public
+routes, consistent SQLite backup with tested restore, and a rollback manifest.
 
-**Rollback atômico e controlado:** preservar em release imutável o diretório anterior do leitor e um manifesto de configuração anterior; registrar previamente o comando de `stackctl` para voltar **apenas** o `catalog-reader` à versão anterior, usando a configuração anterior aprovada. Se o build anterior devolve `200 /`, manter o leitor desligado/isolado até reparo e não rotular esse comportamento como GO. Nunca executar `docker stop && docker rm` fora do wrapper, nem alternar a release do catálogo público. Não fazer `git checkout` no diretório LIVE do MCP como rollback; restaurar o artefato/serviço por release imutável previamente aprovado.
-
-**Gates futuros independentes:** a publicação de um cliente real exige aprovação de um único pedido, sessão/grants e derivativos privados verificados, revogação, WebP/thumb/card/game realmente legíveis e testes físicos Safari/Chrome; não modificar `readiness.json` para contornar bloqueios. PrintServer, CRM, Z-API e gravações/entrega automática são fora do escopo.
-
-**Documentos oficiais:** [Docker Compose service updates](https://docs.docker.com/compose/how-tos/production/), [docker compose restart](https://docs.docker.com/reference/cli/docker/compose/restart/), [SQLite WAL read-only](https://www.sqlite.org/wal.html), [Node 24 DatabaseSync](https://nodejs.org/download/release/latest-v24.x/docs/api/sqlite.html).
+The full operational runbook is in `evydencia-crm-mcp`,
+`docs/AUDITORIA_FORENSE_ETAPA3_MCP_GAMEPLAY_20261027.md`.
