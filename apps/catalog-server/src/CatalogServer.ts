@@ -24,6 +24,8 @@ export interface CatalogServerDependencies {
   readonly clock: SocialPreviewClock;
   readonly runtime?: {
     readonly releaseStage: string;
+    /** The isolated audit sidecar must never serve public demo/session HTML. */
+    readonly privateMetadataReadOnly?: boolean;
   };
   readonly readiness?: () => Promise<void>;
   readonly publicationService?: PublicationService;
@@ -74,6 +76,13 @@ async function handleRequest(
 
   if (dependencies.gameplayStatusLookup) {
     if (await dependencies.gameplayStatusLookup.handleHttpRequest(request, response)) return;
+  }
+
+  // A private metadata sidecar exposes only health and bearer-authenticated
+  // /internal lookups. Reusing CatalogServer must not expose public HTML.
+  if (dependencies.runtime?.privateMetadataReadOnly) {
+    sendNotFound(response);
+    return;
   }
 
   if (dependencies.publicationService) {
