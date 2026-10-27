@@ -67,8 +67,8 @@ if (privateReadOnly) {
   gameplayStatusLookup = new GameplayStatusLookup({
     db,
     publicOrigin: runtime.publicOrigin,
-    sessionSecret: runtime.serverSecret,
-    readSecret,
+    sessionSecret: runtime.serverSecret!,
+    readSecret: readSecret!,
     allowCapabilityLinks: false,
   });
 }
