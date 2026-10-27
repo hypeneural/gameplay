@@ -166,7 +166,7 @@ const server = createCatalogServer({
     },
   },
   clock: { now: () => new Date() },
-  runtime: { releaseStage: runtime.releaseStage },
+  runtime: { releaseStage: runtime.releaseStage, privateMetadataReadOnly: privateReadOnly },
   readiness: async () => {
     if (privateReadOnly) {
       const check = readinessDatabase?.prepare('SELECT 1 AS ok').get() as
