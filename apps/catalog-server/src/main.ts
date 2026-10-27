@@ -1,4 +1,5 @@
 import { readFile } from 'node:fs/promises';
+import { DatabaseSync } from 'node:sqlite';
 import { fileURLToPath } from 'node:url';
 import { createCatalogServer } from './CatalogServer.js';
 import { createFilePreviewRepository, parsePreviewConfiguration } from './filePreviewRepository.js';
@@ -36,7 +37,53 @@ let previews: SocialPreviewRepository = createFilePreviewRepository(runtime.prev
 });
 let readinessDatabase: ReturnType<typeof openSqliteDatabase> | undefined;
 
-if (runtime.databasePath && runtime.publisherApiSecret) {
+// The private metadata-only sidecar reads the existing real SQLite database
+// without running migrations or bringing up any publisher/media writes.
+// Its startup is fail-closed: missing secrets/schema/database => no HTTP server.
+const privateReadOnly = process.env.CATALOG_PRIVATE_METADATA_READ_ONLY === '1';
+if (
+  process.env.CATALOG_PRIVATE_METADATA_READ_ONLY !== undefined &&
+  !['0', '1'].includes(process.env.CATALOG_PRIVATE_METADATA_READ_ONLY)
+) {
+  throw new Error('CATALOG_PRIVATE_METADATA_READ_ONLY_INVALID');
+}
+if (process.env.CATALOG_INTERNAL_READ_SECRET && process.env.CATALOG_INTERNAL_READ_SECRET_FILE) {
+  throw new Error('CATALOG_READ_SECRET_AMBIGUOUS');
+}
+const readSecret = process.env.CATALOG_INTERNAL_READ_SECRET_FILE
+  ? (await readFile(process.env.CATALOG_INTERNAL_READ_SECRET_FILE, 'utf8')).trim()
+  : process.env.CATALOG_INTERNAL_READ_SECRET;
+
+if (privateReadOnly) {
+  if (
+    !runtime.databasePath ||
+    !runtime.serverSecret ||
+    !readSecret ||
+    runtime.publisherApiSecret ||
+    runtime.previewAuthority !== 'file-demo' ||
+    process.env.CATALOG_CUSTOMER_PILOT_ENABLED === '1' ||
+    process.env.CATALOG_CUSTOMER_DATA_ALLOWED === '1'
+  ) {
+    throw new Error('CATALOG_PRIVATE_READ_ONLY_CONFIG_INVALID');
+  }
+  const db = new DatabaseSync(runtime.databasePath, { readOnly: true });
+  db.exec('PRAGMA query_only = ON;');
+  // Don't silently initialize an empty database. Require the deployed
+  // publisher schema and its indexes before exposing the reader.
+  db.prepare('SELECT id, active_revision_id FROM photo_sessions LIMIT 1').all();
+  db.prepare('SELECT id, manifest_json FROM photo_revisions LIMIT 1').all();
+  db.prepare('SELECT revision_id, blob_id, state FROM revision_blobs LIMIT 1').all();
+  readinessDatabase = db;
+  gameplayStatusLookup = new GameplayStatusLookup({
+    db,
+    publicOrigin: runtime.publicOrigin,
+    sessionSecret: runtime.serverSecret,
+    readSecret,
+    allowCapabilityLinks: false,
+  });
+}
+
+if (!privateReadOnly && runtime.databasePath && runtime.publisherApiSecret) {
   if (!runtime.serverSecret) {
     throw new Error('CATALOG_SERVER_SECRET_MISSING');
   }
@@ -49,7 +96,6 @@ if (runtime.databasePath && runtime.publisherApiSecret) {
     publicBaseUrl: runtime.publicOrigin.origin,
   });
   sessionIsActive = async (token) => sessionRepository.isSessionActive(token);
-  const readSecret = process.env.CATALOG_INTERNAL_READ_SECRET;
   if (
     readSecret &&
     (readSecret === runtime.publisherApiSecret || readSecret === runtime.serverSecret)
@@ -111,7 +157,7 @@ if (runtime.databasePath && runtime.publisherApiSecret) {
   });
 }
 
-if (process.env.CATALOG_INTERNAL_READ_SECRET && !gameplayStatusLookup)
+if (readSecret && !gameplayStatusLookup)
   throw new Error('CATALOG_READ_API_REQUIRES_ACTIVE_SQLITE');
 
 const server = createCatalogServer({
@@ -128,6 +174,11 @@ const server = createCatalogServer({
   clock: { now: () => new Date() },
   runtime: { releaseStage: runtime.releaseStage },
   readiness: async () => {
+    if (privateReadOnly) {
+      const check = readinessDatabase?.prepare('SELECT 1 AS ok').get() as
+        { ok?: number } | undefined;
+      if (check?.ok !== 1) throw new Error('CATALOG_PRIVATE_SQLITE_UNAVAILABLE');
+    }
     if (runtime.previewAuthority === 'sqlite') {
       // Lightweight indexed DB connection health; no customer rows are logged.
       const check = readinessDatabase?.prepare('SELECT 1 AS ok').get() as
