@@ -59,6 +59,7 @@ A PR está baseada na branch da PR #30, não na branch padrão do jogo, que aind
 - exige banco SQLite **já existente** e `CATALOG_SERVER_SECRET[_FILE]`, para conferir hash da capability armazenada, além do segredo **independente** `CATALOG_INTERNAL_READ_SECRET[_FILE]`;
 - inicia `new DatabaseSync(path,{readOnly:true})` com `PRAGMA query_only=ON`; requer as três tabelas `photo_sessions`, `photo_revisions`, `revision_blobs`; **não migra nem cria sessão ou publicações**;
 - exige `CATALOG_PREVIEW_AUTHORITY=file-demo` e rejeita segredos Publisher e habilitação do piloto/publicação de clientes; publicador e cliente CRM não são instanciados;
+- com o modo privado ativo, `CatalogServer` atende somente `/healthz` e as rotas `/internal/v1/sessions/lookup*` autenticadas. `/`, `/demo/*` e `/s/*` retornam 404, inclusive em HEAD/GET; isto é defesa em profundidade, não substitui firewall/Caddy;
 - para o endpoint `POST /internal/v1/sessions/lookup-batch` aceita até 50 UUIDs e **não gera URLs privadas**. A rota individual `lookup` com `include_links:true` responde **409 CUSTOMER_LINKS_NOT_ENABLED** até o serviço público, mídia e tokens serem homologados. Esta sidecar é exclusivamente de **METADADOS**.
 
 Arquivo de configuração opt-in:
