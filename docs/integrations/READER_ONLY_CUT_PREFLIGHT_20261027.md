@@ -1,92 +1,62 @@
-# Private catalog-reader: isolated release preflight (2026-10-27)
+# Reader-only cut preflight
 
-**Scope:** Media VPS read-only metadata sidecar, not the public Gameplay catalog.
-This document is a preflight, **not** an authorization to deploy.
+Date: 2026-10-27. Scope: private Gameplay metadata reader only.
 
-## Source-of-truth commits and environment
+This is a review checklist, not permission to deploy.
 
-- Source: Gameplay PR #43; obtain its current complete HEAD with
-  `git rev-parse HEAD`. The Antigravity stage-3 receipt validated
-  `ab672a48c419cdb0323eb05edd81b6d480160cd7`; any later code
-  change requires new tests, staged manifest and CI on the new SHA.
-- Reported Media VPS reader: `20261027-37190a8`, localhost
-  `127.0.0.1:4182`. It still returned 200 for GET `/` and is therefore
-  **not** equivalent to the hardened build.
-- Reader overlay: `deploy/vps/docker/compose.private-audit.yaml`.
-  It uses `CATALOG_READER_RELEASE_DIR` **only for the reader**.
-  The public catalog retains its independent `RELEASE_DIR`, usually
-  `/srv/runtime/christmas-games/current`.
-- The `CATALOG_READER_RELEASE_DIR` environment variable is **required**
-  whenever the reader overlay is rendered, including a dry-run.
-  A missing value must fail configuration rather than fall back silently.
-- Confirm the approved `stackctl` wrapper can pass both variables separately
-  and target only `catalog-reader`. If not, stop: **BLOCKED_WRAPPER**.
+## Release isolation
 
-## Stage 1: local build and evidence (nonmutating)
+- Public catalog release variable: `RELEASE_DIR`.
+- Private reader release variable: `CATALOG_READER_RELEASE_DIR`.
+- The reader release variable is required in the audit overlay.
+- The public `catalog` and `gateway` must keep their existing release mounts.
+- The reader must mount its own immutable `server`, `package.json` and `web`.
 
-1. Keep `readiness.json` flags false. Run `pnpm check`,
-   `pnpm release:staging`, then `pnpm release:verify`.
-2. Check `.release/vps/RELEASE.json`, exact `gitSha`, manifest file count,
-   SHA-256 inventory and `server/main.js`.
-3. Render the **merged** persistence + reader Compose model with the
-   official `docker compose --profile audit-private ... config --format json`
-   in a safe local environment. Use only synthetic paths/UID/GID and
-   placeholder secret-file *paths*, not actual secret contents.
-4. Assert `catalog-reader.command=['node','server/main.js']`, loopback
-   port 4182 to container 4180, `read_only=true`, cap drop ALL,
-   no new privileges, `backend` only, three release mounts
-   from `CATALOG_READER_RELEASE_DIR` and no public `RELEASE_DIR` mounts.
-5. Assert `catalog` and `gateway` still refer to the original
-   `RELEASE_DIR`; do not confuse `docker compose config --quiet`
-   (syntax pass) with the security assertions on the rendered model.
-   **Never paste the full rendered model into a PR or report** because
-   it may contain sensitive environment values.
+## Local build
 
-## Stage 2: VPS preflight (read-only; no deployment)
+1. Record the current full Git SHA and clean worktree.
+2. Run `pnpm check`, `pnpm release:staging` and `pnpm release:verify`.
+3. Validate `.release/vps/RELEASE.json` and `server/main.js`.
+4. Render the merged Compose model using synthetic environment values.
+5. Verify reader command, mounts, profile, network and localhost port.
+6. Confirm that `catalog` and `gateway` still use the public release.
+7. Do not print the full rendered configuration because it may contain secrets.
 
-1. Use `stackctl` documented inspection only: capture container ID,
-   image digest, actual command, release mount source, read-only filesystem,
-   UID/GID, loopback bind and health. Do not print secret values.
-2. Record the existing immutable reader artifact, merged Compose config
-   and a safe rollback procedure. A bare `docker compose restart` does
-   not apply a new mount or command.
-3. Check a **consistent** SQLite snapshot and tested restore in a
-   separate scratch directory using approved tooling. Database file
-   presence, zero-byte WAL and `integrity_check` alone do not prove
-   that media bytes and database revisions are consistent.
-4. Verify `/internal/*` is inaccessible from the public ingress.
-   localhost-only host port is necessary but not a substitute for
-   application-level auth or Docker network isolation.
+## VPS read-only preflight
 
-## Stage 3: after a separately authorized reader-only cut
+1. Inspect the live reader container ID, actual command and mount sources.
+2. Verify the host bind is limited to `127.0.0.1:4182`.
+3. Verify that public ingress cannot reach `/internal/*`.
+4. Verify `stackctl` can target only the reader and pass both release variables.
+5. Confirm the previously deployed immutable artifact and rollback mechanism.
+6. Test SQLite backup integrity and restore in an isolated scratch directory.
+7. Do not restore to live paths or change public catalog, CRM or PrintServer.
 
-- Recreate **only** the `catalog-reader` service using the approved
-  wrapper with `CATALOG_READER_RELEASE_DIR` pointing to the verified,
-  immutable reader build. Do not use `docker compose up` on all
-  services, `down`, or direct `docker rm`.
-- Verify the running **container mount/source checksum**, not merely
-  the Git commit or directory name.
-- Require GET `/healthz` = 200; GET `/`, `/demo/fotos`, synthetic
-  `/s/:token` and HEAD `/s/:token` = 404.
-- POST batch without Bearer = 401. With already-provisioned operator
-  Bearer + synthetic absent UUID = 200 `not_found` without URLs.
-  A single link request = 409
-  `{"error":"CUSTOMER_LINKS_NOT_ENABLED"}`.
-- No actual customer URLs, image access, browser runtime, Z-API, print,
-  CRM writes or `readiness.json` changes in this cut.
-- If any gate fails, use the approved wrapper to return only the reader
-  to its prior immutable artifact/config or disable the reader if the
-  previous build violates public-route isolation.
+If the wrapper cannot isolate the service, report `BLOCKED_WRAPPER`.
 
-## Relevant official documentation
+## After a separately authorized reader cut
 
-- Docker Compose interpolation/merge:
-  https://docs.docker.com/reference/compose-file/interpolation/
-- Compose validation:
-  https://docs.docker.com/reference/cli/docker/compose/config/
-- Targeted Compose service update:
-  https://docs.docker.com/reference/cli/docker/compose/up/
-- SQLite WAL:
-  https://sqlite.org/wal.html
-- SQLite online backup:
-  https://sqlite.org/backup.html
+- Verify the running container mounts the approved, hashed reader bundle.
+- Require `GET /healthz` to return 200.
+- Require public pages and synthetic session pages to return 404.
+- Require a missing Bearer token to return 401.
+- Require an authorized, absent synthetic order UUID to return 200 without URLs.
+- Require customer links to return 409 with `CUSTOMER_LINKS_NOT_ENABLED`.
+- Keep customer publication, automatic delivery and WhatsApp disabled.
+- Restore the prior immutable reader only through the approved wrapper.
+
+The old Media VPS reader reportedly serves HTTP 200 on `GET /`.
+It cannot be accepted as the new hardened reader.
+
+## Separate risks
+
+Gameplay issue #44 tracks fail-closed backup restoration safeguards.
+Do not use `restoreCatalog()` against an existing production target.
+
+## Official references
+
+- https://docs.docker.com/reference/compose-file/interpolation/
+- https://docs.docker.com/reference/cli/docker/compose/config/
+- https://docs.docker.com/reference/cli/docker/compose/up/
+- https://sqlite.org/backup.html
+- https://sqlite.org/wal.html
