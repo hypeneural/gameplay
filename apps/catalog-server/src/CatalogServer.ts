@@ -128,10 +128,13 @@ async function handleRequest(
   // Read-only customer hub/gallery: the immutable token must match an ACTIVE
   // SQLite session. File-demo previews are not the authority for this case.
   // Never override explicit revoked/disabled preview records.
-  if (!record && route.kind === 'session' &&
-      dependencies.runtime?.publicCustomerSessionReadEnabled &&
-      dependencies.sessionIsActive &&
-      await dependencies.sessionIsActive(route.token)) {
+  if (
+    !record &&
+    route.kind === 'session' &&
+    dependencies.runtime?.publicCustomerSessionReadEnabled &&
+    dependencies.sessionIsActive &&
+    (await dependencies.sessionIsActive(route.token))
+  ) {
     const html = renderSessionHtml(
       await dependencies.loadApplicationShell(),
       publicCustomerSessionMetadata(dependencies.publicOrigin, route.canonicalPath),

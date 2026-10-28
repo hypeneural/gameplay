@@ -23,6 +23,7 @@ from the authenticated MCP inventory PR #15.
 ## Proposed opt-in
 
 PR #47 adds a narrow, fail-closed public HTML fallback that:
+
 - activates only with `CATALOG_PUBLIC_SESSION_READ_ENABLED=1` and
   `CATALOG_PUBLIC_CUSTOMER_ROUTES_VERIFIED=1` and
   `CATALOG_CUSTOMER_DATA_ALLOWED=1` at startup;
@@ -47,7 +48,7 @@ The Compose changes add flags **defaulting to 0**, independently for public
    dependency graphs and release manifest).
 2. Dedicated, immutable public release with PR #47 code must be installed
    via **service-only** cut. The existing global `stackctl deploy
-   christmas-games` guard must not be bypassed. Verify the actual live
+christmas-games` guard must not be bypassed. Verify the actual live
    mount layout and client build compatibility: the public `gateway` serves
    the UI from its own `RELEASE_DIR` mount.
 3. No step changes `catalog-reader` in the public cut or invokes
@@ -68,6 +69,7 @@ The Compose changes add flags **defaulting to 0**, independently for public
    the operator asks for them.
 
 **Caveats:**
+
 - A valid published manifest does not prove that every image is accessible.
 - The JSON session route and media auth are served by PublicationService,
   **not** by this CatalogServer HTML fallback. Both must be validated.

@@ -167,7 +167,10 @@ export function publicDemoSocialMetadata(publicOrigin: URL, path: string): Socia
 /** Generic preview for an existing ACTIVE customer session, never a photo.
  * The capability is already in the requested page URL; do not record it
  * in application access logs or use it as an image asset identifier. */
-export function publicCustomerSessionMetadata(publicOrigin: URL, canonicalPath: string): SocialMetadata {
+export function publicCustomerSessionMetadata(
+  publicOrigin: URL,
+  canonicalPath: string,
+): SocialMetadata {
   return {
     canonicalUrl: new URL(canonicalPath, publicOrigin),
     imageUrl: new URL(`/social/${genericPreviewVersion}.jpg`, publicOrigin),

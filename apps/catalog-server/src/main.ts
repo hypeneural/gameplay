@@ -161,10 +161,14 @@ if (publicSessionReadFlag !== undefined && !['0', '1'].includes(publicSessionRea
   throw new Error('CATALOG_PUBLIC_SESSION_READ_FLAG_INVALID');
 }
 const publicSessionReadEnabled = publicSessionReadFlag === '1';
-if (publicSessionReadEnabled &&
-    (privateReadOnly || !publicationService || !sessionIsActive ||
-     process.env.CATALOG_PUBLIC_CUSTOMER_ROUTES_VERIFIED !== '1' ||
-     process.env.CATALOG_CUSTOMER_DATA_ALLOWED !== '1')) {
+if (
+  publicSessionReadEnabled &&
+  (privateReadOnly ||
+    !publicationService ||
+    !sessionIsActive ||
+    process.env.CATALOG_PUBLIC_CUSTOMER_ROUTES_VERIFIED !== '1' ||
+    process.env.CATALOG_CUSTOMER_DATA_ALLOWED !== '1')
+) {
   throw new Error('CATALOG_PUBLIC_SESSION_READ_NOT_AUTHORIZED');
 }
 
@@ -180,7 +184,11 @@ const server = createCatalogServer({
     },
   },
   clock: { now: () => new Date() },
-  runtime: { releaseStage: runtime.releaseStage, privateMetadataReadOnly: privateReadOnly, publicCustomerSessionReadEnabled: publicSessionReadEnabled },
+  runtime: {
+    releaseStage: runtime.releaseStage,
+    privateMetadataReadOnly: privateReadOnly,
+    publicCustomerSessionReadEnabled: publicSessionReadEnabled,
+  },
   readiness: async () => {
     if (privateReadOnly) {
       const check = readinessDatabase?.prepare('SELECT 1 AS ok').get() as

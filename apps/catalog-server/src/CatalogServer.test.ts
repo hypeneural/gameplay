@@ -55,9 +55,16 @@ describe('CatalogServer', () => {
 
   it('opens approved ACTIVE customer hub/gallery/game pages without exposing personal previews', async () => {
     const audit = vi.fn(async () => undefined);
-    const onlyKnown = async (token: string): Promise<boolean> => token === 'known-valid-session-token';
+    const onlyKnown = async (token: string): Promise<boolean> =>
+      token === 'known-valid-session-token';
     const baseUrl = await startServer(
-      undefined, audit, 'staging-demo', undefined, onlyKnown, false, true,
+      undefined,
+      audit,
+      'staging-demo',
+      undefined,
+      onlyKnown,
+      false,
+      true,
     );
     for (const suffix of ['', '/fotos', '/game/memory']) {
       const response = await fetch(`${baseUrl}/s/known-valid-session-token${suffix}`);
@@ -72,11 +79,16 @@ describe('CatalogServer', () => {
     }
     expect((await fetch(`${baseUrl}/s/unknown-session-token`)).status).toBe(404);
     expect((await fetch(`${baseUrl}/s/known-valid-session-token/social-preview`)).status).toBe(404);
-    expect((await fetch(`${baseUrl}/s/known-valid-session-token`, {method:'HEAD'})).status).toBe(200);
+    expect((await fetch(`${baseUrl}/s/known-valid-session-token`, { method: 'HEAD' })).status).toBe(
+      200,
+    );
     expect(audit).not.toHaveBeenCalled();
     const disabled = await startServer(
-      undefined, vi.fn(async () => undefined), 'staging-demo',
-      undefined, onlyKnown,
+      undefined,
+      vi.fn(async () => undefined),
+      'staging-demo',
+      undefined,
+      onlyKnown,
     );
     expect((await fetch(`${disabled}/s/known-valid-session-token`)).status).toBe(404);
   });
@@ -353,7 +365,15 @@ function startServer(
     previews: { getByPublicToken: async () => record },
     audit: { record: auditRecord },
     clock: { now: () => new Date('2026-08-25T12:00:00.000Z') },
-    ...(releaseStage === undefined && !publicCustomerSessionReadEnabled ? {} : { runtime: { releaseStage: releaseStage ?? 'staging-demo', privateMetadataReadOnly, publicCustomerSessionReadEnabled } }),
+    ...(releaseStage === undefined && !publicCustomerSessionReadEnabled
+      ? {}
+      : {
+          runtime: {
+            releaseStage: releaseStage ?? 'staging-demo',
+            privateMetadataReadOnly,
+            publicCustomerSessionReadEnabled,
+          },
+        }),
     ...(readiness === undefined ? {} : { readiness }),
     sessionIsActive,
   });
