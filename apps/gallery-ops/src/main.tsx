@@ -79,7 +79,7 @@ const stateOptions: { id: StateFilter; label: string }[] = [
   { id: 'no_upload', label: 'Sem publicação' },
   { id: 'preparing', label: 'Em preparação' },
   { id: 'incomplete', label: 'Incompleta' },
-  { id: 'published_unverified', label: 'Publicadas' },
+  { id: 'published_unverified', label: 'Publicadas · link individual' },
   { id: 'revoked', label: 'Revogadas' },
   { id: 'unavailable', label: 'Falha de integração' },
 ];
@@ -426,7 +426,7 @@ function App() {
                 />
               </div>
               <div className="quick-tabs" aria-label="Filtrar por situação">
-                {[stateOptions[0],stateOptions[1],stateOptions[2],stateOptions[3],stateOptions[7]].map((t) => (
+                {[stateOptions[0],stateOptions[1],stateOptions[2],stateOptions[3],stateOptions[8]].map((t) => (
                   <button
                     key={t.id}
                     className={'tab ' + (filters.state === t.id ? 'tab--active' : '')}
