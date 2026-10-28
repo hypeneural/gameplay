@@ -5,6 +5,8 @@ import {
   STATES,
   filterOrders,
   formatDate,
+  formatPhone,
+  formatCrmStatus,
   priority,
   sortOrders,
   summarize,
@@ -87,6 +89,7 @@ const sortOptions: { value: SortKey; label: string }[] = [
   { value: 'sessionAt', label: 'Data da sessão' },
   { value: 'orderId', label: 'Número do pedido' },
   { value: 'clientName', label: 'Nome do cliente' },
+  { value: 'clientWhatsapp', label: 'WhatsApp do cliente' },
   { value: 'packageName', label: 'Pacote' },
   { value: 'createdAt', label: 'Criação do pedido' },
   { value: 'firstUploadAt', label: 'Primeiro upload' },
@@ -96,6 +99,16 @@ const sortOptions: { value: SortKey; label: string }[] = [
 ];
 const DEMO_DATE = '2026-10-28';
 const localDemo = import.meta.env.DEV;
+function ClientContact({ row }: { row: {clientWhatsapp: string | null; clientPhone: string | null; clientEmail: string | null} }) {
+  const wa = formatPhone(row.clientWhatsapp);
+  const phone = formatPhone(row.clientPhone);
+  return <div className="client-contacts">
+    {row.clientWhatsapp && <span title="WhatsApp cadastrado no CRM">WhatsApp: {wa}</span>}
+    {row.clientPhone && row.clientPhone !== row.clientWhatsapp && <span title="Telefone alternativo">Tel.: {phone}</span>}
+    {row.clientEmail && <span className="client-email" title="E-mail cadastrado">{row.clientEmail}</span>}
+    {!row.clientWhatsapp && !row.clientPhone && !row.clientEmail && <span>Sem contato cadastrado</span>}
+  </div>;
+}
 function Status({ state }: { state: GalleryState }) {
   return (
     <span className={'status status--' + STATES[state].tone} title={STATES[state].description}>
@@ -387,7 +400,7 @@ function App() {
                 <input
                   id="search"
                   type="search"
-                  placeholder="Buscar pedido, cliente ou pacote..."
+                  placeholder="Buscar pedido, nome, WhatsApp ou e-mail..."
                   value={filters.search}
                   onChange={(e) => update('search', e.target.value)}
                 />
@@ -551,14 +564,14 @@ function App() {
               <div className="empty">
                 <Icon name={localDemo ? 'search' : 'lock'} size={30} />
                 <h3>
-                  {localDemo ? 'Nenhum pedido encontrado' : 'Dados administrativos indisponíveis'}
+                  {loaded ? 'Nenhum pedido com esses filtros' : 'Dados administrativos indisponíveis'}
                 </h3>
                 <p>
-                  {localDemo
+                  {loaded
                     ? 'Altere os filtros ou volte à lista completa.'
                     : 'Acesso a registros reais exige autenticação e integração homologada.'}
                 </p>
-                {localDemo && (
+                {loaded && (
                   <button className="btn btn--ghost" type="button" onClick={reset}>
                     Remover filtros
                   </button>
@@ -570,7 +583,7 @@ function App() {
                   <table>
                     <thead>
                       <tr>
-                        <th scope="col">PEDIDO / CLIENTE</th>
+                        <th scope="col">PEDIDO / CLIENTE / CONTATO</th>
                         <th scope="col">PACOTE / CRM</th>
                         <th scope="col">DATA DA SESSÃO</th>
                         <th scope="col">GALERIA</th>
@@ -585,10 +598,12 @@ function App() {
                           <td>
                             <strong className="order-id">#{o.orderId}</strong>
                             <div className="client-name">{o.clientName}</div>
+                            <ClientContact row={o} />
+                            <small className="order-created">Pedido: {formatDate(o.createdAt)}</small>
                           </td>
                           <td>
                             <span className="package">{o.packageName}</span>
-                            <small className="crm-status">{o.crmStatus}</small>
+                            <small className="crm-status">{formatCrmStatus(o.crmStatus)}</small>
                           </td>
                           <td>
                             <span className="date">{formatDate(o.sessionAt)}</span>
@@ -642,7 +657,9 @@ function App() {
                         <div>
                           <strong>#{o.orderId}</strong>
                           <span>{o.clientName}</span>
+                          <ClientContact row={o} />
                           <small>{o.packageName}</small>
+                          <small>Pedido criado: {formatDate(o.createdAt)}</small>
                         </div>
                         <Status state={o.state} />
                       </div>
@@ -662,7 +679,7 @@ function App() {
                       </div>
                       <div className="mobile-record-foot">
                         <small>
-                          {o.crmStatus} ·{' '}
+                          {formatCrmStatus(o.crmStatus)} ·{' '}
                           {o.preparingPhotos
                             ? o.preparingPhotos + ' em preparação'
                             : 'Sem preparo ativo'}
@@ -714,7 +731,7 @@ function App() {
           </section>
           <footer>
             Estúdio Evydência · Operação de Galerias Natal 2026{' '}
-            <span>Sem dados de produção nesta versão</span>
+            <span>{localDemo ? 'Dados 100% sintéticos' : 'Consulta privada e autenticada · sem cache público'}</span>
           </footer>
         </div>
       </main>
