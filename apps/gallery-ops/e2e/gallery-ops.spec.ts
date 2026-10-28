@@ -25,7 +25,9 @@ test('manager cockpit presents only synthetic records with working filters', asy
   await expect(page.locator('.result-head')).toContainText('48');
   await page.getByRole('searchbox', { name: 'Buscar pedido ou cliente' }).fill('9001001');
   await expect(page.locator('.result-head')).toContainText('1');
-  await page.getByRole('searchbox', { name: 'Buscar pedido ou cliente' }).fill('familia.exemplo2@example.invalid');
+  await page
+    .getByRole('searchbox', { name: 'Buscar pedido ou cliente' })
+    .fill('familia.exemplo2@example.invalid');
   await expect(page.locator('.result-head')).toContainText('1');
   await page.getByRole('searchbox', { name: 'Buscar pedido ou cliente' }).fill('');
   await expect(page.locator('.result-head')).toContainText('48');
