@@ -122,7 +122,7 @@ export async function loadCanonicalOrders(config, fetchFn = fetch) {
   }
   throw Error('CANONICAL_PAGE_LIMIT');
 }
-export function projectState(result) {
+function projectState(result) {
   if (!result) return 'unavailable';
   if (result.state === 'not_found') return 'no_session';
   if (result.state === 'revoked') return 'revoked';
