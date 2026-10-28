@@ -39,10 +39,6 @@ jobs:
           version: 11.19.0
           run_install: false
       - run: pnpm install --frozen-lockfile
-      - name: Temporary formatting diagnostics (read-only CI checkout)
-        run: |
-          pnpm exec prettier --write apps/gallery-ops/AGENTS.md apps/gallery-ops/README.md apps/gallery-ops/index.html apps/gallery-ops/package.json apps/gallery-ops/vite.config.ts apps/gallery-ops/src/domain.ts apps/gallery-ops/src/fixtures.ts apps/gallery-ops/src/domain.test.ts apps/gallery-ops/src/main.tsx apps/gallery-ops/src/styles.css docs/integrations/NATAL26_GALLERY_OPS_FORENSIC_AUDIT_20261028.md docs/generated/repo-map.md
-          node -e "const fs=require('node:fs');for(const path of process.argv.slice(1)){console.log('FORMAT_FILE='+JSON.stringify({path,content:fs.readFileSync(path,'utf8')}))}" apps/gallery-ops/AGENTS.md apps/gallery-ops/README.md apps/gallery-ops/index.html apps/gallery-ops/package.json apps/gallery-ops/vite.config.ts apps/gallery-ops/src/domain.ts apps/gallery-ops/src/fixtures.ts apps/gallery-ops/src/domain.test.ts apps/gallery-ops/src/main.tsx apps/gallery-ops/src/styles.css docs/integrations/NATAL26_GALLERY_OPS_FORENSIC_AUDIT_20261028.md docs/generated/repo-map.md
       - run: pnpm --filter @christmas-games/gallery-ops build
       - run: pnpm --filter @christmas-games/gallery-ops test
       - name: Block public release shortcuts
