@@ -107,8 +107,11 @@
 │   ├── gallery-ops
 │   │   ├── AGENTS.md
 │   │   ├── README.md
+│   │   ├── e2e
+│   │   │   └── gallery-ops.spec.ts
 │   │   ├── index.html
 │   │   ├── package.json
+│   │   ├── playwright.config.ts
 │   │   ├── src
 │   │   │   ├── domain.test.ts
 │   │   │   ├── domain.ts
