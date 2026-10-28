@@ -44,6 +44,14 @@ describe('catalog public HTML asset alignment', () => {
       {html:newHtml,indexSha:'same',assetSha:{}}
     ).status).toBe('BLOCKED_WEB_RELEASE_DRIFT');
   });
+  it('detects stale HTML cached by the running catalog Node process', () => {
+    const result = comparePublicWebSnapshots(
+      {html:newHtml,servedHtml:oldHtml,indexSha:'same',assetSha:assets},
+      {html:newHtml,indexSha:'same',assetSha:assets}
+    );
+    expect(result.status).toBe('BLOCKED_WEB_RELEASE_DRIFT');
+    expect(result.findings).toContain('RUNNING_HTML_RELEASE_DRIFT');
+  });
   it('fails closed if a release lacks hashed entry references', () => {
     const html='<html><body>missing app</body></html>';
     expect(comparePublicWebSnapshots(
