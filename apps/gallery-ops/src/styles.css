@@ -1063,3 +1063,26 @@ table td:first-child {
     color: #6d8175;
   }
 }
+
+/* Operational triage: status of CRM vs state of digital gallery are deliberately separate. */
+.operational-chip { display:inline-flex; margin-top:8px; padding:4px 7px; border-radius:6px;
+  font-weight:750; font-size:10px; line-height:1.3; letter-spacing:.1px; }
+.operational-chip--urgent { background:#fff0e4; color:#9d3e0f; border:1px solid #f4cfb7; }
+.operational-chip--follow_up { background:#fff9e5; color:#92620d; }
+.operational-chip--awaiting_session { background:#edf3f0; color:#496b5e; }
+.operational-chip--published { background:#e7f5ed; color:#236745; }
+.operational-chip--integration_error { background:#fff0ed; color:#a63f36; }
+.quick-actions { display:flex; flex-wrap:wrap; gap:5px; align-items:center; min-width:228px; }
+.quick-actions .icon-action { min-width:62px; height:32px; padding:5px 8px; display:inline-flex;
+  align-items:center; justify-content:center; gap:5px; border:1px solid #d9e5dd;
+  border-radius:8px; background:#f8faf8; font-size:10px; font-weight:700; color:#356b52; }
+.quick-actions .icon-action--enabled:hover { background:#e1f3e9; color:#144b33; border-color:#92c3a3; }
+.quick-actions .icon-action:disabled { color:#81998b; border-color:#e8eeea; opacity:.65; }
+.actions-status { width:100%; display:flex; align-items:center; gap:4px;
+  color:#9a7042; font-size:10px; white-space:normal; }
+.indicator--amber .indicator-number { color:#a84d16; }
+@media (max-width: 720px) {
+  .quick-actions { min-width:0; justify-content:flex-end; }
+  .quick-actions .icon-action { min-width:60px; min-height:34px; }
+  .operational-chip { max-width:100%; white-space:normal; }
+}
