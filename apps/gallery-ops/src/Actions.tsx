@@ -1,5 +1,4 @@
 import type { GalleryOrder } from './domain.js';
-import React from 'react';
 function Icon({name}:{name:'crm'|'gallery'|'game'}) {
   const routes = {
     crm:'M14 4h6v6 M20 4l-10 10 M20 14v6H4V4h6',
