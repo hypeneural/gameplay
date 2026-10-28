@@ -1016,3 +1016,16 @@ footer {
     display: none;
   }
 }
+
+/* Operator-only contact details: compact on desktop, readable without horizontal scrolling on mobile. */
+table th:first-child,
+table td:first-child { min-width: 245px; width: 25%; }
+.client-contacts { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; margin-top: 5px; min-width: 0; }
+.client-contacts span { max-width: 100%; color: #496858; font-size: 10px; font-weight: 500; line-height: 1.4; overflow-wrap: anywhere; }
+.client-contacts .client-email { color: #6d8175; }
+.order-created { display: block; margin-top: 5px; color: #8b9c91; font-size: 9px; }
+@media (max-width: 720px) {
+  .mobile-record-head .client-contacts { gap: 3px; margin-top: 4px; align-items: flex-start; }
+  .mobile-record-head .client-contacts span { font-size: 11px; color: #496858; font-weight: 500; }
+  .mobile-record-head .client-contacts .client-email { color: #6d8175; }
+}
