@@ -3,6 +3,7 @@ import type { IncomingMessage, Server, ServerResponse } from 'node:http';
 import {
   isOpaquePublicToken,
   publicDemoSocialMetadata,
+  publicCustomerSessionMetadata,
   renderSessionHtml,
   resolvePreview,
   socialMetadata,
@@ -26,6 +27,8 @@ export interface CatalogServerDependencies {
     readonly releaseStage: string;
     /** The isolated audit sidecar must never serve public demo/session HTML. */
     readonly privateMetadataReadOnly?: boolean;
+    /** Explicit opt-in to serve EXISTING ACTIVE customer sessions; never publishes. */
+    readonly publicCustomerSessionReadEnabled?: boolean;
   };
   readonly readiness?: () => Promise<void>;
   readonly publicationService?: PublicationService;
@@ -122,6 +125,25 @@ async function handleRequest(
 
   const record = await dependencies.previews.getByPublicToken(route.token);
   const preview = record ? resolvePreview(record) : undefined;
+  // Read-only customer hub/gallery: the immutable token must match an ACTIVE
+  // SQLite session. File-demo previews are not the authority for this case.
+  // Never override explicit revoked/disabled preview records.
+  if (!record && route.kind === 'session' &&
+      dependencies.runtime?.publicCustomerSessionReadEnabled &&
+      dependencies.sessionIsActive &&
+      await dependencies.sessionIsActive(route.token)) {
+    const html = renderSessionHtml(
+      await dependencies.loadApplicationShell(),
+      publicCustomerSessionMetadata(dependencies.publicOrigin, route.canonicalPath),
+    );
+    response.setHeader('Content-Type', 'text/html; charset=utf-8');
+    response.setHeader('Cache-Control', 'private, no-store');
+    response.setHeader('Referrer-Policy', 'no-referrer');
+    response.setHeader('X-Robots-Tag', 'noindex, nofollow, noarchive');
+    response.setHeader('X-Content-Type-Options', 'nosniff');
+    send(response, 200, html, request.method === 'HEAD');
+    return;
+  }
   if (!preview) {
     sendNotFound(response);
     return;
