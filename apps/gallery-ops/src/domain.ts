@@ -60,6 +60,20 @@ export const EMPTY_FILTERS: GalleryFilters = {
   dateTo: '',
   photos: 'all',
 };
+export const CRM_STATUS_LABELS: Readonly<Record<string, string>> = {
+  waiting_payment: 'Aguardando pagamento',
+  payment_confirmed: 'Pagamento confirmado',
+  session_schedule: 'Sessão para agendar',
+  session_schedule_confirmed: 'Agendamento confirmado',
+  selection_schedule: 'Seleção para agendar',
+  selection_schedule_confirmed: 'Seleção confirmada',
+  waiting_product_retrieve: 'Aguardando retirada',
+  product_retrieve_confirmed: 'Produto retirado',
+  order_completed: 'Pedido finalizado',
+};
+export function formatCrmStatus(value: string): string {
+  return CRM_STATUS_LABELS[value] ?? value.replaceAll('_', ' ');
+}
 export const STATES: Readonly<
   Record<GalleryState, { label: string; tone: string; description: string }>
 > = {
