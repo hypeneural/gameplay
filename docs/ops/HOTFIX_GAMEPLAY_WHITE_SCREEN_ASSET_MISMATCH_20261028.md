@@ -1,13 +1,15 @@
 # HOTFIX P0 — tela branca /s/:token após release 16e7f65 (28/10/2026)
 
 ## Evidência recebida
+
 Print Chrome DevTools, viewport 400×802, demonstra:
+
 - documento de sessão `/s/:token` HTTP **200**, com HTML ~2.6 kB;
 - `/assets/react-vendor-*.js` e `/assets/rolldown-runtime-*.js` HTTP **200**;
 - `/assets/index-DoBqPLdB.js` e `/assets/index-DuAjMG-t.css` HTTP **404**;
 - tela branca: bundle de entrada não inicializa. A publicação/UUID/token da
   família **não** é a causa direta desses 404.
-  
+
 **Causa provável de altíssima confiança, mas depende de inspeção dos mounts
 para prova definitiva:** Etapa 8 moveu
 `/srv/runtime/christmas-games/current` para `20261028-16e7f65`, recriou
@@ -42,12 +44,14 @@ banco, credenciais ou envs.
 Esperado ANTES: `BLOCKED_WEB_RELEASE_DRIFT` com pelo menos
 `HTML_RELEASE_DRIFT` / `GATEWAY_ASSET_MISSING:index-...`.
 Verifique ainda:
+
 ```bash
 readlink -f /srv/runtime/christmas-games/current
 docker inspect -f '{{index .Config.Labels "com.docker.compose.project"}}' christmas-games-gateway
 docker inspect -f '{{range .Mounts}}{{if eq .Destination "/var/www/html/web"}}{{.Source}}{{end}}{{end}}' christmas-games-gateway
 docker inspect -f '{{range .Mounts}}{{if eq .Destination "/var/www/html/web"}}{{.Source}}{{end}}{{end}}' christmas-games-catalog
 ```
+
 Anote IDs antes/depois de `christmas-games-catalog` e
 `christmas-games-catalog-reader`; não registre URLs capability.
 
@@ -106,6 +110,7 @@ segredo ou publicação.
   a release pública anterior realmente conhecida, sem alterar reader.
 
 ## Prevenção
+
 Em futuros cortes com mudança de `RELEASE_DIR`, **catalog** e **gateway**
 devem apontar ao mesmo `web/`. Rodar o auditor automatizado e verificar
 JS/CSS 200 antes de liberar a página. Não reportar "GO_BROWSER" apenas por
