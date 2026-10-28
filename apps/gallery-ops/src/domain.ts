@@ -112,7 +112,7 @@ const POST_SESSION_CRM = new Set([
   'session_schedule_confirmed', 'selection_schedule', 'selection_schedule_confirmed',
   'product_retrieve_confirmed',
 ]);
-export type OperationalStage = 'urgent' | 'follow_up' | 'awaiting_session' | 'published' | 'integration_error';
+type OperationalStage = 'urgent' | 'follow_up' | 'awaiting_session' | 'published' | 'integration_error';
 export function operationalStage(order: GalleryOrder): OperationalStage {
   if (order.state === 'unavailable') return 'integration_error';
   if (order.state === 'published_unverified') return 'published';
