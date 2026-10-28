@@ -46,6 +46,33 @@ describe('gallery operations domain (synthetic only)', () => {
       }).every((o) => o.createdAt === '2026-10-05'),
     ).toBe(true);
   });
+  it('finds authorized customer by digits, WhatsApp formatting or email without partial-page limits', () => {
+    const example = items.find(row => row.clientWhatsapp && row.clientEmail)!;
+    expect(example).toBeDefined();
+    const digits = example.clientWhatsapp!.replace(/\D/g, '');
+    expect(filterOrders(items, {...EMPTY_FILTERS, search: digits.slice(-8)}).map(row => row.orderId))
+      .toContain(example.orderId);
+    expect(filterOrders(items, {...EMPTY_FILTERS, search: example.clientEmail!}).map(row => row.orderId))
+      .toContain(example.orderId);
+    expect(filterOrders(items, {...EMPTY_FILTERS, search: '#'+example.orderId}).map(row => row.orderId))
+      .toContain(example.orderId);
+  });
+  it('does not assert that a past scheduled session was completed', () => {
+    const waiting = {...items[0]!, state:'no_session' as const, crmStatus:'session_schedule',
+      sessionAt:'2026-10-10', firstUploadAt:null};
+    expect(priority(waiting, '2026-10-28')).toBe('unknown');
+    expect(priority({...waiting,crmStatus:'waiting_product_retrieve'},'2026-10-28')).toBe('attention');
+    expect(formatDate('2026-10-28T01:30:00Z')).toBe('27/10/2026');
+  });
+  it('CSV includes contacts but neutralizes formula injection in name and email', () => {
+    const row = {...items[0]!, clientName:'=HYPERLINK("bad","open")', clientEmail:'=2+3'};
+    const output = syntheticCsv([row]);
+    expect(output).toContain('WhatsApp');
+    expect(output).toContain('Telefone');
+    expect(output).toContain('E-mail');
+    expect(output).toContain("'=HYPERLINK");
+    expect(output).toContain("'=2+3");
+  });
   it('treats unknown photos distinctly from zero', () => {
     expect(
       filterOrders(items, { ...EMPTY_FILTERS, photos: 'zero' }).every(
