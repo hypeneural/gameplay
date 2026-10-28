@@ -25,7 +25,7 @@ services:
     expose:
       - '4189'
     extra_hosts:
-      - "gallery-ops-reader:${GALLERY_OPS_READER_HOST_IP:-172.18.0.1}"
+      - 'gallery-ops-reader:${GALLERY_OPS_READER_HOST_IP:-172.18.0.1}'
     networks:
       - edge
       - backend
