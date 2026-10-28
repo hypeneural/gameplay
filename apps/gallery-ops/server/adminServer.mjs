@@ -146,7 +146,8 @@ async function postJson(fetchFn, url, token, body, timeout = 18000) {
     body: JSON.stringify(body),
   });
   if (!response.ok) {
-    if (response.status === 409 && url.endsWith('/lookup')) throw Error('READER_LINK_GATE_DISABLED');
+    if (response.status === 409 && url.endsWith('/lookup'))
+      throw Error('READER_LINK_GATE_DISABLED');
     throw Error('UPSTREAM_HTTP_' + response.status);
   }
   const len = Number(response.headers.get('content-length') || '0');
@@ -438,7 +439,11 @@ export function createGalleryOpsAdminServer({
         const link = m[2] === 'gallery' ? g.gallery_url : g.hub_url;
         let uri = null;
         if (typeof link === 'string') {
-          try { uri = new URL(link); } catch { uri = null; }
+          try {
+            uri = new URL(link);
+          } catch {
+            uri = null;
+          }
         }
         if (
           !uri ||
