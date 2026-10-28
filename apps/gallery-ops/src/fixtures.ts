@@ -12,12 +12,12 @@ const names = [
 ];
 const packages = ['Então é Natal', 'Ho-Ho-Ho', 'Boas Festas'];
 const crmStatuses = [
-  'Pagamento confirmado',
-  'Sessão agendada',
-  'Sessão confirmada',
-  'Seleção confirmada',
-  'Aguardando retirada',
-  'Pedido concluído',
+  'payment_confirmed',
+  'session_schedule',
+  'session_schedule_confirmed',
+  'selection_schedule_confirmed',
+  'waiting_product_retrieve',
+  'order_completed',
 ];
 const states: GalleryState[] = [
   'no_session',
