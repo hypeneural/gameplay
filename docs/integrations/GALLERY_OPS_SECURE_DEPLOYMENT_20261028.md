@@ -71,3 +71,13 @@ A PR #46 amplia o `GameplayStatusLookup` SOMENTE na branch da dashboard para ret
 6. Backup/config anterior + rollback do nginx de forma atômica, desligamento do BFF e reader sem impacto no game/publicador.
 
 **NO-GO:** faltam variáveis de Cloudflare Access, rota/túnel e canário físico; o código de PR não é prova de que o domínio esteja protegido. Nunca introduzir `location /` de fallback ou alterar `readiness.json`.
+
+## Dados pessoais autorizados na operação
+
+A listagem do gestor apresenta, para cada pedido comercialmente válido, nome do titular, WhatsApp, telefone alternativo, e-mail (quando preenchidos), ID do pedido, pacote, status CRM, criação, agendamento, fotos e estágio Gameplay. Esses campos ficam exclusivamente no JSON e CSV autenticados, sem publicação no catálogo, sem logs de contato e sem capability URLs em lote. A busca por telefone normaliza dígitos; a UI não dispara mensagens. Quando o contato estiver vazio, exibir "Sem contato cadastrado", nunca preencher com outro cliente.
+
+**Não** acrescentar CPF, data de nascimento, endereço residencial, nomes de crianças ou dados bancários à tabela. Utilizar o pedido no CRM para detalhes que não precisam ser materializados em listas.
+
+A exportação CSV contém WhatsApp, telefone e e-mail; proteger download pela mesma autenticação e headers no-store, e não armazenar exportações em diretório compartilhado ou CDN. O operador é responsável pelo destino do arquivo após o download.
+
+Critério de aceite: busca pelo nome, pedido, dígitos do WhatsApp/telefone e e-mail; filtros em 100% dos pedidos autorizados; não classificar agendamento passado como ensaio realizado sem status operacional posterior ou upload real.
