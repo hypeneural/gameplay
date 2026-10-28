@@ -133,17 +133,22 @@ function dateOnly(value: string | null): string {
   const parsed = new Date(value);
   if (!Number.isFinite(parsed.getTime())) return '';
   const parts = new Intl.DateTimeFormat('en-US', {
-    timeZone: 'America/Sao_Paulo', year: 'numeric', month: '2-digit', day: '2-digit',
+    timeZone: 'America/Sao_Paulo',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
   }).formatToParts(parsed);
-  const part = (type: string) => parts.find(p => p.type === type)?.value ?? '';
+  const part = (type: string) => parts.find((p) => p.type === type)?.value ?? '';
   return part('year') + '-' + part('month') + '-' + part('day');
 }
 export function formatPhone(value: string | null): string {
   if (!value) return '—';
   const raw = value.replace(/\D/g, '');
   const digits = raw.startsWith('55') && raw.length > 11 ? raw.slice(2) : raw;
-  if (digits.length === 11) return '(' + digits.slice(0,2) + ') ' + digits.slice(2,7) + '-' + digits.slice(7);
-  if (digits.length === 10) return '(' + digits.slice(0,2) + ') ' + digits.slice(2,6) + '-' + digits.slice(6);
+  if (digits.length === 11)
+    return '(' + digits.slice(0, 2) + ') ' + digits.slice(2, 7) + '-' + digits.slice(7);
+  if (digits.length === 10)
+    return '(' + digits.slice(0, 2) + ') ' + digits.slice(2, 6) + '-' + digits.slice(6);
   return value.slice(0, 25);
 }
 export function filterOrders(
@@ -152,13 +157,19 @@ export function filterOrders(
 ): GalleryOrder[] {
   const q = normalize(filters.search);
   return orders.filter((o) => {
-    const text = normalize([
-      o.orderId, o.clientName, o.clientWhatsapp, o.clientPhone, o.clientEmail, o.packageName,
-    ].filter(Boolean).join(' '));
+    const text = normalize(
+      [o.orderId, o.clientName, o.clientWhatsapp, o.clientPhone, o.clientEmail, o.packageName]
+        .filter(Boolean)
+        .join(' '),
+    );
     const phoneQuery = filters.search.replace(/\D/g, '');
     const phones = [o.clientWhatsapp, o.clientPhone].filter(Boolean).join(' ').replace(/\D/g, '');
-    if (q && !text.includes(q.replace(/^#/, '')) &&
-        !(phoneQuery.length >= 4 && phones.includes(phoneQuery))) return false;
+    if (
+      q &&
+      !text.includes(q.replace(/^#/, '')) &&
+      !(phoneQuery.length >= 4 && phones.includes(phoneQuery))
+    )
+      return false;
     if (
       filters.state === 'pending'
         ? !isPending(o.state)
@@ -212,7 +223,7 @@ export function summarize(orders: readonly GalleryOrder[]) {
 }
 export function formatDate(value: string | null): string {
   const day = dateOnly(value);
-  return day ? day.slice(8,10)+'/'+day.slice(5,7)+'/'+day.slice(0,4) : '—';
+  return day ? day.slice(8, 10) + '/' + day.slice(5, 7) + '/' + day.slice(0, 4) : '—';
 }
 export function priority(
   o: GalleryOrder,
@@ -221,8 +232,17 @@ export function priority(
   if (o.state === 'unavailable') return 'unknown';
   if (!isPending(o.state)) return 'ready';
   if (o.sessionAt && dateOnly(o.sessionAt) > asOfDay) return 'waiting';
-  if (o.firstUploadAt || ['session_schedule_confirmed', 'selection_schedule', 'selection_schedule_confirmed',
-    'waiting_product_retrieve', 'product_retrieve_confirmed', 'order_completed'].includes(o.crmStatus)) {
+  if (
+    o.firstUploadAt ||
+    [
+      'session_schedule_confirmed',
+      'selection_schedule',
+      'selection_schedule_confirmed',
+      'waiting_product_retrieve',
+      'product_retrieve_confirmed',
+      'order_completed',
+    ].includes(o.crmStatus)
+  ) {
     return 'attention';
   }
   // A past appointment is not proof that the session actually occurred.
