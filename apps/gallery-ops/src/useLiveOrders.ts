@@ -40,6 +40,10 @@ function validateDashboard(value: unknown): {
       !Number.isSafeInteger(row.orderId) ||
       ids.has(row.orderId) ||
       typeof row.clientName !== 'string' ||
+      !['clientWhatsapp', 'clientPhone', 'clientEmail'].every((key) => {
+        const value = row[key as keyof GalleryOrder];
+        return value === null || (typeof value === 'string' && value.length <= 254);
+      }) ||
       !Object.hasOwn(STATES, row.state) ||
       (row.publishedPhotos !== null && !Number.isSafeInteger(row.publishedPhotos))
     ) {
