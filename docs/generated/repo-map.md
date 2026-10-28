@@ -1420,6 +1420,8 @@
 │   ├── deploy
 │   │   ├── backup-restore-catalog.mjs
 │   │   ├── backup-restore-catalog.test.mjs
+│   │   ├── check-public-web-alignment.mjs
+│   │   ├── check-public-web-alignment.test.mjs
 │   │   ├── create-staging-preview-config.mjs
 │   │   ├── photo-session-preflight.mjs
 │   │   ├── photo-session-preflight.test.mjs
