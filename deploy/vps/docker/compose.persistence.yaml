@@ -33,6 +33,10 @@ services:
     environment:
       NODE_ENV: production
       CATALOG_RELEASE_STAGE: staging-demo
+      # Opt-in only after public /s/:token/{data,media} and operator approval.
+      CATALOG_PUBLIC_SESSION_READ_ENABLED: ${CATALOG_PUBLIC_SESSION_READ_ENABLED:-0}
+      CATALOG_PUBLIC_CUSTOMER_ROUTES_VERIFIED: ${CATALOG_PUBLIC_CUSTOMER_ROUTES_VERIFIED:-0}
+      CATALOG_CUSTOMER_DATA_ALLOWED: ${CATALOG_CUSTOMER_DATA_ALLOWED:-0}
       CATALOG_PUBLIC_ORIGIN: https://jogos.fotosdenatal.com
       CATALOG_SOCIAL_PREVIEW_FILE: /srv/secrets/christmas-games/social-preview.json
       CATALOG_APPLICATION_SHELL: /var/www/html/web/index.html

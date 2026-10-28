@@ -53,6 +53,46 @@ describe('CatalogServer', () => {
     expect(audit).not.toHaveBeenCalled();
   });
 
+  it('opens approved ACTIVE customer hub/gallery/game pages without exposing personal previews', async () => {
+    const audit = vi.fn(async () => undefined);
+    const onlyKnown = async (token: string): Promise<boolean> =>
+      token === 'known-valid-session-token';
+    const baseUrl = await startServer(
+      undefined,
+      audit,
+      'staging-demo',
+      undefined,
+      onlyKnown,
+      false,
+      true,
+    );
+    for (const suffix of ['', '/fotos', '/game/memory']) {
+      const response = await fetch(`${baseUrl}/s/known-valid-session-token${suffix}`);
+      expect(response.status).toBe(200);
+      expect(response.headers.get('cache-control')).toBe('private, no-store');
+      expect(response.headers.get('referrer-policy')).toBe('no-referrer');
+      const html = await response.text();
+      expect(html).toContain(
+        '<meta property="og:image" content="https://jogos.exemplo.test/social/evydencia-christmas-v2.jpg" />',
+      );
+      expect(html).toContain(`/s/known-valid-session-token${suffix}`);
+    }
+    expect((await fetch(`${baseUrl}/s/unknown-session-token`)).status).toBe(404);
+    expect((await fetch(`${baseUrl}/s/known-valid-session-token/social-preview`)).status).toBe(404);
+    expect((await fetch(`${baseUrl}/s/known-valid-session-token`, { method: 'HEAD' })).status).toBe(
+      200,
+    );
+    expect(audit).not.toHaveBeenCalled();
+    const disabled = await startServer(
+      undefined,
+      vi.fn(async () => undefined),
+      'staging-demo',
+      undefined,
+      onlyKnown,
+    );
+    expect((await fetch(`${disabled}/s/known-valid-session-token`)).status).toBe(404);
+  });
+
   it('exposes a token-free health endpoint for VPS supervision', async () => {
     const baseUrl = await startServer(
       activeGeneric,
@@ -306,7 +346,7 @@ describe('CatalogServer', () => {
 });
 
 function startServer(
-  record: SocialPreviewRecord,
+  record: SocialPreviewRecord | undefined,
   auditRecord: (entry: {
     readonly route: 'session-html' | 'social-image';
     readonly preview: 'generic' | 'customer-photo';
@@ -317,6 +357,7 @@ function startServer(
   readiness?: () => Promise<void>,
   sessionIsActive: (token: string) => Promise<boolean> = async () => true,
   privateMetadataReadOnly = false,
+  publicCustomerSessionReadEnabled = false,
 ): Promise<string> {
   const server = createCatalogServer({
     publicOrigin: parsePublicOrigin('https://jogos.exemplo.test'),
@@ -324,7 +365,15 @@ function startServer(
     previews: { getByPublicToken: async () => record },
     audit: { record: auditRecord },
     clock: { now: () => new Date('2026-08-25T12:00:00.000Z') },
-    ...(releaseStage === undefined ? {} : { runtime: { releaseStage, privateMetadataReadOnly } }),
+    ...(releaseStage === undefined && !publicCustomerSessionReadEnabled
+      ? {}
+      : {
+          runtime: {
+            releaseStage: releaseStage ?? 'staging-demo',
+            privateMetadataReadOnly,
+            publicCustomerSessionReadEnabled,
+          },
+        }),
     ...(readiness === undefined ? {} : { readiness }),
     sessionIsActive,
   });

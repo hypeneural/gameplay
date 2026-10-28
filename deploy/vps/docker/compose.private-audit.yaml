@@ -25,6 +25,12 @@ services:
       NODE_ENV: production
       CATALOG_RELEASE_STAGE: staging-demo
       CATALOG_PRIVATE_METADATA_READ_ONLY: '1'
+      # The private reader continues to return 404 for all public paths.
+      # These flags control only operator-authorized individual URL generation.
+      CATALOG_PRIVATE_CUSTOMER_LINKS_ENABLED: ${CATALOG_PRIVATE_CUSTOMER_LINKS_ENABLED:-0}
+      CATALOG_LINKS_OPERATOR_APPROVED: ${CATALOG_LINKS_OPERATOR_APPROVED:-0}
+      CATALOG_PUBLIC_CUSTOMER_ROUTES_VERIFIED: ${CATALOG_PUBLIC_CUSTOMER_ROUTES_VERIFIED:-0}
+      CATALOG_CUSTOMER_DATA_ALLOWED: ${CATALOG_CUSTOMER_DATA_ALLOWED:-0}
       CATALOG_DATABASE_PATH: /data/sqlite/catalog.db
       CATALOG_SERVER_SECRET_FILE: /run/catalog-secrets/server.secret
       CATALOG_INTERNAL_READ_SECRET_FILE: /run/catalog-secrets/reader.secret

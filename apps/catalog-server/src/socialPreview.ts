@@ -164,6 +164,23 @@ export function publicDemoSocialMetadata(publicOrigin: URL, path: string): Socia
   };
 }
 
+/** Generic preview for an existing ACTIVE customer session, never a photo.
+ * The capability is already in the requested page URL; do not record it
+ * in application access logs or use it as an image asset identifier. */
+export function publicCustomerSessionMetadata(
+  publicOrigin: URL,
+  canonicalPath: string,
+): SocialMetadata {
+  return {
+    canonicalUrl: new URL(canonicalPath, publicOrigin),
+    imageUrl: new URL(`/social/${genericPreviewVersion}.jpg`, publicOrigin),
+    imageAlt: 'Arte ilustrada de Natal do Estúdio Evydência.',
+    imageType: 'image/jpeg',
+    title: titleForSocialRoute(canonicalPath),
+    description: 'Uma lembrança de Natal que vira brincadeira para toda a família.',
+  };
+}
+
 function titleForSocialRoute(path: string): string {
   if (path.endsWith('/fotos')) return 'Álbum de Natal — Estúdio Evydência';
   if (path.includes('/game/')) return 'Jogos de Natal — Estúdio Evydência';
