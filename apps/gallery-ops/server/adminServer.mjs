@@ -189,6 +189,11 @@ export async function loadCanonicalOrders(config, fetchFn = fetch) {
         !UUID.test(item.order_uuid) ||
         uuids.has(item.order_uuid.toLowerCase()) ||
         typeof item.customer_name !== 'string' ||
+        item.customer_name.length > 180 ||
+        !['customer_whatsapp', 'customer_phone', 'customer_email'].every(
+          key => item[key] === null || item[key] === undefined ||
+            (typeof item[key] === 'string' && item[key].length <= 254)
+        ) ||
         typeof item.status_key !== 'string'
       )
         throw Error('CANONICAL_RECORD_INVALID');
@@ -267,6 +272,9 @@ export async function resolveOperations(config, fetchFn = fetch) {
     return {
       orderId: o.order_id,
       clientName: o.customer_name,
+      clientWhatsapp: typeof o.customer_whatsapp === 'string' ? o.customer_whatsapp : null,
+      clientPhone: typeof o.customer_phone === 'string' ? o.customer_phone : null,
+      clientEmail: typeof o.customer_email === 'string' ? o.customer_email : null,
       packageName: o.package_name ?? 'Pacote não informado',
       crmStatus: o.status_key,
       createdAt: o.created_at ?? null,
@@ -320,6 +328,9 @@ function csv(items) {
   const header = [
     'Pedido',
     'Cliente',
+    'WhatsApp',
+    'Telefone',
+    'E-mail',
     'Pacote',
     'Status CRM',
     'Status Gameplay',
@@ -330,6 +341,9 @@ function csv(items) {
   const rows = items.map((x) => [
     x.orderId,
     x.clientName,
+    x.clientWhatsapp,
+    x.clientPhone,
+    x.clientEmail,
     x.packageName,
     x.crmStatus,
     x.state,
