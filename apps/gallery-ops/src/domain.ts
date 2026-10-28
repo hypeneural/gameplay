@@ -63,13 +63,13 @@ export const EMPTY_FILTERS: GalleryFilters = {
 const CRM_STATUS_LABELS: Readonly<Record<string, string>> = {
   waiting_payment: 'Aguardando pagamento',
   payment_confirmed: 'Pagamento confirmado',
-  session_schedule: 'Sessão para agendar',
-  session_schedule_confirmed: 'Agendamento confirmado',
-  selection_schedule: 'Seleção para agendar',
-  selection_schedule_confirmed: 'Seleção confirmada',
-  waiting_product_retrieve: 'Aguardando retirada',
-  product_retrieve_confirmed: 'Produto retirado',
-  order_completed: 'Pedido finalizado',
+  session_schedule: 'Sessão agendada',
+  session_schedule_confirmed: 'Sessão finalizada',
+  selection_schedule: 'Seleção agendada',
+  selection_schedule_confirmed: 'Seleção finalizada',
+  waiting_product_retrieve: 'Aguardando retirar',
+  product_retrieve_confirmed: 'Entrega realizada',
+  order_completed: 'Pedido concluído',
 };
 export function formatCrmStatus(value: string): string {
   return CRM_STATUS_LABELS[value] ?? value.replaceAll('_', ' ');
@@ -221,7 +221,7 @@ export function priority(
   if (o.state === 'unavailable') return 'unknown';
   if (!isPending(o.state)) return 'ready';
   if (o.sessionAt && dateOnly(o.sessionAt) > asOfDay) return 'waiting';
-  if (o.firstUploadAt || ['selection_schedule', 'selection_schedule_confirmed',
+  if (o.firstUploadAt || ['session_schedule_confirmed', 'selection_schedule', 'selection_schedule_confirmed',
     'waiting_product_retrieve', 'product_retrieve_confirmed', 'order_completed'].includes(o.crmStatus)) {
     return 'attention';
   }
