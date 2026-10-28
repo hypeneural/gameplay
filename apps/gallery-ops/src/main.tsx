@@ -18,7 +18,8 @@ import type {
   SortKey,
   StateFilter,
 } from './domain.js';
-import { fixtureOrders } from './fixtures.js';
+import { useLiveOrders } from './useLiveOrders.js';
+import { Actions } from './Actions.js';
 import './styles.css';
 
 type IconName =
@@ -110,36 +111,7 @@ function Status({ state }: { state: GalleryState }) {
     </span>
   );
 }
-function Actions({ row }: { row: GalleryOrder }) {
-  return (
-    <div className="quick-actions" aria-label={'Ações do pedido ' + row.orderId}>
-      <button
-        className="icon-action"
-        disabled
-        title="CRM: link desabilitado no protótipo sintético"
-        aria-label={'Pedido ' + row.orderId + ' no CRM (indisponível)'}
-      >
-        <Icon name="external" size={17} />
-      </button>
-      <button
-        className="icon-action"
-        disabled
-        title="Galeria: somente após consulta individual autenticada"
-        aria-label={'Galeria ' + row.orderId + ' (indisponível)'}
-      >
-        <Icon name="image" size={17} />
-      </button>
-      <button
-        className="icon-action"
-        disabled
-        title="Jogos: necessário acesso real verificado"
-        aria-label={'Jogos ' + row.orderId + ' (indisponíveis)'}
-      >
-        <Icon name="game" size={18} />
-      </button>
-    </div>
-  );
-}
+
 function Indicator({
   label,
   count,
@@ -181,7 +153,9 @@ function App() {
   const [pageSize, setPageSize] = useState(10);
   const [page, setPage] = useState(1);
   const [exportMessage, setExportMessage] = useState('');
-  const records = useMemo(() => (localDemo ? fixtureOrders() : []), []);
+  const live = useLiveOrders();
+  const records = live.orders;
+  const loaded = localDemo || (!live.loading && !live.error);
   const summary = useMemo(() => summarize(records), [records]);
   const filtered = useMemo(() => filterOrders(records, filters), [records, filters]);
   const sorted = useMemo(
@@ -217,7 +191,12 @@ function App() {
     filters.dateTo !== '' ||
     filters.photos !== 'all';
   const exportSynthetic = () => {
-    if (!localDemo || !sorted.length) return;
+    if (!loaded || !sorted.length) return;
+    if (!localDemo) {
+      window.location.assign('/gestao/galerias/api/export');
+      setExportMessage('Exportação completa de pedidos válidos solicitada ao servidor.');
+      return;
+    }
     const blob = new Blob([syntheticCsv(sorted)], { type: 'text/csv;charset=utf-8' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
@@ -271,22 +250,22 @@ function App() {
                 <Icon name="calendar" size={16} /> Corte de referência: 28/10/2026
               </span>
               <span>
-                <Icon name="clock" size={16} /> Atualização manual · sem consulta real
+                <Icon name="clock" size={16} /> {localDemo ? 'Simulação local' : live.asOf ? 'Corte CRM: '+live.asOf : 'Corte indisponível'}
               </span>
             </div>
           </div>
-          <div className={'notice ' + (localDemo ? '' : 'notice--error')} role="status">
+          <div className={'notice ' + (localDemo || (loaded && !live.degraded) ? '' : 'notice--error')} role="status">
             <Icon name={localDemo ? 'alert' : 'lock'} size={20} />
             <div>
               <strong>
                 {localDemo
                   ? 'Prévia de interface — dados 100% fictícios'
-                  : 'Conexão administrativa ainda não configurada'}
+                  : live.loading ? 'Carregando pedidos válidos…' : live.error ? 'Falha de consulta administrativa' : live.degraded ? 'Gameplay parcialmente indisponível' : 'Dados administrativos sincronizados'}
               </strong>
               <span>
                 {localDemo
                   ? 'Nenhum nome, pedido ou link representa uma família real. Os indicadores abaixo são demonstrativos.'
-                  : 'Por segurança, nenhum registro é apresentado até que a API e a autenticação do gestor estejam homologadas.'}
+                  : live.loading ? 'Consultando a população comercial canônica e suas galerias.' : live.error ? live.error : live.degraded ? 'Os pedidos permanecem visíveis; os lotes sem resposta aparecem como integração indisponível.' : 'CRM e Gameplay consultados com autenticação. A disponibilidade dos links é verificada individualmente.'}
               </span>
             </div>
           </div>
@@ -300,14 +279,14 @@ function App() {
           <div className="indicators">
             <Indicator
               label="Pedidos válidos"
-              count={localDemo ? summary.total : '—'}
+              count={loaded ? summary.total : '—'}
               icon="grid"
               active={filters.state === 'all'}
               onClick={() => setState('all')}
             />
             <Indicator
               label="Pendências"
-              count={localDemo ? summary.pending : '—'}
+              count={loaded ? summary.pending : '—'}
               icon="alert"
               tone="amber"
               active={filters.state === 'pending'}
@@ -315,21 +294,21 @@ function App() {
             />
             <Indicator
               label="Sem sessão"
-              count={localDemo ? summary.states.no_session : '—'}
+              count={loaded ? summary.states.no_session : '—'}
               icon="clock"
               active={filters.state === 'no_session'}
               onClick={() => setState('no_session')}
             />
             <Indicator
               label="Em preparação"
-              count={localDemo ? summary.states.preparing : '—'}
+              count={loaded ? summary.states.preparing : '—'}
               icon="image"
               active={filters.state === 'preparing'}
               onClick={() => setState('preparing')}
             />
             <Indicator
               label="Publicadas*"
-              count={localDemo ? summary.states.published_unverified : '—'}
+              count={loaded ? summary.states.published_unverified : '—'}
               icon="check"
               tone="green"
               active={filters.state === 'published_unverified'}
@@ -338,7 +317,7 @@ function App() {
             <Indicator
               label="Integração indisponível"
               count={
-                localDemo
+                loaded
                   ? summary.states.unavailable
                   : '—'
               }
@@ -359,6 +338,8 @@ function App() {
                 <p>Filtre o universo autorizado para encontrar o próximo atendimento.</p>
               </div>
               <div className="toolbar">
+                {!localDemo && <button className="btn btn--ghost" type="button" disabled={live.loading}
+                  onClick={live.reload}><Icon name="refresh" size={17}/> Atualizar dados</button>}
                 <button className="btn btn--ghost" type="button" onClick={reset}>
                   <Icon name="refresh" size={17} /> Limpar
                 </button>
@@ -373,7 +354,7 @@ function App() {
                 <button
                   className="btn btn--primary"
                   type="button"
-                  disabled={!localDemo || sorted.length === 0}
+                  disabled={!loaded || sorted.length === 0}
                   onClick={exportSynthetic}
                 >
                   <Icon name="download" size={17} /> Exportar CSV
@@ -505,7 +486,7 @@ function App() {
               <div>
                 <strong>{sorted.length}</strong> pedidos{' '}
                 {filters.state === 'pending' ? 'com pendências' : 'encontrados'}{' '}
-                <span>· {localDemo ? 'Dados fictícios' : 'Sem integração'}</span>
+                <span>· {localDemo ? 'Dados fictícios' : live.degraded ? 'Gameplay parcialmente indisponível' : 'Pedidos sincronizados'}</span>
               </div>
               <div className="sort-controls">
                 <label htmlFor="sort">Ordenar por</label>
@@ -587,12 +568,12 @@ function App() {
                           </td>
                           <td>
                             <span className="date">{formatDate(o.sessionAt)}</span>
-                            <small className={'priority priority--' + priority(o, DEMO_DATE)}>
-                              {priority(o, DEMO_DATE) === 'waiting'
+                            <small className={'priority priority--' + priority(o, localDemo ? DEMO_DATE : live.asOf.slice(0, 10))}>
+                              {priority(o, localDemo ? DEMO_DATE : live.asOf.slice(0, 10)) === 'waiting'
                                 ? 'Sessão futura'
-                                : priority(o, DEMO_DATE) === 'attention'
+                                : priority(o, localDemo ? DEMO_DATE : live.asOf.slice(0, 10)) === 'attention'
                                   ? 'Verificar pendência'
-                                  : priority(o, DEMO_DATE) === 'unknown'
+                                  : priority(o, localDemo ? DEMO_DATE : live.asOf.slice(0, 10)) === 'unknown'
                                     ? 'Sem confirmação'
                                     : 'Catálogo preparado'}
                             </small>
@@ -615,7 +596,7 @@ function App() {
                             </small>
                           </td>
                           <td>
-                            <Actions row={o} />
+                            <Actions row={o} demo={localDemo} linksEnabled={live.linksEnabled} />
                           </td>
                         </tr>
                       ))}
@@ -654,7 +635,7 @@ function App() {
                             ? o.preparingPhotos + ' em preparação'
                             : 'Sem preparo ativo'}
                         </small>
-                        <Actions row={o} />
+                        <Actions row={o} demo={localDemo} linksEnabled={live.linksEnabled} />
                       </div>
                     </article>
                   ))}
