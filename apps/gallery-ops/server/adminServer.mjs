@@ -191,8 +191,10 @@ export async function loadCanonicalOrders(config, fetchFn = fetch) {
         typeof item.customer_name !== 'string' ||
         item.customer_name.length > 180 ||
         !['customer_whatsapp', 'customer_phone', 'customer_email'].every(
-          key => item[key] === null || item[key] === undefined ||
-            (typeof item[key] === 'string' && item[key].length <= 254)
+          (key) =>
+            item[key] === null ||
+            item[key] === undefined ||
+            (typeof item[key] === 'string' && item[key].length <= 254),
         ) ||
         typeof item.status_key !== 'string'
       )
