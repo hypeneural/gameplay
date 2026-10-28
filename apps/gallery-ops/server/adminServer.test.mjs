@@ -1,4 +1,5 @@
 import {test} from 'node:test';
+import { Buffer } from 'node:buffer';
 import assert from 'node:assert/strict';
 import {createAccessVerifier,createGalleryOpsAdminServer,configFromEnv,resolveOperations,loadCanonicalOrders} from './adminServer.mjs';
 import {generateKeyPairSync,createSign} from 'node:crypto';
@@ -13,7 +14,7 @@ const config={
   hostname:'jogos.fotosdenatal.com',linksEnabled:false,dist:'/invalid',
   team:'test.cloudflareaccess.com',audience:'demo',emails:new Set(['admin@example.invalid']),
 };
-function response(data,status=200){return new Response(JSON.stringify(data),{status,headers:{'Content-Type':'application/json'}})}
+function response(data,status=200){return new globalThis.Response(JSON.stringify(data),{status,headers:{'Content-Type':'application/json'}})}
 function mockedFetch({readerFail=false,invalidCount=false}={}){
  return async(url,init)=>{
   const req=JSON.parse(init.body);
@@ -51,7 +52,7 @@ test('rejects insecure missing env at process bootstrap',()=>{
  assert.throws(()=>configFromEnv({}),/SECURITY_CONFIG_REQUIRED/);
 });
 async function withServer(verify,fn){
- const app=createGalleryOpsAdminServer({config,verifyOperator:verify,readAsset:async()=>'<html>preview</html>',operations:async()=>({schema_version:1,total_valid:104,items:sample.map(x=>({orderId:x.order_id,clientName:x.customer_name,state:'no_session'}))})});
+ const app=createGalleryOpsAdminServer({config:{...config,hostname:'127.0.0.1'},verifyOperator:verify,readAsset:async()=>'<html>preview</html>',operations:async()=>({schema_version:1,total_valid:104,items:sample.map(x=>({orderId:x.order_id,clientName:x.customer_name,state:'no_session'}))})});
  await new Promise(r=>app.listen(0,'127.0.0.1',r));
  const base='http://127.0.0.1:'+app.address().port;
  try {await fn(base,{headers:{host:config.hostname}})}finally{await new Promise(r=>app.close(r))}
