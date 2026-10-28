@@ -8,6 +8,8 @@ import {
   formatPhone,
   formatCrmStatus,
   priority,
+  operationalStage,
+  OPERATIONAL_LABELS,
   sortOrders,
   summarize,
   syntheticCsv,
@@ -67,10 +69,12 @@ function Icon({ name, size = 18 }: { name: IconName; size?: number }) {
     </svg>
   );
 }
-const INITIAL_SORT: SortKey = 'sessionAt';
+const INITIAL_SORT: SortKey = 'operationalPriority';
 const stateOptions: { id: StateFilter; label: string }[] = [
   { id: 'all', label: 'Todos' },
-  { id: 'pending', label: 'Todas as pendências' },
+  { id: 'pending', label: 'Pendências reais' },
+  { id: 'follow_up', label: 'Acompanhar produção' },
+  { id: 'awaiting_session', label: 'Aguardando sessão' },
   { id: 'no_session', label: 'Sem sessão' },
   { id: 'no_upload', label: 'Sem publicação' },
   { id: 'preparing', label: 'Em preparação' },
@@ -86,6 +90,7 @@ const dateFieldOptions: { value: DateField; label: string }[] = [
   { value: 'publishedAt', label: 'Publicação' },
 ];
 const sortOptions: { value: SortKey; label: string }[] = [
+  { value: 'operationalPriority', label: 'Prioridade operacional' },
   { value: 'sessionAt', label: 'Data da sessão' },
   { value: 'orderId', label: 'Número do pedido' },
   { value: 'clientName', label: 'Nome do cliente' },
@@ -244,7 +249,7 @@ function App() {
           <Icon name="lock" size={17} />
           <div>
             <strong>Área administrativa</strong>
-            <small>Prévia local sem acesso a clientes</small>
+            <small>{localDemo ? 'Somente dados sintéticos' : 'Acesso administrativo autenticado'}</small>
           </div>
         </div>
       </aside>
@@ -255,7 +260,7 @@ function App() {
           </div>
           <span className="head-environment">
             <span className="pulse" />
-            {localDemo ? 'Visualização sintética' : 'Integração não habilitada'}
+            {localDemo ? 'Visualização sintética' : loaded ? 'Operação conectada' : 'Verificando integração'}
           </span>
         </header>
         <div className="content">
@@ -313,7 +318,7 @@ function App() {
             <h2>Visão geral</h2>
             <span>
               Indicadores do conjunto completo{' '}
-              {localDemo ? '(48 registros fictícios)' : '(indisponível)'}
+              {localDemo ? '(48 registros fictícios)' : loaded ? '(' + summary.total + ' pedidos válidos)' : '(carregando)'}
             </span>
           </div>
           <div className="indicators">
@@ -325,7 +330,7 @@ function App() {
               onClick={() => setState('all')}
             />
             <Indicator
-              label="Pendências"
+              label="Pendências reais"
               count={loaded ? summary.pending : '—'}
               icon="alert"
               tone="amber"
@@ -333,22 +338,22 @@ function App() {
               onClick={() => setState('pending')}
             />
             <Indicator
-              label="Sem sessão"
-              count={loaded ? summary.states.no_session : '—'}
+              label="Acompanhar produção"
+              count={loaded ? summary.followUp : '—'}
               icon="clock"
-              active={filters.state === 'no_session'}
-              onClick={() => setState('no_session')}
+              active={filters.state === 'follow_up'}
+              onClick={() => setState('follow_up')}
             />
             <Indicator
-              label="Em preparação"
-              count={loaded ? summary.states.preparing : '—'}
-              icon="image"
-              active={filters.state === 'preparing'}
-              onClick={() => setState('preparing')}
+              label="Aguardando sessão"
+              count={loaded ? summary.awaiting : '—'}
+              icon="calendar"
+              active={filters.state === 'awaiting_session'}
+              onClick={() => setState('awaiting_session')}
             />
             <Indicator
               label="Publicadas*"
-              count={loaded ? summary.states.published_unverified : '—'}
+              count={loaded ? summary.published : '—'}
               icon="check"
               tone="green"
               active={filters.state === 'published_unverified'}
@@ -364,14 +369,15 @@ function App() {
             />
           </div>
           <div className="indicators-note">
-            * Publicação no catálogo não comprova abertura da galeria ou funcionamento dos jogos no
-            navegador.
+            A fila urgente contém apenas pedidos comercialmente avançados (retirada/conclusão) sem publicação.
+            Os outros pedidos seguem em acompanhamento, sem serem contabilizados como atraso.
+            * Publicação no catálogo não comprova o funcionamento dos jogos no navegador.
           </div>
           <section className="workspace" aria-label="Lista de pedidos">
             <div className="workspace-top">
               <div>
                 <h2>Fila de galerias</h2>
-                <p>Filtre o universo autorizado para encontrar o próximo atendimento.</p>
+                <p>Prioridade automática: retirada e pedidos concluídos sem publicação. Demais pedidos ficam em acompanhamento.</p>
               </div>
               <div className="toolbar">
                 {!localDemo && (
@@ -420,7 +426,7 @@ function App() {
                 />
               </div>
               <div className="quick-tabs" aria-label="Filtrar por situação">
-                {stateOptions.slice(0, 5).map((t) => (
+                {[stateOptions[0],stateOptions[1],stateOptions[2],stateOptions[3],stateOptions[7]].map((t) => (
                   <button
                     key={t.id}
                     className={'tab ' + (filters.state === t.id ? 'tab--active' : '')}
@@ -529,7 +535,7 @@ function App() {
             <div className="result-head">
               <div>
                 <strong>{sorted.length}</strong> pedidos{' '}
-                {filters.state === 'pending' ? 'com pendências' : 'encontrados'}{' '}
+                {filters.state === 'pending' ? 'com publicação urgente' : 'encontrados'}{' '}
                 <span>
                   ·{' '}
                   {localDemo
@@ -622,6 +628,7 @@ function App() {
                           <td>
                             <span className="package">{o.packageName}</span>
                             <small className="crm-status">{formatCrmStatus(o.crmStatus)}</small>
+                            <span className={'operational-chip operational-chip--'+operationalStage(o)}>{OPERATIONAL_LABELS[operationalStage(o)]}</span>
                           </td>
                           <td>
                             <span className="date">{formatDate(o.sessionAt)}</span>
@@ -636,10 +643,10 @@ function App() {
                                 ? 'Sessão futura'
                                 : priority(o, localDemo ? DEMO_DATE : live.asOf.slice(0, 10)) ===
                                     'attention'
-                                  ? 'Verificar pendência'
+                                  ? 'Publicação urgente'
                                   : priority(o, localDemo ? DEMO_DATE : live.asOf.slice(0, 10)) ===
                                       'unknown'
-                                    ? 'Sem confirmação'
+                                    ? 'Acompanhar etapa'
                                     : 'Catálogo preparado'}
                             </small>
                           </td>
@@ -677,6 +684,7 @@ function App() {
                           <span>{o.clientName}</span>
                           <ClientContact row={o} />
                           <small>{o.packageName}</small>
+                          <span className={'operational-chip operational-chip--'+operationalStage(o)}>{OPERATIONAL_LABELS[operationalStage(o)]}</span>
                           <small>Pedido criado: {formatDate(o.createdAt)}</small>
                         </div>
                         <Status state={o.state} />
