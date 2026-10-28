@@ -59,11 +59,17 @@ test('CSV action is synthetic and disabled customer links stay disabled', async 
   await expect(page.getByText(/CSV fictício gerado somente neste navegador/)).toBeVisible();
 });
 
-test('urgent operational queue is separate from ordinary valid orders', async ({ page, isMobile }) => {
+test('urgent operational queue is separate from ordinary valid orders', async ({
+  page,
+  isMobile,
+}) => {
   await page.goto('');
   await page.getByRole('button', { name: /Pedidos válidos/ }).click();
   await expect(page.locator('.result-head')).toContainText('48');
-  await page.getByRole('button', { name: /Pendências reais/ }).first().click();
+  await page
+    .getByRole('button', { name: /Pendências reais/ })
+    .first()
+    .click();
   const result = page.locator(isMobile ? '.mobile-record' : '.table-viewport tbody tr');
   const count = await result.count();
   expect(count).toBeGreaterThan(0);
