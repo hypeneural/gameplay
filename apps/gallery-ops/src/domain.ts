@@ -60,7 +60,7 @@ export const EMPTY_FILTERS: GalleryFilters = {
   dateTo: '',
   photos: 'all',
 };
-export const CRM_STATUS_LABELS: Readonly<Record<string, string>> = {
+const CRM_STATUS_LABELS: Readonly<Record<string, string>> = {
   waiting_payment: 'Aguardando pagamento',
   payment_confirmed: 'Pagamento confirmado',
   session_schedule: 'Sessão para agendar',
