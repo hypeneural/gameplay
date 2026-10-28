@@ -39,6 +39,8 @@ jobs:
           version: 11.19.0
           run_install: false
       - run: pnpm install --frozen-lockfile
+      - run: node --check apps/gallery-ops/server/adminServer.mjs && node --check apps/gallery-ops/server/start.mjs
+      - run: node --test apps/gallery-ops/server/adminServer.test.mjs
       - run: pnpm --filter @christmas-games/gallery-ops build
       - run: pnpm --filter @christmas-games/gallery-ops test
       - run: pnpm exec playwright install --with-deps chromium
