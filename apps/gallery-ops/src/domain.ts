@@ -7,10 +7,11 @@ export type GalleryState =
   | 'published_unverified'
   | 'revoked'
   | 'unavailable';
-export type StateFilter = 'all' | 'pending' | GalleryState;
+export type StateFilter = 'all' | 'pending' | 'follow_up' | 'awaiting_session' | GalleryState;
 export type DateField = 'createdAt' | 'sessionAt' | 'firstUploadAt' | 'publishedAt';
 type PhotoRange = 'all' | 'zero' | '1-10' | '11-25' | '26+';
 export type SortKey =
+  | 'operationalPriority'
   | 'orderId'
   | 'clientName'
   | 'clientWhatsapp'
@@ -105,7 +106,27 @@ export const STATES: Readonly<
     description: 'Erro de consulta: não equivale a ausência de galeria',
   },
 };
-const isPending = (state: GalleryState): boolean => state !== 'published_unverified';
+/** Status commercial proven by CRM; a calendar date is NOT proof of an executed session. */
+const URGENT_CRM = new Set(['waiting_product_retrieve', 'order_completed']);
+const POST_SESSION_CRM = new Set([
+  'session_schedule_confirmed', 'selection_schedule', 'selection_schedule_confirmed',
+  'product_retrieve_confirmed',
+]);
+export type OperationalStage = 'urgent' | 'follow_up' | 'awaiting_session' | 'published' | 'integration_error';
+export function operationalStage(order: GalleryOrder): OperationalStage {
+  if (order.state === 'unavailable') return 'integration_error';
+  if (order.state === 'published_unverified') return 'published';
+  if (URGENT_CRM.has(order.crmStatus)) return 'urgent';
+  if (POST_SESSION_CRM.has(order.crmStatus) || order.firstUploadAt) return 'follow_up';
+  return 'awaiting_session';
+}
+export const OPERATIONAL_LABELS: Readonly<Record<OperationalStage,string>> = {
+  urgent: 'Publicar com urgência',
+  follow_up: 'Acompanhar produção',
+  awaiting_session: 'Aguardando etapa de fotos',
+  published: 'Publicação confirmada',
+  integration_error: 'Verificar integração',
+};
 export function projectGameplayState(
   state: 'not_found' | 'not_published' | 'partial' | 'revoked' | 'published_unverified' | null,
   preparation: 'none' | 'staged' | 'invalid' | null,
@@ -170,12 +191,12 @@ export function filterOrders(
       !(phoneQuery.length >= 4 && phones.includes(phoneQuery))
     )
       return false;
-    if (
-      filters.state === 'pending'
-        ? !isPending(o.state)
-        : filters.state !== 'all' && o.state !== filters.state
-    )
-      return false;
+    const stage = operationalStage(o);
+    if (filters.state === 'pending' && stage !== 'urgent') return false;
+    if (filters.state === 'follow_up' && stage !== 'follow_up') return false;
+    if (filters.state === 'awaiting_session' && stage !== 'awaiting_session') return false;
+    if (!['all','pending','follow_up','awaiting_session'].includes(filters.state)
+        && o.state !== filters.state) return false;
     if (filters.packageName !== 'all' && o.packageName !== filters.packageName) return false;
     if (filters.crmStatus !== 'all' && o.crmStatus !== filters.crmStatus) return false;
     const when = dateOnly(o[filters.dateField]);
@@ -199,6 +220,18 @@ export function sortOrders(
 ): GalleryOrder[] {
   const dir = descending ? -1 : 1;
   return [...orders].sort((a, b) => {
+    if (key === 'operationalPriority') {
+      const ranks: Record<OperationalStage,number> = {
+        urgent: 0, integration_error: 1, follow_up: 2, awaiting_session: 3, published: 4,
+      };
+      const diff = ranks[operationalStage(a)] - ranks[operationalStage(b)];
+      if (diff !== 0) return diff * dir;
+      // Oldest session first inside an operational stage; null dates go last.
+      const ax = a.sessionAt ? dateOnly(a.sessionAt) : null;
+      const bx = b.sessionAt ? dateOnly(b.sessionAt) : null;
+      if (ax !== bx) return ax === null ? 1 : bx === null ? -1 : ax.localeCompare(bx);
+      return b.orderId - a.orderId;
+    }
     const av = a[key],
       bv = b[key];
     if (av === null && bv !== null) return 1;
@@ -219,7 +252,16 @@ export function summarize(orders: readonly GalleryOrder[]) {
     number
   >;
   for (const o of orders) states[o.state]++;
-  return { total: orders.length, pending: orders.filter((o) => isPending(o.state)).length, states };
+  const stages = orders.map(operationalStage);
+  return {
+    total: orders.length,
+    pending: stages.filter(s => s === 'urgent').length,
+    followUp: stages.filter(s => s === 'follow_up').length,
+    awaiting: stages.filter(s => s === 'awaiting_session').length,
+    published: stages.filter(s => s === 'published').length,
+    integrationErrors: stages.filter(s => s === 'integration_error').length,
+    states,
+  };
 }
 export function formatDate(value: string | null): string {
   const day = dateOnly(value);
@@ -230,21 +272,10 @@ export function priority(
   asOfDay: string,
 ): 'waiting' | 'attention' | 'ready' | 'unknown' {
   if (o.state === 'unavailable') return 'unknown';
-  if (!isPending(o.state)) return 'ready';
+  if (o.state === 'published_unverified') return 'ready';
+  if (operationalStage(o) === 'urgent') return 'attention';
   if (o.sessionAt && dateOnly(o.sessionAt) > asOfDay) return 'waiting';
-  if (
-    o.firstUploadAt ||
-    [
-      'session_schedule_confirmed',
-      'selection_schedule',
-      'selection_schedule_confirmed',
-      'waiting_product_retrieve',
-      'product_retrieve_confirmed',
-      'order_completed',
-    ].includes(o.crmStatus)
-  ) {
-    return 'attention';
-  }
+  if (operationalStage(o) === 'follow_up') return 'unknown';
   // A past appointment is not proof that the session actually occurred.
   return 'unknown';
 }
