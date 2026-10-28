@@ -92,9 +92,9 @@ export function sortOrders(orders: readonly GalleryOrder[], key: SortKey, descen
     const av = a[key], bv = b[key];
     if (av === null && bv !== null) return 1;
     if (bv === null && av !== null) return -1;
-    let cmp = 0;
-    if (typeof av === 'number' && typeof bv === 'number') cmp = av - bv;
-    else cmp = String(av ?? '').localeCompare(String(bv ?? ''), 'pt-BR', { numeric: true, sensitivity: 'base' });
+    const cmp = typeof av === 'number' && typeof bv === 'number'
+      ? av - bv
+      : String(av ?? '').localeCompare(String(bv ?? ''), 'pt-BR', { numeric: true, sensitivity: 'base' });
     return cmp === 0 ? b.orderId - a.orderId : cmp * dir;
   });
 }
