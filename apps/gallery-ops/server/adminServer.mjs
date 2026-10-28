@@ -1,6 +1,8 @@
 // Dedicated Gallery Ops BFF. Never expose CRM/MCP/Gameplay service secrets to Vite or a browser.
 // Cloudflare Access is verified AGAIN at this origin with the provider's signed JWK.
 import { createServer } from 'node:http';
+import { URL } from 'node:url';
+import { Buffer } from 'node:buffer';
 import { createPublicKey, verify as verifySignature } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
 import { resolve, join } from 'node:path';
@@ -195,7 +197,7 @@ function json(response, status, data, extra={}) {
   response.writeHead(status, {...headers(), ...extra}); response.end(JSON.stringify(data));
 }
 function safeCsvCell(v) {
-  const str = String(v ?? ''), value = /^[\s]*[=+@\-]/.test(str) ? "'"+str : str;
+  const str = String(v ?? ''), value = /^[\s]*[=+@-]/.test(str) ? "'"+str : str;
   return '"'+value.replaceAll('"','""')+'"';
 }
 function csv(items) {
