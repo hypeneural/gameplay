@@ -426,7 +426,7 @@ function App() {
                 />
               </div>
               <div className="quick-tabs" aria-label="Filtrar por situação">
-                {[stateOptions[0],stateOptions[1],stateOptions[2],stateOptions[3],stateOptions[8]].map((t) => (
+                {stateOptions.filter((t) => ['all','pending','follow_up','awaiting_session','published_unverified'].includes(t.id)).map((t) => (
                   <button
                     key={t.id}
                     className={'tab ' + (filters.state === t.id ? 'tab--active' : '')}
