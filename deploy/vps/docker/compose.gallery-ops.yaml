@@ -24,9 +24,11 @@ services:
       - ${GALLERY_OPS_RELEASE_DIR:?GALLERY_OPS_RELEASE_DIR_required}/dist:/app/dist:ro
     expose:
       - '4189'
+    extra_hosts:
+      - "gallery-ops-reader:${GALLERY_OPS_READER_HOST_IP:-172.18.0.1}"
     networks:
       - edge
-      - internal
+      - backend
     healthcheck:
       test: ['CMD', 'wget', '-q', '--spider', 'http://127.0.0.1:4189/healthz']
       interval: 20s
