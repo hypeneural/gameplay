@@ -8,45 +8,97 @@ const paths: Record<ActionName, string> = {
   lock: 'M5 10h14v11H5z M8 10V7a4 4 0 0 1 8 0v3',
 };
 function Icon({ name }: { name: ActionName }) {
-  return <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
-    stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"
-    aria-hidden="true"><path d={paths[name]}/></svg>;
+  return (
+    <svg
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d={paths[name]} />
+    </svg>
+  );
 }
-function Action({ name, label, href, explanation }: {
-  name: ActionName; label: string; href: string | null; explanation: string;
+function Action({
+  name,
+  label,
+  href,
+  explanation,
+}: {
+  name: ActionName;
+  label: string;
+  href: string | null;
+  explanation: string;
 }) {
-  if (!href) return <button className="icon-action" type="button" disabled
-    title={explanation} aria-label={label+' indisponível: '+explanation}>
-      <Icon name={name}/><span>{label}</span>
-    </button>;
-  return <a className="icon-action icon-action--enabled" href={href}
-    target="_blank" rel="noopener noreferrer" title={explanation}
-    aria-label={label+' (consulta individual autorizada)'}>
-    <Icon name={name}/><span>{label}</span>
-  </a>;
+  if (!href)
+    return (
+      <button
+        className="icon-action"
+        type="button"
+        disabled
+        title={explanation}
+        aria-label={label + ' indisponível: ' + explanation}
+      >
+        <Icon name={name} />
+        <span>{label}</span>
+      </button>
+    );
+  return (
+    <a
+      className="icon-action icon-action--enabled"
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      title={explanation}
+      aria-label={label + ' (consulta individual autorizada)'}
+    >
+      <Icon name={name} />
+      <span>{label}</span>
+    </a>
+  );
 }
-export function Actions({ row, demo, linksEnabled }: {
-  row: GalleryOrder; demo: boolean; linksEnabled: boolean;
+export function Actions({
+  row,
+  demo,
+  linksEnabled,
+}: {
+  row: GalleryOrder;
+  demo: boolean;
+  linksEnabled: boolean;
 }) {
-  const crm = !demo && row.crmOrderUrl?.startsWith('https://evydencia.com/gestao/pedidos/')
-    ? row.crmOrderUrl : null;
+  const crm =
+    !demo && row.crmOrderUrl?.startsWith('https://evydencia.com/gestao/pedidos/')
+      ? row.crmOrderUrl
+      : null;
   const published = row.state === 'published_unverified';
   const allowed = !demo && linksEnabled && published;
   const reason = !published
     ? 'Pedido ainda não tem galeria publicada e válida'
-    : !linksEnabled ? 'Acesso individual aguardando liberação administrativa'
-    : 'Verificar a publicação deste pedido em uma nova aba';
+    : !linksEnabled
+      ? 'Acesso individual aguardando liberação administrativa'
+      : 'Verificar a publicação deste pedido em uma nova aba';
   const href = (kind: 'gallery' | 'hub') =>
-    '/gestao/galerias/api/orders/'+row.orderId+'/open/'+kind;
-  return <div className="quick-actions" aria-label={'Ações do pedido '+row.orderId}>
-    <Action name="crm" label="CRM" href={crm}
-      explanation="Abrir pedido no CRM (login próprio)" />
-    <Action name="gallery" label="Fotos" href={allowed ? href('gallery') : null}
-      explanation={reason} />
-    <Action name="game" label="Jogos" href={allowed ? href('hub') : null}
-      explanation={reason} />
-    {published && !allowed && !demo && <small className="actions-status">
-      <Icon name="lock"/> Links protegidos
-    </small>}
-  </div>;
+    '/gestao/galerias/api/orders/' + row.orderId + '/open/' + kind;
+  return (
+    <div className="quick-actions" aria-label={'Ações do pedido ' + row.orderId}>
+      <Action name="crm" label="CRM" href={crm} explanation="Abrir pedido no CRM (login próprio)" />
+      <Action
+        name="gallery"
+        label="Fotos"
+        href={allowed ? href('gallery') : null}
+        explanation={reason}
+      />
+      <Action name="game" label="Jogos" href={allowed ? href('hub') : null} explanation={reason} />
+      {published && !allowed && !demo && (
+        <small className="actions-status">
+          <Icon name="lock" /> Links protegidos
+        </small>
+      )}
+    </div>
+  );
 }
