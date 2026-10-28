@@ -190,6 +190,55 @@ test('origin rejects unknown/non-operator requests, authorizes HTML and list onl
     },
   );
 });
+test('admin reader gate returns a specific 409; approved single-order links redirect privately', async () => {
+  const actor = async () => ({id:'synthetic-operator'});
+  const token = 'a'.repeat(32);
+  const gatewayFetch = async (url, init) => {
+    if (String(url).endsWith('/lookup')) {
+      const payload = JSON.parse(init.body);
+      assert.equal(payload.include_links,true);
+      return response({
+        schema_version:1,
+        results:[{
+          crm_order_uuid:sample[0].order_uuid,
+          state:'published_unverified',
+          gallery_url:'https://jogos.fotosdenatal.com/s/'+token+'/fotos',
+          hub_url:'https://jogos.fotosdenatal.com/s/'+token,
+        }],
+      });
+    }
+    return mockedFetch()(url,init);
+  };
+  const approvedConfig = {...config, hostname:'127.0.0.1', linksEnabled:true};
+  const app=createGalleryOpsAdminServer({config:approvedConfig,verifyOperator:actor,fetchFn:gatewayFetch});
+  await new Promise(done=>app.listen(0,'127.0.0.1',done));
+  const base='http://127.0.0.1:'+app.address().port+'/gestao/galerias/api/orders/1/open/';
+  try {
+    const gallery=await fetch(base+'gallery',{redirect:'manual'});
+    assert.equal(gallery.status,303);
+    assert.equal(gallery.headers.get('location'),'https://jogos.fotosdenatal.com/s/'+token+'/fotos');
+    assert.equal(gallery.headers.get('cache-control').includes('no-store'),true);
+    const hub=await fetch(base+'hub',{redirect:'manual'});
+    assert.equal(hub.status,303);
+    assert.equal(hub.headers.get('location'),'https://jogos.fotosdenatal.com/s/'+token);
+    const unknown=await fetch(base.replace('/1/open/','/999999/open/')+'hub',{redirect:'manual'});
+    assert.equal(unknown.status,404);
+  } finally {await new Promise(done=>app.close(done));}
+  const denied = createGalleryOpsAdminServer({config:approvedConfig,verifyOperator:actor,
+    fetchFn:async (url,init)=>String(url).endsWith('/lookup')?response({error:'CUSTOMER_LINKS_NOT_ENABLED'},409):mockedFetch()(url,init)});
+  await new Promise(done=>denied.listen(0,'127.0.0.1',done));
+  try {
+    const res=await fetch('http://127.0.0.1:'+denied.address().port+'/gestao/galerias/api/orders/1/open/gallery',{redirect:'manual'});
+    assert.equal(res.status,409);
+    assert.equal((await res.json()).error,'READER_LINKS_NOT_APPROVED');
+  } finally {await new Promise(done=>denied.close(done));}
+});
+test('missing Cloudflare credentials cannot enable implicit operator session', () => {
+  assert.throws(()=>configFromEnv({
+    GALLERY_OPS_MCP_READER_SECRET:secret,
+    GALLERY_OPS_GAMEPLAY_READ_SECRET:readSecret,
+  }),/GALLERY_OPS_SECURITY_CONFIG_REQUIRED/);
+});
 test('verifies Cloudflare RS256 signed JWT, rejects spoofed email and expired claims', async () => {
   const { publicKey, privateKey } = generateKeyPairSync('rsa', { modulusLength: 2048 });
   const jwk = publicKey.export({ format: 'jwk' });
