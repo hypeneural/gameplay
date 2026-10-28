@@ -18,6 +18,9 @@ const sample = Array.from({ length: 104 }, (_, i) => ({
   order_id: i + 1,
   order_uuid: u(i + 1),
   customer_name: 'Família Sintética ' + i,
+  customer_whatsapp: '554899900' + String(1000 + i),
+  customer_phone: null,
+  customer_email: 'familia' + i + '@example.invalid',
   package_name: 'Pacote Exemplo',
   status_key: 'session_schedule',
   created_at: '2026-10-01T10:00:00-03:00',
@@ -89,6 +92,9 @@ test('slices canonical 104 without truncation or status-10/12 restriction', asyn
     true,
   );
   assert.equal(data.items[0].crmStatus, 'session_schedule');
+  assert.equal(data.items[0].clientWhatsapp, sample[0].customer_whatsapp);
+  assert.equal(data.items[0].clientEmail, sample[0].customer_email);
+  assert.equal(data.items[0].clientPhone, null);
   assert.ok(!JSON.stringify(data).includes('order_uuid'));
 });
 test('read failures do not erase CRM-valid orders or misclassify missing session', async () => {
@@ -118,6 +124,9 @@ async function withServer(verify, fn) {
       items: sample.map((x) => ({
         orderId: x.order_id,
         clientName: x.customer_name,
+        clientWhatsapp: x.customer_whatsapp,
+        clientPhone: x.customer_phone,
+        clientEmail: x.customer_email,
         state: 'no_session',
       })),
     }),
@@ -145,6 +154,13 @@ test('origin rejects unknown/non-operator requests, authorizes HTML and list onl
       assert.equal(r.status, 200);
       assert.equal((await r.json()).total_valid, 104);
       assert.match(r.headers.get('cache-control'), /no-store/);
+      const csvResponse = await fetch(base + '/gestao/galerias/api/export', init);
+      assert.equal(csvResponse.status, 200);
+      assert.match(csvResponse.headers.get('cache-control'), /no-store/);
+      const csv = await csvResponse.text();
+      assert.ok(csv.includes('WhatsApp'));
+      assert.ok(csv.includes(sample[0].customer_whatsapp));
+      assert.ok(csv.includes(sample[0].customer_email));
       const invalidHost = await new Promise((resolve, reject) => {
         const dest = new URL(base + '/gestao/galerias/api/orders');
         const req = httpRequest(
