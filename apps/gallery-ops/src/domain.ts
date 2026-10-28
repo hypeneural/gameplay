@@ -1,4 +1,4 @@
-/** Pure, privacy-minimized projection. Never ingest customer phones, participants or capability URLs. */
+/** Authorized manager-only projection. Customer contact is PII: never cache publicly or include capability URLs. */
 export type GalleryState =
   | 'no_session'
   | 'no_upload'
@@ -13,6 +13,7 @@ type PhotoRange = 'all' | 'zero' | '1-10' | '11-25' | '26+';
 export type SortKey =
   | 'orderId'
   | 'clientName'
+  | 'clientWhatsapp'
   | 'packageName'
   | 'createdAt'
   | 'sessionAt'
@@ -24,6 +25,9 @@ export type SortKey =
 export interface GalleryOrder {
   orderId: number;
   clientName: string;
+  clientWhatsapp: string | null;
+  clientPhone: string | null;
+  clientEmail: string | null;
   packageName: string;
   crmStatus: string;
   createdAt: string | null;
@@ -110,7 +114,23 @@ function normalize(s: string): string {
     .trim();
 }
 function dateOnly(value: string | null): string {
-  return value ? value.slice(0, 10) : '';
+  if (!value) return '';
+  if (/^\d{4}-\d{2}-\d{2}$/.test(value)) return value;
+  const parsed = new Date(value);
+  if (!Number.isFinite(parsed.getTime())) return '';
+  const parts = new Intl.DateTimeFormat('en-US', {
+    timeZone: 'America/Sao_Paulo', year: 'numeric', month: '2-digit', day: '2-digit',
+  }).formatToParts(parsed);
+  const part = (type: string) => parts.find(p => p.type === type)?.value ?? '';
+  return part('year') + '-' + part('month') + '-' + part('day');
+}
+export function formatPhone(value: string | null): string {
+  if (!value) return '—';
+  const raw = value.replace(/\D/g, '');
+  const digits = raw.startsWith('55') && raw.length > 11 ? raw.slice(2) : raw;
+  if (digits.length === 11) return '(' + digits.slice(0,2) + ') ' + digits.slice(2,7) + '-' + digits.slice(7);
+  if (digits.length === 10) return '(' + digits.slice(0,2) + ') ' + digits.slice(2,6) + '-' + digits.slice(6);
+  return value.slice(0, 25);
 }
 export function filterOrders(
   orders: readonly GalleryOrder[],
@@ -118,8 +138,13 @@ export function filterOrders(
 ): GalleryOrder[] {
   const q = normalize(filters.search);
   return orders.filter((o) => {
-    const text = normalize(`${o.orderId} ${o.clientName} ${o.packageName}`);
-    if (q && !text.includes(q.replace(/^#/, ''))) return false;
+    const text = normalize([
+      o.orderId, o.clientName, o.clientWhatsapp, o.clientPhone, o.clientEmail, o.packageName,
+    ].filter(Boolean).join(' '));
+    const phoneQuery = filters.search.replace(/\D/g, '');
+    const phones = [o.clientWhatsapp, o.clientPhone].filter(Boolean).join(' ').replace(/\D/g, '');
+    if (q && !text.includes(q.replace(/^#/, '')) &&
+        !(phoneQuery.length >= 4 && phones.includes(phoneQuery))) return false;
     if (
       filters.state === 'pending'
         ? !isPending(o.state)
@@ -172,9 +197,8 @@ export function summarize(orders: readonly GalleryOrder[]) {
   return { total: orders.length, pending: orders.filter((o) => isPending(o.state)).length, states };
 }
 export function formatDate(value: string | null): string {
-  if (!value) return '—';
-  const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(value);
-  return m ? `${m[3]}/${m[2]}/${m[1]}` : '—';
+  const day = dateOnly(value);
+  return day ? day.slice(8,10)+'/'+day.slice(5,7)+'/'+day.slice(0,4) : '—';
 }
 export function priority(
   o: GalleryOrder,
@@ -183,7 +207,12 @@ export function priority(
   if (o.state === 'unavailable') return 'unknown';
   if (!isPending(o.state)) return 'ready';
   if (o.sessionAt && dateOnly(o.sessionAt) > asOfDay) return 'waiting';
-  return 'attention';
+  if (o.firstUploadAt || ['selection_schedule', 'selection_schedule_confirmed',
+    'waiting_product_retrieve', 'product_retrieve_confirmed', 'order_completed'].includes(o.crmStatus)) {
+    return 'attention';
+  }
+  // A past appointment is not proof that the session actually occurred.
+  return 'unknown';
 }
 function csvCell(value: string | number | null): string {
   const text = value === null ? '' : String(value);
@@ -195,6 +224,9 @@ export function syntheticCsv(orders: readonly GalleryOrder[]): string {
   const columns = [
     'Pedido',
     'Cliente',
+    'WhatsApp',
+    'Telefone',
+    'E-mail',
     'Pacote',
     'Status CRM',
     'Situação Gameplay',
@@ -207,6 +239,9 @@ export function syntheticCsv(orders: readonly GalleryOrder[]): string {
   const rows = orders.map((o) => [
     o.orderId,
     o.clientName,
+    o.clientWhatsapp,
+    o.clientPhone,
+    o.clientEmail,
     o.packageName,
     o.crmStatus,
     STATES[o.state].label,
