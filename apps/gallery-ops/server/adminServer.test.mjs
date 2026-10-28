@@ -1,4 +1,6 @@
 import {test} from 'node:test';
+import { request as httpRequest } from 'node:http';
+import { URL } from 'node:url';
 import { Buffer } from 'node:buffer';
 import assert from 'node:assert/strict';
 import {createAccessVerifier,createGalleryOpsAdminServer,configFromEnv,resolveOperations,loadCanonicalOrders} from './adminServer.mjs';
@@ -66,7 +68,15 @@ test('origin rejects unknown/non-operator requests, authorizes HTML and list onl
   const r=await fetch(base+'/gestao/galerias/api/orders',init);
   assert.equal(r.status,200);assert.equal((await r.json()).total_valid,104);
   assert.match(r.headers.get('cache-control'),/no-store/);
-  assert.equal((await fetch(base+'/gestao/galerias/api/orders',{headers:{host:'evil.example'}})).status,403);
+  const invalidHost = await new Promise((resolve, reject) => {
+    const dest = new URL(base + '/gestao/galerias/api/orders');
+    const req = httpRequest({ hostname:dest.hostname, port:dest.port, path:dest.pathname,
+      headers:{Host:'evil.example'} }, res => {
+        res.resume();res.on('end',()=>resolve(res.statusCode));
+      });
+    req.on('error',reject);req.end();
+  });
+  assert.equal(invalidHost,403);
   assert.equal((await fetch(base+'/gestao/galerias/api/orders',{...init,method:'POST'})).status,405);
   assert.equal((await fetch(base+'/gestao/galerias/api/orders/1/open/gallery',init)).status,409);
  });
