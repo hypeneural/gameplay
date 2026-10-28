@@ -13,7 +13,7 @@ export interface LiveDashboard {
   reload: () => void;
 }
 const demo = import.meta.env.DEV;
-export function validateDashboard(value: unknown): {
+function validateDashboard(value: unknown): {
   items: GalleryOrder[];
   as_of: string;
   degraded: boolean;
