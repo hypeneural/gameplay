@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test';
 
 test('manager cockpit presents only synthetic records with working filters', async ({ page, isMobile }) => {
-  await page.goto('/');
+  await page.goto('');
   await expect(page.getByRole('heading', { name: 'Operação de Galerias' })).toBeVisible();
   await expect(page.getByText('Prévia de interface — dados 100% fictícios')).toBeVisible();
   await expect(page.locator('.indicator')).toHaveCount(6);
@@ -29,7 +29,7 @@ test('manager cockpit presents only synthetic records with working filters', asy
 });
 
 test('CSV action is synthetic and disabled customer links stay disabled', async ({ page, isMobile }) => {
-  await page.goto('/');
+  await page.goto('');
   await expect(page.locator('.icon-action').first()).toBeDisabled();
   if (isMobile) return;
   const downloadWait = page.waitForEvent('download');
