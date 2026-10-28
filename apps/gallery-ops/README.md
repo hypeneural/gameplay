@@ -35,7 +35,6 @@ O preview local usa a porta 4178 e **não executa nenhuma consulta real**. No bu
 
 Detalhamento: `docs/integrations/NATAL26_GALLERY_OPS_FORENSIC_AUDIT_20261028.md` e Issue #45.
 
-
 ## Testes do backend administrativo
 
 ```sh
