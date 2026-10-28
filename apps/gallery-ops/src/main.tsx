@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import {
-  EMPTY_FILTERS, STATES, filterOrders, formatDate, isPending, priority,
+  EMPTY_FILTERS, STATES, filterOrders, formatDate, priority,
   sortOrders, summarize, syntheticCsv,
 } from './domain.js';
 import type { DateField, GalleryFilters, GalleryOrder, GalleryState, SortKey, StateFilter } from './domain.js';
