@@ -5,19 +5,19 @@ Dashboard React 19 + Vite 8/TypeScript, independente do catálogo de jogos, em `
 ## Implementação presente
 
 - Preview local com 48 pedidos **sintéticos e determinísticos** (nomes explícitos de demonstração, URLs pessoais ausentes).
-- KPIs e filtros por situação, nome/pedido/pacote, etapa CRM, tipo/período de data e contagem de fotos publicadas.
+- KPIs e filtros por situação, nome/pedido/WhatsApp/telefone/e-mail/pacote, etapa CRM (rótulos da enum oficial), tipo/período de data e contagem de fotos publicadas.
 - Ordenação estável, paginação, exportação CSV sintética protegida contra fórmulas, desktop/table e mobile/cards.
 - Estados distintos de `no_session`, `no_upload`, `preparing`, `incomplete`, `published_unverified`, `revoked`, `unavailable`.
 - No modo demo, ações de clientes estão desabilitadas. Em produção a ação de CRM só usa link administrativo; galeria e hub exigem checagem individual por BFF + sidecar e flags explícitas, sem expor URL capability na tabela ou CSV.
-- Build de produção **sem dados** até existir BFF autenticado; Vite `base` não habilita rota nem auth.
+- Build de produção só carrega dados quando o BFF autenticado estiver implantado e autorizado; Vite `base` sozinho não habilita rota nem autenticação.
 
 ## Sem alterar o CRM Laravel (caminho preferido)
 
-1. O MCP já roda `scripts/crm-natal-bridge.php`, que consulta `NatalValidOrdersQuery::validNatalOrders()` diretamente. O CRM não precisa de nova regra nem novo endpoint se esse bridge puder expor uma projeção administrativa paginada e autenticada (necessário implementar a projeção leve e sua autorização no gateway MCP).
+1. O MCP possui modo opt-in `gallery.ops.valid_orders` em `scripts/crm-natal-bridge.php`, via PR #16, que consulta `NatalValidOrdersQuery::validNatalOrders()` e inclui contato do titular apenas na projeção privada. O CRM Laravel não precisa de nova regra ou endpoint; basta implantar o reader interno autenticado.
 2. `crm_pedidos_buscar(product_slug=natal)` é busca **bruta**; 132 pedidos de produto Natal não são equivalentes a 104 comercialmente válidos, conforme consulta verificada em 28/10/2026. A lista `crm_gameplay_auditoria` restringe a status 10/12. Nenhuma das duas é fonte única de membership.
 3. A seção `operacional_listas` do MCP já gera `by_status_full` a partir de `validNatalOrders`, mas o modo completo pode ser lento e disponibiliza dados demais. **Não usar essa resposta pesada diretamente como backend da interface**. Contrato leve deve retornar todos os pedidos elegíveis e paginação sem truncamento, e receber o mesmo `asOf`.
 4. Proxy BFF por sessão de gestor: operar apenas servidor-servidor e consultar reader privado por batches ≤50. O domínio atual não possui rota protegida instalada; não supor que login CRM compartilha cookies com `jogos.fotosdenatal.com`.
-5. Em produção: filtros/sort/contagens sobre o universo agregado no servidor, nunca apenas sobre a página corrente. Endpoints do domínio só após política de operador + recursos de autorização.
+5. Em produção: o BFF retorna a população canônica integral; a interface filtra, ordena e calcula os contadores sobre esse universo, nunca só a página visível. CSV é autorizado pelo BFF e inclui campos de contato. Endpoints do domínio só após política de operador + recursos de autorização.
 
 ## Execução local
 
