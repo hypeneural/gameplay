@@ -8,7 +8,7 @@ Dashboard React 19 + Vite 8/TypeScript, independente do catálogo de jogos, em `
 - KPIs e filtros por situação, nome/pedido/pacote, etapa CRM, tipo/período de data e contagem de fotos publicadas.
 - Ordenação estável, paginação, exportação CSV sintética protegida contra fórmulas, desktop/table e mobile/cards.
 - Estados distintos de `no_session`, `no_upload`, `preparing`, `incomplete`, `published_unverified`, `revoked`, `unavailable`.
-- Todas as ações de pedidos/galerias/jogos estão desabilitadas neste protótipo; nenhum link capability é armazenado.
+- No modo demo, ações de clientes estão desabilitadas. Em produção a ação de CRM só usa link administrativo; galeria e hub exigem checagem individual por BFF + sidecar e flags explícitas, sem expor URL capability na tabela ou CSV.
 - Build de produção **sem dados** até existir BFF autenticado; Vite `base` não habilita rota nem auth.
 
 ## Sem alterar o CRM Laravel (caminho preferido)
@@ -31,6 +31,16 @@ pnpm exec playwright install chromium
 pnpm exec playwright test --config apps/gallery-ops/playwright.config.ts
 ```
 
-O preview local usa a porta 4178 e **não executa nenhuma consulta real**. Em build release, a interface mostra `Conexão administrativa ainda não configurada` e nenhuma linha, mesmo que a pasta `dist/` seja publicada por engano. O BFF é trabalho pendente e será tratado em PR separada com contratos, testes 401/403 e implantação privada.
+O preview local usa a porta 4178 e **não executa nenhuma consulta real**. No build de produção, o frontend chama `/gestao/galerias/api/orders` SOMENTE após a autenticação do backend; sem acesso válido ou em erro, apresenta estado fechado, nunca fixtures. O BFF, seus testes e o modo canônico do MCP foram implementados em Draft; **a implantação e autenticação no domínio ainda precisam de homologação**. Veja `docs/integrations/GALLERY_OPS_SECURE_DEPLOYMENT_20261028.md` e a PR #16 do MCP.
 
 Detalhamento: `docs/integrations/NATAL26_GALLERY_OPS_FORENSIC_AUDIT_20261028.md` e Issue #45.
+
+
+## Testes do backend administrativo
+
+```sh
+node --check apps/gallery-ops/server/adminServer.mjs
+node --test apps/gallery-ops/server/adminServer.test.mjs
+```
+
+Leia também o runbook seguro de implantação citado acima. Nunca disponibilize o frontend HTML diretamente como rota pública sem o backend Cloudflare Access JWT.
