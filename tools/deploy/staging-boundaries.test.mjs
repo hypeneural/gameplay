@@ -32,12 +32,16 @@ describe('staging Docker boundary', () => {
     expect(overlay).not.toContain('${RELEASE_DIR:');
     // Three explicit read-only bundle mounts. No shared public RELEASE_DIR.
     expect(
-      overlay.match(/\$\{CATALOG_READER_RELEASE_DIR:\?preapproved_immutable_reader_release_dir\}/g),
+      overlay.match(
+        /\$\{CATALOG_READER_RELEASE_DIR:\?preapproved_immutable_reader_release_dir\}/g,
+      ),
     ).toHaveLength(3);
     expect(overlay).not.toContain('${RELEASE_DIR}');
     expect(overlay).not.toContain('RELEASE_DIR:-');
     // The public catalog/gateway still read only the independently pinned release.
-    expect(persistent.match(/\$\{RELEASE_DIR:-\/srv\/runtime\/christmas-games\/current\}/g)).toHaveLength(5);
+    expect(
+      persistent.match(/\$\{RELEASE_DIR:-\/srv\/runtime\/christmas-games\/current\}/g),
+    ).toHaveLength(5);
 
     expect(persistent).toContain('${RELEASE_DIR:-/srv/runtime/christmas-games/current}');
 
