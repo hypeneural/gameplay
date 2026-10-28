@@ -750,8 +750,8 @@
 │   │   └── repo-map.md
 │   ├── index.md
 │   ├── integrations
-│   │   ├── GAMEPLAY_STATUS_READ_V1_20261026.md
 │   │   ├── GALLERY_OPS_SECURE_DEPLOYMENT_20261028.md
+│   │   ├── GAMEPLAY_STATUS_READ_V1_20261026.md
 │   │   ├── NATAL26_GALLERY_OPS_FORENSIC_AUDIT_20261028.md
 │   │   ├── READER_ONLY_CUT_PREFLIGHT_20261027.md
 │   │   └── photo-sessions
