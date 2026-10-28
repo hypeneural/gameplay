@@ -470,7 +470,7 @@ function App() {
                     <option value="all">Todas as etapas</option>
                     {crmStatuses.map((s) => (
                       <option key={s} value={s}>
-                        {s}
+                        {formatCrmStatus(s)}
                       </option>
                     ))}
                   </select>
