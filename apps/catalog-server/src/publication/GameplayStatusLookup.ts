@@ -11,7 +11,8 @@ const LIMIT = 50;
 function asUtcEvent(value: string | null): string | null {
   if (!value) return null;
   const normalized = /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/.test(value)
-    ? value.replace(' ', 'T') + 'Z' : value;
+    ? value.replace(' ', 'T') + 'Z'
+    : value;
   const parsed = new Date(normalized);
   return Number.isFinite(parsed.getTime()) ? parsed.toISOString() : null;
 }
@@ -126,11 +127,13 @@ export class GameplayStatusLookup {
         }
       | undefined;
     if (!session) return base('not_found');
-    const uploadEvent = this.db.prepare(
-      `SELECT MIN(rb.received_at) AS first_ready
+    const uploadEvent = this.db
+      .prepare(
+        `SELECT MIN(rb.received_at) AS first_ready
        FROM revision_blobs rb JOIN photo_revisions pr ON pr.id = rb.revision_id
        WHERE pr.session_id = ? AND rb.state = 'READY' AND rb.received_at IS NOT NULL`,
-    ).get(session.id) as { first_ready: string | null } | undefined;
+      )
+      .get(session.id) as { first_ready: string | null } | undefined;
     firstUploadAt = asUtcEvent(uploadEvent?.first_ready ?? null);
     if (session.status !== 'ACTIVE') return base('revoked', session.id);
     const staged = this.db
@@ -225,7 +228,16 @@ export class GameplayStatusLookup {
     // Batch audits and metadata-only sidecars never materialize customer
     // capability URLs. This includes a single-order include_links request.
     if (!includeLinks || !this.allowCapabilityLinks) {
-      return base('published_unverified', session.id, revision.id, photoCount, expected, ready, null, asUtcEvent(revision.activated_at));
+      return base(
+        'published_unverified',
+        session.id,
+        revision.id,
+        photoCount,
+        expected,
+        ready,
+        null,
+        asUtcEvent(revision.activated_at),
+      );
     }
     return base(
       'published_unverified',
