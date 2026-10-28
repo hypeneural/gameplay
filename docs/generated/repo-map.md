@@ -662,9 +662,11 @@
 │       ├── christmas-games-catalog.service.example
 │       ├── docker
 │       │   ├── Caddyfile.fragment
+│       │   ├── compose.gallery-ops.yaml
 │       │   ├── compose.persistence.yaml
 │       │   ├── compose.private-audit.yaml
 │       │   ├── compose.yaml
+│       │   ├── gallery-ops.nginx.snippet
 │       │   ├── nginx.conf
 │       │   └── stack.yaml
 │       └── nginx
@@ -749,6 +751,7 @@
 │   ├── index.md
 │   ├── integrations
 │   │   ├── GAMEPLAY_STATUS_READ_V1_20261026.md
+│   │   ├── GALLERY_OPS_SECURE_DEPLOYMENT_20261028.md
 │   │   ├── NATAL26_GALLERY_OPS_FORENSIC_AUDIT_20261028.md
 │   │   ├── READER_ONLY_CUT_PREFLIGHT_20261027.md
 │   │   └── photo-sessions
