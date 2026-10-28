@@ -1,0 +1,34 @@
+# Opt-in Compose overlay. No exposure to public host ports.
+# Private MCP tunnel and Gameplay reader must be reachable from this service.
+services:
+  gallery-ops:
+    image: node:24-alpine
+    container_name: christmas-games-gallery-ops
+    restart: unless-stopped
+    read_only: true
+    security_opt:
+      - no-new-privileges:true
+    tmpfs:
+      - /tmp:size=8m,noexec,nosuid
+    working_dir: /app
+    command: ['node', 'server/start.mjs']
+    env_file:
+      - ${GALLERY_OPS_ENV_FILE:?GALLERY_OPS_ENV_FILE_required}
+    environment:
+      GALLERY_OPS_HOST: 0.0.0.0
+      GALLERY_OPS_PORT: 4189
+      GALLERY_OPS_DIST: /app/dist
+      GALLERY_OPS_PUBLIC_HOST: jogos.fotosdenatal.com
+    volumes:
+      - ${GALLERY_OPS_RELEASE_DIR:?GALLERY_OPS_RELEASE_DIR_required}/server:/app/server:ro
+      - ${GALLERY_OPS_RELEASE_DIR:?GALLERY_OPS_RELEASE_DIR_required}/dist:/app/dist:ro
+    expose:
+      - '4189'
+    networks:
+      - edge
+      - internal
+    healthcheck:
+      test: ['CMD', 'wget', '-q', '--spider', 'http://127.0.0.1:4189/healthz']
+      interval: 20s
+      timeout: 4s
+      retries: 3
