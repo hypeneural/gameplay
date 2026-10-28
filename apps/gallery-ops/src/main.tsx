@@ -99,15 +99,29 @@ const sortOptions: { value: SortKey; label: string }[] = [
 ];
 const DEMO_DATE = '2026-10-28';
 const localDemo = import.meta.env.DEV;
-function ClientContact({ row }: { row: {clientWhatsapp: string | null; clientPhone: string | null; clientEmail: string | null} }) {
+function ClientContact({
+  row,
+}: {
+  row: { clientWhatsapp: string | null; clientPhone: string | null; clientEmail: string | null };
+}) {
   const wa = formatPhone(row.clientWhatsapp);
   const phone = formatPhone(row.clientPhone);
-  return <div className="client-contacts">
-    {row.clientWhatsapp && <span title="WhatsApp cadastrado no CRM">WhatsApp: {wa}</span>}
-    {row.clientPhone && row.clientPhone !== row.clientWhatsapp && <span title="Telefone alternativo">Tel.: {phone}</span>}
-    {row.clientEmail && <span className="client-email" title="E-mail cadastrado">{row.clientEmail}</span>}
-    {!row.clientWhatsapp && !row.clientPhone && !row.clientEmail && <span>Sem contato cadastrado</span>}
-  </div>;
+  return (
+    <div className="client-contacts">
+      {row.clientWhatsapp && <span title="WhatsApp cadastrado no CRM">WhatsApp: {wa}</span>}
+      {row.clientPhone && row.clientPhone !== row.clientWhatsapp && (
+        <span title="Telefone alternativo">Tel.: {phone}</span>
+      )}
+      {row.clientEmail && (
+        <span className="client-email" title="E-mail cadastrado">
+          {row.clientEmail}
+        </span>
+      )}
+      {!row.clientWhatsapp && !row.clientPhone && !row.clientEmail && (
+        <span>Sem contato cadastrado</span>
+      )}
+    </div>
+  );
 }
 function Status({ state }: { state: GalleryState }) {
   return (
@@ -564,7 +578,9 @@ function App() {
               <div className="empty">
                 <Icon name={localDemo ? 'search' : 'lock'} size={30} />
                 <h3>
-                  {loaded ? 'Nenhum pedido com esses filtros' : 'Dados administrativos indisponíveis'}
+                  {loaded
+                    ? 'Nenhum pedido com esses filtros'
+                    : 'Dados administrativos indisponíveis'}
                 </h3>
                 <p>
                   {loaded
@@ -599,7 +615,9 @@ function App() {
                             <strong className="order-id">#{o.orderId}</strong>
                             <div className="client-name">{o.clientName}</div>
                             <ClientContact row={o} />
-                            <small className="order-created">Pedido: {formatDate(o.createdAt)}</small>
+                            <small className="order-created">
+                              Pedido: {formatDate(o.createdAt)}
+                            </small>
                           </td>
                           <td>
                             <span className="package">{o.packageName}</span>
@@ -731,7 +749,11 @@ function App() {
           </section>
           <footer>
             Estúdio Evydência · Operação de Galerias Natal 2026{' '}
-            <span>{localDemo ? 'Dados 100% sintéticos' : 'Consulta privada e autenticada · sem cache público'}</span>
+            <span>
+              {localDemo
+                ? 'Dados 100% sintéticos'
+                : 'Consulta privada e autenticada · sem cache público'}
+            </span>
           </footer>
         </div>
       </main>
