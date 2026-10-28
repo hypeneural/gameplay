@@ -39,6 +39,9 @@ export function fixtureOrders(): GalleryOrder[] {
     return {
       orderId: 9001 + i,
       clientName: `${names[i % names.length]} ${Math.floor(i / names.length) + 1}`,
+      clientWhatsapp: i % 7 === 0 ? null : '554899900' + String(1000 + i),
+      clientPhone: i % 7 === 0 ? '483220' + String(1000 + i) : null,
+      clientEmail: i % 5 === 0 ? null : 'familia.exemplo' + (i + 1) + '@example.invalid',
       packageName: packages[i % packages.length]!,
       crmStatus: crmStatuses[(i * 5) % crmStatuses.length]!,
       createdAt: day(1 + (i % 24)),
