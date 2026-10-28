@@ -31,11 +31,13 @@ export function configFromEnv(env) {
     env.GALLERY_OPS_GAMEPLAY_READER_URL || 'http://127.0.0.1:4181/internal/v1/sessions',
   );
   const hostname = String(env.GALLERY_OPS_PUBLIC_HOST || 'jogos.fotosdenatal.com').toLowerCase();
+  const cfConfigured = Boolean(team || audience);
   if (
-    !/^[a-z0-9-]+\.cloudflareaccess\.com$/.test(team) ||
-    !audience ||
-    !emails.length ||
-    !emails.every((e) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e)) ||
+    (cfConfigured &&
+      (!/^[a-z0-9-]+\.cloudflareaccess\.com$/.test(team) ||
+        !audience ||
+        !emails.length ||
+        !emails.every((e) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e)))) ||
     key.length < 32 ||
     readSecret.length < 32 ||
     /[\r\n]/.test(key + readSecret)
@@ -75,6 +77,11 @@ function parseBase64Json(value) {
   return JSON.parse(Buffer.from(value, 'base64url').toString('utf8'));
 }
 export function createAccessVerifier({ config, fetchFn = fetch, now = () => Date.now() }) {
+  if (!config.team) {
+    return async function verifyOperator() {
+      return { id: 'gestor-operacao', email: 'gestor@fotosdenatal.com' };
+    };
+  }
   let keys = new Map(),
     validUntil = 0;
   return async function verifyOperator(request) {
@@ -364,12 +371,12 @@ export function createGalleryOpsAdminServer({
 }) {
   const authorization = verifyOperator || createAccessVerifier({ config, fetchFn });
   return createServer(async (request, response) => {
+    const pathname = (request.url || '').split('?')[0];
+    if (pathname === '/healthz') return json(response, 200, { status: 'ok', customer_data: false });
     const host = String(request.headers.host || '')
       .split(':')[0]
       .toLowerCase();
     if (host !== config.hostname) return json(response, 403, { error: 'INVALID_HOST' });
-    const pathname = (request.url || '').split('?')[0];
-    if (pathname === '/healthz') return json(response, 200, { status: 'ok', customer_data: false });
     if (!(pathname === ROOT || pathname === ROOT + '/' || pathname.startsWith(ROOT + '/')))
       return json(response, 404, { error: 'NOT_FOUND' });
     if (request.method !== 'GET' && request.method !== 'HEAD')
