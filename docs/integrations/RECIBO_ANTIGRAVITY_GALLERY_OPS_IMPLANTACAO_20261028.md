@@ -40,11 +40,11 @@
 
 Confronto executado no mesmo instante temporal (`as_of: 2026-10-28 02:55:04`):
 
-| Fonte Auditada | Método | Pedidos Válidos | Paridade |
-| :--- | :--- | :---: | :---: |
-| **CRM Laravel MySQL** | `NatalValidOrdersQuery::validNatalOrders` | **104** | **100%** |
-| **Leitor Canônico MCP** | `POST /internal/v1/gallery-ops/valid-orders` | **104** | **100%** |
-| **Dashboard BFF Operacional** | `GET /gestao/galerias/api/orders` | **104** | **100%** |
+| Fonte Auditada                | Método                                       | Pedidos Válidos | Paridade |
+| :---------------------------- | :------------------------------------------- | :-------------: | :------: |
+| **CRM Laravel MySQL**         | `NatalValidOrdersQuery::validNatalOrders`    |     **104**     | **100%** |
+| **Leitor Canônico MCP**       | `POST /internal/v1/gallery-ops/valid-orders` |     **104**     | **100%** |
+| **Dashboard BFF Operacional** | `GET /gestao/galerias/api/orders`            |     **104**     | **100%** |
 
 Zero discrepâncias observadas. População integral de todos os pacotes e status válidos abrangida.
 
@@ -52,8 +52,8 @@ Zero discrepâncias observadas. População integral de todos os pacotes e statu
 
 ## 4. Testes de Segurança e Acesso Negado
 
-1. **Tentativa sem Bearer token no Reader MCP**:
-   - `POST http://127.0.0.1:4196/internal/v1/gallery-ops/valid-orders` sem Bearer → **HTTP 401 Unauthorized**.
+1. **Tentativa sem *** no Reader MCP**:
+   - `POST http://127.0.0.1:4196/internal/v1/gallery-ops/valid-orders` sem *** **HTTP 401 Unauthorized**.
 2. **Método HTTP indevido no Reader MCP**:
    - `GET http://127.0.0.1:4196/internal/v1/gallery-ops/valid-orders` → **HTTP 405 Method Not Allowed**.
 3. **Bloqueio de Links Capability de Clientes**:
