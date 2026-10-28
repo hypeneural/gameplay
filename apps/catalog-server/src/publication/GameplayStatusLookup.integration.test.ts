@@ -105,11 +105,15 @@ describe('read-only Gameplay contract against real SQLite repository', () => {
       expect(prepared.photo_count).toBe(0);
       expect(prepared.preparation.photo_count).toBe(1);
       expect(prepared.preparation.ready_blobs).toBe(3);
+      expect(prepared.first_upload_at).toMatch(/^\\d{4}-\\d{2}-\\d{2}T/);
+      expect(prepared.published_at).toBeNull();
       await repository.activatePublication(staged.revisionId, null);
       const audited = reader.lookup(ORDER_A);
       expect(audited.state).toBe('published_unverified');
       expect(audited.ready_blobs).toBe(3);
       expect(audited.photo_count).toBe(1);
+      expect(audited.first_upload_at).toMatch(/^\\d{4}-\\d{2}-\\d{2}T/);
+      expect(audited.published_at).toMatch(/^\\d{4}-\\d{2}-\\d{2}T/);
       expect(audited.preparation.state).toBe('none');
       expect(audited.hub_url).toBeNull();
       const individual = reader.lookup(ORDER_A, true);
