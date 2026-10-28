@@ -39,6 +39,10 @@ jobs:
           version: 11.19.0
           run_install: false
       - run: pnpm install --frozen-lockfile
+      - name: Capture legacy Prettier formatting (temporary)
+        run: |
+          pnpm exec prettier --write deploy/vps/docker/compose.gallery-ops.yaml docs/integrations/RECIBO_ANTIGRAVITY_GALLERY_OPS_IMPLANTACAO_20261028.md
+          node -e "const fs=require('node:fs');for(const p of process.argv.slice(1))console.log('LEGACYFMT='+JSON.stringify({path:p,content:fs.readFileSync(p,'utf8')}))" deploy/vps/docker/compose.gallery-ops.yaml docs/integrations/RECIBO_ANTIGRAVITY_GALLERY_OPS_IMPLANTACAO_20261028.md
       - run: node --check apps/gallery-ops/server/adminServer.mjs && node --check apps/gallery-ops/server/start.mjs
       - run: node --test apps/gallery-ops/server/adminServer.test.mjs
       - run: pnpm --filter @christmas-games/gallery-ops build
