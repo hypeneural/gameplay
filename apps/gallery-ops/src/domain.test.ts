@@ -8,6 +8,7 @@ import {
   sortOrders,
   summarize,
   syntheticCsv,
+  operationalStage,
 } from './domain.js';
 import { fixtureOrders } from './fixtures.js';
 const items = fixtureOrders();
@@ -86,6 +87,19 @@ describe('gallery operations domain (synthetic only)', () => {
     expect(output).toContain('E-mail');
     expect(output).toContain("'=HYPERLINK");
     expect(output).toContain("'=2+3");
+  });
+  it('prioritizes CRM pickup and completed orders only if not yet published', () => {
+    const base = { ...items[0]!, state:'no_session' as const, crmStatus:'session_schedule' };
+    const urgent = { ...base, orderId:88881, crmStatus:'waiting_product_retrieve' };
+    const finished = { ...base, orderId:88882, crmStatus:'order_completed' };
+    const published = { ...urgent, orderId:88883, state:'published_unverified' as const };
+    const following = { ...base, orderId:88884, crmStatus:'selection_schedule_confirmed' };
+    const rows = [base,following,published,urgent,finished];
+    expect(rows.map(operationalStage)).toEqual(['awaiting_session','follow_up','published','urgent','urgent']);
+    expect(summarize(rows).pending).toBe(2);
+    expect(filterOrders(rows,{...EMPTY_FILTERS,state:'pending'})).toHaveLength(2);
+    expect(filterOrders(rows,{...EMPTY_FILTERS,state:'follow_up'})).toHaveLength(1);
+    expect(sortOrders(rows,'operationalPriority',false).slice(0,2).every(row => operationalStage(row)==='urgent')).toBe(true);
   });
   it('treats unknown photos distinctly from zero', () => {
     expect(
