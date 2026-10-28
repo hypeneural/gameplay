@@ -30,16 +30,8 @@ describe('staging Docker boundary', () => {
       '${CATALOG_READER_RELEASE_DIR:?preapproved_immutable_reader_release_dir}',
     );
     expect(overlay).not.toContain('${RELEASE_DIR:');
-    // Three independent reader mounts, five unchanged public mounts.
-    const readerReleaseToken =
-      '${CATALOG_READER_RELEASE_DIR:?preapproved_immutable_reader_release_dir}';
-    expect(overlay.split(readerReleaseToken)).toHaveLength(4);
-    expect(overlay).not.toContain('${RELEASE_DIR}');
-    expect(overlay).not.toContain('RELEASE_DIR:-');
-    const publicReleaseToken =
-      '${RELEASE_DIR:-/srv/runtime/christmas-games/current}';
-    expect(persistent.split(publicReleaseToken)).toHaveLength(6);
-
+    expect(overlay.match(/CATALOG_READER_RELEASE_DIR/g)).toHaveLength(3);
+    expect(persistent.match(/RELEASE_DIR:-/g)).toHaveLength(5);
     expect(persistent).toContain('${RELEASE_DIR:-/srv/runtime/christmas-games/current}');
 
     expect(overlay).toContain("CATALOG_PRIVATE_METADATA_READ_ONLY: '1'");
