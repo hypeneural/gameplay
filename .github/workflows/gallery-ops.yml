@@ -39,10 +39,6 @@ jobs:
           version: 11.19.0
           run_install: false
       - run: pnpm install --frozen-lockfile
-      - name: Generate exact repository map (temporary diagnostic)
-        run: |
-          pnpm repo:map
-          node -e "const fs=require('node:fs');const path='docs/generated/repo-map.md';console.log('REPO_MAP_EXACT='+JSON.stringify(fs.readFileSync(path,'utf8')))"
       - run: node --check apps/gallery-ops/server/adminServer.mjs && node --check apps/gallery-ops/server/start.mjs
       - run: node --test apps/gallery-ops/server/adminServer.test.mjs
       - run: pnpm --filter @christmas-games/gallery-ops build
