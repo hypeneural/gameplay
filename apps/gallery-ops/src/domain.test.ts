@@ -35,12 +35,12 @@ describe('gallery operations domain (synthetic only)', () => {
   it('marks future session as waiting rather than overdue', () => {
     const future = { ...items[0]!, sessionAt: '2026-11-04' };
     expect(priority(future, '2026-10-28')).toBe('waiting');
-    expect(priority({ ...future, state:'unavailable' }, '2026-10-28')).toBe('unknown');
+    expect(priority({ ...future, state:'unavailable' as const }, '2026-10-28')).toBe('unknown');
   });
   it('escapes spreadsheet formulas and quotes in CSV', () => {
     const row = { ...items[0]!, clientName: '=HYPERLINK("bad","open")' };
     const csv = syntheticCsv([row]);
-    expect(csv).toContain(''=HYPERLINK(');
+    expect(csv).toContain("'=HYPERLINK(");
     expect(csv).toContain('""bad""');
     expect(csv.startsWith('\uFEFF')).toBe(true);
     expect(formatDate(null)).toBe('—');
