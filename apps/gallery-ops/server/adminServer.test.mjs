@@ -318,3 +318,15 @@ test('verifies Cloudflare RS256 signed JWT, rejects spoofed email and expired cl
     null,
   );
 });
+
+test('explicit allowInsecureOperator enables local operator fallback without Cloudflare', async () => {
+  const insecure = configFromEnv({
+    GALLERY_OPS_MCP_READER_SECRET: secret,
+    GALLERY_OPS_GAMEPLAY_READ_SECRET: readSecret,
+    GALLERY_OPS_ALLOW_INSECURE_OPERATOR: '1',
+  });
+  assert.equal(insecure.team, '');
+  const verifier = createAccessVerifier({ config: insecure });
+  const actor = await verifier({});
+  assert.equal(actor?.id, 'gestor-operacao');
+});
