@@ -10,13 +10,7 @@ import {
   summarize,
   syntheticCsv,
 } from './domain.js';
-import type {
-  DateField,
-  GalleryFilters,
-  GalleryState,
-  SortKey,
-  StateFilter,
-} from './domain.js';
+import type { DateField, GalleryFilters, GalleryState, SortKey, StateFilter } from './domain.js';
 import { useLiveOrders } from './useLiveOrders.js';
 import { Actions } from './Actions.js';
 import './styles.css';
@@ -249,22 +243,42 @@ function App() {
                 <Icon name="calendar" size={16} /> Corte de referência: 28/10/2026
               </span>
               <span>
-                <Icon name="clock" size={16} /> {localDemo ? 'Simulação local' : live.asOf ? 'Corte CRM: '+live.asOf : 'Corte indisponível'}
+                <Icon name="clock" size={16} />{' '}
+                {localDemo
+                  ? 'Simulação local'
+                  : live.asOf
+                    ? 'Corte CRM: ' + live.asOf
+                    : 'Corte indisponível'}
               </span>
             </div>
           </div>
-          <div className={'notice ' + (localDemo || (loaded && !live.degraded) ? '' : 'notice--error')} role="status">
+          <div
+            className={'notice ' + (localDemo || (loaded && !live.degraded) ? '' : 'notice--error')}
+            role="status"
+          >
             <Icon name={localDemo ? 'alert' : 'lock'} size={20} />
             <div>
               <strong>
                 {localDemo
                   ? 'Prévia de interface — dados 100% fictícios'
-                  : live.loading ? 'Carregando pedidos válidos…' : live.error ? 'Falha de consulta administrativa' : live.degraded ? 'Gameplay parcialmente indisponível' : 'Dados administrativos sincronizados'}
+                  : live.loading
+                    ? 'Carregando pedidos válidos…'
+                    : live.error
+                      ? 'Falha de consulta administrativa'
+                      : live.degraded
+                        ? 'Gameplay parcialmente indisponível'
+                        : 'Dados administrativos sincronizados'}
               </strong>
               <span>
                 {localDemo
                   ? 'Nenhum nome, pedido ou link representa uma família real. Os indicadores abaixo são demonstrativos.'
-                  : live.loading ? 'Consultando a população comercial canônica e suas galerias.' : live.error ? live.error : live.degraded ? 'Os pedidos permanecem visíveis; os lotes sem resposta aparecem como integração indisponível.' : 'CRM e Gameplay consultados com autenticação. A disponibilidade dos links é verificada individualmente.'}
+                  : live.loading
+                    ? 'Consultando a população comercial canônica e suas galerias.'
+                    : live.error
+                      ? live.error
+                      : live.degraded
+                        ? 'Os pedidos permanecem visíveis; os lotes sem resposta aparecem como integração indisponível.'
+                        : 'CRM e Gameplay consultados com autenticação. A disponibilidade dos links é verificada individualmente.'}
               </span>
             </div>
           </div>
@@ -315,11 +329,7 @@ function App() {
             />
             <Indicator
               label="Integração indisponível"
-              count={
-                loaded
-                  ? summary.states.unavailable
-                  : '—'
-              }
+              count={loaded ? summary.states.unavailable : '—'}
               icon="alert"
               tone="red"
               active={filters.state === 'unavailable'}
@@ -337,8 +347,16 @@ function App() {
                 <p>Filtre o universo autorizado para encontrar o próximo atendimento.</p>
               </div>
               <div className="toolbar">
-                {!localDemo && <button className="btn btn--ghost" type="button" disabled={live.loading}
-                  onClick={live.reload}><Icon name="refresh" size={17}/> Atualizar dados</button>}
+                {!localDemo && (
+                  <button
+                    className="btn btn--ghost"
+                    type="button"
+                    disabled={live.loading}
+                    onClick={live.reload}
+                  >
+                    <Icon name="refresh" size={17} /> Atualizar dados
+                  </button>
+                )}
                 <button className="btn btn--ghost" type="button" onClick={reset}>
                   <Icon name="refresh" size={17} /> Limpar
                 </button>
@@ -485,7 +503,14 @@ function App() {
               <div>
                 <strong>{sorted.length}</strong> pedidos{' '}
                 {filters.state === 'pending' ? 'com pendências' : 'encontrados'}{' '}
-                <span>· {localDemo ? 'Dados fictícios' : live.degraded ? 'Gameplay parcialmente indisponível' : 'Pedidos sincronizados'}</span>
+                <span>
+                  ·{' '}
+                  {localDemo
+                    ? 'Dados fictícios'
+                    : live.degraded
+                      ? 'Gameplay parcialmente indisponível'
+                      : 'Pedidos sincronizados'}
+                </span>
               </div>
               <div className="sort-controls">
                 <label htmlFor="sort">Ordenar por</label>
@@ -567,12 +592,20 @@ function App() {
                           </td>
                           <td>
                             <span className="date">{formatDate(o.sessionAt)}</span>
-                            <small className={'priority priority--' + priority(o, localDemo ? DEMO_DATE : live.asOf.slice(0, 10))}>
-                              {priority(o, localDemo ? DEMO_DATE : live.asOf.slice(0, 10)) === 'waiting'
+                            <small
+                              className={
+                                'priority priority--' +
+                                priority(o, localDemo ? DEMO_DATE : live.asOf.slice(0, 10))
+                              }
+                            >
+                              {priority(o, localDemo ? DEMO_DATE : live.asOf.slice(0, 10)) ===
+                              'waiting'
                                 ? 'Sessão futura'
-                                : priority(o, localDemo ? DEMO_DATE : live.asOf.slice(0, 10)) === 'attention'
+                                : priority(o, localDemo ? DEMO_DATE : live.asOf.slice(0, 10)) ===
+                                    'attention'
                                   ? 'Verificar pendência'
-                                  : priority(o, localDemo ? DEMO_DATE : live.asOf.slice(0, 10)) === 'unknown'
+                                  : priority(o, localDemo ? DEMO_DATE : live.asOf.slice(0, 10)) ===
+                                      'unknown'
                                     ? 'Sem confirmação'
                                     : 'Catálogo preparado'}
                             </small>
