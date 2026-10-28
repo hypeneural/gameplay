@@ -21,50 +21,88 @@ function validateDashboard(value: unknown): {
 } {
   if (!value || typeof value !== 'object') throw Error('Resposta administrativa inválida.');
   const v = value as Record<string, unknown>;
-  if (v.schema_version !== 1 || v.source !== 'gallery_ops_authenticated_join'
-      || !Array.isArray(v.items) || (typeof v.total_valid !== 'number' || !Number.isSafeInteger(v.total_valid))
-      || v.items.length !== v.total_valid || typeof v.as_of !== 'string') {
+  if (
+    v.schema_version !== 1 ||
+    v.source !== 'gallery_ops_authenticated_join' ||
+    !Array.isArray(v.items) ||
+    typeof v.total_valid !== 'number' ||
+    !Number.isSafeInteger(v.total_valid) ||
+    v.items.length !== v.total_valid ||
+    typeof v.as_of !== 'string'
+  ) {
     throw Error('Divergência na população comercial válida.');
   }
   const ids = new Set<number>();
   for (const entry of v.items) {
     if (!entry || typeof entry !== 'object') throw Error('Registro administrativo inválido.');
     const row = entry as GalleryOrder;
-    if (!Number.isSafeInteger(row.orderId) || ids.has(row.orderId)
-        || typeof row.clientName !== 'string' || !Object.hasOwn(STATES, row.state)
-        || (row.publishedPhotos !== null && !Number.isSafeInteger(row.publishedPhotos))) {
+    if (
+      !Number.isSafeInteger(row.orderId) ||
+      ids.has(row.orderId) ||
+      typeof row.clientName !== 'string' ||
+      !Object.hasOwn(STATES, row.state) ||
+      (row.publishedPhotos !== null && !Number.isSafeInteger(row.publishedPhotos))
+    ) {
       throw Error('Registros duplicados ou incompletos.');
     }
     ids.add(row.orderId);
   }
-  return { items: v.items as GalleryOrder[], as_of: v.as_of, degraded:v.degraded === true, links_enabled:v.links_enabled === true };
+  return {
+    items: v.items as GalleryOrder[],
+    as_of: v.as_of,
+    degraded: v.degraded === true,
+    links_enabled: v.links_enabled === true,
+  };
 }
 export function useLiveOrders(): LiveDashboard {
-  const fixtures = useMemo(() => demo ? fixtureOrders() : [], []);
+  const fixtures = useMemo(() => (demo ? fixtureOrders() : []), []);
   const [rows, setRows] = useState<GalleryOrder[]>([]);
   const [nonce, setNonce] = useState(0);
-  const [info, setInfo] = useState({ loading:!demo, error:'', asOf:'', degraded:false, linksEnabled:false });
+  const [info, setInfo] = useState({
+    loading: !demo,
+    error: '',
+    asOf: '',
+    degraded: false,
+    linksEnabled: false,
+  });
   useEffect(() => {
     if (demo) return;
     const abort = new AbortController();
-    setInfo(v => ({ ...v, loading: true, error: '' }));
+    setInfo((v) => ({ ...v, loading: true, error: '' }));
     fetch('/gestao/galerias/api/orders', {
-      credentials: 'same-origin', cache:'no-store', signal:abort.signal,
-    }).then(async response => {
-      if (!response.ok) {
-        if (response.status === 401 || response.status === 403) throw Error('Acesso administrativo negado. Entre com a conta autorizada.');
-        throw Error('Serviços CRM/Gameplay temporariamente indisponíveis.');
-      }
-      const data = validateDashboard(await response.json());
-      if (abort.signal.aborted) return;
-      setRows(data.items);
-      setInfo({loading:false,error:'',asOf:data.as_of,degraded:data.degraded,linksEnabled:data.links_enabled});
-    }).catch((e:unknown) => {
-      if (abort.signal.aborted) return;
-      setRows([]);
-      setInfo({loading:false,error:e instanceof Error ? e.message : 'Falha de sincronização.',asOf:'',degraded:false,linksEnabled:false});
-    });
+      credentials: 'same-origin',
+      cache: 'no-store',
+      signal: abort.signal,
+    })
+      .then(async (response) => {
+        if (!response.ok) {
+          if (response.status === 401 || response.status === 403)
+            throw Error('Acesso administrativo negado. Entre com a conta autorizada.');
+          throw Error('Serviços CRM/Gameplay temporariamente indisponíveis.');
+        }
+        const data = validateDashboard(await response.json());
+        if (abort.signal.aborted) return;
+        setRows(data.items);
+        setInfo({
+          loading: false,
+          error: '',
+          asOf: data.as_of,
+          degraded: data.degraded,
+          linksEnabled: data.links_enabled,
+        });
+      })
+      .catch((e: unknown) => {
+        if (abort.signal.aborted) return;
+        setRows([]);
+        setInfo({
+          loading: false,
+          error: e instanceof Error ? e.message : 'Falha de sincronização.',
+          asOf: '',
+          degraded: false,
+          linksEnabled: false,
+        });
+      });
     return () => abort.abort();
   }, [nonce]);
-  return { ...info, orders:demo ? fixtures : rows, reload:()=>setNonce(v=>v+1) };
+  return { ...info, orders: demo ? fixtures : rows, reload: () => setNonce((v) => v + 1) };
 }
