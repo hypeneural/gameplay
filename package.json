@@ -50,6 +50,7 @@
     "clean:reports": "node tools/clean.mjs",
     "agent:doctor": "node tools/agent-doctor.mjs",
     "release:verify": "node tools/deploy/verify-vps-release.mjs",
+    "release:check-web-alignment": "node tools/deploy/check-public-web-alignment.mjs",
     "deploy:smoke": "node tools/deploy/smoke-staging.mjs",
     "validate:staging": "pnpm agent:doctor && pnpm check && pnpm asset:validate:all && pnpm test:e2e:gallery && pnpm release:staging && pnpm release:verify && pnpm release:smoke-runtime",
     "deploy:staging-config": "node tools/deploy/create-staging-preview-config.mjs",
