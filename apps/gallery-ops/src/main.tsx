@@ -249,7 +249,9 @@ function App() {
           <Icon name="lock" size={17} />
           <div>
             <strong>Área administrativa</strong>
-            <small>{localDemo ? 'Somente dados sintéticos' : 'Acesso administrativo autenticado'}</small>
+            <small>
+              {localDemo ? 'Somente dados sintéticos' : 'Acesso administrativo autenticado'}
+            </small>
           </div>
         </div>
       </aside>
@@ -260,7 +262,11 @@ function App() {
           </div>
           <span className="head-environment">
             <span className="pulse" />
-            {localDemo ? 'Visualização sintética' : loaded ? 'Operação conectada' : 'Verificando integração'}
+            {localDemo
+              ? 'Visualização sintética'
+              : loaded
+                ? 'Operação conectada'
+                : 'Verificando integração'}
           </span>
         </header>
         <div className="content">
@@ -318,7 +324,11 @@ function App() {
             <h2>Visão geral</h2>
             <span>
               Indicadores do conjunto completo{' '}
-              {localDemo ? '(48 registros fictícios)' : loaded ? '(' + summary.total + ' pedidos válidos)' : '(carregando)'}
+              {localDemo
+                ? '(48 registros fictícios)'
+                : loaded
+                  ? '(' + summary.total + ' pedidos válidos)'
+                  : '(carregando)'}
             </span>
           </div>
           <div className="indicators">
@@ -369,15 +379,18 @@ function App() {
             />
           </div>
           <div className="indicators-note">
-            A fila urgente contém apenas pedidos comercialmente avançados (retirada/conclusão) sem publicação.
-            Os outros pedidos seguem em acompanhamento, sem serem contabilizados como atraso.
-            * Publicação no catálogo não comprova o funcionamento dos jogos no navegador.
+            A fila urgente contém apenas pedidos comercialmente avançados (retirada/conclusão) sem
+            publicação. Os outros pedidos seguem em acompanhamento, sem serem contabilizados como
+            atraso. * Publicação no catálogo não comprova o funcionamento dos jogos no navegador.
           </div>
           <section className="workspace" aria-label="Lista de pedidos">
             <div className="workspace-top">
               <div>
                 <h2>Fila de galerias</h2>
-                <p>Prioridade automática: retirada e pedidos concluídos sem publicação. Demais pedidos ficam em acompanhamento.</p>
+                <p>
+                  Prioridade automática: retirada e pedidos concluídos sem publicação. Demais
+                  pedidos ficam em acompanhamento.
+                </p>
               </div>
               <div className="toolbar">
                 {!localDemo && (
@@ -426,16 +439,26 @@ function App() {
                 />
               </div>
               <div className="quick-tabs" aria-label="Filtrar por situação">
-                {stateOptions.filter((t) => ['all','pending','follow_up','awaiting_session','published_unverified'].includes(t.id)).map((t) => (
-                  <button
-                    key={t.id}
-                    className={'tab ' + (filters.state === t.id ? 'tab--active' : '')}
-                    aria-pressed={filters.state === t.id}
-                    onClick={() => setState(t.id)}
-                  >
-                    {t.label}
-                  </button>
-                ))}
+                {stateOptions
+                  .filter((t) =>
+                    [
+                      'all',
+                      'pending',
+                      'follow_up',
+                      'awaiting_session',
+                      'published_unverified',
+                    ].includes(t.id),
+                  )
+                  .map((t) => (
+                    <button
+                      key={t.id}
+                      className={'tab ' + (filters.state === t.id ? 'tab--active' : '')}
+                      aria-pressed={filters.state === t.id}
+                      onClick={() => setState(t.id)}
+                    >
+                      {t.label}
+                    </button>
+                  ))}
               </div>
             </div>
             {filtersOpen && (
@@ -628,7 +651,13 @@ function App() {
                           <td>
                             <span className="package">{o.packageName}</span>
                             <small className="crm-status">{formatCrmStatus(o.crmStatus)}</small>
-                            <span className={'operational-chip operational-chip--'+operationalStage(o)}>{OPERATIONAL_LABELS[operationalStage(o)]}</span>
+                            <span
+                              className={
+                                'operational-chip operational-chip--' + operationalStage(o)
+                              }
+                            >
+                              {OPERATIONAL_LABELS[operationalStage(o)]}
+                            </span>
                           </td>
                           <td>
                             <span className="date">{formatDate(o.sessionAt)}</span>
@@ -684,7 +713,11 @@ function App() {
                           <span>{o.clientName}</span>
                           <ClientContact row={o} />
                           <small>{o.packageName}</small>
-                          <span className={'operational-chip operational-chip--'+operationalStage(o)}>{OPERATIONAL_LABELS[operationalStage(o)]}</span>
+                          <span
+                            className={'operational-chip operational-chip--' + operationalStage(o)}
+                          >
+                            {OPERATIONAL_LABELS[operationalStage(o)]}
+                          </span>
                           <small>Pedido criado: {formatDate(o.createdAt)}</small>
                         </div>
                         <Status state={o.state} />
