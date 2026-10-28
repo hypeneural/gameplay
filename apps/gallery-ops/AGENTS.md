@@ -5,12 +5,12 @@ This app is intentionally isolated from `apps/play` and `apps/catalog-server`. I
 ## Working modes
 
 - `pnpm --filter @christmas-games/gallery-ops dev`: deterministic **synthetic-only** preview on loopback. Never real customer data.
-- Production build: **fail closed** (no mocked rows, no PII, no active customer actions). No production integration is implemented until an authenticated same-origin server API is validated.
+- Production build: calls the same-origin BFF implemented under `server/` only after signed Cloudflare Access JWT and email allowlist checks; unauthenticated/failed API receives no rows and never falls back to mocks. **Deploy not approved until gated tests and live canary.**
 - No automatic fallback from live API errors to synthetic data.
 
 ## Hard gates before any live deployment
 
-1. Per-operator authentication/authorization for both HTML and API; deny by default; do not depend on `robots.txt`, cookies from another domain, or static host rules alone.
+1. Per-operator authentication/authorization for both HTML and API via BFF Cloudflare Access RS256 verification; deny by default; do not depend on `robots.txt`, cookies from another domain, or static host rules alone.
 2. Canonical eligible order IDs from `NatalValidOrdersQuery::validNatalOrders()` via an authorized CRM/MCP server-side bridge; do not assume product filter equals commercial eligibility.
 3. Private Gameplay reader lookup by UUID in ≤50 batches, excluding capability URLs from listing/CSV; unknown API results are not `no_session`.
 4. Dates from actual first READY blob / active revision `activated_at` with declared semantics; not inferred from order creation.
