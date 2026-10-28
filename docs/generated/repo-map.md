@@ -39,6 +39,7 @@
 │   ├── pull_request_template.md
 │   └── workflows
 │       ├── ci.yml
+│       ├── gallery-ops.yml
 │       └── release-staging.yml
 ├── .gitignore
 ├── .node-version
@@ -103,6 +104,18 @@
 │   │   │       ├── FileSystemStorageService.test.ts
 │   │   │       └── FileSystemStorageService.ts
 │   │   └── tsconfig.build.json
+│   ├── gallery-ops
+│   │   ├── AGENTS.md
+│   │   ├── README.md
+│   │   ├── index.html
+│   │   ├── package.json
+│   │   ├── src
+│   │   │   ├── domain.test.ts
+│   │   │   ├── domain.ts
+│   │   │   ├── fixtures.ts
+│   │   │   ├── main.tsx
+│   │   │   └── styles.css
+│   │   └── vite.config.ts
 │   └── play
 │       ├── AGENTS.md
 │       ├── assets
@@ -727,6 +740,7 @@
 │   ├── index.md
 │   ├── integrations
 │   │   ├── GAMEPLAY_STATUS_READ_V1_20261026.md
+│   │   ├── NATAL26_GALLERY_OPS_FORENSIC_AUDIT_20261028.md
 │   │   ├── READER_ONLY_CUT_PREFLIGHT_20261027.md
 │   │   └── photo-sessions
 │   │       ├── AUDITORIA_FORENSE_ANTIGRAVITY_MOBILE_2026-10-06.md
@@ -1527,6 +1541,7 @@
 | Package                                      | Manifest                                                | Entry                                                                                                                                                                      |
 | -------------------------------------------- | ------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `@christmas-games/catalog-server`            | `apps/catalog-server/package.json`                      | `—`                                                                                                                                                                        |
+| `@christmas-games/gallery-ops`               | `apps/gallery-ops/package.json`                         | `—`                                                                                                                                                                        |
 | `@christmas-games/play`                      | `apps/play/package.json`                                | `—`                                                                                                                                                                        |
 | `@christmas-games/dev-smoke`                 | `packages/games/dev-smoke/package.json`                 | `{".":"./src/index.ts","./definition":"./src/definition.ts"}`                                                                                                              |
 | `@christmas-games/estilingue-das-lembrancas` | `packages/games/estilingue-das-lembrancas/package.json` | `{".":"./src/index.ts","./definition":"./src/definition.ts"}`                                                                                                              |
