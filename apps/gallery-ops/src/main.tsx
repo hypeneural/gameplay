@@ -336,10 +336,10 @@ function App() {
               onClick={() => setState('published_unverified')}
             />
             <Indicator
-              label="Falha/Revogação"
+              label="Integração indisponível"
               count={
                 localDemo
-                  ? summary.states.unavailable + summary.states.revoked + summary.states.incomplete
+                  ? summary.states.unavailable
                   : '—'
               }
               icon="alert"
