@@ -145,7 +145,10 @@ async function postJson(fetchFn, url, token, body, timeout = 18000) {
     },
     body: JSON.stringify(body),
   });
-  if (!response.ok) throw Error('UPSTREAM_HTTP_' + response.status);
+  if (!response.ok) {
+    if (response.status === 409 && url.endsWith('/lookup')) throw Error('READER_LINK_GATE_DISABLED');
+    throw Error('UPSTREAM_HTTP_' + response.status);
+  }
   const len = Number(response.headers.get('content-length') || '0');
   if (len > 256000) throw Error('UPSTREAM_OVERSIZED');
   const raw = await response.text();
@@ -433,7 +436,10 @@ export function createGalleryOpsAdminServer({
         )
           return json(response, 409, { error: 'GALLERY_NOT_READY' });
         const link = m[2] === 'gallery' ? g.gallery_url : g.hub_url;
-        const uri = typeof link === 'string' ? new URL(link) : null;
+        let uri = null;
+        if (typeof link === 'string') {
+          try { uri = new URL(link); } catch { uri = null; }
+        }
         if (
           !uri ||
           uri.origin !== MEDIA_ORIGIN ||
@@ -449,7 +455,10 @@ export function createGalleryOpsAdminServer({
         return response.end();
       }
       return json(response, 404, { error: 'NOT_FOUND' });
-    } catch {
+    } catch (error) {
+      if (error?.message === 'READER_LINK_GATE_DISABLED') {
+        return json(response, 409, { error: 'READER_LINKS_NOT_APPROVED' });
+      }
       // Deliberately omit tokens, PII and backend paths from logs or errors.
       return json(response, 503, { error: 'GALLERY_OPS_UPSTREAM_UNAVAILABLE' });
     }
