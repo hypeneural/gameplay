@@ -168,8 +168,8 @@ export async function resolveOperations(config, fetchFn = fetch) {
       crmStatus: o.status_key,
       createdAt: o.created_at ?? null,
       sessionAt: o.session_at ?? null,
-      firstUploadAt: null, // Reader v1 has no authoritative upload timestamp.
-      publishedAt: null, // Reader v1 has no activated_at timestamp.
+      firstUploadAt: typeof g?.first_upload_at === 'string' ? g.first_upload_at : null,
+      publishedAt: typeof g?.published_at === 'string' ? g.published_at : null,
       publishedPhotos: g ? g.photo_count : null,
       preparingPhotos: g ? g.preparation?.photo_count ?? null : null,
       state: projectState(g),
