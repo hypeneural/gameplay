@@ -1,11 +1,12 @@
 # Gallery Ops Natal 2026 — implantação protegida, sem mudança Laravel
+
 **Status: PR Draft / sem deploy. Data: 2026-10-28.**
 
 ## Grafo de dependências
 
 - Dashboard e BFF: Gameplay PR #46 (baseada na reader PR #43, ainda Draft).
 - Consulta canônica: MCP PR #16, baseada na PR #14 (em desenvolvimento, preserva PrintServer, Z-API, OAuth). O PHP existente `scripts/crm-natal-bridge.php` recebeu modo `gallery.ops.valid_orders` baseado na `NatalValidOrdersQuery::validNatalOrders()`.
-- ERP Laravel `hypeneural/evydencia-crm`: **nenhuma alteração**. O MCP precisa continuar tendo acesso autorizado ao diretório Laravel atual para executar o bridge *read-only*.
+- ERP Laravel `hypeneural/evydencia-crm`: **nenhuma alteração**. O MCP precisa continuar tendo acesso autorizado ao diretório Laravel atual para executar o bridge _read-only_.
 - GamePlay PR #43 sidecar `POST /internal/v1/sessions/lookup-batch`, batches <=50 sem URLs; `lookup` individual com links somente quando o gate específico permitir.
 - Runtime/DOM real ainda exige implantação separada; CI offline não comprova acesso a clientes.
 
@@ -22,12 +23,14 @@
 ## Variáveis operacionais (nomes; nunca comitar valores)
 
 MCP reader:
+
 - `GALLERY_OPS_READER_SECRET` (32+ chars, exclusivo).
 - `GALLERY_OPS_READER_HOST=127.0.0.1` (não usar 0.0.0.0).
 - `GALLERY_OPS_READER_PORT=4196`.
 - `EVYD_CRM_APP_PATH` já configurado em produção MCP; confirmar leitura via bridge sem escrita.
 
 Gameplay BFF:
+
 - `GALLERY_OPS_CF_TEAM_DOMAIN` (e.g. `example.cloudflareaccess.com`, sem URL ou caminho).
 - `GALLERY_OPS_CF_AUD` (AUD real configurado no Cloudflare Access app).
 - `GALLERY_OPS_ADMIN_EMAILS` (lista CSV de operadores autorizados, sem wildcard).
@@ -53,6 +56,7 @@ O frontend opera com filtragem local na população integral retornada pelo BFF;
 ## Datas reais
 
 A PR #46 amplia o `GameplayStatusLookup` SOMENTE na branch da dashboard para retornar:
+
 - `first_upload_at`: menor `revision_blobs.received_at` com estado READY, para qualquer revisão da sessão (não necessariamente arquivo original ou primeira foto do CRM).
 - `published_at`: `photo_revisions.activated_at` da revisão ativa VALIDADA. Null se não confirmada.
 - Ambos ISO UTC; a UI exibe a data local. Testes SQLite de READY → ACTIVE validam as fontes.
