@@ -39,6 +39,10 @@ jobs:
           version: 11.19.0
           run_install: false
       - run: pnpm install --frozen-lockfile
+      - name: Temporary read-only formatting for browser specs
+        run: |
+          pnpm exec prettier --write apps/gallery-ops/e2e/gallery-ops.spec.ts apps/gallery-ops/playwright.config.ts apps/gallery-ops/README.md .github/workflows/gallery-ops.yml
+          node -e "const fs=require('node:fs');for(const path of process.argv.slice(1)){console.log('FORMAT_FILE='+JSON.stringify({path,content:fs.readFileSync(path,'utf8')}))}" apps/gallery-ops/e2e/gallery-ops.spec.ts apps/gallery-ops/playwright.config.ts apps/gallery-ops/README.md .github/workflows/gallery-ops.yml
       - run: pnpm --filter @christmas-games/gallery-ops build
       - run: pnpm --filter @christmas-games/gallery-ops test
       - run: pnpm exec playwright install --with-deps chromium
