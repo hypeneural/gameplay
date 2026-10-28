@@ -109,10 +109,13 @@ export const STATES: Readonly<
 /** Status commercial proven by CRM; a calendar date is NOT proof of an executed session. */
 const URGENT_CRM = new Set(['waiting_product_retrieve', 'order_completed']);
 const POST_SESSION_CRM = new Set([
-  'session_schedule_confirmed', 'selection_schedule', 'selection_schedule_confirmed',
+  'session_schedule_confirmed',
+  'selection_schedule',
+  'selection_schedule_confirmed',
   'product_retrieve_confirmed',
 ]);
-type OperationalStage = 'urgent' | 'follow_up' | 'awaiting_session' | 'published' | 'integration_error';
+type OperationalStage =
+  'urgent' | 'follow_up' | 'awaiting_session' | 'published' | 'integration_error';
 export function operationalStage(order: GalleryOrder): OperationalStage {
   if (order.state === 'unavailable') return 'integration_error';
   if (order.state === 'published_unverified') return 'published';
@@ -120,7 +123,7 @@ export function operationalStage(order: GalleryOrder): OperationalStage {
   if (POST_SESSION_CRM.has(order.crmStatus) || order.firstUploadAt) return 'follow_up';
   return 'awaiting_session';
 }
-export const OPERATIONAL_LABELS: Readonly<Record<OperationalStage,string>> = {
+export const OPERATIONAL_LABELS: Readonly<Record<OperationalStage, string>> = {
   urgent: 'Publicar com urgência',
   follow_up: 'Acompanhar produção',
   awaiting_session: 'Aguardando etapa de fotos',
@@ -195,8 +198,11 @@ export function filterOrders(
     if (filters.state === 'pending' && stage !== 'urgent') return false;
     if (filters.state === 'follow_up' && stage !== 'follow_up') return false;
     if (filters.state === 'awaiting_session' && stage !== 'awaiting_session') return false;
-    if (!['all','pending','follow_up','awaiting_session'].includes(filters.state)
-        && o.state !== filters.state) return false;
+    if (
+      !['all', 'pending', 'follow_up', 'awaiting_session'].includes(filters.state) &&
+      o.state !== filters.state
+    )
+      return false;
     if (filters.packageName !== 'all' && o.packageName !== filters.packageName) return false;
     if (filters.crmStatus !== 'all' && o.crmStatus !== filters.crmStatus) return false;
     const when = dateOnly(o[filters.dateField]);
@@ -221,8 +227,12 @@ export function sortOrders(
   const dir = descending ? -1 : 1;
   return [...orders].sort((a, b) => {
     if (key === 'operationalPriority') {
-      const ranks: Record<OperationalStage,number> = {
-        urgent: 0, integration_error: 1, follow_up: 2, awaiting_session: 3, published: 4,
+      const ranks: Record<OperationalStage, number> = {
+        urgent: 0,
+        integration_error: 1,
+        follow_up: 2,
+        awaiting_session: 3,
+        published: 4,
       };
       const diff = ranks[operationalStage(a)] - ranks[operationalStage(b)];
       if (diff !== 0) return diff * dir;
@@ -255,11 +265,11 @@ export function summarize(orders: readonly GalleryOrder[]) {
   const stages = orders.map(operationalStage);
   return {
     total: orders.length,
-    pending: stages.filter(s => s === 'urgent').length,
-    followUp: stages.filter(s => s === 'follow_up').length,
-    awaiting: stages.filter(s => s === 'awaiting_session').length,
-    published: stages.filter(s => s === 'published').length,
-    integrationErrors: stages.filter(s => s === 'integration_error').length,
+    pending: stages.filter((s) => s === 'urgent').length,
+    followUp: stages.filter((s) => s === 'follow_up').length,
+    awaiting: stages.filter((s) => s === 'awaiting_session').length,
+    published: stages.filter((s) => s === 'published').length,
+    integrationErrors: stages.filter((s) => s === 'integration_error').length,
     states,
   };
 }
