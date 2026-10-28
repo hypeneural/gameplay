@@ -27,6 +27,8 @@ pnpm install --frozen-lockfile
 pnpm --filter @christmas-games/gallery-ops dev
 pnpm --filter @christmas-games/gallery-ops build
 pnpm --filter @christmas-games/gallery-ops test
+pnpm exec playwright install chromium
+pnpm exec playwright test --config apps/gallery-ops/playwright.config.ts
 ```
 
 O preview local usa a porta 4178 e **não executa nenhuma consulta real**. Em build release, a interface mostra `Conexão administrativa ainda não configurada` e nenhuma linha, mesmo que a pasta `dist/` seja publicada por engano. O BFF é trabalho pendente e será tratado em PR separada com contratos, testes 401/403 e implantação privada.
