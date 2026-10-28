@@ -41,6 +41,16 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm --filter @christmas-games/gallery-ops build
       - run: pnpm --filter @christmas-games/gallery-ops test
+      - run: pnpm exec playwright install --with-deps chromium
+      - run: pnpm exec playwright test --config apps/gallery-ops/playwright.config.ts
+      - name: Keep synthetic dashboard screenshots
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: gallery-ops-synthetic-screenshots
+          path: test-results/gallery-ops-*.png
+          if-no-files-found: ignore
+          retention-days: 7
       - name: Block public release shortcuts
         run: |
           test ! -f apps/gallery-ops/dist/fixtures.json
