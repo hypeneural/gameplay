@@ -1,6 +1,9 @@
 import { expect, test } from '@playwright/test';
 
-test('manager cockpit presents only synthetic records with working filters', async ({ page, isMobile }) => {
+test('manager cockpit presents only synthetic records with working filters', async ({
+  page,
+  isMobile,
+}) => {
   await page.goto('');
   await expect(page.getByRole('heading', { name: 'Operação de Galerias' })).toBeVisible();
   await expect(page.getByText('Prévia de interface — dados 100% fictícios')).toBeVisible();
@@ -15,7 +18,10 @@ test('manager cockpit presents only synthetic records with working filters', asy
   await page.getByRole('button', { name: /Filtros/ }).click();
   await page.getByLabel('Estado da galeria').selectOption('published_unverified');
   await expect(page.locator('.result-head')).toContainText('0');
-  await page.getByRole('button', { name: /Limpar/ }).first().click();
+  await page
+    .getByRole('button', { name: /Limpar/ })
+    .first()
+    .click();
   await expect(page.locator('.result-head')).toContainText('48');
 
   if (isMobile) {
@@ -25,10 +31,16 @@ test('manager cockpit presents only synthetic records with working filters', asy
     await expect(page.locator('.table-viewport')).toBeVisible();
     await expect(page.locator('.mobile-records')).toBeHidden();
   }
-  await page.screenshot({ path: `test-results/gallery-ops-${test.info().project.name}.png`, fullPage: true });
+  await page.screenshot({
+    path: `test-results/gallery-ops-${test.info().project.name}.png`,
+    fullPage: true,
+  });
 });
 
-test('CSV action is synthetic and disabled customer links stay disabled', async ({ page, isMobile }) => {
+test('CSV action is synthetic and disabled customer links stay disabled', async ({
+  page,
+  isMobile,
+}) => {
   await page.goto('');
   await expect(page.locator('.icon-action').first()).toBeDisabled();
   if (isMobile) return;
