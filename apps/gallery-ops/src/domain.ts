@@ -9,7 +9,7 @@ export type GalleryState =
   | 'unavailable';
 export type StateFilter = 'all' | 'pending' | GalleryState;
 export type DateField = 'createdAt' | 'sessionAt' | 'firstUploadAt' | 'publishedAt';
-export type PhotoRange = 'all' | 'zero' | '1-10' | '11-25' | '26+';
+type PhotoRange = 'all' | 'zero' | '1-10' | '11-25' | '26+';
 export type SortKey =
   | 'orderId'
   | 'clientName'
@@ -87,7 +87,7 @@ export const STATES: Readonly<
     description: 'Erro de consulta: não equivale a ausência de galeria',
   },
 };
-export const isPending = (state: GalleryState): boolean => state !== 'published_unverified';
+const isPending = (state: GalleryState): boolean => state !== 'published_unverified';
 export function projectGameplayState(
   state: 'not_found' | 'not_published' | 'partial' | 'revoked' | 'published_unverified' | null,
   preparation: 'none' | 'staged' | 'invalid' | null,
@@ -102,7 +102,7 @@ export function projectGameplayState(
   if (state === 'not_published') return 'no_upload';
   return 'published_unverified';
 }
-export function normalize(s: string): string {
+function normalize(s: string): string {
   return s
     .normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '')
