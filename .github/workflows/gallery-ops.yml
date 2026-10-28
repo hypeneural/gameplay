@@ -39,11 +39,6 @@ jobs:
           version: 11.19.0
           run_install: false
       - run: pnpm install --frozen-lockfile
-      - name: Temporary formatting snapshot for Gallery Ops audit
-        run: |
-          pnpm exec prettier --write apps/gallery-ops/src/domain.ts apps/gallery-ops/src/fixtures.ts apps/gallery-ops/src/domain.test.ts apps/gallery-ops/src/main.tsx apps/gallery-ops/src/useLiveOrders.ts apps/gallery-ops/src/styles.css apps/gallery-ops/e2e/gallery-ops.spec.ts apps/gallery-ops/server/adminServer.mjs apps/gallery-ops/server/adminServer.test.mjs docs/integrations/GALLERY_OPS_SECURE_DEPLOYMENT_20261028.md docs/integrations/PROMPT_ANTIGRAVITY_GALLERY_OPS_CUT_20261028.md
-          pnpm repo:map
-          node -e "const fs=require('node:fs');for(const p of process.argv.slice(1)){console.log('FMT='+JSON.stringify({path:p,content:fs.readFileSync(p,'utf8')}))}" apps/gallery-ops/src/domain.ts apps/gallery-ops/src/fixtures.ts apps/gallery-ops/src/domain.test.ts apps/gallery-ops/src/main.tsx apps/gallery-ops/src/useLiveOrders.ts apps/gallery-ops/src/styles.css apps/gallery-ops/e2e/gallery-ops.spec.ts apps/gallery-ops/server/adminServer.mjs apps/gallery-ops/server/adminServer.test.mjs docs/integrations/GALLERY_OPS_SECURE_DEPLOYMENT_20261028.md docs/integrations/PROMPT_ANTIGRAVITY_GALLERY_OPS_CUT_20261028.md docs/generated/repo-map.md
       - run: node --check apps/gallery-ops/server/adminServer.mjs && node --check apps/gallery-ops/server/start.mjs
       - run: node --test apps/gallery-ops/server/adminServer.test.mjs
       - run: pnpm --filter @christmas-games/gallery-ops build
