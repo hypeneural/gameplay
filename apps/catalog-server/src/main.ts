@@ -1,4 +1,5 @@
 import { readFile } from 'node:fs/promises';
+import { DatabaseSync } from 'node:sqlite';
 import { fileURLToPath } from 'node:url';
 import { createCatalogServer } from './CatalogServer.js';
 import { createFilePreviewRepository, parsePreviewConfiguration } from './filePreviewRepository.js';
@@ -6,8 +7,12 @@ import type { SocialPreviewRepository } from './socialPreview.js';
 import { SqlitePreviewRepository } from './publication/sqlitePreviewRepository.js';
 import { CrmClientError, HttpCrmClient } from './crm/CrmEligibilityService.js';
 import type { CrmClient } from './crm/CrmEligibilityService.js';
-import { resolveCatalogRuntimeConfig } from './runtimeConfig.js';
+import {
+  assertPrivateMetadataReadOnlyConfiguration,
+  resolveCatalogRuntimeConfig,
+} from './runtimeConfig.js';
 import { PublicationService } from './publication/PublicationService.js';
+import { GameplayStatusLookup } from './publication/GameplayStatusLookup.js';
 import { SqliteSessionRepository } from './publication/SessionRepository.js';
 import { applyMigrations, openSqliteDatabase } from './publication/sqliteDatabase.js';
 import { StructuredPublicationLogger } from './publication/publicationLogger.js';
@@ -28,13 +33,52 @@ if (runtime.previewAuthority === 'file-demo') {
 }
 
 let publicationService: PublicationService | undefined;
+let gameplayStatusLookup: GameplayStatusLookup | undefined;
 let sessionIsActive: ((token: string) => Promise<boolean>) | undefined;
 let previews: SocialPreviewRepository = createFilePreviewRepository(runtime.previewConfigPath, {
   rejectExampleTokens: environment === 'production',
 });
 let readinessDatabase: ReturnType<typeof openSqliteDatabase> | undefined;
 
-if (runtime.databasePath && runtime.publisherApiSecret) {
+// The private metadata-only sidecar reads the existing real SQLite database
+// without running migrations or bringing up any publisher/media writes.
+// Its startup is fail-closed: missing secrets/schema/database => no HTTP server.
+const privateReadOnly = process.env.CATALOG_PRIVATE_METADATA_READ_ONLY === '1';
+if (
+  process.env.CATALOG_PRIVATE_METADATA_READ_ONLY !== undefined &&
+  !['0', '1'].includes(process.env.CATALOG_PRIVATE_METADATA_READ_ONLY)
+) {
+  throw new Error('CATALOG_PRIVATE_METADATA_READ_ONLY_INVALID');
+}
+if (process.env.CATALOG_INTERNAL_READ_SECRET && process.env.CATALOG_INTERNAL_READ_SECRET_FILE) {
+  throw new Error('CATALOG_READ_SECRET_AMBIGUOUS');
+}
+const readSecret = process.env.CATALOG_INTERNAL_READ_SECRET_FILE
+  ? (await readFile(process.env.CATALOG_INTERNAL_READ_SECRET_FILE, 'utf8')).trim()
+  : process.env.CATALOG_INTERNAL_READ_SECRET;
+
+if (privateReadOnly) {
+  assertPrivateMetadataReadOnlyConfiguration(runtime, process.env, readSecret);
+  const db = new DatabaseSync(runtime.databasePath!, { readOnly: true });
+  db.exec('PRAGMA query_only = ON;');
+  // Don't silently initialize an empty database. Require the deployed
+  // publisher schema and its indexes before exposing the reader.
+  db.prepare('SELECT id, active_revision_id FROM photo_sessions LIMIT 1').all();
+  db.prepare('SELECT id, manifest_json FROM photo_revisions LIMIT 1').all();
+  db.prepare('SELECT revision_id, blob_id, state FROM revision_blobs LIMIT 1').all();
+  readinessDatabase = db;
+  gameplayStatusLookup = new GameplayStatusLookup({
+    db,
+    publicOrigin: runtime.publicOrigin,
+    sessionSecret: runtime.serverSecret!,
+    readSecret: readSecret!,
+    // The private reader is read-only even with approved customer links.
+    // Approval is checked fail-closed at startup in runtimeConfig.ts.
+    allowCapabilityLinks: process.env.CATALOG_PRIVATE_CUSTOMER_LINKS_ENABLED === '1',
+  });
+}
+
+if (!privateReadOnly && runtime.databasePath && runtime.publisherApiSecret) {
   if (!runtime.serverSecret) {
     throw new Error('CATALOG_SERVER_SECRET_MISSING');
   }
@@ -47,6 +91,18 @@ if (runtime.databasePath && runtime.publisherApiSecret) {
     publicBaseUrl: runtime.publicOrigin.origin,
   });
   sessionIsActive = async (token) => sessionRepository.isSessionActive(token);
+  if (
+    readSecret &&
+    (readSecret === runtime.publisherApiSecret || readSecret === runtime.serverSecret)
+  )
+    throw new Error('CATALOG_READ_SECRET_MUST_BE_DISTINCT');
+  if (readSecret)
+    gameplayStatusLookup = new GameplayStatusLookup({
+      db,
+      publicOrigin: runtime.publicOrigin,
+      sessionSecret: runtime.serverSecret,
+      readSecret,
+    });
   if (runtime.previewAuthority === 'sqlite') {
     previews = new SqlitePreviewRepository({ db });
   }
@@ -96,6 +152,8 @@ if (runtime.databasePath && runtime.publisherApiSecret) {
   });
 }
 
+if (readSecret && !gameplayStatusLookup) throw new Error('CATALOG_READ_API_REQUIRES_ACTIVE_SQLITE');
+
 const server = createCatalogServer({
   publicOrigin: runtime.publicOrigin,
   loadApplicationShell: async () => applicationShell,
@@ -108,8 +166,13 @@ const server = createCatalogServer({
     },
   },
   clock: { now: () => new Date() },
-  runtime: { releaseStage: runtime.releaseStage },
+  runtime: { releaseStage: runtime.releaseStage, privateMetadataReadOnly: privateReadOnly },
   readiness: async () => {
+    if (privateReadOnly) {
+      const check = readinessDatabase?.prepare('SELECT 1 AS ok').get() as
+        { ok?: number } | undefined;
+      if (check?.ok !== 1) throw new Error('CATALOG_PRIVATE_SQLITE_UNAVAILABLE');
+    }
     if (runtime.previewAuthority === 'sqlite') {
       // Lightweight indexed DB connection health; no customer rows are logged.
       const check = readinessDatabase?.prepare('SELECT 1 AS ok').get() as
@@ -123,6 +186,7 @@ const server = createCatalogServer({
     });
   },
   ...(publicationService ? { publicationService } : {}),
+  ...(gameplayStatusLookup ? { gameplayStatusLookup } : {}),
   ...(sessionIsActive ? { sessionIsActive } : {}),
 });
 

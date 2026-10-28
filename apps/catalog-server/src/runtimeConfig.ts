@@ -118,6 +118,42 @@ export function resolveCatalogRuntimeConfig(
   };
 }
 
+/** Enforces a separate, read-only reader. Customer capability URLs are
+ * opt-in only after approval and public route verification; no publisher runs. */
+export function assertPrivateMetadataReadOnlyConfiguration(
+  runtime: CatalogRuntimeConfig,
+  environment: NodeJS.ProcessEnv,
+  readSecret: string | undefined,
+): void {
+  if (environment.CATALOG_PRIVATE_METADATA_READ_ONLY !== '1') return;
+  const customerLinks = environment.CATALOG_PRIVATE_CUSTOMER_LINKS_ENABLED === '1';
+  if (
+    environment.CATALOG_PRIVATE_CUSTOMER_LINKS_ENABLED !== undefined &&
+    !['0', '1'].includes(environment.CATALOG_PRIVATE_CUSTOMER_LINKS_ENABLED)
+  ) {
+    throw new Error('CATALOG_PRIVATE_CUSTOMER_LINKS_FLAG_INVALID');
+  }
+  const linksApproved =
+    customerLinks &&
+    environment.CATALOG_LINKS_OPERATOR_APPROVED === '1' &&
+    environment.CATALOG_PUBLIC_CUSTOMER_ROUTES_VERIFIED === '1' &&
+    environment.CATALOG_CUSTOMER_DATA_ALLOWED === '1';
+
+  if (
+    !runtime.databasePath ||
+    !runtime.serverSecret ||
+    !readSecret ||
+    readSecret === runtime.serverSecret ||
+    runtime.publisherApiSecret ||
+    runtime.previewAuthority !== 'file-demo' ||
+    environment.CATALOG_CUSTOMER_PILOT_ENABLED === '1' ||
+    (customerLinks && !linksApproved) ||
+    (environment.CATALOG_CUSTOMER_DATA_ALLOWED === '1' && !linksApproved)
+  ) {
+    throw new Error('CATALOG_PRIVATE_READ_ONLY_CONFIG_INVALID');
+  }
+}
+
 function resolveSecret(directValue?: string, filePath?: string): string | undefined {
   if (directValue) return directValue;
   if (!filePath) return undefined;

@@ -14,6 +14,7 @@ import type {
 } from './socialPreview.js';
 
 import type { PublicationService } from './publication/PublicationService.js';
+import type { GameplayStatusLookup } from './publication/GameplayStatusLookup.js';
 
 export interface CatalogServerDependencies {
   readonly publicOrigin: URL;
@@ -23,9 +24,12 @@ export interface CatalogServerDependencies {
   readonly clock: SocialPreviewClock;
   readonly runtime?: {
     readonly releaseStage: string;
+    /** The isolated audit sidecar must never serve public demo/session HTML. */
+    readonly privateMetadataReadOnly?: boolean;
   };
   readonly readiness?: () => Promise<void>;
   readonly publicationService?: PublicationService;
+  readonly gameplayStatusLookup?: GameplayStatusLookup;
   /** Database authority: validates ACTIVE session, not just the OG preview config. */
   readonly sessionIsActive?: (token: string) => Promise<boolean>;
 }
@@ -67,6 +71,17 @@ async function handleRequest(
     response.setHeader('Content-Type', 'application/json; charset=utf-8');
     response.setHeader('Referrer-Policy', 'no-referrer');
     send(response, statusCode, body, request.method === 'HEAD');
+    return;
+  }
+
+  if (dependencies.gameplayStatusLookup) {
+    if (await dependencies.gameplayStatusLookup.handleHttpRequest(request, response)) return;
+  }
+
+  // A private metadata sidecar exposes only health and bearer-authenticated
+  // /internal lookups. Reusing CatalogServer must not expose public HTML.
+  if (dependencies.runtime?.privateMetadataReadOnly) {
+    sendNotFound(response);
     return;
   }
 

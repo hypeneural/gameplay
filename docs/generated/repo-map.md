@@ -78,6 +78,9 @@
 │   │   │   ├── filePreviewRepository.ts
 │   │   │   ├── main.ts
 │   │   │   ├── publication
+│   │   │   │   ├── GameplayStatusLookup.integration.test.ts
+│   │   │   │   ├── GameplayStatusLookup.test.ts
+│   │   │   │   ├── GameplayStatusLookup.ts
 │   │   │   │   ├── PublicationService.ts
 │   │   │   │   ├── SessionRepository.ts
 │   │   │   │   ├── corte2Http.test.ts
@@ -638,6 +641,7 @@
 │       ├── docker
 │       │   ├── Caddyfile.fragment
 │       │   ├── compose.persistence.yaml
+│       │   ├── compose.private-audit.yaml
 │       │   ├── compose.yaml
 │       │   ├── nginx.conf
 │       │   └── stack.yaml
@@ -722,6 +726,8 @@
 │   │   └── repo-map.md
 │   ├── index.md
 │   ├── integrations
+│   │   ├── GAMEPLAY_STATUS_READ_V1_20261026.md
+│   │   ├── READER_ONLY_CUT_PREFLIGHT_20261027.md
 │   │   └── photo-sessions
 │   │       ├── AUDITORIA_FORENSE_ANTIGRAVITY_MOBILE_2026-10-06.md
 │   │       ├── AUDITORIA_GITHUB_GALERIA_NATALINA_MOBILE_2026-10-06.md
@@ -1337,6 +1343,10 @@
 ├── pnpm-lock.yaml
 ├── pnpm-workspace.yaml
 ├── prettier.config.mjs
+├── scripts
+│   └── forensic
+│       ├── audit-real-catalog-readonly.mjs
+│       └── audit-real-catalog-readonly.test.mjs
 ├── tests
 │   ├── e2e
 │   │   ├── christmas-shell.spec.ts

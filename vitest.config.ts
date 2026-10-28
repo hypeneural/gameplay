@@ -40,6 +40,7 @@ export default defineConfig({
       'tools/**/tests/**/*.test.ts',
       'tools/**/src/**/*.test.ts',
       'tools/**/*.test.mjs',
+      'scripts/**/*.test.mjs',
     ],
     environment: 'node',
     coverage: { enabled: false },

@@ -27,6 +27,32 @@ afterEach(async () => {
 });
 
 describe('CatalogServer', () => {
+  it('serves only health and internal endpoints in private metadata sidecar mode', async () => {
+    const audit = vi.fn(async () => undefined);
+    const baseUrl = await startServer(
+      activeGeneric,
+      audit,
+      'staging-demo',
+      undefined,
+      async () => true,
+      true,
+    );
+    expect((await fetch(`${baseUrl}/healthz`)).status).toBe(200);
+    for (const path of [
+      '/',
+      '/demo/fotos',
+      '/demo/game/memory',
+      '/s/local-demo-token',
+      '/s/local-demo-token/fotos',
+      '/s/local-demo-token/social-preview',
+    ]) {
+      const response = await fetch(`${baseUrl}${path}`);
+      expect(response.status).toBe(404);
+      expect(response.headers.get('x-accel-redirect')).toBeNull();
+    }
+    expect(audit).not.toHaveBeenCalled();
+  });
+
   it('exposes a token-free health endpoint for VPS supervision', async () => {
     const baseUrl = await startServer(
       activeGeneric,
@@ -290,6 +316,7 @@ function startServer(
   releaseStage?: string,
   readiness?: () => Promise<void>,
   sessionIsActive: (token: string) => Promise<boolean> = async () => true,
+  privateMetadataReadOnly = false,
 ): Promise<string> {
   const server = createCatalogServer({
     publicOrigin: parsePublicOrigin('https://jogos.exemplo.test'),
@@ -297,7 +324,7 @@ function startServer(
     previews: { getByPublicToken: async () => record },
     audit: { record: auditRecord },
     clock: { now: () => new Date('2026-08-25T12:00:00.000Z') },
-    ...(releaseStage === undefined ? {} : { runtime: { releaseStage } }),
+    ...(releaseStage === undefined ? {} : { runtime: { releaseStage, privateMetadataReadOnly } }),
     ...(readiness === undefined ? {} : { readiness }),
     sessionIsActive,
   });

@@ -15,6 +15,37 @@ describe('staging Docker boundary', () => {
     expect(compose).not.toMatch(/^\s+ports:/m);
   });
 
+  it('private metadata reader starts the bundled catalog process and never exposes a public port', async () => {
+    const overlay = await readFile(
+      new URL('deploy/vps/docker/compose.private-audit.yaml', root),
+      'utf8',
+    );
+    const persistent = await readFile(
+      new URL('deploy/vps/docker/compose.persistence.yaml', root),
+      'utf8',
+    );
+    expect(overlay).toContain("command: ['node', 'server/main.js']");
+    // The public catalog continues on its own RELEASE_DIR after a reader-only cut.
+    expect(overlay).toContain(
+      '${CATALOG_READER_RELEASE_DIR:?preapproved_immutable_reader_release_dir}',
+    );
+    expect(overlay).not.toContain('${RELEASE_DIR:');
+    expect(overlay.match(/CATALOG_READER_RELEASE_DIR/g)).toHaveLength(3);
+    expect(persistent.match(/RELEASE_DIR:-/g)).toHaveLength(5);
+    expect(persistent).toContain('${RELEASE_DIR:-/srv/runtime/christmas-games/current}');
+
+    expect(overlay).toContain("CATALOG_PRIVATE_METADATA_READ_ONLY: '1'");
+    expect(overlay).toContain('read_only: true');
+    expect(overlay).toContain('no-new-privileges:true');
+    expect(overlay).toContain(
+      'CATALOG_INTERNAL_READ_SECRET_FILE: /run/catalog-secrets/reader.secret',
+    );
+    expect(overlay).toContain("'127.0.0.1:${CATALOG_READER_HOST_PORT:-4182}:4180'");
+    expect(overlay).not.toContain('100.116.8.109:4180');
+    expect(overlay).not.toContain(' - edge');
+    expect(persistent).toContain('  backend:');
+  });
+
   it('disables access logs for malformed capability URLs too', async () => {
     const nginx = await readFile(new URL('deploy/vps/docker/nginx.conf', root), 'utf8');
     const serverStart = nginx.slice(0, nginx.indexOf('location ^~ /assets/'));
