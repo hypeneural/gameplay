@@ -8,7 +8,9 @@
     "build": "tsc --noEmit --project ../../tsconfig.json && vite build",
     "typecheck": "tsc --noEmit --project ../../tsconfig.json",
     "test": "vitest run src/domain.test.ts",
-    "preview": "vite preview --host 127.0.0.1"
+    "preview": "vite preview --host 127.0.0.1",
+    "serve:admin": "node server/start.mjs",
+    "test:admin": "node --test server/adminServer.test.mjs"
   },
   "dependencies": {
     "react": "19.2.8",
