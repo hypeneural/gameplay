@@ -13,7 +13,6 @@ import {
 import type {
   DateField,
   GalleryFilters,
-  GalleryOrder,
   GalleryState,
   SortKey,
   StateFilter,
