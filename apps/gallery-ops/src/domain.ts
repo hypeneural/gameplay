@@ -1,0 +1,330 @@
+/** Authorized manager-only projection. Customer contact is PII: never cache publicly or include capability URLs. */
+export type GalleryState =
+  | 'no_session'
+  | 'no_upload'
+  | 'preparing'
+  | 'incomplete'
+  | 'published_unverified'
+  | 'revoked'
+  | 'unavailable';
+export type StateFilter = 'all' | 'pending' | 'follow_up' | 'awaiting_session' | GalleryState;
+export type DateField = 'createdAt' | 'sessionAt' | 'firstUploadAt' | 'publishedAt';
+type PhotoRange = 'all' | 'zero' | '1-10' | '11-25' | '26+';
+export type SortKey =
+  | 'operationalPriority'
+  | 'orderId'
+  | 'clientName'
+  | 'clientWhatsapp'
+  | 'packageName'
+  | 'createdAt'
+  | 'sessionAt'
+  | 'firstUploadAt'
+  | 'publishedAt'
+  | 'publishedPhotos'
+  | 'state';
+
+export interface GalleryOrder {
+  orderId: number;
+  clientName: string;
+  clientWhatsapp: string | null;
+  clientPhone: string | null;
+  clientEmail: string | null;
+  packageName: string;
+  crmStatus: string;
+  createdAt: string | null;
+  sessionAt: string | null;
+  firstUploadAt: string | null;
+  publishedAt: string | null;
+  publishedPhotos: number | null;
+  preparingPhotos: number | null;
+  state: GalleryState;
+  /** Only server-authorized administration routes, never customer capability links. */
+  crmOrderUrl: string | null;
+}
+export interface GalleryFilters {
+  search: string;
+  state: StateFilter;
+  packageName: string;
+  crmStatus: string;
+  dateField: DateField;
+  dateFrom: string;
+  dateTo: string;
+  photos: PhotoRange;
+}
+export const EMPTY_FILTERS: GalleryFilters = {
+  search: '',
+  state: 'all',
+  packageName: 'all',
+  crmStatus: 'all',
+  dateField: 'sessionAt',
+  dateFrom: '',
+  dateTo: '',
+  photos: 'all',
+};
+const CRM_STATUS_LABELS: Readonly<Record<string, string>> = {
+  waiting_payment: 'Aguardando pagamento',
+  payment_confirmed: 'Pagamento confirmado',
+  session_schedule: 'Sessão agendada',
+  session_schedule_confirmed: 'Sessão finalizada',
+  selection_schedule: 'Seleção agendada',
+  selection_schedule_confirmed: 'Seleção finalizada',
+  waiting_product_retrieve: 'Aguardando retirar',
+  product_retrieve_confirmed: 'Entrega realizada',
+  order_completed: 'Pedido concluído',
+};
+export function formatCrmStatus(value: string): string {
+  return CRM_STATUS_LABELS[value] ?? value.replaceAll('_', ' ');
+}
+export const STATES: Readonly<
+  Record<GalleryState, { label: string; tone: string; description: string }>
+> = {
+  no_session: {
+    label: 'Sem sessão Gameplay',
+    tone: 'neutral',
+    description: 'Pedido válido, sem sessão digital criada',
+  },
+  no_upload: {
+    label: 'Sem publicação',
+    tone: 'neutral',
+    description: 'Sessão criada, nenhuma revisão publicada',
+  },
+  preparing: {
+    label: 'Em preparação',
+    tone: 'amber',
+    description: 'Revisão em preparo; fotos ainda não disponíveis',
+  },
+  incomplete: { label: 'Incompleta', tone: 'red', description: 'Revisão ou blobs inconsistentes' },
+  published_unverified: {
+    label: 'Publicada · acesso não verificado',
+    tone: 'green',
+    description: 'Manifesto pronto, mas navegador e jogos não comprovados',
+  },
+  revoked: { label: 'Revogada', tone: 'red', description: 'Acesso da sessão revogado' },
+  unavailable: {
+    label: 'Integração indisponível',
+    tone: 'red',
+    description: 'Erro de consulta: não equivale a ausência de galeria',
+  },
+};
+/** Status commercial proven by CRM; a calendar date is NOT proof of an executed session. */
+const URGENT_CRM = new Set(['waiting_product_retrieve', 'order_completed']);
+const POST_SESSION_CRM = new Set([
+  'session_schedule_confirmed',
+  'selection_schedule',
+  'selection_schedule_confirmed',
+  'product_retrieve_confirmed',
+]);
+type OperationalStage =
+  'urgent' | 'follow_up' | 'awaiting_session' | 'published' | 'integration_error';
+export function operationalStage(order: GalleryOrder): OperationalStage {
+  if (order.state === 'unavailable') return 'integration_error';
+  if (order.state === 'published_unverified') return 'published';
+  if (URGENT_CRM.has(order.crmStatus)) return 'urgent';
+  if (POST_SESSION_CRM.has(order.crmStatus) || order.firstUploadAt) return 'follow_up';
+  return 'awaiting_session';
+}
+export const OPERATIONAL_LABELS: Readonly<Record<OperationalStage, string>> = {
+  urgent: 'Publicar com urgência',
+  follow_up: 'Acompanhar produção',
+  awaiting_session: 'Aguardando etapa de fotos',
+  published: 'Publicação confirmada',
+  integration_error: 'Verificar integração',
+};
+export function projectGameplayState(
+  state: 'not_found' | 'not_published' | 'partial' | 'revoked' | 'published_unverified' | null,
+  preparation: 'none' | 'staged' | 'invalid' | null,
+  failed = false,
+): GalleryState {
+  if (failed || state === null) return 'unavailable';
+  if (state === 'not_found') return 'no_session';
+  if (state === 'revoked') return 'revoked';
+  if (preparation === 'invalid') return 'incomplete';
+  if (state === 'partial') return 'incomplete';
+  if (state === 'not_published' && preparation === 'staged') return 'preparing';
+  if (state === 'not_published') return 'no_upload';
+  return 'published_unverified';
+}
+function normalize(s: string): string {
+  return s
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLocaleLowerCase('pt-BR')
+    .trim();
+}
+function dateOnly(value: string | null): string {
+  if (!value) return '';
+  if (/^\d{4}-\d{2}-\d{2}$/.test(value)) return value;
+  const parsed = new Date(value);
+  if (!Number.isFinite(parsed.getTime())) return '';
+  const parts = new Intl.DateTimeFormat('en-US', {
+    timeZone: 'America/Sao_Paulo',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).formatToParts(parsed);
+  const part = (type: string) => parts.find((p) => p.type === type)?.value ?? '';
+  return part('year') + '-' + part('month') + '-' + part('day');
+}
+export function formatPhone(value: string | null): string {
+  if (!value) return '—';
+  const raw = value.replace(/\D/g, '');
+  const digits = raw.startsWith('55') && raw.length > 11 ? raw.slice(2) : raw;
+  if (digits.length === 11)
+    return '(' + digits.slice(0, 2) + ') ' + digits.slice(2, 7) + '-' + digits.slice(7);
+  if (digits.length === 10)
+    return '(' + digits.slice(0, 2) + ') ' + digits.slice(2, 6) + '-' + digits.slice(6);
+  return value.slice(0, 25);
+}
+export function filterOrders(
+  orders: readonly GalleryOrder[],
+  filters: GalleryFilters,
+): GalleryOrder[] {
+  const q = normalize(filters.search);
+  return orders.filter((o) => {
+    const text = normalize(
+      [o.orderId, o.clientName, o.clientWhatsapp, o.clientPhone, o.clientEmail, o.packageName]
+        .filter(Boolean)
+        .join(' '),
+    );
+    const phoneQuery = filters.search.replace(/\D/g, '');
+    const phones = [o.clientWhatsapp, o.clientPhone].filter(Boolean).join(' ').replace(/\D/g, '');
+    if (
+      q &&
+      !text.includes(q.replace(/^#/, '')) &&
+      !(phoneQuery.length >= 4 && phones.includes(phoneQuery))
+    )
+      return false;
+    const stage = operationalStage(o);
+    if (filters.state === 'pending' && stage !== 'urgent') return false;
+    if (filters.state === 'follow_up' && stage !== 'follow_up') return false;
+    if (filters.state === 'awaiting_session' && stage !== 'awaiting_session') return false;
+    if (
+      !['all', 'pending', 'follow_up', 'awaiting_session'].includes(filters.state) &&
+      o.state !== filters.state
+    )
+      return false;
+    if (filters.packageName !== 'all' && o.packageName !== filters.packageName) return false;
+    if (filters.crmStatus !== 'all' && o.crmStatus !== filters.crmStatus) return false;
+    const when = dateOnly(o[filters.dateField]);
+    if (filters.dateFrom && (!when || when < filters.dateFrom)) return false;
+    if (filters.dateTo && (!when || when > filters.dateTo)) return false;
+    const count = o.publishedPhotos;
+    if (filters.photos !== 'all') {
+      if (count === null) return false;
+      if (filters.photos === 'zero' && count !== 0) return false;
+      if (filters.photos === '1-10' && (count < 1 || count > 10)) return false;
+      if (filters.photos === '11-25' && (count < 11 || count > 25)) return false;
+      if (filters.photos === '26+' && count < 26) return false;
+    }
+    return true;
+  });
+}
+export function sortOrders(
+  orders: readonly GalleryOrder[],
+  key: SortKey,
+  descending: boolean,
+): GalleryOrder[] {
+  const dir = descending ? -1 : 1;
+  return [...orders].sort((a, b) => {
+    if (key === 'operationalPriority') {
+      const ranks: Record<OperationalStage, number> = {
+        urgent: 0,
+        integration_error: 1,
+        follow_up: 2,
+        awaiting_session: 3,
+        published: 4,
+      };
+      const diff = ranks[operationalStage(a)] - ranks[operationalStage(b)];
+      if (diff !== 0) return diff * dir;
+      // Oldest session first inside an operational stage; null dates go last.
+      const ax = a.sessionAt ? dateOnly(a.sessionAt) : null;
+      const bx = b.sessionAt ? dateOnly(b.sessionAt) : null;
+      if (ax !== bx) return ax === null ? 1 : bx === null ? -1 : ax.localeCompare(bx);
+      return b.orderId - a.orderId;
+    }
+    const av = a[key],
+      bv = b[key];
+    if (av === null && bv !== null) return 1;
+    if (bv === null && av !== null) return -1;
+    const cmp =
+      typeof av === 'number' && typeof bv === 'number'
+        ? av - bv
+        : String(av ?? '').localeCompare(String(bv ?? ''), 'pt-BR', {
+            numeric: true,
+            sensitivity: 'base',
+          });
+    return cmp === 0 ? b.orderId - a.orderId : cmp * dir;
+  });
+}
+export function summarize(orders: readonly GalleryOrder[]) {
+  const states = Object.fromEntries(Object.keys(STATES).map((s) => [s, 0])) as Record<
+    GalleryState,
+    number
+  >;
+  for (const o of orders) states[o.state]++;
+  const stages = orders.map(operationalStage);
+  return {
+    total: orders.length,
+    pending: stages.filter((s) => s === 'urgent').length,
+    followUp: stages.filter((s) => s === 'follow_up').length,
+    awaiting: stages.filter((s) => s === 'awaiting_session').length,
+    published: stages.filter((s) => s === 'published').length,
+    integrationErrors: stages.filter((s) => s === 'integration_error').length,
+    states,
+  };
+}
+export function formatDate(value: string | null): string {
+  const day = dateOnly(value);
+  return day ? day.slice(8, 10) + '/' + day.slice(5, 7) + '/' + day.slice(0, 4) : '—';
+}
+export function priority(
+  o: GalleryOrder,
+  asOfDay: string,
+): 'waiting' | 'attention' | 'ready' | 'unknown' {
+  if (o.state === 'unavailable') return 'unknown';
+  if (o.state === 'published_unverified') return 'ready';
+  if (operationalStage(o) === 'urgent') return 'attention';
+  if (o.sessionAt && dateOnly(o.sessionAt) > asOfDay) return 'waiting';
+  if (operationalStage(o) === 'follow_up') return 'unknown';
+  // A past appointment is not proof that the session actually occurred.
+  return 'unknown';
+}
+function csvCell(value: string | number | null): string {
+  const text = value === null ? '' : String(value);
+  const hardened = /^[\s]*[=+@\-\t\r]/.test(text) ? `'${text}` : text;
+  return `"${hardened.replaceAll('"', '""')}"`;
+}
+/** Client-side CSV is for synthetic local preview only. Production export requires server-side authorization. */
+export function syntheticCsv(orders: readonly GalleryOrder[]): string {
+  const columns = [
+    'Pedido',
+    'Cliente',
+    'WhatsApp',
+    'Telefone',
+    'E-mail',
+    'Pacote',
+    'Status CRM',
+    'Situação Gameplay',
+    'Sessão',
+    'Primeiro upload',
+    'Publicação',
+    'Fotos publicadas',
+    'Fotos em preparo',
+  ];
+  const rows = orders.map((o) => [
+    o.orderId,
+    o.clientName,
+    o.clientWhatsapp,
+    o.clientPhone,
+    o.clientEmail,
+    o.packageName,
+    o.crmStatus,
+    STATES[o.state].label,
+    formatDate(o.sessionAt),
+    formatDate(o.firstUploadAt),
+    formatDate(o.publishedAt),
+    o.publishedPhotos,
+    o.preparingPhotos,
+  ]);
+  return '\uFEFF' + [columns, ...rows].map((r) => r.map(csvCell).join(';')).join('\r\n');
+}

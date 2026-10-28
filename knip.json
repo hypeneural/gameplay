@@ -1,6 +1,7 @@
 {
   "$schema": "https://unpkg.com/knip@6/schema.json",
   "workspaces": {
+    "apps/gallery-ops": {},
     "apps/play": {},
     "packages/platform": {},
     "packages/theme": {},
