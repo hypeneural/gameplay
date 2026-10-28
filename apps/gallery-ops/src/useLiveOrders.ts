@@ -22,7 +22,7 @@ export function validateDashboard(value: unknown): {
   if (!value || typeof value !== 'object') throw Error('Resposta administrativa inválida.');
   const v = value as Record<string, unknown>;
   if (v.schema_version !== 1 || v.source !== 'gallery_ops_authenticated_join'
-      || !Array.isArray(v.items) || !Number.isSafeInteger(v.total_valid)
+      || !Array.isArray(v.items) || (typeof v.total_valid !== 'number' || !Number.isSafeInteger(v.total_valid))
       || v.items.length !== v.total_valid || typeof v.as_of !== 'string') {
     throw Error('Divergência na população comercial válida.');
   }
