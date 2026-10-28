@@ -8,6 +8,13 @@ import { computeTokenHash, derivePublicToken } from './tokenSecurity.js';
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const LIMIT = 50;
+function asUtcEvent(value: string | null): string | null {
+  if (!value) return null;
+  const normalized = /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/.test(value)
+    ? value.replace(' ', 'T') + 'Z' : value;
+  const parsed = new Date(normalized);
+  return Number.isFinite(parsed.getTime()) ? parsed.toISOString() : null;
+}
 type State = 'not_found' | 'revoked' | 'not_published' | 'partial' | 'published_unverified';
 
 export interface GameplayLookupRecord {
@@ -18,6 +25,10 @@ export interface GameplayLookupRecord {
   readonly photo_count: number;
   readonly expected_blobs: number;
   readonly ready_blobs: number;
+  /** First verified READY variant event; not necessarily source photo upload. */
+  readonly first_upload_at: string | null;
+  /** Activation of the active, validated revision; not proof of browser access. */
+  readonly published_at: string | null;
   /** Most recent STAGED revision, separate from the published photo count. */
   readonly preparation: {
     readonly state: 'none' | 'staged' | 'invalid';
@@ -67,6 +78,7 @@ export class GameplayStatusLookup {
     if (!UUID.test(crmOrderUuid)) throw new Error('INVALID_ORDER_UUID');
     const id = crmOrderUuid.toLowerCase();
     // A photo in a staging manifest is NOT a published or playable photo.
+    let firstUploadAt: string | null = null;
     let preparation: GameplayLookupRecord['preparation'] = {
       state: 'none',
       revision_id: null,
@@ -82,6 +94,7 @@ export class GameplayStatusLookup {
       expected = 0,
       ready = 0,
       hub: string | null = null,
+      publishedAt: string | null = null,
     ): GameplayLookupRecord => ({
       crm_order_uuid: id,
       state,
@@ -90,6 +103,8 @@ export class GameplayStatusLookup {
       photo_count: photoCount,
       expected_blobs: expected,
       ready_blobs: ready,
+      first_upload_at: firstUploadAt,
+      published_at: publishedAt,
       preparation,
       hub_url: hub,
       gallery_url: hub ? hub + '/fotos' : null,
@@ -111,6 +126,12 @@ export class GameplayStatusLookup {
         }
       | undefined;
     if (!session) return base('not_found');
+    const uploadEvent = this.db.prepare(
+      `SELECT MIN(rb.received_at) AS first_ready
+       FROM revision_blobs rb JOIN photo_revisions pr ON pr.id = rb.revision_id
+       WHERE pr.session_id = ? AND rb.state = 'READY' AND rb.received_at IS NOT NULL`,
+    ).get(session.id) as { first_ready: string | null } | undefined;
+    firstUploadAt = asUtcEvent(uploadEvent?.first_ready ?? null);
     if (session.status !== 'ACTIVE') return base('revoked', session.id);
     const staged = this.db
       .prepare(
@@ -158,11 +179,11 @@ export class GameplayStatusLookup {
     const revision = this.db
       .prepare(
         `
-      SELECT id, state, manifest_json FROM photo_revisions
+      SELECT id, state, manifest_json, activated_at FROM photo_revisions
       WHERE id = ? AND session_id = ? LIMIT 1`,
       )
       .get(session.active_revision_id, session.id) as
-      { id: string; state: string; manifest_json: string } | undefined;
+      { id: string; state: string; manifest_json: string; activated_at: string | null } | undefined;
     if (!revision || revision.state !== 'ACTIVE') {
       return base('partial', session.id, session.active_revision_id);
     }
@@ -204,7 +225,7 @@ export class GameplayStatusLookup {
     // Batch audits and metadata-only sidecars never materialize customer
     // capability URLs. This includes a single-order include_links request.
     if (!includeLinks || !this.allowCapabilityLinks) {
-      return base('published_unverified', session.id, revision.id, photoCount, expected, ready);
+      return base('published_unverified', session.id, revision.id, photoCount, expected, ready, null, asUtcEvent(revision.activated_at));
     }
     return base(
       'published_unverified',
@@ -214,6 +235,7 @@ export class GameplayStatusLookup {
       expected,
       ready,
       this.origin + '/s/' + encodeURIComponent(token),
+      asUtcEvent(revision.activated_at),
     );
   }
 
