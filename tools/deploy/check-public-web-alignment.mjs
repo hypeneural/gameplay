@@ -27,6 +27,14 @@ export function comparePublicWebSnapshots(catalog, gateway) {
   }
   const entries = referencedEntryAssets(catalog.html);
   if (entries.length === 0) findings.push('NO_VITE_ENTRY_ASSETS');
+  // CatalogServer loads the HTML shell once at startup. A bind mount can
+  // look current even when the running Node process still has an old shell.
+  if (catalog.servedHtml !== undefined) {
+    const runtimeEntries = referencedEntryAssets(catalog.servedHtml);
+    if (runtimeEntries.join('|') !== entries.join('|')) {
+      findings.push('RUNNING_HTML_RELEASE_DRIFT');
+    }
+  }
   for (const asset of entries) {
     const c = catalog.assetSha[asset] ?? null;
     const g = gateway.assetSha[asset] ?? null;
@@ -66,6 +74,9 @@ function readSnapshot(container) {
 export function inspectDockerWebAlignment(containers = DEFAULT_CONTAINERS) {
   const catalog = readSnapshot(containers.catalog);
   const gateway = readSnapshot(containers.gateway);
+  // Read only the public synthetic demo, never a customer capability URL.
+  catalog.servedHtml = dockerExec(containers.catalog, 'node', '-e',
+    'fetch("http://127.0.0.1:4180/").then(async r => { if (!r.ok) process.exit(2); process.stdout.write(await r.text()); }).catch(() => process.exit(2));');
   const assets = new Set([...referencedEntryAssets(catalog.html), ...referencedEntryAssets(gateway.html)]);
   for (const asset of assets) {
     catalog.assetSha[asset] = dockerAssetSha(containers.catalog, asset);
