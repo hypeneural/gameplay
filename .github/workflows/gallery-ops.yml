@@ -39,10 +39,6 @@ jobs:
           version: 11.19.0
           run_install: false
       - run: pnpm install --frozen-lockfile
-      - name: Temporary format capture (synthetic source only)
-        run: |
-          pnpm exec prettier --write apps/catalog-server/src/publication/GameplayStatusLookup.ts apps/catalog-server/src/publication/GameplayStatusLookup.integration.test.ts apps/gallery-ops/src/Actions.tsx apps/gallery-ops/src/useLiveOrders.ts apps/gallery-ops/src/main.tsx apps/gallery-ops/src/domain.ts apps/gallery-ops/server/adminServer.mjs apps/gallery-ops/server/adminServer.test.mjs apps/gallery-ops/server/start.mjs apps/gallery-ops/README.md apps/gallery-ops/AGENTS.md docs/integrations/GALLERY_OPS_SECURE_DEPLOYMENT_20261028.md apps/gallery-ops/package.json knip.json deploy/vps/docker/compose.gallery-ops.yaml
-          node -e "const fs=require('node:fs');for(const p of process.argv.slice(1)){console.log('FORMAT_FILE='+JSON.stringify({path:p,content:fs.readFileSync(p,'utf8')}))}" apps/catalog-server/src/publication/GameplayStatusLookup.ts apps/catalog-server/src/publication/GameplayStatusLookup.integration.test.ts apps/gallery-ops/src/Actions.tsx apps/gallery-ops/src/useLiveOrders.ts apps/gallery-ops/src/main.tsx apps/gallery-ops/src/domain.ts apps/gallery-ops/server/adminServer.mjs apps/gallery-ops/server/adminServer.test.mjs apps/gallery-ops/server/start.mjs apps/gallery-ops/README.md apps/gallery-ops/AGENTS.md docs/integrations/GALLERY_OPS_SECURE_DEPLOYMENT_20261028.md apps/gallery-ops/package.json knip.json deploy/vps/docker/compose.gallery-ops.yaml
       - run: node --check apps/gallery-ops/server/adminServer.mjs && node --check apps/gallery-ops/server/start.mjs
       - run: node --test apps/gallery-ops/server/adminServer.test.mjs
       - run: pnpm --filter @christmas-games/gallery-ops build
