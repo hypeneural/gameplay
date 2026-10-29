@@ -2,15 +2,19 @@ import { describe, expect, it } from 'vitest';
 import { evaluatePublicMounts } from './check-public-release-boundary.mjs';
 
 const root = '/srv/runtime/christmas-games/releases/20261028-16e7f65';
-const mount = (suffix, dest) => ({ Source: root + '/' + suffix,
-  Destination: dest, RW: false });
+const mount = (suffix, dest) => ({ Source: root + '/' + suffix, Destination: dest, RW: false });
 
 function example() {
   const make = (service, mounts) => ({
-    Id: service.repeat(12), State: { Running: true }, Config: { Labels: {
-      'com.docker.compose.project': 'christmas-games',
-      'com.docker.compose.service': service,
-    } }, Mounts: mounts,
+    Id: service.repeat(12),
+    State: { Running: true },
+    Config: {
+      Labels: {
+        'com.docker.compose.project': 'christmas-games',
+        'com.docker.compose.service': service,
+      },
+    },
+    Mounts: mounts,
   });
   return {
     catalog: make('catalog', [
@@ -34,8 +38,7 @@ describe('immutable public release and private reader boundaries', () => {
   });
   it('blocks mixed public releases even if both are healthy', () => {
     const data = example();
-    data.gateway.Mounts[0].Source =
-      '/srv/runtime/christmas-games/releases/20261029-abcdef0/web';
+    data.gateway.Mounts[0].Source = '/srv/runtime/christmas-games/releases/20261029-abcdef0/web';
     expect(evaluatePublicMounts(data).findings).toContain('MIXED_PUBLIC_RELEASES');
   });
   it('rejects implicit mutable current symlink and absent readonly mounts', () => {
