@@ -10,7 +10,7 @@ export function summarizePublicRuntime(results) {
     edge: 'PUBLIC_EDGE_ASSETS_PASS',
   };
   const checks = Object.fromEntries(
-    Object.entries(expected).map(([key, value]) => [
+    Object.entries(expected).map(([key]) => [
       key,
       results[key]?.status ?? 'UNAVAILABLE',
     ]),
