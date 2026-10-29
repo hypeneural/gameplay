@@ -128,7 +128,7 @@ exige futura homologação de montagem e não está sendo ativado nesta PR.
 
 Há um **script isolado**, e não é necessário improvisar comandos Docker:
 `tools/deploy/apply-public-pair.sh`. Ele **não executa por si só**;
-a mutação exige o argumento `--execute`, três identificadores explícitos e
+a mutação exige o argumento `--execute`, quatro identificadores explícitos e
 todas as pré-condições.
 
 **Executar somente depois do CI da PR #48 integralmente verde, aprovação
@@ -145,7 +145,7 @@ node tools/deploy/verify-public-cut-plan.mjs \
 sudo bash tools/deploy/apply-public-pair.sh --execute \
   /srv/runtime/christmas-games/releases/RELEASE_NOVA_APROVADA \
   /srv/runtime/christmas-games/releases/ULTIMA_RELEASE_BOA \
-  SHA_GIT_COMPLETO_DE_40_CARACTERES
+  SHA_NOVO_DE_40_CARACTERES SHA_ROLLBACK_DE_40_CARACTERES
 ```
 
 O segundo comando é propositalmente exigente:
