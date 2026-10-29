@@ -53,6 +53,7 @@
     "release:verify-bundled": "node .release/vps/ops/tools/verify-vps-release.mjs .release/vps",
     "release:check-web-alignment": "node tools/deploy/check-public-web-alignment.mjs",
     "release:check-public-boundary": "node tools/deploy/check-public-release-boundary.mjs",
+    "release:plan-public-cut": "node tools/deploy/verify-public-cut-plan.mjs",
     "release:verify-public-runtime": "node tools/deploy/verify-public-runtime.mjs",
     "release:check-edge-assets": "node tools/deploy/check-public-asset-http.mjs",
     "deploy:smoke": "node tools/deploy/smoke-staging.mjs",
