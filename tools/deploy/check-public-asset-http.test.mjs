@@ -10,15 +10,18 @@ function fake(status, mime, body = '') {
 
 describe('public edge asset transport contract', () => {
   it('accepts JS/CSS only with 200 and matching MIME', () => {
-    expect(classifyEdgeAsset(js, 200, 'application/javascript; charset=utf-8'))
-      .toBe('EDGE_ASSET_OK');
+    expect(classifyEdgeAsset(js, 200, 'application/javascript; charset=utf-8')).toBe(
+      'EDGE_ASSET_OK',
+    );
     expect(classifyEdgeAsset(css, 200, 'text/css')).toBe('EDGE_ASSET_OK');
   });
 
   it('reproduces real recurring failure: JS 404 and CSS returning HTML', async () => {
-    const fetchFn = vi.fn(async (url) => String(url).endsWith('.js')
-      ? fake(404, 'text/html', 'not found')
-      : fake(200, 'text/html', '<html>fallback</html>'));
+    const fetchFn = vi.fn(async (url) =>
+      String(url).endsWith('.js')
+        ? fake(404, 'text/html', 'not found')
+        : fake(200, 'text/html', '<html>fallback</html>'),
+    );
     const result = await auditPublicEdge([js, css], fetchFn);
     expect(result.status).toBe('BLOCKED_PUBLIC_EDGE_ASSETS');
     expect(result.assets).toEqual([
@@ -29,11 +32,12 @@ describe('public edge asset transport contract', () => {
   });
 
   it('requires both real assets even when the document returns 200', async () => {
-    const html = '<link rel="stylesheet" href="' + css +
-      '"><script type="module" src="' + js + '"></script>';
+    const html =
+      '<link rel="stylesheet" href="' + css + '"><script type="module" src="' + js + '"></script>';
     const fetchFn = vi.fn(async (url) => {
       if (String(url).endsWith('/')) return fake(200, 'text/html', html);
-      return String(url).endsWith('.js') ? fake(200, 'text/javascript', 'export default 1')
+      return String(url).endsWith('.js')
+        ? fake(200, 'text/javascript', 'export default 1')
         : fake(200, 'text/css', 'body{}');
     });
     const result = await auditPublicEdge([], fetchFn);
@@ -50,8 +54,12 @@ describe('public edge asset transport contract', () => {
   });
 
   it('rejects private session URLs, unsupported and traversal paths', async () => {
-    for (const path of ['/s/secret-token', '/assets/../../private.css',
-      'https://example.com/index.css', '/assets/index.png']) {
+    for (const path of [
+      '/s/secret-token',
+      '/assets/../../private.css',
+      'https://example.com/index.css',
+      '/assets/index.png',
+    ]) {
       await expect(auditPublicEdge([path])).rejects.toThrow('EDGE_ASSET_LIST_INVALID');
     }
   });
@@ -59,7 +67,8 @@ describe('public edge asset transport contract', () => {
   it('fails closed if a public document is unavailable or has no asset references', async () => {
     const unavailable = await auditPublicEdge([], async () => fake(503, 'text/html'));
     expect(unavailable.status).toBe('BLOCKED_EDGE_DOCUMENT');
-    await expect(auditPublicEdge([], async () => fake(200, 'text/html', 'empty')))
-      .rejects.toThrow('EDGE_ASSET_LIST_INVALID');
+    await expect(auditPublicEdge([], async () => fake(200, 'text/html', 'empty'))).rejects.toThrow(
+      'EDGE_ASSET_LIST_INVALID',
+    );
   });
 });
