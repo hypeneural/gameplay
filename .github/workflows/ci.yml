@@ -57,6 +57,24 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Canonical P0 formatter diagnostics (temporary)
+        run: |
+          files=(
+            docs/ops/PROMPT_ANTIGRAVITY_ETAPA9_GAMEPLAY_RESILIENTE_20261029.md
+            tools/deploy/prepare-vps-release.mjs
+            tools/deploy/verify-public-runtime.mjs
+            tools/deploy/verify-public-runtime.test.mjs
+            tools/deploy/vite-entry-integrity.mjs
+            tools/deploy/vite-entry-integrity.test.mjs
+          )
+          pnpm exec prettier --write "${files[@]}"
+          for file in "${files[@]}"; do
+            echo "FORMAT_START:$file"
+            base64 -w0 "$file"
+            echo
+            echo "FORMAT_END:$file"
+          done
+
       - name: Verify machine-readable repository state
         run: pnpm agent:doctor
 
