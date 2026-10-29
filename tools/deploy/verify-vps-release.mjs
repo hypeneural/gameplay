@@ -39,7 +39,6 @@ for (const requiredPath of [
   'ops/catalog.env.example',
   'ops/christmas-games-catalog.service.example',
   'ops/nginx/christmas-games.conf.example',
-  'ops/tools/vite-entry-integrity.mjs',
   'ops/tools/verify-vps-release.mjs',
 ]) {
   if (!actualPaths.has(requiredPath)) {
