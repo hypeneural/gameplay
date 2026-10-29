@@ -1,6 +1,7 @@
 import { readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { assertNoForbiddenReleaseFiles, inventoryReleaseFiles } from './release-utils.mjs';
+import { assertViteEntryIntegrity } from './vite-entry-integrity.mjs';
 
 const releaseRoot = resolve(process.argv[2] ?? '.release/vps');
 const releasePath = resolve(releaseRoot, 'RELEASE.json');
@@ -45,26 +46,12 @@ for (const requiredPath of [
   }
 }
 
-// An otherwise valid manifest can still contain HTML pointing to a missing
-// content-hashed Vite entrypoint. Fail the release BEFORE a public cut.
-const appShell = await readFile(resolve(releaseRoot, 'web/index.html'), 'utf8');
-const linkedAssetRegex =
-  /<(?:script|link)\b[^>]*?\b(?:src|href)\s*=\s*["'](\/assets\/[A-Za-z0-9_.-]+\.(?:js|css))["']/gi;
-const referencedAssets = new Set(
-  [...appShell.matchAll(linkedAssetRegex)].map((match) => match[1].slice(1)),
+// An otherwise valid manifest can still contain HTML pointing at an
+// absent content-hashed Vite entrypoint. Fail before any public cut.
+assertViteEntryIntegrity(
+  await readFile(resolve(releaseRoot, 'web/index.html'), 'utf8'),
+  actualPaths,
 );
-if (
-  referencedAssets.size < 2 ||
-  ![...referencedAssets].some((asset) => asset.endsWith('.js')) ||
-  ![...referencedAssets].some((asset) => asset.endsWith('.css'))
-) {
-  throw new Error('Release HTML has no valid Vite JS/CSS entrypoint pair.');
-}
-for (const asset of referencedAssets) {
-  if (!actualPaths.has('web/' + asset)) {
-    throw new Error(`Vite entry asset missing from release: ${asset}`);
-  }
-}
 
 const expected = [...release.files].sort((left, right) => left.path.localeCompare(right.path));
 if (expected.length !== actual.length) {
