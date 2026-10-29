@@ -5,7 +5,7 @@ const js = '/assets/index-CXZUH_4f.js';
 const css = '/assets/index-BFvuR7tZ.css';
 
 function fake(status, mime, body = '') {
-  return new Response(body, { status, headers: { 'content-type': mime } });
+  return new globalThis.Response(body, { status, headers: { 'content-type': mime } });
 }
 
 describe('public edge asset transport contract', () => {
