@@ -86,6 +86,8 @@ RELEASE_DIR="$target" CATALOG_READER_RELEASE_DIR="$reader_release" \
   node "$SCRIPT_DIR/verify-public-cut-plan.mjs" "$target" >/dev/null ||
   fail 'COMPOSE_PUBLIC_BOUNDARY_BLOCKED'
 compose "$target" config --quiet >/dev/null || fail 'COMPOSE_CONFIG_INVALID'
+node "$SCRIPT_DIR/nginx-asset-policy.mjs" >/dev/null ||
+  fail 'HOST_NGINX_POLICY_NOT_STAGED'
 old_ids="$(docker inspect --format '{{.Id}}' "$READER_NAME")"
 before_other="$(docker ps -a --format '{{.Names}} {{.ID}}' |
   grep -vE '^christmas-games-(catalog|gateway) ' | sort)"
