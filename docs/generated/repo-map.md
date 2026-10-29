@@ -1422,6 +1422,8 @@
 │   ├── deploy
 │   │   ├── backup-restore-catalog.mjs
 │   │   ├── backup-restore-catalog.test.mjs
+│   │   ├── apply-public-pair.sh
+│   │   ├── apply-public-pair.test.mjs
 │   │   ├── check-public-asset-http.mjs
 │   │   ├── check-public-asset-http.test.mjs
 │   │   ├── check-public-release-boundary.mjs
