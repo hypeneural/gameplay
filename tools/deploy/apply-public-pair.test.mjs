@@ -7,8 +7,10 @@ const scriptPath = fileURLToPath(new URL('./apply-public-pair.sh', import.meta.u
 describe('isolated public cut command invariants', () => {
   it('requires an explicit, SHA-pinned immutable target and rollback', async () => {
     const script = await readFile(scriptPath, 'utf8');
-    expect(script).toContain('USAGE_EXECUTE_TARGET_ROLLBACK_EXACT_SHA');
+    expect(script).toContain('USAGE_EXECUTE_TARGET_ROLLBACK_TWO_EXACT_SHAS');
     expect(script).toContain('TARGET_SHA_NOT_PINNED');
+    expect(script).toContain('ROLLBACK_SHA_NOT_PINNED');
+    expect(script).toContain('INSECURE_ROLLBACK_RELEASE');
     expect(script).toContain('RELEASE_SYMLINK_CHAIN');
     expect(script).toContain('verify-vps-release.mjs');
   });
