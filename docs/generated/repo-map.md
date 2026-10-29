@@ -1421,6 +1421,8 @@
 │   ├── deploy
 │   │   ├── backup-restore-catalog.mjs
 │   │   ├── backup-restore-catalog.test.mjs
+│   │   ├── check-public-asset-http.mjs
+│   │   ├── check-public-asset-http.test.mjs
 │   │   ├── check-public-web-alignment.mjs
 │   │   ├── check-public-web-alignment.test.mjs
 │   │   ├── create-staging-preview-config.mjs
