@@ -72,12 +72,36 @@ export function evaluatePublicCutPlan(config, actual, targetRelease) {
       const equals = entry.indexOf('=');
       return [entry.slice(0, equals), entry.slice(equals + 1)];
     }));
+    if (serviceName === 'catalog') {
+      for (const entry of live.Config?.Env ?? []) {
+        const key = entry.split('=')[0];
+        if (/^(?:CATALOG_|PUBLISHER_|NODE_ENV$|HOST$|PORT$)/.test(key) &&
+            !Object.hasOwn(env, key)) {
+          failures.push('DROPPED_RUNTIME_ENVIRONMENT:' + key);
+        }
+      }
+    }
     for (const [name, value] of Object.entries(env)) {
       if (String(value) !== liveEnvironment.get(name)) {
         failures.push('CHANGED_ENVIRONMENT:' + serviceName + ':' + name);
       }
     }
     if (proposal.image !== live.Config?.Image) failures.push('CHANGED_IMAGE:' + serviceName);
+    const command = proposal.command;
+    const actualCommand = live.Config?.Cmd;
+    if (JSON.stringify(command ?? []) !== JSON.stringify(actualCommand ?? [])) {
+      failures.push('CHANGED_COMMAND:' + serviceName);
+    }
+    const portPairs = (proposal.ports ?? []).map((port) =>
+      [String(port.target) + '/tcp', String(port.host_ip ?? '') + ':' + String(port.published)],
+    ).sort((a, b) => a[0].localeCompare(b[0]));
+    const actualPorts = Object.entries(live.HostConfig?.PortBindings ?? {})
+      .flatMap(([port, values]) => (values ?? []).map((value) =>
+        [port, String(value.HostIp ?? '') + ':' + String(value.HostPort)],
+      )).sort((a, b) => a[0].localeCompare(b[0]));
+    if (JSON.stringify(portPairs) !== JSON.stringify(actualPorts)) {
+      failures.push('CHANGED_PUBLISHED_PORTS:' + serviceName);
+    }
     const currentNetworks = Object.keys(live.NetworkSettings?.Networks ?? {}).sort();
     const desiredNetworks = Object.keys(proposal.networks ?? {}).map(
       (name) => config.networks?.[name]?.name ?? name,
