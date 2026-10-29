@@ -9,6 +9,7 @@ const allGood = {
   },
   web: { status: 'WEB_ASSETS_ALIGNED' },
   edge: { status: 'PUBLIC_EDGE_ASSETS_PASS' },
+  missingAssetCache: { status: 'MISSING_ASSET_NOT_CACHED' },
 };
 
 describe('one-shot public runtime readiness', () => {
@@ -35,6 +36,7 @@ describe('one-shot public runtime readiness', () => {
         throw Error('Synthetic docker failure');
       },
       edge: async () => allGood.edge,
+      missingAssetCache: async () => allGood.missingAssetCache,
     });
     expect(result.status).toBe('BLOCKED_PUBLIC_RUNTIME');
     expect(result.checks.web).toBe('UNAVAILABLE');
