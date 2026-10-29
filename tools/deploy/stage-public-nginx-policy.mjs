@@ -17,10 +17,16 @@ export function planNginxPolicyChange(config) {
   if (status === 'ASSET_CACHE_POLICY_PASS') {
     return { status: 'NGINX_CACHE_POLICY_ALREADY_SAFE', updated: config };
   }
-  if (status !== 'BLOCKED_IMMUTABLE_404' || config.split(LEGACY_CACHE).length !== 2) {
+  const assetBlockMatch = config.match(/location \^~ \/assets\/ \{[^}]+\}/);
+  if (status !== 'BLOCKED_IMMUTABLE_404' || !assetBlockMatch) {
     throw Error('UNKNOWN_NGINX_CONFIGURATION');
   }
-  const updated = config.replace(LEGACY_CACHE, SAFE_CACHE);
+  const assetBlock = assetBlockMatch[0];
+  if (!assetBlock.includes(LEGACY_CACHE)) {
+    throw Error('UNKNOWN_NGINX_CONFIGURATION');
+  }
+  const updatedAssetBlock = assetBlock.replace(LEGACY_CACHE, SAFE_CACHE);
+  const updated = config.replace(assetBlock, updatedAssetBlock);
   if (validateAssetCachePolicy(updated) !== 'ASSET_CACHE_POLICY_PASS') {
     throw Error('NGINX_POLICY_PATCH_INVALID');
   }

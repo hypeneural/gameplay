@@ -16,6 +16,16 @@ describe('nginx Vite asset cache policy', () => {
     expect(validateAssetCachePolicy(fixed.updated)).toBe('ASSET_CACHE_POLICY_PASS');
     expect(planNginxPolicyChange(fixed.updated).status).toBe('NGINX_CACHE_POLICY_ALREADY_SAFE');
     expect(() => planNginxPolicyChange('unknown config')).toThrow('UNKNOWN_NGINX_CONFIGURATION');
+
+    const withShowcase =
+      legacy +
+      '\nlocation ~ showcase { add_header Cache-Control "public, max-age=31536000, immutable" always; }';
+    const patchedShowcase = planNginxPolicyChange(withShowcase);
+    expect(patchedShowcase.status).toBe('NGINX_CACHE_POLICY_NEEDS_PATCH');
+    expect(patchedShowcase.updated).toContain(
+      'location ~ showcase { add_header Cache-Control "public, max-age=31536000, immutable" always; }',
+    );
+    expect(validateAssetCachePolicy(patchedShowcase.updated)).toBe('ASSET_CACHE_POLICY_PASS');
   });
 
   it('never sends immutable caching on a 404 response', async () => {
