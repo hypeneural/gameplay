@@ -21,6 +21,8 @@ do código. **Não gerar, alterar, logar ou reemitir links privados de famílias
 
 ## Código preparado na PR #48
 
+- `release:verify-bundled`: o CI executa o verificador **dentro** da
+  release gerada, exigindo a presença de todas as dependências locais;
 - `tools/deploy/verify-vps-release.mjs`: exige manifesto íntegro **e** HTML
   com par JS/CSS de entrada existente na release;
 - `check-public-release-boundary.mjs`: compara release imutável dos mounts
