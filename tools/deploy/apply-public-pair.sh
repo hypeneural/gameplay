@@ -99,15 +99,21 @@ rollback() {
   if [[ "$rollback_required" != 1 || "$rollback_done" == 1 ]]; then return; fi
   rollback_done=1
   trap - EXIT ERR INT TERM
-  if [[ "$pointer_changed" == 1 ]]; then
-    recovery_link="$CURRENT.rollback.$"
-    ln -s -- "$original_pointer" "$recovery_link" &&
-      mv -Tf -- "$recovery_link" "$CURRENT" ||
-      printf 'PUBLIC_CUT_RECOVERY:CURRENT_POINTER_RESTORE_FAILED\n' >&2
-  fi
   printf 'PUBLIC_CUT_RECOVERY:ROLLING_BACK_PAIR\n' >&2
   if compose "$previous" up -d --wait --wait-timeout 90 --no-deps --no-build \
       --force-recreate "${SERVICES[@]}" >/dev/null; then
+    # After a successful rollback ALWAYS align the canonical public pointer
+    # to the verified previous release, including when it initially pointed
+    # at the candidate new release from an earlier partial operation.
+    if [[ "$(readlink -f -- "$CURRENT")" != "$previous" ]]; then
+      recovery_link="$CURRENT.rollback.$BASHPID"
+      if ln -s -- "$previous" "$recovery_link" &&
+          mv -Tf -- "$recovery_link" "$CURRENT"; then
+        printf 'PUBLIC_CUT_RECOVERY:CURRENT_POINTER_ALIGNED\n' >&2
+      else
+        printf 'PUBLIC_CUT_RECOVERY:CURRENT_POINTER_RESTORE_FAILED\n' >&2
+      fi
+    fi
     node "$SCRIPT_DIR/verify-public-runtime.mjs" >/dev/null &&
       printf 'PUBLIC_CUT_RECOVERY:PREVIOUS_RELEASE_VERIFIED\n' >&2 ||
       printf 'PUBLIC_CUT_RECOVERY:PREVIOUS_RELEASE_NOT_VERIFIED\n' >&2
@@ -135,7 +141,7 @@ after_other="$(docker ps -a --format '{{.Names}} {{.ID}}' |
 # Align the canonical pointer ONLY after HTTP, MIME and reader guards pass.
 # Atomic symlink replacement; neither directory contents nor media are edited.
 if [[ "$original_pointer" != "$target" ]]; then
-  candidate="$CURRENT.next.$"
+  candidate="$CURRENT.next.$BASHPID"
   ln -s -- "$target" "$candidate" || fail 'CURRENT_POINTER_CREATE_FAILED'
   pointer_changed=1
   mv -Tf -- "$candidate" "$CURRENT" || fail 'CURRENT_POINTER_SWAP_FAILED'
