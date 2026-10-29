@@ -15,11 +15,13 @@ SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)"
 LOCK='/run/lock/stackctl-christmas-games.lock'
 READER_LOCK='/run/lock/stackctl-reader-christmas-games.lock'
 READER_NAME='christmas-games-catalog-reader'
+CURRENT='/srv/runtime/christmas-games/current'
 PUBLIC_NAMES=(christmas-games-catalog christmas-games-gateway)
 SERVICES=(catalog gateway)
 stage='preflight'
 rollback_required=0
 rollback_done=0
+pointer_changed=0
 project=''
 reader_release=''
 target=''
@@ -43,6 +45,11 @@ expected_sha="$4"
 [[ "$target" != "$previous" ]] || fail 'ROLLBACK_EQUALS_TARGET'
 release_dir "$target"
 release_dir "$previous"
+# Never overwrite an unrelated directory or an unexpected public pointer.
+[[ -L "$CURRENT" ]] || fail 'CURRENT_POINTER_NOT_SYMLINK'
+original_pointer="$(readlink -f -- "$CURRENT")"
+[[ "$original_pointer" == "$previous" || "$original_pointer" == "$target" ]] ||
+  fail 'CURRENT_POINTER_UNEXPECTED'
 [[ -d "$STACK" && -f "$STACK/compose.yaml" && -f "$STACK/compose.private-audit.yaml" ]] ||
   fail 'CANONICAL_STACK_NOT_FOUND'
 command -v docker >/dev/null && command -v node >/dev/null &&
@@ -90,6 +97,12 @@ rollback() {
   if [[ "$rollback_required" != 1 || "$rollback_done" == 1 ]]; then return; fi
   rollback_done=1
   trap - EXIT ERR INT TERM
+  if [[ "$pointer_changed" == 1 ]]; then
+    recovery_link="$CURRENT.rollback.$"
+    ln -s -- "$original_pointer" "$recovery_link" &&
+      mv -Tf -- "$recovery_link" "$CURRENT" ||
+      printf 'PUBLIC_CUT_RECOVERY:CURRENT_POINTER_RESTORE_FAILED\n' >&2
+  fi
   printf 'PUBLIC_CUT_RECOVERY:ROLLING_BACK_PAIR\n' >&2
   if compose "$previous" up -d --wait --wait-timeout 90 --no-deps --no-build \
       --force-recreate "${SERVICES[@]}" >/dev/null; then
@@ -117,6 +130,16 @@ after_other="$(docker ps -a --format '{{.Names}} {{.ID}}' |
   grep -vE '^christmas-games-(catalog|gateway) ' | sort)"
 [[ "$before_other" == "$after_other" ]] || fail 'NONPUBLIC_CONTAINER_CHANGED'
 
+# Align the canonical pointer ONLY after HTTP, MIME and reader guards pass.
+# Atomic symlink replacement; neither directory contents nor media are edited.
+if [[ "$original_pointer" != "$target" ]]; then
+  candidate="$CURRENT.next.$"
+  ln -s -- "$target" "$candidate" || fail 'CURRENT_POINTER_CREATE_FAILED'
+  pointer_changed=1
+  mv -Tf -- "$candidate" "$CURRENT" || fail 'CURRENT_POINTER_SWAP_FAILED'
+  [[ "$(readlink -f -- "$CURRENT")" == "$target" ]] ||
+    fail 'CURRENT_POINTER_VERIFY_FAILED'
+fi
 rollback_required=0
 trap - EXIT ERR INT TERM
 printf 'GO_PUBLIC_PAIR target_sha=%s project=%s reader_preserved=true\n' "$expected_sha" "$project"
