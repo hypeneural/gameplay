@@ -1,13 +1,14 @@
 import { fileURLToPath } from 'node:url';
 import { inspectPublicMounts } from './check-public-release-boundary.mjs';
 import { inspectDockerWebAlignment } from './check-public-web-alignment.mjs';
-import { auditPublicEdge } from './check-public-asset-http.mjs';
+import { auditPublicEdge, auditMissingAssetCache } from './check-public-asset-http.mjs';
 
 export function summarizePublicRuntime(results) {
   const expected = {
     boundary: 'PUBLIC_RELEASE_BOUNDARY_PASS',
     web: 'WEB_ASSETS_ALIGNED',
     edge: 'PUBLIC_EDGE_ASSETS_PASS',
+    missingAssetCache: 'MISSING_ASSET_NOT_CACHED',
   };
   const checks = Object.fromEntries(
     Object.entries(expected).map(([key]) => [key, results[key]?.status ?? 'UNAVAILABLE']),
@@ -28,14 +29,16 @@ export async function verifyPublicRuntime(
     boundary: inspectPublicMounts,
     web: inspectDockerWebAlignment,
     edge: auditPublicEdge,
+    missingAssetCache: auditMissingAssetCache,
   },
 ) {
   const settled = await Promise.allSettled([
     Promise.resolve().then(() => probes.boundary()),
     Promise.resolve().then(() => probes.web()),
     Promise.resolve().then(() => probes.edge()),
+    Promise.resolve().then(() => probes.missingAssetCache()),
   ]);
-  const names = ['boundary', 'web', 'edge'];
+  const names = ['boundary', 'web', 'edge', 'missingAssetCache'];
   const results = Object.fromEntries(
     settled.map((item, i) => [
       names[i],
