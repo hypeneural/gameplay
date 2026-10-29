@@ -1,4 +1,11 @@
-import { referencedEntryAssets } from './check-public-web-alignment.mjs';
+export function referencedEntryAssets(html) {
+  if (typeof html !== 'string') throw new TypeError('HTML_NOT_STRING');
+  const found = new Set();
+  const matcher =
+    /<(?:script|link)\b[^>]*?\b(?:src|href)\s*=\s*["'](\/assets\/[A-Za-z0-9_.-]+\.(?:js|css))["']/gi;
+  for (const match of html.matchAll(matcher)) found.add(match[1]);
+  return [...found].sort();
+}
 
 export function assertViteEntryIntegrity(html, manifestPaths) {
   if (!(manifestPaths instanceof Set)) throw Error('VITE_ASSET_MANIFEST_INVALID');
