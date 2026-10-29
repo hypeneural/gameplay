@@ -1,6 +1,8 @@
 import { createHash } from 'node:crypto';
 import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
+import { referencedEntryAssets } from './vite-entry-integrity.mjs';
+export { referencedEntryAssets } from './vite-entry-integrity.mjs';
 
 const DEFAULT_CONTAINERS = Object.freeze({
   catalog: 'christmas-games-catalog',
@@ -8,19 +10,6 @@ const DEFAULT_CONTAINERS = Object.freeze({
 });
 const WEB_ROOT = '/var/www/html/web';
 const sha = (bytes) => createHash('sha256').update(bytes).digest('hex');
-
-export function referencedEntryAssets(html) {
-  if (typeof html !== 'string') throw new TypeError('HTML_NOT_STRING');
-  const items = new Set();
-  // Vite's emitted HTML references content-hashed JS/CSS. Never parse
-  // arbitrary external URLs, tokenized session paths, or media.
-  const matcher =
-    /<(?:script|link)\b[^>]*?\b(?:src|href)\s*=\s*["'](\/assets\/[A-Za-z0-9_.-]+\.(?:js|css))["']/gi;
-  for (const match of html.matchAll(matcher)) {
-    items.add(match[1]);
-  }
-  return [...items].sort();
-}
 
 export function comparePublicWebSnapshots(catalog, gateway) {
   const findings = [];
