@@ -1,6 +1,6 @@
 import { execFileSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
-import { copyFile, mkdir, open, lstat, readFile, rename, chown } from 'node:fs/promises';
+import { copyFile, mkdir, open, lstat, readFile, rename, chown, chmod } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import {
   HOST_CONFIG, LEGACY_CACHE, SAFE_CACHE, validateAssetCachePolicy,
@@ -64,6 +64,8 @@ export async function applyNginxPolicyChange() {
     return { status: 'NGINX_POLICY_STAGED_RECREATE_GATEWAY_REQUIRED', backup };
   } catch {
     await copyFile(backup, temp);
+    await chmod(temp, stat.mode & 0o777);
+    await chown(temp, stat.uid, stat.gid);
     await rename(temp, HOST_CONFIG);
     throw Error('NGINX_POLICY_VALIDATION_FAILED_RESTORED');
   }
