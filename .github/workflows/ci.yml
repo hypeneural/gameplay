@@ -63,6 +63,9 @@ jobs:
       - name: Check TypeScript, Lint, Tests, Architecture, Format and RepoMap
         run: pnpm check
 
+      - name: Validate public cut shell syntax (never executes deploy)
+        run: bash -n tools/deploy/apply-public-pair.sh
+
       - name: Validate Assets & Provenance
         run: pnpm asset:validate:all
 
