@@ -89,7 +89,7 @@ export function evaluatePublicCutPlan(config, actual, targetRelease) {
     if (proposal.image !== live.Config?.Image) failures.push('CHANGED_IMAGE:' + serviceName);
     const command = proposal.command;
     const actualCommand = live.Config?.Cmd;
-    if (JSON.stringify(command ?? []) !== JSON.stringify(actualCommand ?? [])) {
+    if (command !== undefined && JSON.stringify(command) !== JSON.stringify(actualCommand ?? [])) {
       failures.push('CHANGED_COMMAND:' + serviceName);
     }
     const portPairs = (proposal.ports ?? []).map((port) =>
