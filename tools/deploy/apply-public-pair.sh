@@ -18,10 +18,8 @@ READER_NAME='christmas-games-catalog-reader'
 CURRENT='/srv/runtime/christmas-games/current'
 PUBLIC_NAMES=(christmas-games-catalog christmas-games-gateway)
 SERVICES=(catalog gateway)
-stage='preflight'
 rollback_required=0
 rollback_done=0
-pointer_changed=0
 project=''
 reader_release=''
 target=''
@@ -124,11 +122,9 @@ rollback() {
 trap rollback EXIT ERR INT TERM
 
 # The only mutation: recreation of EXACTLY catalog + gateway.
-stage='deploying_public_pair'
 rollback_required=1
 compose "$target" up -d --wait --wait-timeout 90 --no-deps --no-build \
   --force-recreate "${SERVICES[@]}" >/dev/null || fail 'PUBLIC_PAIR_RECREATE_FAILED'
-stage='verifying_public_pair'
 node "$SCRIPT_DIR/verify-public-runtime.mjs" >/dev/null ||
   fail 'PUBLIC_RUNTIME_SMOKE_FAILED'
 
@@ -139,11 +135,12 @@ after_other="$(docker ps -a --format '{{.Names}} {{.ID}}' |
 [[ "$before_other" == "$after_other" ]] || fail 'NONPUBLIC_CONTAINER_CHANGED'
 
 # Align the canonical pointer ONLY after HTTP, MIME and reader guards pass.
+[[ "$(readlink -f -- "$CURRENT")" == "$original_pointer" ]] ||
+  fail 'CURRENT_POINTER_CHANGED_CONCURRENTLY'
 # Atomic symlink replacement; neither directory contents nor media are edited.
 if [[ "$original_pointer" != "$target" ]]; then
   candidate="$CURRENT.next.$BASHPID"
   ln -s -- "$target" "$candidate" || fail 'CURRENT_POINTER_CREATE_FAILED'
-  pointer_changed=1
   mv -Tf -- "$candidate" "$CURRENT" || fail 'CURRENT_POINTER_SWAP_FAILED'
   [[ "$(readlink -f -- "$CURRENT")" == "$target" ]] ||
     fail 'CURRENT_POINTER_VERIFY_FAILED'
