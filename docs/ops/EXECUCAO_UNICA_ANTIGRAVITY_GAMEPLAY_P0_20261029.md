@@ -86,6 +86,7 @@ Anotar três valores EXATOS, previamente verificados:
 - `NEW_RELEASE`: diretório imutável do release novo;
 - `GOOD_RELEASE`: diretório imutável do último release bom;
 - `NEW_SHA`: SHA Git completo de 40 caracteres de `NEW_RELEASE/RELEASE.json`.
+- `GOOD_SHA`: SHA Git completo de 40 caracteres de `GOOD_RELEASE/RELEASE.json`.
 
 Os dois diretórios devem existir e estar íntegros. NÃO usar
 `20261028-16e7f65` automaticamente se o bundle real tiver mudado.
@@ -110,7 +111,7 @@ o preflight, nunca o deploy.
 
 ```bash
 sudo bash tools/deploy/apply-public-pair.sh --execute \
-  "$NEW_RELEASE" "$GOOD_RELEASE" "$NEW_SHA"
+  "$NEW_RELEASE" "$GOOD_RELEASE" "$NEW_SHA" "$GOOD_SHA"
 ```
 
 A operação segura:
