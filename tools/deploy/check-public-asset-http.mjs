@@ -8,11 +8,13 @@ const ACCEPTED_ASSET = /^\/assets\/[A-Za-z0-9_.-]+\.(?:css|js)$/;
 export function classifyEdgeAsset(path, status, mime) {
   if (!ACCEPTED_ASSET.test(path)) return 'INVALID_PUBLIC_ASSET_PATH';
   if (status !== 200) return 'EDGE_ASSET_HTTP_' + status;
-  const type = String(mime ?? '').split(';')[0].trim().toLowerCase();
-  const expected = path.endsWith('.css') ? ['text/css'] : [
-    'text/javascript', 'application/javascript',
-    'application/ecmascript', 'text/ecmascript',
-  ];
+  const type = String(mime ?? '')
+    .split(';')[0]
+    .trim()
+    .toLowerCase();
+  const expected = path.endsWith('.css')
+    ? ['text/css']
+    : ['text/javascript', 'application/javascript', 'application/ecmascript', 'text/ecmascript'];
   return expected.includes(type) ? 'EDGE_ASSET_OK' : 'EDGE_ASSET_WRONG_MIME';
 }
 
@@ -43,23 +45,29 @@ export async function auditPublicEdge(assets = [], fetchFn = fetch) {
       redirect: 'manual',
       signal: AbortSignal.timeout(10000),
     });
-    if (page.status !== 200 ||
-        !String(page.headers.get('content-type')).toLowerCase().includes('text/html')) {
+    if (
+      page.status !== 200 ||
+      !String(page.headers.get('content-type')).toLowerCase().includes('text/html')
+    ) {
       await page.body?.cancel();
       return { status: 'BLOCKED_EDGE_DOCUMENT', documentHttpStatus: page.status, assets: [] };
     }
     const html = await page.text();
     wanted = referencedEntryAssets(html);
   }
-  if (wanted.length === 0 || wanted.length > 100 ||
-      wanted.some((path) => !ACCEPTED_ASSET.test(path))) {
+  if (
+    wanted.length === 0 ||
+    wanted.length > 100 ||
+    wanted.some((path) => !ACCEPTED_ASSET.test(path))
+  ) {
     throw new Error('EDGE_ASSET_LIST_INVALID');
   }
   const results = [];
   for (const path of wanted) results.push(await auditEdgeAsset(path, fetchFn));
   return {
     status: results.every((result) => result.check === 'EDGE_ASSET_OK')
-      ? 'PUBLIC_EDGE_ASSETS_PASS' : 'BLOCKED_PUBLIC_EDGE_ASSETS',
+      ? 'PUBLIC_EDGE_ASSETS_PASS'
+      : 'BLOCKED_PUBLIC_EDGE_ASSETS',
     assets: results,
   };
 }
@@ -76,10 +84,12 @@ if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
       process.stdout.write(JSON.stringify(result) + '\n');
       if (result.status !== 'PUBLIC_EDGE_ASSETS_PASS') process.exitCode = 2;
     } catch (error) {
-      process.stderr.write(JSON.stringify({
-        status: 'EDGE_PROBE_UNAVAILABLE',
-        reason: error?.name === 'TimeoutError' ? 'TIMEOUT' : 'NETWORK_OR_FETCH_FAILED',
-      }) + '\n');
+      process.stderr.write(
+        JSON.stringify({
+          status: 'EDGE_PROBE_UNAVAILABLE',
+          reason: error?.name === 'TimeoutError' ? 'TIMEOUT' : 'NETWORK_OR_FETCH_FAILED',
+        }) + '\n',
+      );
       process.exitCode = 2;
     }
   }
