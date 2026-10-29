@@ -78,6 +78,8 @@ async function applyNginxPolicyChange() {
         '--network=none',
         '--add-host',
         'catalog:127.0.0.1',
+        '--add-host',
+        'gallery-ops:127.0.0.1',
         '-v',
         HOST_CONFIG + ':/etc/nginx/conf.d/default.conf:ro',
         'nginx:alpine',
