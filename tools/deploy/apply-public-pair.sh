@@ -4,7 +4,7 @@
 #   sudo bash tools/deploy/apply-public-pair.sh --execute \
 #     /srv/runtime/christmas-games/releases/APPROVED_NEW \
 #     /srv/runtime/christmas-games/releases/VERIFIED_ROLLBACK \
-#     EXACT_40_CHAR_TARGET_GIT_SHA
+#     EXACT_40_CHAR_TARGET_GIT_SHA EXACT_40_CHAR_ROLLBACK_GIT_SHA
 # This script never performs a generic platform deploy or touches catalog-reader.
 set -Eeuo pipefail
 umask 077
@@ -34,12 +34,14 @@ release_dir() {
   [[ "$(realpath -e -- "$directory")" == "$directory" ]] || fail 'RELEASE_SYMLINK_CHAIN'
 }
 
-[[ "$#" -eq 4 && "$1" == '--execute' ]] ||
-  fail 'USAGE_EXECUTE_TARGET_ROLLBACK_EXACT_SHA'
+[[ "$#" -eq 5 && "$1" == '--execute' ]] ||
+  fail 'USAGE_EXECUTE_TARGET_ROLLBACK_TWO_EXACT_SHAS'
 target="$2"
 previous="$3"
 expected_sha="$4"
-[[ "$expected_sha" =~ ^[a-f0-9]{40}$ ]] || fail 'INVALID_SHA'
+rollback_sha="$5"
+[[ "$expected_sha" =~ ^[a-f0-9]{40}$ && "$rollback_sha" =~ ^[a-f0-9]{40}$ ]] ||
+  fail 'INVALID_SHA'
 [[ "$target" != "$previous" ]] || fail 'ROLLBACK_EQUALS_TARGET'
 release_dir "$target"
 release_dir "$previous"
@@ -65,6 +67,9 @@ node "$SCRIPT_DIR/verify-vps-release.mjs" "$previous" >/dev/null ||
   fail 'ROLLBACK_MANIFEST_FAILED'
 actual_sha="$(node -p "JSON.parse(require('node:fs').readFileSync(process.argv[1], 'utf8')).gitSha" "$target/RELEASE.json")"
 [[ "$actual_sha" == "$expected_sha" ]] || fail 'TARGET_SHA_NOT_PINNED'
+actual_rollback_sha="$(node -p "JSON.parse(require('node:fs').readFileSync(process.argv[1], 'utf8')).gitSha" "$previous/RELEASE.json")"
+[[ "$actual_rollback_sha" == "$rollback_sha" ]] || fail 'ROLLBACK_SHA_NOT_PINNED'
+[[ "$rollback_sha" != 37190a8* ]] || fail 'INSECURE_ROLLBACK_RELEASE'
 
 project="$(docker inspect --format '{{index .Config.Labels "com.docker.compose.project"}}' "${PUBLIC_NAMES[0]}")"
 [[ "$project" =~ ^[A-Za-z0-9_-]+$ ]] || fail 'INVALID_PROJECT'
