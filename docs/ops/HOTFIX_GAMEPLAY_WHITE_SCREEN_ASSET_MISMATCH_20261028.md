@@ -120,3 +120,98 @@ Fontes: https://docs.docker.com/engine/storage/bind-mounts/ ;
 https://docs.docker.com/reference/cli/docker/compose/up/ ;
 https://docs.docker.com/reference/cli/docker/compose/restart/ ;
 https://vite.dev/guide/build .
+
+
+## RECORRÊNCIA 29/10/2026 — novos hashes, MIME HTML
+
+Nova evidência DevTools:
+- `GET /assets/index-CXZUH_4f.js` -> HTTP 404;
+- `/assets/index-BFvuR7tZ.css` -> `Content-Type: text/html`, recusado pelo navegador.
+  **O status HTTP do CSS não foi fornecido**: pode ser uma página HTML de erro
+  404 ou fallback de Caddy. Não afirmar 200 ou reconfigurar MIME para ocultar.
+- Os nomes hash mudaram em relação ao incidente anterior. Investigar
+  **repetição do fluxo de deploy** ou HTML antigo vindo de cache/borda;
+  a recriação isolada de gateway é um paliativo, não corrige publicação futura.
+
+A falha anterior da PR #48 era uma lacuna no gate: ela compara arquivos
+dentro dos containers, mas não verifica HTTP/MIME na BORDA. Adicionado
+`tools/deploy/check-public-asset-http.mjs` com teste de regressão.
+
+### Uma única coleta: origem, gateway e navegador
+
+No host Media VPS (em worktree com PR #48), primeiro rodar:
+```bash
+pnpm release:check-web-alignment
+pnpm release:check-edge-assets index-CXZUH_4f.js index-BFvuR7tZ.css
+```
+
+O segundo comando acessa exclusivamente arquivos públicos no HTTPS
+`jogos.fotosdenatal.com`; exige 200 + MIME JavaScript/CSS real e rejeita
+redirect/HTML como asset. Sem argumentos, consulta só a demo `/` e deriva
+os nomes publicados de JS/CSS. Nunca passar URL de família/token ao script.
+
+Se a VPS não resolver DNS, diagnosticar `BLOCKED_DNS`; não marcar
+`PUBLIC_EDGE_ASSETS_PASS` a partir de um teste apenas localhost.
+
+Para distinguir Nginx do Caddy, do host seguro na mesma rede Docker:
+```bash
+docker exec christmas-games-catalog node -e '
+const files=["index-CXZUH_4f.js","index-BFvuR7tZ.css"];
+Promise.all(files.map(async name=>{
+const r=await fetch("http://christmas-games-gateway/assets/"+name);
+console.log(name,r.status,r.headers.get("content-type"));
+})).then(()=>{}).catch(()=>process.exitCode=2)'
+```
+Sem dados privados. Registrar status e MIME; não registrar corpos HTML.
+Conferir também `docker inspect` para `/var/www/html/web` em ambos
+os serviços e `nginx -T` dentro do gateway para saber se o arquivo
+`nginx.conf` efetivo é o esperado.
+
+**Interpretação:**
+1. Montagens divergentes, assets ausentes no gateway -> publicação
+   incompleta do par catalog+gateway. Corrigir alinhamento de release.
+2. Gateway entrega 200/CSS correto mas HTTPS público entrega HTML/404 ->
+   problema no Caddy, virtual host, reverse proxy ou cache de borda.
+3. Ambos entregam os hashes da release corrente, mas navegador pede
+   arquivo de release anterior -> HTML antigo, cache HTTP ou service worker.
+4. O arquivo não existe na própria release imutável -> bundle incompleto
+   ou HTML incorreto; falha de build/deploy, não do proxy.
+5. Arquivo existe no gateway e status 200 mas MIME HTML -> configuração
+   incorreta do location /assets; **não** configurar o navegador para
+   ignorar MIME.
+
+### Correção duradoura — publicar HTML e assets como unidade
+
+A origem do risco é `compose.persistence.yaml`: os **dois**
+serviços montam `${RELEASE_DIR}/web`. Qualquer atualização que apenas
+troque o symlink `current`, recrie `catalog` ou recarregue Nginx
+pode deixar o HTML com um hash diferente dos assets no gateway.
+
+Na implantação futura, após CI e build/manifesto validado:
+- escolher um diretório **imutável** `/srv/runtime/christmas-games/releases/<SHA>`;
+- provar que `web/index.html` referencia APENAS arquivos existentes
+  nessa mesma árvore `web/assets`, com checksums do manifesto;
+- preflight `docker compose config` no projeto correto, preservando
+  mounts/env da produção, reader privado e gateway edge;
+- **recriar conjuntamente catalog e gateway** com o mesmo
+  `RELEASE_DIR` imutável; nunca aplicar só um dos dois serviços;
+- antes de encerrar, exigir **os dois** gates:
+  `WEB_ASSETS_ALIGNED` e `PUBLIC_EDGE_ASSETS_PASS` (200 + MIME),
+  além do canário navegador/JSON/WebP;
+- em falha, **rollback coordenado** dos dois serviços à release anterior
+  comprovadamente íntegra, preservando o `catalog-reader`;
+- não apagar os assets da release anterior durante a janela de cache de
+  HTML/JS em navegadores abertos; prever retenção temporária de chunks
+  antigos, conforme documentação Vite.
+
+**Importante:** o `stackctl` da plataforma bloqueia deploy genérico
+`christmas-games`. Não retirar esse guard. Preparar uma operação
+publica transacional e auditável em PR independente, ou executar a
+troca seletiva do **par** de serviços por operador com plano/rollback
+comprovados e liberação explícita. Não usar `docker compose down`.
+
+Fontes oficiais:
+- https://vite.dev/guide/build
+- https://vite.dev/guide/troubleshooting
+- https://docs.docker.com/engine/storage/bind-mounts/
+- https://docs.docker.com/reference/cli/docker/compose/up/
