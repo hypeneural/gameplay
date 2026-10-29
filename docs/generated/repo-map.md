@@ -1439,6 +1439,8 @@
 │   │   ├── smoke-release-runtime.mjs
 │   │   ├── smoke-staging.mjs
 │   │   ├── staging-boundaries.test.mjs
+│   │   ├── verify-public-runtime.mjs
+│   │   ├── verify-public-runtime.test.mjs
 │   │   └── verify-vps-release.mjs
 │   ├── export-puzzle-source-reader.mjs
 │   ├── fixture-generator
