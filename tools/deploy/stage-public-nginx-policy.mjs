@@ -3,7 +3,10 @@ import { createHash } from 'node:crypto';
 import { copyFile, mkdir, open, lstat, readFile, rename, chown, chmod } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import {
-  HOST_CONFIG, LEGACY_CACHE, SAFE_CACHE, validateAssetCachePolicy,
+  HOST_CONFIG,
+  LEGACY_CACHE,
+  SAFE_CACHE,
+  validateAssetCachePolicy,
 } from './nginx-asset-policy.mjs';
 
 const BACKUPS = '/srv/backups/platform/christmas-games';
@@ -14,8 +17,7 @@ export function planNginxPolicyChange(config) {
   if (status === 'ASSET_CACHE_POLICY_PASS') {
     return { status: 'NGINX_CACHE_POLICY_ALREADY_SAFE', updated: config };
   }
-  if (status !== 'BLOCKED_IMMUTABLE_404' ||
-      config.split(LEGACY_CACHE).length !== 2) {
+  if (status !== 'BLOCKED_IMMUTABLE_404' || config.split(LEGACY_CACHE).length !== 2) {
     throw Error('UNKNOWN_NGINX_CONFIGURATION');
   }
   const updated = config.replace(LEGACY_CACHE, SAFE_CACHE);
@@ -25,7 +27,7 @@ export function planNginxPolicyChange(config) {
   return { status: 'NGINX_CACHE_POLICY_NEEDS_PATCH', updated };
 }
 
-export async function applyNginxPolicyChange() {
+async function applyNginxPolicyChange() {
   if (process.getuid?.() !== 0) throw Error('ROOT_REQUIRED');
   const stat = await lstat(HOST_CONFIG);
   if (!stat.isFile() || stat.isSymbolicLink()) throw Error('NGINX_FILE_NOT_REGULAR');
@@ -35,8 +37,13 @@ export async function applyNginxPolicyChange() {
     return { status: plan.status };
   }
   await mkdir(BACKUPS, { recursive: true, mode: 0o700 });
-  const backup = BACKUPS + '/nginx-' + new Date().toISOString()
-    .replace(/[^0-9TZ]/g, '') + '-' + sha(existing).slice(0, 12) + '.conf';
+  const backup =
+    BACKUPS +
+    '/nginx-' +
+    new Date().toISOString().replace(/[^0-9TZ]/g, '') +
+    '-' +
+    sha(existing).slice(0, 12) +
+    '.conf';
   // Exclusive backup, no replacement of an existing receipt.
   const backupFd = await open(backup, 'wx', 0o600);
   try {
@@ -56,11 +63,23 @@ export async function applyNginxPolicyChange() {
     await rename(temp, HOST_CONFIG);
     // This is a TEMPORARY Nginx process, not the live gateway. The bind-mounted
     // config in an already-running gateway is not replaced until recreate.
-    execFileSync('docker', [
-      'run', '--rm', '--pull=never', '--network=none', '--add-host', 'catalog:127.0.0.1',
-      '-v', HOST_CONFIG + ':/etc/nginx/conf.d/default.conf:ro',
-      'nginx:alpine', 'nginx', '-t',
-    ], { timeout: 20000, stdio: ['ignore', 'ignore', 'pipe'] });
+    execFileSync(
+      'docker',
+      [
+        'run',
+        '--rm',
+        '--pull=never',
+        '--network=none',
+        '--add-host',
+        'catalog:127.0.0.1',
+        '-v',
+        HOST_CONFIG + ':/etc/nginx/conf.d/default.conf:ro',
+        'nginx:alpine',
+        'nginx',
+        '-t',
+      ],
+      { timeout: 20000, stdio: ['ignore', 'ignore', 'pipe'] },
+    );
     return { status: 'NGINX_POLICY_STAGED_RECREATE_GATEWAY_REQUIRED', backup };
   } catch {
     await copyFile(backup, temp);
