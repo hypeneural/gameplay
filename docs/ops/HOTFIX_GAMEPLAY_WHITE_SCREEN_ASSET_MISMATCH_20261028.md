@@ -121,10 +121,10 @@ https://docs.docker.com/reference/cli/docker/compose/up/ ;
 https://docs.docker.com/reference/cli/docker/compose/restart/ ;
 https://vite.dev/guide/build .
 
-
 ## RECORRÊNCIA 29/10/2026 — novos hashes, MIME HTML
 
 Nova evidência DevTools:
+
 - `GET /assets/index-CXZUH_4f.js` -> HTTP 404;
 - `/assets/index-BFvuR7tZ.css` -> `Content-Type: text/html`, recusado pelo navegador.
   **O status HTTP do CSS não foi fornecido**: pode ser uma página HTML de erro
@@ -140,6 +140,7 @@ dentro dos containers, mas não verifica HTTP/MIME na BORDA. Adicionado
 ### Uma única coleta: origem, gateway e navegador
 
 No host Media VPS (em worktree com PR #48), primeiro rodar:
+
 ```bash
 pnpm release:check-web-alignment
 pnpm release:check-edge-assets index-CXZUH_4f.js index-BFvuR7tZ.css
@@ -154,6 +155,7 @@ Se a VPS não resolver DNS, diagnosticar `BLOCKED_DNS`; não marcar
 `PUBLIC_EDGE_ASSETS_PASS` a partir de um teste apenas localhost.
 
 Para distinguir Nginx do Caddy, do host seguro na mesma rede Docker:
+
 ```bash
 docker exec christmas-games-catalog node -e '
 const files=["index-CXZUH_4f.js","index-BFvuR7tZ.css"];
@@ -162,12 +164,14 @@ const r=await fetch("http://christmas-games-gateway/assets/"+name);
 console.log(name,r.status,r.headers.get("content-type"));
 })).then(()=>{}).catch(()=>process.exitCode=2)'
 ```
+
 Sem dados privados. Registrar status e MIME; não registrar corpos HTML.
 Conferir também `docker inspect` para `/var/www/html/web` em ambos
 os serviços e `nginx -T` dentro do gateway para saber se o arquivo
 `nginx.conf` efetivo é o esperado.
 
 **Interpretação:**
+
 1. Montagens divergentes, assets ausentes no gateway -> publicação
    incompleta do par catalog+gateway. Corrigir alinhamento de release.
 2. Gateway entrega 200/CSS correto mas HTTPS público entrega HTML/404 ->
@@ -188,6 +192,7 @@ troque o symlink `current`, recrie `catalog` ou recarregue Nginx
 pode deixar o HTML com um hash diferente dos assets no gateway.
 
 Na implantação futura, após CI e build/manifesto validado:
+
 - escolher um diretório **imutável** `/srv/runtime/christmas-games/releases/<SHA>`;
 - provar que `web/index.html` referencia APENAS arquivos existentes
   nessa mesma árvore `web/assets`, com checksums do manifesto;
@@ -211,6 +216,7 @@ troca seletiva do **par** de serviços por operador com plano/rollback
 comprovados e liberação explícita. Não usar `docker compose down`.
 
 Fontes oficiais:
+
 - https://vite.dev/guide/build
 - https://vite.dev/guide/troubleshooting
 - https://docs.docker.com/engine/storage/bind-mounts/
