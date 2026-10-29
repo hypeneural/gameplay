@@ -1,8 +1,11 @@
 import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 
-const CONTAINERS = ['christmas-games-catalog', 'christmas-games-gateway',
-  'christmas-games-catalog-reader'];
+const CONTAINERS = [
+  'christmas-games-catalog',
+  'christmas-games-gateway',
+  'christmas-games-catalog-reader',
+];
 const RELEASE_PREFIX = '/srv/runtime/christmas-games/releases/';
 const PATHS = {
   catalog: ['/app/server', '/app/package.json', '/var/www/html/web'],
@@ -10,8 +13,12 @@ const PATHS = {
 };
 
 function releaseForSource(source, suffix) {
-  if (typeof source !== 'string' || !source.startsWith(RELEASE_PREFIX) ||
-      !source.endsWith('/' + suffix)) return null;
+  if (
+    typeof source !== 'string' ||
+    !source.startsWith(RELEASE_PREFIX) ||
+    !source.endsWith('/' + suffix)
+  )
+    return null;
   const name = source.slice(RELEASE_PREFIX.length, -suffix.length - 1);
   return /^[A-Za-z0-9][A-Za-z0-9._-]*$/.test(name) ? name : null;
 }
@@ -21,9 +28,11 @@ export function evaluatePublicMounts(containers) {
   const gateway = containers?.gateway;
   const reader = containers?.reader;
   const findings = [];
-  if (!catalog || !gateway || !reader) return {
-    status: 'BLOCKED_CONTAINER_INVENTORY', findings: ['MISSING_CONTAINER'],
-  };
+  if (!catalog || !gateway || !reader)
+    return {
+      status: 'BLOCKED_CONTAINER_INVENTORY',
+      findings: ['MISSING_CONTAINER'],
+    };
 
   const entries = [
     ['catalog', catalog, PATHS.catalog],
@@ -48,9 +57,14 @@ export function evaluatePublicMounts(containers) {
         findings.push('MISSING_READONLY_MOUNT:' + service + ':' + destination);
         continue;
       }
-      const suffix = destination === '/app/server' ? 'server' :
-        destination === '/app/package.json' ? 'package.json' :
-          destination === '/var/www/html/public/social' ? 'public/social' : 'web';
+      const suffix =
+        destination === '/app/server'
+          ? 'server'
+          : destination === '/app/package.json'
+            ? 'package.json'
+            : destination === '/var/www/html/public/social'
+              ? 'public/social'
+              : 'web';
       const name = releaseForSource(m.Source, suffix);
       if (!name) findings.push('NOT_IMMUTABLE_RELEASE:' + service + ':' + destination);
       else releaseNames.add(name);
@@ -104,10 +118,12 @@ if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
     process.stdout.write(JSON.stringify(result) + '\n');
     if (result.status !== 'PUBLIC_RELEASE_BOUNDARY_PASS') process.exitCode = 2;
   } catch (error) {
-    process.stderr.write(JSON.stringify({
-      status: 'PUBLIC_RELEASE_INSPECTION_UNAVAILABLE',
-      reason: error?.code === 'ENOENT' ? 'DOCKER_NOT_FOUND' : 'INSPECTION_FAILED',
-    }) + '\n');
+    process.stderr.write(
+      JSON.stringify({
+        status: 'PUBLIC_RELEASE_INSPECTION_UNAVAILABLE',
+        reason: error?.code === 'ENOENT' ? 'DOCKER_NOT_FOUND' : 'INSPECTION_FAILED',
+      }) + '\n',
+    );
     process.exitCode = 2;
   }
 }
