@@ -10,9 +10,11 @@ export function referencedEntryAssets(html) {
 export function assertViteEntryIntegrity(html, manifestPaths) {
   if (!(manifestPaths instanceof Set)) throw Error('VITE_ASSET_MANIFEST_INVALID');
   const assets = referencedEntryAssets(html);
-  if (assets.length < 2 ||
-      !assets.some((name) => name.endsWith('.js')) ||
-      !assets.some((name) => name.endsWith('.css'))) {
+  if (
+    assets.length < 2 ||
+    !assets.some((name) => name.endsWith('.js')) ||
+    !assets.some((name) => name.endsWith('.css'))
+  ) {
     throw Error('VITE_ENTRYPOINT_PAIR_MISSING');
   }
   for (const asset of assets) {
