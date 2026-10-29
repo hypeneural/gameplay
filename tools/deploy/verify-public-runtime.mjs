@@ -10,25 +10,26 @@ export function summarizePublicRuntime(results) {
     edge: 'PUBLIC_EDGE_ASSETS_PASS',
   };
   const checks = Object.fromEntries(
-    Object.entries(expected).map(([key]) => [
-      key,
-      results[key]?.status ?? 'UNAVAILABLE',
-    ]),
+    Object.entries(expected).map(([key]) => [key, results[key]?.status ?? 'UNAVAILABLE']),
   );
   const status = Object.entries(expected).every(([key, value]) => checks[key] === value)
     ? 'PUBLIC_RUNTIME_PASS'
     : 'BLOCKED_PUBLIC_RUNTIME';
-  return { status, checks,
+  return {
+    status,
+    checks,
     publicRelease: results.boundary?.publicRelease ?? null,
     project: results.boundary?.project ?? null,
   };
 }
 
-export async function verifyPublicRuntime(probes = {
-  boundary: inspectPublicMounts,
-  web: inspectDockerWebAlignment,
-  edge: auditPublicEdge,
-}) {
+export async function verifyPublicRuntime(
+  probes = {
+    boundary: inspectPublicMounts,
+    web: inspectDockerWebAlignment,
+    edge: auditPublicEdge,
+  },
+) {
   const settled = await Promise.allSettled([
     Promise.resolve().then(() => probes.boundary()),
     Promise.resolve().then(() => probes.web()),
@@ -37,7 +38,8 @@ export async function verifyPublicRuntime(probes = {
   const names = ['boundary', 'web', 'edge'];
   const results = Object.fromEntries(
     settled.map((item, i) => [
-      names[i], item.status === 'fulfilled' ? item.value : { status: 'UNAVAILABLE' },
+      names[i],
+      item.status === 'fulfilled' ? item.value : { status: 'UNAVAILABLE' },
     ]),
   );
   return summarizePublicRuntime(results);
