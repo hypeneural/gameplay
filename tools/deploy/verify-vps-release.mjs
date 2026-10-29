@@ -45,6 +45,27 @@ for (const requiredPath of [
   }
 }
 
+// An otherwise valid manifest can still contain HTML pointing to a missing
+// content-hashed Vite entrypoint. Fail the release BEFORE a public cut.
+const appShell = await readFile(resolve(releaseRoot, 'web/index.html'), 'utf8');
+const linkedAssetRegex =
+  /<(?:script|link)\b[^>]*?\b(?:src|href)\s*=\s*["'](\/assets\/[A-Za-z0-9_.-]+\.(?:js|css))["']/gi;
+const referencedAssets = new Set(
+  [...appShell.matchAll(linkedAssetRegex)].map((match) => match[1].slice(1)),
+);
+if (
+  referencedAssets.size < 2 ||
+  ![...referencedAssets].some((asset) => asset.endsWith('.js')) ||
+  ![...referencedAssets].some((asset) => asset.endsWith('.css'))
+) {
+  throw new Error('Release HTML has no valid Vite JS/CSS entrypoint pair.');
+}
+for (const asset of referencedAssets) {
+  if (!actualPaths.has('web/' + asset)) {
+    throw new Error(`Vite entry asset missing from release: ${asset}`);
+  }
+}
+
 const expected = [...release.files].sort((left, right) => left.path.localeCompare(right.path));
 if (expected.length !== actual.length) {
   throw new Error(
