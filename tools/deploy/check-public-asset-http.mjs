@@ -36,6 +36,27 @@ export async function auditEdgeAsset(path, fetchFn = fetch) {
   return result;
 }
 
+// Probe one synthetic, token-free chunk that must not exist. A 404 with
+// Cache-Control: immutable can poison browser caches long after a fixed cut.
+export async function auditMissingAssetCache(fetchFn = fetch) {
+  const path = '/assets/__evydencia_forensic_missing_20261029__.js';
+  const response = await fetchFn(HOST + path, {
+    method: 'GET',
+    redirect: 'manual',
+    signal: AbortSignal.timeout(10000),
+  });
+  const cache = String(response.headers.get('cache-control') ?? '').toLowerCase();
+  const status = response.status;
+  await response.body?.cancel();
+  return {
+    status: status === 404 && !/immutable|max-age\\s*=\\s*[1-9]/.test(cache)
+      ? 'MISSING_ASSET_NOT_CACHED'
+      : 'BLOCKED_MISSING_ASSET_CACHE',
+    httpStatus: status,
+    immutable: /immutable/.test(cache),
+  };
+}
+
 export async function auditPublicEdge(assets = [], fetchFn = fetch) {
   if (!Array.isArray(assets)) throw new Error('INVALID_PUBLIC_ASSET_ARGUMENTS');
   let wanted = assets;
