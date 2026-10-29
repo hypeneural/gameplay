@@ -1,3 +1,4 @@
+import { randomBytes } from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import { referencedEntryAssets } from './check-public-web-alignment.mjs';
 
@@ -39,7 +40,7 @@ export async function auditEdgeAsset(path, fetchFn = fetch) {
 // Probe one synthetic, token-free chunk that must not exist. A 404 with
 // Cache-Control: immutable can poison browser caches long after a fixed cut.
 export async function auditMissingAssetCache(fetchFn = fetch) {
-  const path = '/assets/__evydencia_forensic_missing_20261029__.js';
+  const path = '/assets/__evydencia_forensic_missing_' + randomBytes(8).toString('hex') + '.js';
   const response = await fetchFn(HOST + path, {
     method: 'GET',
     redirect: 'manual',
