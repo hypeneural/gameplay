@@ -53,7 +53,7 @@ pnpm release:verify-public-runtime
 
 4. Execute `node tools/deploy/verify-vps-release.mjs
 /srv/runtime/christmas-games/releases/<release-confirmada>` para validar
-o manifesto real e os JS/CSS referenciados.
+   o manifesto real e os JS/CSS referenciados.
 5. Diferencie e registre uma causa:
    - `PUBLIC_RELEASE_BOUNDARY`: releases/mounts diferentes;
    - `RUNNING_HTML_RELEASE_DRIFT`: Node carregou HTML antigo;
@@ -61,7 +61,7 @@ o manifesto real e os JS/CSS referenciados.
    - `EDGE_ASSET_WRONG_MIME`: Caddy/Nginx serve HTML para CSS/JS;
    - `OLD_BROWSER_HTML`: navegador ainda usa hash anterior;
    - `BUNDLE_INCOMPLETE`: release contém HTML sem o respectivo asset.
-   Não chamar cache/MIME a causa sem evidência direta de headers/mounts.
+     Não chamar cache/MIME a causa sem evidência direta de headers/mounts.
 
 ## Etapa B — hotfix UMA VEZ, apenas após confirmar A
 
@@ -86,6 +86,7 @@ o manifesto real e os JS/CSS referenciados.
 ## Etapa C — um único recibo pós-corte
 
 Exigir simultaneamente:
+
 - `PUBLIC_RELEASE_BOUNDARY_PASS`;
 - `WEB_ASSETS_ALIGNED`;
 - `PUBLIC_EDGE_ASSETS_PASS`;
@@ -116,6 +117,7 @@ alternativa estrutural para persistir chunks com nomes hash entre releases;
 exige futura homologação de montagem e não está sendo ativado nesta PR.
 
 ## Documentação oficial
+
 - https://docs.docker.com/reference/cli/docker/compose/up/
 - https://docs.docker.com/engine/storage/bind-mounts/
 - https://vite.dev/guide/build
