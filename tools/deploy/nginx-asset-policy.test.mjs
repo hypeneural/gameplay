@@ -1,5 +1,5 @@
 import { readFile } from 'node:fs/promises';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, URL } from 'node:url';
 import { describe, expect, it } from 'vitest';
 import { validateAssetCachePolicy } from './nginx-asset-policy.mjs';
 import { planNginxPolicyChange } from './stage-public-nginx-policy.mjs';
