@@ -57,7 +57,7 @@ export async function applyNginxPolicyChange() {
     // This is a TEMPORARY Nginx process, not the live gateway. The bind-mounted
     // config in an already-running gateway is not replaced until recreate.
     execFileSync('docker', [
-      'run', '--rm', '--pull=never', '--network=none',
+      'run', '--rm', '--pull=never', '--network=none', '--add-host', 'catalog:127.0.0.1',
       '-v', HOST_CONFIG + ':/etc/nginx/conf.d/default.conf:ro',
       'nginx:alpine', 'nginx', '-t',
     ], { timeout: 20000, stdio: ['ignore', 'ignore', 'pipe'] });
