@@ -1442,7 +1442,9 @@
 │   │   ├── staging-boundaries.test.mjs
 │   │   ├── verify-public-runtime.mjs
 │   │   ├── verify-public-runtime.test.mjs
-│   │   └── verify-vps-release.mjs
+│   │   ├── verify-vps-release.mjs
+│   │   ├── vite-entry-integrity.mjs
+│   │   └── vite-entry-integrity.test.mjs
 │   ├── export-puzzle-source-reader.mjs
 │   ├── fixture-generator
 │   │   ├── package.json
