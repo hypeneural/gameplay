@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { auditPublicEdge, classifyEdgeAsset } from './check-public-asset-http.mjs';
+import { auditPublicEdge, classifyEdgeAsset, auditMissingAssetCache } from './check-public-asset-http.mjs';
 
 const js = '/assets/index-CXZUH_4f.js';
 const css = '/assets/index-BFvuR7tZ.css';
@@ -51,6 +51,24 @@ describe('public edge asset transport contract', () => {
     expect(result.status).toBe('BLOCKED_PUBLIC_EDGE_ASSETS');
     expect(result.assets[0].check).toBe('EDGE_ASSET_HTTP_302');
     expect(fetchFn.mock.calls[0][1].redirect).toBe('manual');
+  });
+
+  it('rejects immutable caching for synthetic missing JavaScript (404)', async () => {
+    const safe = await auditMissingAssetCache(async () => new globalThis.Response('', {
+      status: 404,
+      headers: { 'cache-control': 'no-store' },
+    }));
+    expect(safe.status).toBe('MISSING_ASSET_NOT_CACHED');
+    const poisoned = await auditMissingAssetCache(async () => new globalThis.Response('', {
+      status: 404,
+      headers: { 'cache-control': 'public, max-age=31536000, immutable' },
+    }));
+    expect(poisoned.status).toBe('BLOCKED_MISSING_ASSET_CACHE');
+    const cached = await auditMissingAssetCache(async () => new globalThis.Response('', {
+      status: 404,
+      headers: { 'cache-control': 'max-age=120' },
+    }));
+    expect(cached.status).toBe('BLOCKED_MISSING_ASSET_CACHE');
   });
 
   it('rejects private session URLs, unsupported and traversal paths', async () => {
