@@ -56,7 +56,7 @@ export function evaluatePublicCutPlan(config, actual, targetRelease) {
     if (volumes.size !== current.size) failures.push('MOUNT_COUNT_DRIFT:' + serviceName);
     for (const [destination, mounted] of current) {
       const planned = volumes.get(destination);
-      if (!planned || planned.type !== 'bind' || planned.read_only !== !mounted.RW) {
+      if (!planned || planned.type !== 'bind' || Boolean(planned.read_only) !== !mounted.RW) {
         failures.push('MOUNT_PROTECTION_DRIFT:' + serviceName + ':' + destination);
         continue;
       }
@@ -121,7 +121,7 @@ export function evaluatePublicCutPlan(config, actual, targetRelease) {
     for (const [destination, mount] of live) {
       const candidate = proposed.get(destination);
       if (!candidate || candidate.source !== mount.Source ||
-          candidate.read_only !== !mount.RW) {
+          Boolean(candidate.read_only) !== !mount.RW) {
         failures.push('READER_MOUNT_DRIFT:' + destination);
       }
     }
