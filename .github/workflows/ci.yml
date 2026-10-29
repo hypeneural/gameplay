@@ -57,6 +57,11 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Forensic formatting diff for PR48 (temporary, no secrets)
+        run: |
+          pnpm exec prettier --write docs/ops/HOTFIX_GAMEPLAY_WHITE_SCREEN_ASSET_MISMATCH_20261028.md tools/deploy/check-public-asset-http.mjs tools/deploy/check-public-asset-http.test.mjs
+          git diff -- docs/ops/HOTFIX_GAMEPLAY_WHITE_SCREEN_ASSET_MISMATCH_20261028.md tools/deploy/check-public-asset-http.mjs tools/deploy/check-public-asset-http.test.mjs
+
       - name: Verify machine-readable repository state
         run: pnpm agent:doctor
 
