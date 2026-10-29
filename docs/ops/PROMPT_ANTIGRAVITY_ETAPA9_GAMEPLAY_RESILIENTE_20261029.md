@@ -123,7 +123,6 @@ exige futura homologação de montagem e não está sendo ativado nesta PR.
 - https://vite.dev/guide/build
 - https://vite.dev/guide/troubleshooting
 
-
 ## One-shot de execução preparada na PR #48
 
 Há um **script isolado**, e não é necessário improvisar comandos Docker:
@@ -149,13 +148,14 @@ sudo bash tools/deploy/apply-public-pair.sh --execute \
 ```
 
 O segundo comando é propositalmente exigente:
+
 - valida hashes/manifests de destino e rollback e SHA completo;
 - rejeita symlinks de releases, diretórios inesperados e alteração de env,
   volume do SQLite, portas, imagens, comando ou redes;
 - obtém o projeto Compose real das labels do Docker;
 - adquire **ambos** os locks públicos e privados usados pelo `stackctl`;
 - usa somente `docker compose up -d --wait ... --no-deps --no-build
-  --force-recreate catalog gateway`;
+--force-recreate catalog gateway`;
 - confere que `catalog-reader` e todos os demais containers mantiveram ID;
 - roda `PUBLIC_RUNTIME_PASS` no HTTPS real (sem tokens);
 - em erro, executa **uma** tentativa de rollback coordenado do par;

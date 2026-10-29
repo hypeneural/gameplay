@@ -83,6 +83,7 @@ não substituir o Nginx inteiro nem copiar um template por cima.
 ## 4. Preflight da release nova e rollback — 100% read-only
 
 Anotar três valores EXATOS, previamente verificados:
+
 - `NEW_RELEASE`: diretório imutável do release novo;
 - `GOOD_RELEASE`: diretório imutável do último release bom;
 - `NEW_SHA`: SHA Git completo de 40 caracteres de `NEW_RELEASE/RELEASE.json`.
@@ -115,10 +116,11 @@ sudo bash tools/deploy/apply-public-pair.sh --execute \
 ```
 
 A operação segura:
+
 - valida release e rollback por SHA/manifesto antes de agir;
 - usa os dois locks do `stackctl`;
 - roda `docker compose ... up -d --wait --wait-timeout 90
-  --no-deps --no-build --force-recreate catalog gateway` SOMENTE;
+--no-deps --no-build --force-recreate catalog gateway` SOMENTE;
 - exige `PUBLIC_RUNTIME_PASS` = mounts + HTML/JS/CSS + HTTP/MIME na
   borda + 404 sintético sem cache longo;
 - preserva ID do reader e demais containers;
@@ -138,6 +140,7 @@ NÃO significa que os jogos já estejam prontos.
 
 Com um canário autorizado (sem registrar o token) testar Chrome
 responsivo 400 × 802 e Safari/iPhone:
+
 - `/s/:token` e `/fotos` renderizam React;
 - JSON `/data` e WebP real carregam, sem erros no Console;
 - `/internal/*` retorna acesso negado na borda;

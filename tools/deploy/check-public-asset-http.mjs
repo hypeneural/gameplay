@@ -50,9 +50,10 @@ export async function auditMissingAssetCache(fetchFn = fetch) {
   const status = response.status;
   await response.body?.cancel();
   return {
-    status: status === 404 && !/immutable|max-age\s*=\s*[1-9]/.test(cache)
-      ? 'MISSING_ASSET_NOT_CACHED'
-      : 'BLOCKED_MISSING_ASSET_CACHE',
+    status:
+      status === 404 && !/immutable|max-age\s*=\s*[1-9]/.test(cache)
+        ? 'MISSING_ASSET_NOT_CACHED'
+        : 'BLOCKED_MISSING_ASSET_CACHE',
     httpStatus: status,
     immutable: /immutable/.test(cache),
   };

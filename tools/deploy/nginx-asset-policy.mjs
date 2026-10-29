@@ -2,7 +2,8 @@ import { readFile, lstat } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 
 export const HOST_CONFIG = '/srv/platform/stacks/christmas-games/nginx.conf';
-export const LEGACY_CACHE = 'add_header Cache-Control "public, max-age=31536000, immutable" always;';
+export const LEGACY_CACHE =
+  'add_header Cache-Control "public, max-age=31536000, immutable" always;';
 export const SAFE_CACHE = 'add_header Cache-Control "public, max-age=31536000, immutable";';
 
 export function validateAssetCachePolicy(config) {
