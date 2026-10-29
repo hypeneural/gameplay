@@ -57,24 +57,6 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Format PR48 source and emit sanitized patch material (temporary)
-        run: |
-          files=(
-            tools/deploy/check-public-asset-http.mjs
-            tools/deploy/check-public-asset-http.test.mjs
-            tools/deploy/check-public-release-boundary.mjs
-            tools/deploy/check-public-release-boundary.test.mjs
-            tools/deploy/verify-vps-release.mjs
-            docs/ops/HOTFIX_GAMEPLAY_WHITE_SCREEN_ASSET_MISMATCH_20261028.md
-          )
-          pnpm exec prettier --write "${files[@]}"
-          for file in "${files[@]}"; do
-            echo "FORMAT_START:$file"
-            base64 -w0 "$file"
-            echo
-            echo "FORMAT_END:$file"
-          done
-
       - name: Verify machine-readable repository state
         run: pnpm agent:doctor
 
