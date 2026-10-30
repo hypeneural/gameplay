@@ -760,9 +760,12 @@
 │   ├── ops
 │   │   ├── CONTABO_JOGOS_STAGING_2026-10-08.md
 │   │   ├── EVYDFLOW_GAMEPLAY_P0_HANDOFF_2026-10-09.md
+│   │   ├── EXECUCAO_UNICA_ANTIGRAVITY_GAMEPLAY_P0_20261029.md
 │   │   ├── GAMEPLAY_PUBLIC_DEMO_AND_CRM_EVYDFLOW_FORENSIC_2026-10-09.md
+│   │   ├── HOTFIX_GAMEPLAY_WHITE_SCREEN_ASSET_MISMATCH_20261028.md
 │   │   ├── MVP_LOCAL_PHOTO_PREFLIGHT_2026-10-09.md
 │   │   ├── P0_PILOT_ORDER_SCOPE_GATE_20261012.md
+│   │   ├── PROMPT_ANTIGRAVITY_ETAPA9_GAMEPLAY_RESILIENTE_20261029.md
 │   │   ├── VPS_STAGING_DEMO_RUNBOOK.md
 │   │   └── WHATSAPP_OG_SOCIAL_COVERS_2026-10-10.md
 │   ├── plan
@@ -1418,9 +1421,19 @@
 │   │       └── asset-factory.test.ts
 │   ├── clean.mjs
 │   ├── deploy
+│   │   ├── apply-public-pair.sh
+│   │   ├── apply-public-pair.test.mjs
 │   │   ├── backup-restore-catalog.mjs
 │   │   ├── backup-restore-catalog.test.mjs
+│   │   ├── check-public-asset-http.mjs
+│   │   ├── check-public-asset-http.test.mjs
+│   │   ├── check-public-release-boundary.mjs
+│   │   ├── check-public-release-boundary.test.mjs
+│   │   ├── check-public-web-alignment.mjs
+│   │   ├── check-public-web-alignment.test.mjs
 │   │   ├── create-staging-preview-config.mjs
+│   │   ├── nginx-asset-policy.mjs
+│   │   ├── nginx-asset-policy.test.mjs
 │   │   ├── photo-session-preflight.mjs
 │   │   ├── photo-session-preflight.test.mjs
 │   │   ├── prepare-vps-release.mjs
@@ -1431,8 +1444,15 @@
 │   │   ├── release-utils.test.mjs
 │   │   ├── smoke-release-runtime.mjs
 │   │   ├── smoke-staging.mjs
+│   │   ├── stage-public-nginx-policy.mjs
 │   │   ├── staging-boundaries.test.mjs
-│   │   └── verify-vps-release.mjs
+│   │   ├── verify-public-cut-plan.mjs
+│   │   ├── verify-public-cut-plan.test.mjs
+│   │   ├── verify-public-runtime.mjs
+│   │   ├── verify-public-runtime.test.mjs
+│   │   ├── verify-vps-release.mjs
+│   │   ├── vite-entry-integrity.mjs
+│   │   └── vite-entry-integrity.test.mjs
 │   ├── export-puzzle-source-reader.mjs
 │   ├── fixture-generator
 │   │   ├── package.json

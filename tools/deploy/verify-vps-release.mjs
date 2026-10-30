@@ -1,6 +1,7 @@
 import { readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { assertNoForbiddenReleaseFiles, inventoryReleaseFiles } from './release-utils.mjs';
+import { assertViteEntryIntegrity } from './vite-entry-integrity.mjs';
 
 const releaseRoot = resolve(process.argv[2] ?? '.release/vps');
 const releasePath = resolve(releaseRoot, 'RELEASE.json');
@@ -44,6 +45,13 @@ for (const requiredPath of [
     throw new Error(`VPS release is missing required runtime file: ${requiredPath}.`);
   }
 }
+
+// An otherwise valid manifest can still contain HTML pointing at an
+// absent content-hashed Vite entrypoint. Fail before any public cut.
+assertViteEntryIntegrity(
+  await readFile(resolve(releaseRoot, 'web/index.html'), 'utf8'),
+  actualPaths,
+);
 
 const expected = [...release.files].sort((left, right) => left.path.localeCompare(right.path));
 if (expected.length !== actual.length) {
