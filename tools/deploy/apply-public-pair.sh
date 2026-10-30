@@ -117,6 +117,9 @@ rollback() {
         printf 'PUBLIC_CUT_RECOVERY:CURRENT_POINTER_RESTORE_FAILED\n' >&2
       fi
     fi
+    if [[ -f "$STACK/.env" ]]; then
+      sed -i "s|^RELEASE_DIR=.*|RELEASE_DIR=$previous|g" "$STACK/.env" || true
+    fi
     node "$SCRIPT_DIR/verify-public-runtime.mjs" >/dev/null &&
       printf 'PUBLIC_CUT_RECOVERY:PREVIOUS_RELEASE_VERIFIED\n' >&2 ||
       printf 'PUBLIC_CUT_RECOVERY:PREVIOUS_RELEASE_NOT_VERIFIED\n' >&2
@@ -149,6 +152,10 @@ if [[ "$original_pointer" != "$target" ]]; then
   mv -Tf -- "$candidate" "$CURRENT" || fail 'CURRENT_POINTER_SWAP_FAILED'
   [[ "$(readlink -f -- "$CURRENT")" == "$target" ]] ||
     fail 'CURRENT_POINTER_VERIFY_FAILED'
+fi
+# Persist RELEASE_DIR in stack .env so subsequent standard Compose commands never revert.
+if [[ -f "$STACK/.env" ]]; then
+  sed -i "s|^RELEASE_DIR=.*|RELEASE_DIR=$target|g" "$STACK/.env" || fail 'STACK_ENV_UPDATE_FAILED'
 fi
 rollback_required=0
 trap - EXIT ERR INT TERM

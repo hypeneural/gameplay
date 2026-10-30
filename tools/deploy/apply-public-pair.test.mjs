@@ -32,5 +32,6 @@ describe('isolated public cut command invariants', () => {
     expect(script).toContain('--no-deps --no-build');
     expect(script).toContain('--wait-timeout 90');
     expect(script).toContain('ROLLBACK_COMMAND_FAILED');
+    expect(script).toContain('STACK_ENV_UPDATE_FAILED');
   });
 });
